@@ -1,20 +1,45 @@
 package com.team4099.robot2026.subsystems.hopper
-
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
-import org.team4099.lib.units.base.Current
+import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.inAmperes
 import org.team4099.lib.units.base.inCelsius
-import org.team4099.lib.units.derived.degrees
-import org.team4099.lib.units.derived.inVolts
-import org.team4099.lib.units.derived.volts
+import org.team4099.lib.units.derived.*
 import org.team4099.lib.units.inDegreesPerSecond
 import org.team4099.lib.units.inDegreesPerSecondPerSecond
 import org.team4099.lib.units.perSecond
 
 interface HopperIO{
+
+
+    fun updateInputs(inputs: HopperIOInputs){}
+
+
+    fun setVoltage(voltage: ElectricalPotential){}
+
+
+    fun setVelocity(velocity: AngularVelocity){}
+
+
+    fun configPID(
+        kP: ProportionalGain<Angle, Volt>,
+        kI: IntegralGain<Angle, Volt>,
+        kD: DerivativeGain<Angle, Volt>
+    )
+
+        //im ngl i have NO idea what to do with config pid and config ff idk what to make the first param in < x, volt>
+
+    fun configFF(
+        kG: ElectricalPotential,
+        kS: StaticFeedforward<Volt>,
+        kV: VelocityFeedforward<Angle, Volt>,
+        kA: AccelerationFeedforward<Angle, Volt>
+
+    )
+
+    fun setBrakeMode(brake: Boolean)
     class HopperIOInputs : LoggableInputs {
         //Hopper Inputs
         var hopperVelocity = 0.0.degrees.perSecond
@@ -23,58 +48,49 @@ interface HopperIO{
         var hopperStatorCurrent = 0.0.amps
         var hopperSupplyCurrent = 0.0.amps
         var hopperTemp = 0.0.celsius
-        var isSimulating = falase
+        var isSimulating = false
         override fun toLog(table: LogTable) {
             table.put("hopperVelocityPerSecond", hopperVelocity.inDegreesPerSecond)
-        }
-        override fun getLog(table: LogTable){
-            table.get("hopperVelocityPerSecond", hopperVelocity.inDegreesPerSecond){
-                hopperVelocity = it.hopperVelocity.inDegreesPerSecond
-            }
-        }
-        override fun toLog(table: LogTable){
-            table.put("hopperAcceleration", hopperAcceleration.inDegrees)
-            table.put("hopperAccelerationPerSecond", hopperAcceleration.inDegreesPerSecond.inDegreesPerSecond)
-        }
-
-        override fun getLog(table: LogTable){
-            table.get("hopperAcceleration", hopperAcceleration.inDegreesPerSecond.inDegreesPerSecond).let{
-                hopperAcceleration = it.inDegreesPerSecond.inDegreesPerSecond
-            }
-        }
-        override fun toLog(table: LogTable){
+            table.put("hopperAccelerationDPSPS", hopperAcceleration.inDegreesPerSecondPerSecond)
             table.put("hopperAppliedVoltage", hopperAppliedVoltage.inVolts)
+            table.put("hopperStatorCurrent", hopperStatorCurrent.inAmperes)
+            table.put("hopperSupplyCurrent", hopperSupplyCurrent.inAmperes)
+            table.put("hopperTemp", hopperTemp.inCelsius)
+        }
+
+        override fun fromLog(table: LogTable){
+            table.get("hopperVelocityPerSecond", hopperVelocity.inDegreesPerSecond).let{
+                hopperVelocity = it.degrees.perSecond
             }
-        override fun getLog(table: LogTable){
-            table.get("hopperAppliedVoltage", hopperAppliedVoltage.inVolts){
-                hopperAppliedVoltage = it.inVolts
+            table.get("hopperAcceleration", hopperAcceleration.inDegreesPerSecondPerSecond).let{
+              hopperAcceleration = it.degrees.perSecond.perSecond
+            }
+            table.get("hopperAppliedVoltage", hopperAppliedVoltage.inVolts).let {
+                hopperAppliedVoltage = it.volts //idk if this is right
+            }
+            table.get("hopperStatorCurrent", hopperStatorCurrent.inAmperes).let {
+                hopperStatorCurrent = it.amps
+            }
+            table.get("hopperSupplyCurrent", hopperSupplyCurrent.inAmperes).let {
+                hopperSupplyCurrent = it.amps
+            }
+            table.get("hopperTemp", hopperTemp.inCelsius).let {
+                hopperTemp = it.celsius
             }
         }
-        override  fun toLog(table: LogTable){
-            table.put("hopperStatorCurrent",){
-
-            }
-        }
-        fun updateInputs(inputs: hopperInputs) {
+        fun updateInputs(inputs: String) {
 
         }
-        fun setVoltage(voltage: hopperSetVoltage) {
+        fun setVoltage(voltage: Double) {
 
         }
 
-        fun setPosition(position: hopperSetPosition) {
+        fun setVelocity(velocity: Double) {
 
         }
         fun setBrakeMode(brake: Boolean) {
 
         }
-        fun configFF(
-            kG: ElectricalPotential,
-            kS: StaticFeedforward<Volt>,
-            kV: VelocityFeedforward<MeasurementUnit, Volt>,
-            kA: AccelerationFeedforward<MeasurementUnit, Volt>
-        ) {
 
-        }
     }
 }
