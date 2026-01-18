@@ -10,7 +10,7 @@ import org.team4099.lib.units.derived.*
 import org.team4099.lib.units.inDegreesPerSecond
 import org.team4099.lib.units.inDegreesPerSecondPerSecond
 import org.team4099.lib.units.perSecond
-
+import org.team4099.lib.units.derived.Angle
 interface HopperIO{
 
 
