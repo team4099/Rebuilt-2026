@@ -37,11 +37,10 @@ class LoggedTunableNumber(dashboardKey: String) {
       this.defaultValue = defaultValue
       if (Constants.Tuning.TUNING_MODE) {
         Logger.registerDashboardInput(LoggedNetworkNumber(key))
-        }
-        //dashboardNumber = LoggedDashboardNumber(key, defaultValue)
       }
+      // dashboardNumber = LoggedDashboardNumber(key, defaultValue)
     }
-
+  }
 
   /**
    * Get the current value, from dashboard if available and in tuning mode.

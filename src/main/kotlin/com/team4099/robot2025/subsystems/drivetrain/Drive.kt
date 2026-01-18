@@ -13,7 +13,6 @@
 package com.team4099.robot2025.subsystems.drivetrain
 
 import com.ctre.phoenix6.CANBus
-import com.ctre.phoenix6.signals.NeutralModeValue
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.config.ModuleConfig
 import com.pathplanner.lib.config.PIDConstants
@@ -30,17 +29,18 @@ import com.team4099.robot2025.util.CustomLogger
 import edu.wpi.first.hal.FRCNetComm
 import edu.wpi.first.hal.HAL
 import edu.wpi.first.math.Matrix
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator3d
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics
 import edu.wpi.first.math.kinematics.SwerveModulePosition
 import edu.wpi.first.math.kinematics.SwerveModuleState
 import edu.wpi.first.math.numbers.N1
-import edu.wpi.first.math.numbers.N3
+import edu.wpi.first.math.numbers.N4
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.units.Units
 import edu.wpi.first.units.Units.KilogramSquareMeters
 import edu.wpi.first.units.Units.Kilograms
 import edu.wpi.first.units.Units.Meters
+import edu.wpi.first.units.Units.Seconds
 import edu.wpi.first.units.Units.Volts
 import edu.wpi.first.units.measure.Voltage
 import edu.wpi.first.wpilibj.Alert
@@ -56,6 +56,8 @@ import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig
 import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.geometry.Pose2d
+import org.team4099.lib.geometry.Pose3d
+import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.geometry.Translation2d
 import org.team4099.lib.geometry.Twist2d
 import org.team4099.lib.kinematics.ChassisSpeeds
@@ -82,6 +84,7 @@ import kotlin.math.absoluteValue
 import kotlin.math.hypot
 import kotlin.math.max
 import edu.wpi.first.math.geometry.Pose2d as WPIPose2d
+import edu.wpi.first.math.geometry.Pose3d as WPIPose3d
 import edu.wpi.first.math.kinematics.ChassisSpeeds as WPIChassisSpeeds
 
 class Drive(
@@ -104,7 +107,7 @@ class Drive(
           .toTypedArray()
         )
     )
-  private var rawGyroRotation: Angle = 0.0.radians
+  private var rawGyroRotation: Rotation3d = Rotation3d()
   private val lastModulePositions: Array<SwerveModulePosition?> = // For delta tracking
     arrayOf(
       SwerveModulePosition(),
@@ -112,9 +115,9 @@ class Drive(
       SwerveModulePosition(),
       SwerveModulePosition()
     )
-  private val poseEstimator: SwerveDrivePoseEstimator =
-    SwerveDrivePoseEstimator(
-      kinematics, rawGyroRotation.inRotation2ds, lastModulePositions, Pose2d().pose2d
+  private val poseEstimator: SwerveDrivePoseEstimator3d =
+    SwerveDrivePoseEstimator3d(
+      kinematics, rawGyroRotation.rotation3d, lastModulePositions, Pose3d().pose3d
     )
 
   init {
@@ -133,9 +136,10 @@ class Drive(
     PhoenixOdometryThread.instance.start()
 
     // Configure AutoBuilder for PathPlanner
+    // WARNING! takes in pose as pose2d and does not account for z
     AutoBuilder.configure(
-      { this.pose.pose2d },
-      { pose: WPIPose2d -> this.pose = Pose2d(pose) },
+      { this.pose.pose3d.toPose2d() },
+      { pose: WPIPose2d -> this.pose = Pose3d(Pose2d(pose)) },
       { this.chassisSpeeds.chassisSpeedsWPILIB },
       { speeds: WPIChassisSpeeds -> this.runSpeeds(ChassisSpeeds(speeds)) },
       PPHolonomicDriveController(
@@ -168,7 +172,8 @@ class Drive(
     // Configure SysId
     sysId =
       SysIdRoutine(
-        SysIdRoutine.Config(null, null, null) { state: SysIdRoutineLog.State ->
+        SysIdRoutine.Config(Volts.of(1.0) / Seconds.of(1.0), Volts.of(7.0), Seconds.of(10.0)) {
+          state: SysIdRoutineLog.State ->
           Logger.recordOutput("Drive/SysIdState", state.toString())
         },
         SysIdRoutine.Mechanism(
@@ -222,23 +227,26 @@ class Drive(
       // Update gyro angle
       if (gyroInputs.connected) {
         // Use the real gyro angle
-        rawGyroRotation = gyroInputs.odometryYawPositions[i]
+        rawGyroRotation =
+          Rotation3d(
+            gyroInputs.odometryRollPositions[i],
+            gyroInputs.odometryPitchPositions[i],
+            gyroInputs.odometryYawPositions[i]
+          )
       } else {
         // Use the angle delta from the kinematics and module deltas
         val twist = Twist2d(kinematics.toTwist2d(*moduleDeltas))
-        rawGyroRotation += twist.dtheta
+        rawGyroRotation += Rotation3d(0.radians, 0.radians, twist.dtheta)
       }
 
       // Apply update
-      poseEstimator.updateWithTime(
-        sampleTimestamps[i], rawGyroRotation.inRotation2ds, modulePositions
-      )
+      poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation.rotation3d, modulePositions)
     }
 
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && RobotBase.isReal())
 
-    Logger.recordOutput("Odometry/pose", pose.pose2d)
+    Logger.recordOutput("Odometry/pose", pose.pose3d)
     Logger.recordOutput("SwerveChassisSpeeds/Measured", chassisSpeeds.chassisSpeedsWPILIB)
 
     Logger.recordOutput("SwerveStates/Measured", *moduleStates)
@@ -305,7 +313,7 @@ class Drive(
    * return to their normal orientations the next time a nonzero velocity is requested.
    */
   fun stopWithX() {
-    val headings: Array<Angle> = arrayOf()
+    val headings: Array<Angle> = Array(4) { 0.radians }
     for (i in 0..3) {
       headings[i] = Angle(moduleTranslations[i].x.inMeters, moduleTranslations[i].y.inMeters)
     }
@@ -369,28 +377,27 @@ class Drive(
       return output
     }
 
-  var pose: Pose2d
+  var pose: Pose3d
     /** Returns the current odometry pose. */
     get() =
-      Pose2d(
-        if (RobotBase.isReal()) poseEstimator.estimatedPosition
-        else getSimulationPoseCallback.get()
-      )
+      if (RobotBase.isReal()) Pose3d(poseEstimator.estimatedPosition)
+      else Pose3d(Pose2d(getSimulationPoseCallback.get()))
+
     /** Resets the current odometry pose. */
     set(pose) {
-      resetSimulationPoseCallback.accept(pose.pose2d)
-      poseEstimator.resetPosition(rawGyroRotation.inRotation2ds, modulePositions, pose.pose2d)
+      resetSimulationPoseCallback.accept(pose.toPose2d().pose2d)
+      poseEstimator.resetPosition(rawGyroRotation.rotation3d, modulePositions, pose.pose3d)
     }
 
-  val rotation: Angle
-    /** Returns the current odometry rotation. */
+  val rotation: Rotation3d
+    /** Returns the current odometry pitch rotation. */
     get() = pose.rotation
 
   /** Adds a new timestamped vision measurement. */
   fun addVisionMeasurement(
-    visionRobotPose: WPIPose2d?,
+    visionRobotPose: WPIPose3d?,
     timestampSeconds: Double,
-    visionMeasurementStdDevs: Matrix<N3?, N1?>?
+    visionMeasurementStdDevs: Matrix<N4?, N1?>?
   ) {
     poseEstimator.addVisionMeasurement(visionRobotPose, timestampSeconds, visionMeasurementStdDevs)
   }
@@ -402,12 +409,6 @@ class Drive(
   val maxAngularSpeedRadPerSec: Double
     /** Returns the maximum angular speed in radians per sec. */
     get() = maxLinearSpeedMetersPerSec / DRIVE_BASE_RADIUS
-
-  fun setBrakeMode(neutralModeValue: NeutralModeValue) {
-    for (module in modules) {
-      module?.setBrakeMode(neutralModeValue)
-    }
-  }
 
   companion object {
     // TunerConstants doesn't include these constants, so they are declared locally

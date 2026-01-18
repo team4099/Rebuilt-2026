@@ -1,3 +1,8 @@
+# team4099 added stuff
+/src/main/kotlin/com/team4099/robot2025/BuildConstants.kt
+
+**/*.hprof
+
 # This gitignore has been specially created by the WPILib team.
 # If you remove items from this file, intellisense might break.
 

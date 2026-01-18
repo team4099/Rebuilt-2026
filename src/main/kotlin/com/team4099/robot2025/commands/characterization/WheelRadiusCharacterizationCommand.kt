@@ -53,11 +53,11 @@ class WheelRadiusCharacterizationCommand(drivetrain: Drive) : ParallelCommandGro
         Commands.waitSeconds(1.0),
         Commands.runOnce({
           state.positions = drivetrain.wheelRadiusCharacterizationPositions
-          state.lastAngle = drivetrain.rotation.inRotation2ds
+          state.lastAngle = drivetrain.rotation.z.inRotation2ds
           state.gyroDelta = 0.0
         }),
         Commands.run({
-          val rotation = drivetrain.rotation.inRotation2ds
+          val rotation = drivetrain.rotation.z.inRotation2ds
           state.gyroDelta += abs(rotation.minus(state.lastAngle).radians)
           state.lastAngle = rotation
         })
