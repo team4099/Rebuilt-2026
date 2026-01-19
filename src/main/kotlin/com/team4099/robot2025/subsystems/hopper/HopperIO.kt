@@ -1,4 +1,5 @@
 package com.team4099.robot2026.subsystems.hopper
+
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
 import org.team4099.lib.units.AngularVelocity
@@ -11,17 +12,17 @@ import org.team4099.lib.units.inDegreesPerSecond
 import org.team4099.lib.units.inDegreesPerSecondPerSecond
 import org.team4099.lib.units.perSecond
 import org.team4099.lib.units.derived.Angle
-interface HopperIO{
+
+interface HopperIO {
 
 
-    fun updateInputs(inputs: HopperIOInputs){}
+    fun updateInputs(inputs: HopperIOInputs) {}
 
 
-    fun setVoltage(voltage: ElectricalPotential){
-    }
+    fun setVoltage(voltage: ElectricalPotential) {}
 
-    
-    fun setBrakeMode(brake: Boolean)
+    fun setBrakeMode(brake: Boolean){}
+
     class HopperIOInputs : LoggableInputs {
         //Hopper Inputs
         var hopperVelocity = 0.0.degrees.perSecond
@@ -40,12 +41,12 @@ interface HopperIO{
             table.put("hopperTemp", hopperTemp.inCelsius)
         }
 
-        override fun fromLog(table: LogTable){
-            table.get("hopperVelocityPerSecond", hopperVelocity.inDegreesPerSecond).let{
+        override fun fromLog(table: LogTable) {
+            table.get("hopperVelocityPerSecond", hopperVelocity.inDegreesPerSecond).let {
                 hopperVelocity = it.degrees.perSecond
             }
-            table.get("hopperAcceleration", hopperAcceleration.inDegreesPerSecondPerSecond).let{
-              hopperAcceleration = it.degrees.perSecond.perSecond
+            table.get("hopperAcceleration", hopperAcceleration.inDegreesPerSecondPerSecond).let {
+                hopperAcceleration = it.degrees.perSecond.perSecond
             }
             table.get("hopperAppliedVoltage", hopperAppliedVoltage.inVolts).let {
                 hopperAppliedVoltage = it.volts //idk if this is right
@@ -60,9 +61,11 @@ interface HopperIO{
                 hopperTemp = it.celsius
             }
         }
+
         fun updateInputs(inputs: String) {
 
         }
+
         fun setVoltage(voltage: Double) {
 
         }
@@ -70,6 +73,7 @@ interface HopperIO{
         fun setVelocity(velocity: Double) {
 
         }
+
         fun setBrakeMode(brake: Boolean) {
 
         }
