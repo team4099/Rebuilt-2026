@@ -23,14 +23,6 @@ interface HopperIO{
     fun setVelocity(velocity: AngularVelocity){}
 
 
-    fun configPID(
-        kP: ProportionalGain<Angle, Volt>,
-        kI: IntegralGain<Angle, Volt>,
-        kD: DerivativeGain<Angle, Volt>
-    )
-
-        //im ngl i have NO idea what to do with config pid and config ff idk what to make the first param in < x, volt>
-
     fun configFF(
         kG: ElectricalPotential,
         kS: StaticFeedforward<Volt>,
