@@ -12,44 +12,43 @@ import org.team4099.lib.units.inMetersPerSecondPerSecond
 import org.team4099.lib.units.perSecond
 
 fun trajectoryFromPath(
-  startVelocity: LinearVelocity,
-  path: Path,
-  endVelocity: LinearVelocity,
-  trajectoryConfig: TrajectoryConfig
+    startVelocity: LinearVelocity,
+    path: Path,
+    endVelocity: LinearVelocity,
+    trajectoryConfig: TrajectoryConfig
 ): Trajectory {
   if (!path.built) path.build()
 
   val wpilibStates =
-    TrajectoryParameterizer.timeParameterizeTrajectory(
-      path.splinePoints,
-      trajectoryConfig.constraints,
-      startVelocity.inMetersPerSecond,
-      endVelocity.inMetersPerSecond,
-      trajectoryConfig.maxLinearVelocity.inMetersPerSecond,
-      trajectoryConfig.maxLinearAcceleration.inMetersPerSecondPerSecond,
-      false
-    )
-      .states
+      TrajectoryParameterizer.timeParameterizeTrajectory(
+              path.splinePoints,
+              trajectoryConfig.constraints,
+              startVelocity.inMetersPerSecond,
+              endVelocity.inMetersPerSecond,
+              trajectoryConfig.maxLinearVelocity.inMetersPerSecond,
+              trajectoryConfig.maxLinearAcceleration.inMetersPerSecondPerSecond,
+              false)
+          .states
 
   val states =
-    wpilibStates.mapIndexed { index, state ->
-      var headingTarget =
-        if (index == 0) {
-          path.startingPose.rotation
-        } else if (index == wpilibStates.size - 1) {
-          path.endingPose.rotation
-        } else {
-          val tailMap = path.headingPointMap.tailMap(index)
-          if (tailMap.size == 0) {
-            path.endingPose.rotation
-          } else {
-            path.headingPointMap[tailMap.firstKey()]
-          }
-        }
+      wpilibStates.mapIndexed { index, state ->
+        var headingTarget =
+            if (index == 0) {
+              path.startingPose.rotation
+            } else if (index == wpilibStates.size - 1) {
+              path.endingPose.rotation
+            } else {
+              val tailMap = path.headingPointMap.tailMap(index)
+              if (tailMap.size == 0) {
+                path.endingPose.rotation
+              } else {
+                path.headingPointMap[tailMap.firstKey()]
+              }
+            }
 
-      if (headingTarget == null) {
-        headingTarget = path.endingPose.rotation
-      }
+        if (headingTarget == null) {
+          headingTarget = path.endingPose.rotation
+        }
         /*
          #TO DO
 
@@ -58,14 +57,13 @@ fun trajectoryFromPath(
 
           Look back to this if rotation is jittery
         */
-      TrajectoryState(
-        state.timeSeconds.seconds,
-        Pose2d(Translation2d(state.poseMeters.translation), headingTarget),
-        state.poseMeters.rotation.angle,
-        state.velocityMetersPerSecond.meters.perSecond,
-        state.accelerationMetersPerSecondSq.meters.perSecond.perSecond
-      )
-    }
+        TrajectoryState(
+            state.timeSeconds.seconds,
+            Pose2d(Translation2d(state.poseMeters.translation), headingTarget),
+            state.poseMeters.rotation.angle,
+            state.velocityMetersPerSecond.meters.perSecond,
+            state.accelerationMetersPerSecondSq.meters.perSecond.perSecond)
+      }
 
   return Trajectory(states)
 }

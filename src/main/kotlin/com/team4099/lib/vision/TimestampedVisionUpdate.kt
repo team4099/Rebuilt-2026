@@ -8,8 +8,8 @@ import org.team4099.lib.units.base.Time
 
 /** Represents a single vision pose with a timestamp and associated standard deviations. */
 data class TimestampedVisionUpdate(
-  val timestamp: Time,
-  val fieldTRobot: Pose2d,
-  val stdDevs: Matrix<N3, N1>,
-  val fromVision: Boolean = false
+    val timestamp: Time,
+    val fieldTRobot: Pose2d,
+    val stdDevs: Matrix<N3, N1>,
+    val fromVision: Boolean = false
 )
