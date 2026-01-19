@@ -1,4 +1,4 @@
-package com.team4099.robot2025.subsystems.shooter
+package com.team4099.robot2025.subsystems.superstructure.shooter
 
 import com.ctre.phoenix6.BaseStatusSignal
 import com.ctre.phoenix6.StatusSignal
@@ -84,8 +84,6 @@ object ShooterIOTalon : ShooterIO {
     configs.CurrentLimits.StatorCurrentLimitEnable = true
     configs.MotorOutput.NeutralMode = NeutralModeValue.Coast
 
-    configs.MotionMagic.MotionMagicCruiseVelocity =
-      leaderSensor.velocityToRawUnits(ShooterConstants.MAX_VELOCITY)
     configs.MotionMagic.MotionMagicAcceleration =
       leaderSensor.accelerationToRawUnits(ShooterConstants.MAX_ACCELERATION)
 

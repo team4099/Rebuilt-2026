@@ -1,4 +1,4 @@
-package com.team4099.robot2025.subsystems.shooter
+package com.team4099.robot2025.subsystems.superstructure.shooter
 
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
