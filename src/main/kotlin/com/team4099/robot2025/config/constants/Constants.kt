@@ -54,4 +54,8 @@ object Constants {
   object Alert {
     val TABS = arrayOf("Pre-match", "In-match")
   }
+
+  object Intake {
+    const val INTAKE_ROLLERS_MOTOR_ID = 0
+  }
 }
