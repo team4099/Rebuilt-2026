@@ -39,7 +39,7 @@ class TeleopDriveCommand(
 
       drivetrain.runSpeeds(
         ChassisSpeeds.fromFieldRelativeSpeeds(
-          speed.first, speed.second, rotation, drivetrain.pose.rotation
+          speed.first, speed.second, rotation, drivetrain.pose.rotation.z
         )
       )
 

@@ -1,17 +1,15 @@
 package com.team4099.robot2025.commands.drivetrain
 
 import com.team4099.lib.hal.Clock
-import com.team4099.lib.math.asPose2d
 import com.team4099.robot2025.config.constants.DrivetrainConstants
 import com.team4099.robot2025.subsystems.drivetrain.Drive
 import com.team4099.robot2025.subsystems.vision.Vision
 import com.team4099.robot2025.util.CustomLogger
+import com.team4099.robot2025.util.toPose3d
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.Command
 import org.team4099.lib.controller.PIDController
-import org.team4099.lib.geometry.Transform2d
-import org.team4099.lib.geometry.Translation2d
 import org.team4099.lib.kinematics.ChassisSpeeds
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Length
@@ -140,9 +138,9 @@ class CoolerTargetTagCommand(
     CustomLogger.recordOutput("ActiveCommands/CoolerTargetTagCommand", true)
 
     val lastUpdate = vision.lastTrigVisionUpdate
-    val odomTTag = lastUpdate.robotTReefTag
+    val odomTTag = lastUpdate.robotTTargetTag
 
-    val exists = odomTTag != Transform2d(Translation2d(), 0.degrees)
+    val exists = odomTTag.translation.norm != 0.meters
     CustomLogger.recordOutput("CoolerTargetTagCommand/odomTTagExists", exists)
     if (!exists || Clock.fpgaTime - lastUpdate.timestamp > .5.seconds)
       end(interrupted = true) // todo kalman?
@@ -150,18 +148,19 @@ class CoolerTargetTagCommand(
     val setpointTranslation = odomTTag.translation
     val setpointRotation = odomTTag.rotation
 
-    CustomLogger.recordOutput("CoolerTargetTagCommand/odomTTag", odomTTag.asPose2d().pose2d)
+    CustomLogger.recordOutput("CoolerTargetTagCommand/odomTTag", odomTTag.toPose3d().pose3d)
     CustomLogger.recordOutput(
-      "CoolerTargetTagCommand/expectedTagPose", drivetrain.pose.transformBy(odomTTag).pose2d
+      "CoolerTargetTagCommand/expectedTagPose", drivetrain.pose.transformBy(odomTTag).pose3d
     )
     CustomLogger.recordOutput(
-      "CoolerTargetTagCommand/setpointTranslation", setpointTranslation.translation2d
+      "CoolerTargetTagCommand/setpointTranslation", setpointTranslation.translation3d
     )
     CustomLogger.recordOutput(
-      "CoolerTargetTagCommand/currentRotation", drivetrain.rotation.inDegrees
+      "CoolerTargetTagCommand/currentRotation", drivetrain.rotation.z.inDegrees
     )
     CustomLogger.recordOutput(
-      "CoolerTargetTagCommand/setpointRotation", (setpointRotation + thetaTargetOffset).inDegrees
+      "CoolerTargetTagCommand/setpointRotation",
+      (setpointRotation.z + thetaTargetOffset).inDegrees
     )
 
     // todo check signs and whatnot
@@ -170,7 +169,7 @@ class CoolerTargetTagCommand(
         setpointTranslation.x.sign
     var yvel = -yPID.calculate(setpointTranslation.y, yTargetOffset)
     var thetavel =
-      thetaPID.calculate(drivetrain.rotation, setpointRotation + thetaTargetOffset) *
+      thetaPID.calculate(drivetrain.rotation.z, setpointRotation.z + thetaTargetOffset) *
         if (RobotBase.isReal()) -1.0 else 1.0
 
     CustomLogger.recordOutput("CoolerTargetTagCommand/xvelmps", xvel.inMetersPerSecond)

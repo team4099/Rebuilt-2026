@@ -149,7 +149,7 @@ object Robot : LoggedRobot() {
         .withWidget(BuiltInWidgets.kTextView)
         .entry
 
-    CommandScheduler.getInstance().schedule( FollowPathCommand.warmupCommand())
+    CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand())
 
     Logger.recordOutput("RobotSimulation/simulateVision", Constants.Universal.SIMULATE_VISION)
 
@@ -160,7 +160,7 @@ object Robot : LoggedRobot() {
 
   override fun autonomousInit() {
     val autonCommandWithWait = runOnce({ RobotContainer.zeroSensors() }).andThen(autonomousCommand)
-    CommandScheduler.getInstance().schedule( autonCommandWithWait)
+    CommandScheduler.getInstance().schedule(autonCommandWithWait)
   }
 
   override fun disabledPeriodic() {

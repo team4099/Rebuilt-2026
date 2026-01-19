@@ -140,7 +140,8 @@ class FollowChoreoPath(val drivetrain: Drive, val trajectory: Trajectory<SwerveS
 
     CustomLogger.recordOutput("FollowChoreoPath/desiredPose", desiredState.pose)
 
-    val nextDriveState = swerveDriveController.calculate(drivetrain.pose.pose2d, desiredState)
+    val nextDriveState =
+      swerveDriveController.calculate(drivetrain.pose.toPose2d().pose2d, desiredState)
     drivetrain.runSpeeds(
       ChassisSpeeds(
         nextDriveState.vxMetersPerSecond.meters.perSecond,
@@ -154,7 +155,7 @@ class FollowChoreoPath(val drivetrain: Drive, val trajectory: Trajectory<SwerveS
   }
 
   private fun atSetpoint(): Boolean {
-    val posediff = drivetrain.pose.relativeTo(finalPose)
+    val posediff = drivetrain.pose.toPose2d().relativeTo(finalPose)
 
     CustomLogger.recordOutput("FollowChoreoPath/poseDiff", posediff.asTransform2d().transform2d)
 
