@@ -4,7 +4,7 @@ import org.team4099.lib.geometry.Transform3d
 import org.team4099.lib.units.base.Time
 
 data class TimestampedTrigVisionUpdate(
-  val timestamp: Time,
-  val targetTagID: Int,
-  val robotTTargetTag: Transform3d,
+    val timestamp: Time,
+    val targetTagID: Int,
+    val robotTTargetTag: Transform3d,
 )
