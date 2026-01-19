@@ -17,20 +17,10 @@ interface HopperIO{
     fun updateInputs(inputs: HopperIOInputs){}
 
 
-    fun setVoltage(voltage: ElectricalPotential){}
+    fun setVoltage(voltage: ElectricalPotential){
+    }
 
-
-    fun setVelocity(velocity: AngularVelocity){}
-
-
-    fun configFF(
-        kG: ElectricalPotential,
-        kS: StaticFeedforward<Volt>,
-        kV: VelocityFeedforward<Angle, Volt>,
-        kA: AccelerationFeedforward<Angle, Volt>
-
-    )
-
+    
     fun setBrakeMode(brake: Boolean)
     class HopperIOInputs : LoggableInputs {
         //Hopper Inputs
