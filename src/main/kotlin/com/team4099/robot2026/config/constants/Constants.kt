@@ -1,7 +1,5 @@
 package com.team4099.robot2026.config.constants
 
-import org.team4099.lib.units.base.Ampere
-import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.grams
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.pounds
@@ -56,14 +54,8 @@ object Constants {
   object Alert {
     val TABS = arrayOf("Pre-match", "In-match")
   }
+
   object Hopper {
     const val HOPPER_MOTOR_ID = -1337
-    const val HOPPER_MOTOR_NAME = "Hopepr Motor"
-    const val HOPPER_MOTOR_SPEED = -1337
-    const val GEAR_RATIO: Double = 1.0 / 1.0
-    const val MAX_ACCELERATION: Double = -1337.0
-    const val MAX_VELOCITY: Double = -1337.0
-    val VOLTAGE_COMPENSATION = -1337.amps
-  const val ENCODER_TO_MECHANISM_GEAR_RATIO = -1337
   }
 }
