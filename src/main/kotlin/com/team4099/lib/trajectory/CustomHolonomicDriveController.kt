@@ -19,9 +19,9 @@ import edu.wpi.first.math.trajectory.Trajectory
  * point toward. This heading reference is profiled for smoothness.
  */
 class CustomHolonomicDriveController(
-  private val m_xController: PIDController,
-  private val m_yController: PIDController,
-  private val m_thetaController: PIDController
+    private val m_xController: PIDController,
+    private val m_yController: PIDController,
+    private val m_thetaController: PIDController
 ) {
   private var m_poseError = Pose2d()
   private var m_rotationError = Rotation2d()
@@ -50,8 +50,8 @@ class CustomHolonomicDriveController(
     val tolTranslate = m_poseTolerance.translation
     val tolRotate = m_poseTolerance.rotation
     return Math.abs(eTranslate.x) < tolTranslate.x &&
-      Math.abs(eTranslate.y) < tolTranslate.y &&
-      Math.abs(eRotate.radians) < tolRotate.radians
+        Math.abs(eTranslate.y) < tolTranslate.y &&
+        Math.abs(eRotate.radians) < tolRotate.radians
   }
 
   /**
@@ -74,11 +74,11 @@ class CustomHolonomicDriveController(
    * @return The next output of the holonomic drive controller.
    */
   fun calculate(
-    currentPose: Pose2d,
-    poseRef: Pose2d,
-    linearVelocityRefMeters: Double,
-    angleRef: Rotation2d,
-    angleVelocityRefRadians: Double
+      currentPose: Pose2d,
+      poseRef: Pose2d,
+      linearVelocityRefMeters: Double,
+      angleRef: Rotation2d,
+      angleVelocityRefRadians: Double
   ): ChassisSpeeds {
 
     // Calculate feedforward velocities (field-relative).
@@ -88,8 +88,7 @@ class CustomHolonomicDriveController(
     m_rotationError = angleRef.minus(currentPose.rotation)
     if (!m_enabled) {
       return ChassisSpeeds.fromFieldRelativeSpeeds(
-        xFF, yFF, angleVelocityRefRadians, currentPose.rotation
-      )
+          xFF, yFF, angleVelocityRefRadians, currentPose.rotation)
     }
 
     // Calculate feedback velocities (based on position error).
@@ -99,11 +98,10 @@ class CustomHolonomicDriveController(
 
     // Return next output.
     return ChassisSpeeds.fromFieldRelativeSpeeds(
-      xFF + xFeedback,
-      yFF + yFeedback,
-      angleVelocityRefRadians + thetaFeedback,
-      currentPose.rotation
-    )
+        xFF + xFeedback,
+        yFF + yFeedback,
+        angleVelocityRefRadians + thetaFeedback,
+        currentPose.rotation)
   }
 
   /**
@@ -115,17 +113,16 @@ class CustomHolonomicDriveController(
    * @return The next output of the holonomic drive controller.
    */
   fun calculate(
-    currentPose: Pose2d,
-    driveState: Trajectory.State,
-    holonomicRotationState: RotationSequence.State
+      currentPose: Pose2d,
+      driveState: Trajectory.State,
+      holonomicRotationState: RotationSequence.State
   ): ChassisSpeeds {
     return calculate(
-      currentPose,
-      driveState.poseMeters,
-      driveState.velocityMetersPerSecond,
-      holonomicRotationState.position,
-      holonomicRotationState.velocityRadiansPerSec
-    )
+        currentPose,
+        driveState.poseMeters,
+        driveState.velocityMetersPerSecond,
+        holonomicRotationState.position,
+        holonomicRotationState.velocityRadiansPerSec)
   }
 
   /**
@@ -143,16 +140,14 @@ class CustomHolonomicDriveController(
     val xFeedback = m_xController.calculate(currentPose.x, trajectoryState.pose.x)
     val yFeedback = m_yController.calculate(currentPose.y, trajectoryState.pose.y)
     val thetaFeedback =
-      m_thetaController.calculate(
-        currentPose.rotation.radians, trajectoryState.pose.rotation.radians
-      )
+        m_thetaController.calculate(
+            currentPose.rotation.radians, trajectoryState.pose.rotation.radians)
 
     return ChassisSpeeds.fromFieldRelativeSpeeds(
-      xFF + xFeedback,
-      yFF + yFeedback,
-      trajectoryState.omega + thetaFeedback,
-      currentPose.rotation
-    )
+        xFF + xFeedback,
+        yFF + yFeedback,
+        trajectoryState.omega + thetaFeedback,
+        currentPose.rotation)
   }
 
   /**

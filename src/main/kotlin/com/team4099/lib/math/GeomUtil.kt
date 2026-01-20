@@ -28,8 +28,9 @@ fun multiplyTwist(twist: Twist2d, factor: Double): Twist2d {
 /**
  * Translates a pose with respect to its own angle. Takes care of translation specific rotations
  * necessary.
+ *
  * @param translation2d The pure translation that is being applied. Note this will be applied in the
- * pose's axis.
+ *   pose's axis.
  * @return Translated pose
  */
 fun Pose2d.purelyTranslateBy(translation2d: Translation2d): Pose2d {
@@ -40,6 +41,7 @@ fun Pose2d.purelyTranslateBy(translation2d: Translation2d): Pose2d {
  * Returns the transform between the frame origin of the pose and the current pose state -- for
  * example, if the pose describes the pose of the robot in the odometry frame, the returned
  * transform will be the transform between the odometry frame and the robot frame.
+ *
  * @return
  */
 fun Pose2d.asTransform2d(): Transform2d {
