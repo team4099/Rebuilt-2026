@@ -25,8 +25,10 @@ import org.team4099.lib.units.perSecond
 import com.ctre.phoenix6.StatusSignal as WPIStatusSignal
 import edu.wpi.first.units.measure.AngularVelocity as WPIAngularVelocity
 import edu.wpi.first.units.CurrentUnit
+import edu.wpi.first.units.measure.Current
 import edu.wpi.first.units.measure.Temperature as WPITemp
 import edu.wpi.first.units.measure.Acceleration as WPIAccel
+import edu.wpi.first.units.measure.AngularAcceleration as WPIAngularAcceleration
 
 
 object HopperIOTalon: HopperIO {
@@ -46,12 +48,12 @@ object HopperIOTalon: HopperIO {
     override fun setBrakeMode(brake: Boolean) {
         TODO("Not yet implemented")
     }
-        var statorCurrentSignal: StatusSignal<WPIStatusSignal>
+        var statorCurrentSignal: StatusSignal<Current>
         var supplyCurrentSignal: StatusSignal<Voltage>
         var tempSignal: StatusSignal<WPITemp>
         var dutyCycleSignal: StatusSignal<Double>
         var motorVoltageSignal: StatusSignal<Voltage>
-        var motorAccelSignal: StatusSignal<WPIAccel>
+        var motorAccelSignal: StatusSignal<WPIAngularAcceleration>
         var rotorVelocitySignal: StatusSignal<WPIAngularVelocity>
     init {
         hopperTalon.clearStickyFaults()
