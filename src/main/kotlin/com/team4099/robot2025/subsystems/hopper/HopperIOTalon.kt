@@ -22,14 +22,19 @@ import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
+import com.ctre.phoenix6.StatusSignal as WPIStatusSignal
+import edu.wpi.first.units.measure.AngularVelocity as WPIAngularVelocity
+import edu.wpi.first.units.CurrentUnit
+import edu.wpi.first.units.measure.Temperature as WPITemp
+import edu.wpi.first.units.measure.Acceleration as WPIAccel
+
 
 object HopperIOTalon: HopperIO {
 
     private val hopperTalon: TalonFX = TalonFX(Constants.Hopper.HOPPER_MOTOR_ID)
     private val motionMagicControl: MotionMagicVoltage = MotionMagicVoltage(-1337.degrees.inDegrees)
     private val configs: TalonFXConfiguration = TalonFXConfiguration()
-    private val subsystemSensor = ctreAngularMechanismSensor(hopperTalon, Constants.Hopper.GEAR_RATIO,Constants.Hopper.VOLTAGE_COMPENSATION)
-
+    private val hopperSensor = ctreAngularMechanismSensor(hopperTalon, Constants.Hopper.GEAR_RATIO,Constants.Hopper.VOLTAGE_COMPENSATION)
     private fun ctreAngularMechanismSensor(
         controller: TalonFX,
         ratio: Double,
@@ -41,13 +46,13 @@ object HopperIOTalon: HopperIO {
     override fun setBrakeMode(brake: Boolean) {
         TODO("Not yet implemented")
     }
-        var statorCurrentSignal: StatusSignal<Ampere>
+        var statorCurrentSignal: StatusSignal<WPIStatusSignal>
         var supplyCurrentSignal: StatusSignal<Voltage>
-        var tempSignal: StatusSignal<Temperature>
+        var tempSignal: StatusSignal<WPITemp>
         var dutyCycleSignal: StatusSignal<Double>
         var motorVoltageSignal: StatusSignal<Voltage>
-        var motorAccelSignal: StatusSignal<AngularAcceleration>
-        var rotorVelocitySignal: StatusSignal<AngularVelocity>
+        var motorAccelSignal: StatusSignal<WPIAccel>
+        var rotorVelocitySignal: StatusSignal<WPIAngularVelocity>
     init {
         hopperTalon.clearStickyFaults()
 
