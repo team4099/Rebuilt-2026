@@ -10,21 +10,21 @@ import org.team4099.lib.units.Value
  * @param dashboardKey Key associated with value
  * @param defaultValue Default value of the Tunable Number
  * @param conversionFunctions.first Defines how to go from the Tunable Value (in Units Library) to a
- * double
+ *   double
  * @param conversionFunctions.second Defines how to go from the double in dashboard to the Tunable
- * Value
+ *   Value
  */
 class LoggedTunableValue<U : UnitKey>(
-  val dashboardKey: String,
-  inline val conversionFunctions: Pair<(Value<U>) -> Double, (Double) -> Value<U>> =
-    Pair({ it.value }, { Value(it) })
+    val dashboardKey: String,
+    val conversionFunctions: Pair<(Value<U>) -> Double, (Double) -> Value<U>> =
+        Pair({ it.value }, { Value(it) })
 ) {
 
   constructor(
-    dashboardKey: String,
-    defaultValue: Value<U>,
-    conversionFunctions: Pair<(Value<U>) -> Double, (Double) -> Value<U>> =
-      Pair({ it.value }, { Value(it) })
+      dashboardKey: String,
+      defaultValue: Value<U>,
+      conversionFunctions: Pair<(Value<U>) -> Double, (Double) -> Value<U>> =
+          Pair({ it.value }, { Value(it) })
   ) : this(dashboardKey, conversionFunctions) {
     initDefault(defaultValue)
   }

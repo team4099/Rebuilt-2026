@@ -21,13 +21,14 @@ import com.ctre.phoenix6.signals.StaticFeedforwardSignValue
 import com.ctre.phoenix6.sim.CANcoderSimState
 import com.ctre.phoenix6.sim.TalonFXSimState
 import com.ctre.phoenix6.swerve.SwerveModuleConstants
-import com.team4099.robot2025.config.constants.DrivetrainConstants
+import com.team4099.robot2026.config.constants.DrivetrainConstants
 import edu.wpi.first.units.Units
 import edu.wpi.first.units.measure.Angle
 import edu.wpi.first.units.measure.AngularVelocity
 import edu.wpi.first.units.measure.Voltage
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj.Timer
+import java.util.function.Supplier
 import org.ironmaple.simulation.SimulatedArena
 import org.ironmaple.simulation.motorsims.SimulatedBattery
 import org.ironmaple.simulation.motorsims.SimulatedMotorController
@@ -39,7 +40,6 @@ import org.team4099.lib.units.derived.inVoltsPerMetersPerSecondPerSecond
 import org.team4099.lib.units.derived.inVoltsPerRadian
 import org.team4099.lib.units.derived.inVoltsPerRadianPerSecond
 import org.team4099.lib.units.derived.inVoltsPerRadianSeconds
-import java.util.function.Supplier
 
 object PhoenixUtil {
   /** Attempts to run the command until no error is produced. */
@@ -85,48 +85,44 @@ object PhoenixUtil {
       val odometryTimeStamps = DoubleArray(SimulatedArena.getSimulationSubTicksIn1Period())
       for (i in odometryTimeStamps.indices) {
         odometryTimeStamps[i] =
-          (
-            Timer.getFPGATimestamp() - 0.02 +
-              i * SimulatedArena.getSimulationDt().`in`(Units.Seconds)
-            )
+            (Timer.getFPGATimestamp() - 0.02 +
+                i * SimulatedArena.getSimulationDt().`in`(Units.Seconds))
       }
 
       return odometryTimeStamps
     }
 
   fun regulateModuleConstantForSimulation(
-    moduleConstants: ConfiguredSwerveModuleConstants
+      moduleConstants: ConfiguredSwerveModuleConstants
   ): ConfiguredSwerveModuleConstants {
     if (RobotBase.isReal()) {
       return moduleConstants
     }
 
     return moduleConstants
-      .withEncoderOffset(0.0)
-      .withDriveMotorInverted(false)
-      .withSteerMotorInverted(false)
-      .withEncoderInverted(false)
-      .withDriveMotorGains(
-        Slot0Configs()
-          .withKP(DrivetrainConstants.PID.SIM_DRIVE_KP.inVoltsPerMetersPerSecond)
-          .withKI(DrivetrainConstants.PID.SIM_DRIVE_KI.inVoltsPerMeters)
-          .withKD(DrivetrainConstants.PID.SIM_DRIVE_KD.inVoltsPerMetersPerSecondPerSecond)
-          .withKS(DrivetrainConstants.PID.SIM_DRIVE_KS.inVolts)
-          .withKV(DrivetrainConstants.PID.SIM_DRIVE_KV.inVoltsPerMetersPerSecond)
-          .withKA(DrivetrainConstants.PID.SIM_DRIVE_KA.inVoltsPerMeterPerSecondPerSecond)
-          .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign)
-      )
-      .withSteerMotorGains(
-        Slot0Configs()
-          .withKP(DrivetrainConstants.PID.SIM_STEERING_KP.inVoltsPerRadian)
-          .withKI(DrivetrainConstants.PID.SIM_STEERING_KI.inVoltsPerRadianSeconds)
-          .withKD(DrivetrainConstants.PID.SIM_STEERING_KD.inVoltsPerRadianPerSecond)
-          .withKS(0.0)
-          .withKV(DrivetrainConstants.PID.SIM_STEERING_KV.inVoltsPerRadianPerSecond)
-          .withKA(0.0)
-          .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign)
-      )
-      .withSlipCurrent(120.0)
+        .withEncoderOffset(0.0)
+        .withDriveMotorInverted(false)
+        .withSteerMotorInverted(false)
+        .withEncoderInverted(false)
+        .withDriveMotorGains(
+            Slot0Configs()
+                .withKP(DrivetrainConstants.PID.SIM_DRIVE_KP.inVoltsPerMetersPerSecond)
+                .withKI(DrivetrainConstants.PID.SIM_DRIVE_KI.inVoltsPerMeters)
+                .withKD(DrivetrainConstants.PID.SIM_DRIVE_KD.inVoltsPerMetersPerSecondPerSecond)
+                .withKS(DrivetrainConstants.PID.SIM_DRIVE_KS.inVolts)
+                .withKV(DrivetrainConstants.PID.SIM_DRIVE_KV.inVoltsPerMetersPerSecond)
+                .withKA(DrivetrainConstants.PID.SIM_DRIVE_KA.inVoltsPerMeterPerSecondPerSecond)
+                .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign))
+        .withSteerMotorGains(
+            Slot0Configs()
+                .withKP(DrivetrainConstants.PID.SIM_STEERING_KP.inVoltsPerRadian)
+                .withKI(DrivetrainConstants.PID.SIM_STEERING_KI.inVoltsPerRadianSeconds)
+                .withKD(DrivetrainConstants.PID.SIM_STEERING_KD.inVoltsPerRadianPerSecond)
+                .withKS(0.0)
+                .withKV(DrivetrainConstants.PID.SIM_STEERING_KV.inVoltsPerRadianPerSecond)
+                .withKA(0.0)
+                .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign))
+        .withSlipCurrent(120.0)
   }
 
   open class TalonFXMotorControllerSim(talonFX: TalonFX) : SimulatedMotorController {
@@ -141,10 +137,10 @@ object PhoenixUtil {
     }
 
     override fun updateControlSignal(
-      mechanismAngle: Angle,
-      mechanismVelocity: AngularVelocity,
-      encoderAngle: Angle,
-      encoderVelocity: AngularVelocity
+        mechanismAngle: Angle,
+        mechanismVelocity: AngularVelocity,
+        encoderAngle: Angle,
+        encoderVelocity: AngularVelocity
     ): Voltage {
       talonFXSimState.setRawRotorPosition(encoderAngle)
       talonFXSimState.setRotorVelocity(encoderVelocity)
@@ -158,24 +154,23 @@ object PhoenixUtil {
   }
 
   class TalonFXMotorControllerWithRemoteCancoderSim(talonFX: TalonFX, cancoder: CANcoder) :
-    TalonFXMotorControllerSim(talonFX) {
+      TalonFXMotorControllerSim(talonFX) {
     private val remoteCancoderSimState: CANcoderSimState = cancoder.simState
 
     override fun updateControlSignal(
-      mechanismAngle: Angle,
-      mechanismVelocity: AngularVelocity,
-      encoderAngle: Angle,
-      encoderVelocity: AngularVelocity
+        mechanismAngle: Angle,
+        mechanismVelocity: AngularVelocity,
+        encoderAngle: Angle,
+        encoderVelocity: AngularVelocity
     ): Voltage {
       remoteCancoderSimState.setRawPosition(mechanismAngle)
       remoteCancoderSimState.setVelocity(mechanismVelocity)
 
       return super.updateControlSignal(
-        mechanismAngle, mechanismVelocity, encoderAngle, encoderVelocity
-      )
+          mechanismAngle, mechanismVelocity, encoderAngle, encoderVelocity)
     }
   }
 }
 
 private typealias ConfiguredSwerveModuleConstants =
-  SwerveModuleConstants<TalonFXConfiguration?, TalonFXConfiguration?, CANcoderConfiguration?>
+    SwerveModuleConstants<TalonFXConfiguration?, TalonFXConfiguration?, CANcoderConfiguration?>

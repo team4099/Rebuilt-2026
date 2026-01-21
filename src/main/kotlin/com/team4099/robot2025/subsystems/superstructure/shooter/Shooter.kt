@@ -17,7 +17,7 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
   var shooterVoltageTarget: ElectricalPotential = 0.0.volts
     private set
   var shooterVelocityTarget: AngularVelocity = 0.0.degrees.perSecond
-    private set // i think this is just correct im looking
+    private set
   val isAtTargetedVelocity: Boolean
     get() =
       (

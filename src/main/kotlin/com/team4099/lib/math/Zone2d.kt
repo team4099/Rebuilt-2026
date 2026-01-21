@@ -20,15 +20,12 @@ class Zone2d(var vertices: List<Translation2d>) {
     var vBIndex = vertices.size - 1
     for (vAIndex in vertices.indices) {
       if ((vertices[vAIndex].y > pose.y) != (vertices[vBIndex].y > pose.y) &&
-        pose.x <
-        (
-          (vertices[vBIndex].x - vertices[vAIndex].x).inMeters *
-            (pose.y - vertices[vAIndex].y).inMeters /
-            (vertices[vBIndex].y - vertices[vAIndex].y).inMeters +
-            vertices[vAIndex].x.inMeters
-          )
-          .meters
-      ) {
+          pose.x <
+              ((vertices[vBIndex].x - vertices[vAIndex].x).inMeters *
+                      (pose.y - vertices[vAIndex].y).inMeters /
+                      (vertices[vBIndex].y - vertices[vAIndex].y).inMeters +
+                      vertices[vAIndex].x.inMeters)
+                  .meters) {
         isInside = !isInside
       }
       vBIndex = vAIndex
