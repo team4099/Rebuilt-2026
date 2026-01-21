@@ -1,8 +1,10 @@
-import com.team4099.robot2025.config.constants.ShooterConstants
-import com.team4099.robot2025.subsystems.superstructure.Request
-import com.team4099.robot2025.subsystems.superstructure.shooter.ShooterIO
-import com.team4099.robot2025.util.ControlledByStateMachine
-import com.team4099.robot2025.util.CustomLogger
+package com.team4099.robot2026.subsystems.superstructure.shooter
+
+import com.team4099.robot2026.subsystems.superstructure.Request
+import com.team4099.robot2026.subsystems.superstructure.shooter.ShooterIO
+import com.team4099.robot2026.util.ControlledByStateMachine
+import com.team4099.robot2026.util.CustomLogger
+import com.team4099.robot2026.config.constants.ShooterConstants
 import edu.wpi.first.wpilibj.RobotBase
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.derived.ElectricalPotential

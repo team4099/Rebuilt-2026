@@ -1,4 +1,4 @@
-package com.team4099.robot2025.subsystems.superstructure.shooter
+package com.team4099.robot2026.subsystems.superstructure.shooter
 
 import com.ctre.phoenix6.BaseStatusSignal
 import com.ctre.phoenix6.StatusSignal
@@ -8,8 +8,8 @@ import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage
 import com.ctre.phoenix6.hardware.TalonFX
 import com.ctre.phoenix6.signals.NeutralModeValue
 import com.team4099.lib.math.clamp
-import com.team4099.robot2025.config.constants.Constants
-import com.team4099.robot2025.config.constants.ShooterConstants
+import com.team4099.robot2026.config.constants.Constants
+import com.team4099.robot2026.config.constants.ShooterConstants
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.Fraction
 import org.team4099.lib.units.base.Second

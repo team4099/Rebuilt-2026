@@ -1,7 +1,10 @@
-package com.team4099.robot2025.config.constants
+package com.team4099.robot2026.config.constants
 
+import org.team4099.lib.units.AngularAcceleration
+import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.amps
+import org.team4099.lib.units.base.grams
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.AccelerationFeedforward
 import org.team4099.lib.units.derived.DerivativeGain
@@ -12,9 +15,11 @@ import org.team4099.lib.units.derived.StaticFeedforward
 import org.team4099.lib.units.derived.VelocityFeedforward
 import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.meterSquared
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
+import org.team4099.lib.units.kilo
 import org.team4099.lib.units.perMinute
 import org.team4099.lib.units.perSecond
 
@@ -23,8 +28,9 @@ object ShooterConstants {
   val SUPPLY_CURRENT_LIMIT = 40.0.amps
   val STATOR_CURRENT_LIMIT = 40.0.amps
   val VOLTAGE_COMPENSATION = 12.0.volts
+  val MOMENT_OF_INERTIA = 1.0.kilo.grams.meterSquared
 
-  val MAX_ACCELERATION = 0.1.degrees.perSecond.perSecond
+  val MAX_ACCELERATION: AngularAcceleration = 0.1.radians.perSecond.perSecond
 
   val SHOOTER_TOLERANCE = 1.0.degrees.perSecond
 
