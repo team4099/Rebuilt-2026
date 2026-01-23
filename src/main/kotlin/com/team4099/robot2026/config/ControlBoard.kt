@@ -43,7 +43,4 @@ object ControlBoard {
     get() = driver.rightJoystickButton
 
   val resetGyro = Trigger { driver.startButton && driver.selectButton }
-
-  val testButton = Trigger { driver.xButton }
-  val testButton2 = Trigger { driver.yButton }
 }

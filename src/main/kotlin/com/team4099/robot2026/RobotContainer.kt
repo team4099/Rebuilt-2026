@@ -2,7 +2,6 @@ package com.team4099.robot2026
 
 import com.ctre.phoenix6.signals.NeutralModeValue
 import com.team4099.robot2026.auto.AutonomousSelector
-import com.team4099.robot2026.commands.ShooterTestCommand
 import com.team4099.robot2026.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2026.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2026.config.ControlBoard
@@ -14,6 +13,7 @@ import com.team4099.robot2026.subsystems.drivetrain.GyroIOPigeon2
 import com.team4099.robot2026.subsystems.drivetrain.GyroIOSim
 import com.team4099.robot2026.subsystems.drivetrain.ModuleIOTalonFXReal
 import com.team4099.robot2026.subsystems.drivetrain.ModuleIOTalonFXSim
+import com.team4099.robot2026.subsystems.superstructure.Request
 import com.team4099.robot2026.subsystems.superstructure.shooter.Shooter
 import com.team4099.robot2026.subsystems.superstructure.shooter.ShooterIOSim
 import com.team4099.robot2026.subsystems.superstructure.shooter.ShooterIOTalon
@@ -23,6 +23,7 @@ import com.team4099.robot2026.subsystems.vision.camera.CameraIOPVSim
 import com.team4099.robot2026.subsystems.vision.camera.CameraIOPhotonvision
 import com.team4099.robot2026.util.driver.Jessika
 import edu.wpi.first.wpilibj.RobotBase
+import edu.wpi.first.wpilibj2.command.Commands
 import org.ironmaple.simulation.SimulatedArena
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation
 import org.littletonrobotics.junction.Logger
@@ -32,14 +33,16 @@ import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.geometry.Transform3d
 import org.team4099.lib.smoothDeadband
 import org.team4099.lib.units.base.meters
+import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.rotations
+import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perMinute
+import org.team4099.lib.units.perSecond
 
 object RobotContainer {
   private val drivetrain: Drive
   private val vision: Vision
-  private val shooter: Shooter
 
   var driveSimulation: SwerveDriveSimulation? = null
 
@@ -70,8 +73,6 @@ object RobotContainer {
                   drivetrain::addVisionMeasurement,
                   { drivetrain.rotation }),
               poseSupplier = { drivetrain.pose })
-
-      shooter = Shooter(ShooterIOTalon)
     } else {
       driveSimulation =
           SwerveDriveSimulation(Drive.mapleSimConfig, Pose2d(3.meters, 3.meters, 0.radians).pose2d)
@@ -95,8 +96,6 @@ object RobotContainer {
                       { drivetrain.rotation }),
                   poseSupplier = { drivetrain.pose })
       else vision = Vision(poseSupplier = { Pose3d() })
-
-      shooter = Shooter(ShooterIOSim)
     }
   }
 
@@ -122,9 +121,6 @@ object RobotContainer {
 
   fun mapTeleopControls() {
     ControlBoard.resetGyro.whileTrue(ResetGyroYawCommand(drivetrain))
-
-    ControlBoard.testButton.whileTrue(ShooterTestCommand(shooter, 2000.rotations.perMinute))
-    ControlBoard.testButton2.whileTrue(ShooterTestCommand(shooter, 5000.rotations.perMinute))
   }
 
   fun mapTestControls() {}

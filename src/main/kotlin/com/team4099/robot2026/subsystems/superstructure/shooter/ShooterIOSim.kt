@@ -3,6 +3,7 @@ package com.team4099.robot2026.subsystems.superstructure.shooter
 import com.team4099.lib.math.clamp
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.ShooterConstants
+import com.team4099.robot2026.util.CustomLogger
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.math.system.plant.LinearSystemId
 import edu.wpi.first.wpilibj.simulation.FlywheelSim
@@ -39,8 +40,6 @@ object ShooterIOSim : ShooterIO {
     DCMotor.getKrakenX60(2)
   )
 
-  private var lastAppliedVoltage = 0.0.volts
-
   private val shooterPIDController = PIDController(
       ShooterConstants.PID.SIM_KP,
       ShooterConstants.PID.SIM_KI,
@@ -71,19 +70,25 @@ object ShooterIOSim : ShooterIO {
   }
 
   override fun setVoltage(voltage: ElectricalPotential) {
+    CustomLogger.recordOutput("Shooter/attemptedVoltage", voltage.inVolts)
     val clampedVoltage = clamp(
       voltage,
       -ShooterConstants.VOLTAGE_COMPENSATION,
       ShooterConstants.VOLTAGE_COMPENSATION
     )
     shooterSim.setInputVoltage(clampedVoltage.inVolts)
-    lastAppliedVoltage = clampedVoltage
   }
 
   override fun setVelocity(velocity: AngularVelocity) {
-    val pidOutput = shooterPIDController.calculate(
+    var pidOutput = shooterPIDController.calculate(
       shooterSim.angularVelocityRadPerSec.radians.perSecond, velocity)
-    val ffOutput = shooterFFController.calculate(velocity)
+    if (pidOutput.inVolts.isNaN()) pidOutput = 0.volts
+    val ffOutput = shooterFFController.calculateWithVelocities(
+      shooterSim.angularVelocityRadPerSec.radians.perSecond,
+      velocity
+    )
+    CustomLogger.recordOutput("Shooter/appliedPIDOutput", pidOutput.inVolts)
+    CustomLogger.recordOutput("Shooter/appliedFFOutput", ffOutput.inVolts)
     setVoltage(pidOutput + ffOutput)
   }
 

@@ -2,6 +2,7 @@ package com.team4099.robot2026
 
 import com.pathplanner.lib.commands.FollowPathCommand
 import com.team4099.lib.hal.Clock
+import com.team4099.robot2026.RobotContainer.shooter
 import com.team4099.robot2026.auto.AutonomousSelector
 import com.team4099.robot2026.commands.drivetrain.DrivePathOTF
 import com.team4099.robot2026.config.ControlBoard
@@ -186,6 +187,7 @@ object Robot : LoggedRobot() {
 
     CustomLogger.recordDebugOutput(
         "LoggedRobot/totalMS", (Clock.fpgaTime - startTime).inMilliseconds)
+    RobotContainer.shooter.onLoop()
   }
 
   override fun teleopInit() {
