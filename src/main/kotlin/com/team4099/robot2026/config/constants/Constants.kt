@@ -26,7 +26,7 @@ object Constants {
     val POWER_DISTRIBUTION_HUB_ID = 1
 
     const val SIMULATE_VISION = false
-    const val DISABLE_COLLISIONS = true
+    const val DISABLE_COLLISIONS = false
 
     val ROBOT_WEIGHT = 135.pounds
     val ROBOT_MOI = 6.76.kilo.grams.meterSquared
