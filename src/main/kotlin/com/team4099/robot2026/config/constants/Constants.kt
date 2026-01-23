@@ -10,6 +10,7 @@ import org.team4099.lib.units.milli
 import org.team4099.lib.units.perSecond
 
 object Constants {
+
   object Universal {
     val gravity = 9.81.meters.perSecond.perSecond
     val SIM_MODE = Tuning.SimType.SIM
@@ -53,5 +54,9 @@ object Constants {
 
   object Alert {
     val TABS = arrayOf("Pre-match", "In-match")
+  }
+
+  object feeder {
+    const val FEEDER_MOTOR_ID = 61
   }
 }

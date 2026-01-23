@@ -47,7 +47,6 @@ object RobotContainer {
               ModuleIOTalonFXReal.generateModules(),
               { edu.wpi.first.math.geometry.Pose2d.kZero },
               { pose -> {} })
-
       vision =
           Vision(
               CameraIOPhotonvision(
