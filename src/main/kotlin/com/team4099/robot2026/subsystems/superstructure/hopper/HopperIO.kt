@@ -1,4 +1,4 @@
-package com.team4099.robot2026.subsystems.hopper
+package com.team4099.robot2026.subsystems.superstructure.hopper
 
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
@@ -21,16 +21,15 @@ interface HopperIO {
 
   class HopperIOInputs : LoggableInputs {
     // Hopper Inputs
-    var hopperVelocity = 0.0.degrees.perSecond
+    var hopperAngularVelocity = 0.0.degrees.perSecond
     var hopperAcceleration = 0.0.degrees.perSecond.perSecond
     var hopperAppliedVoltage = 0.0.volts
     var hopperStatorCurrent = 0.0.amps
     var hopperSupplyCurrent = 0.0.amps
     var hopperTemp = 0.0.celsius
-    var isSimulating = false
 
     override fun toLog(table: LogTable) {
-      table.put("hopperVelocityPerSecond", hopperVelocity.inDegreesPerSecond)
+      table.put("hopperVelocityPerSecond", hopperAngularVelocity.inDegreesPerSecond)
       table.put("hopperAccelerationDPSPS", hopperAcceleration.inDegreesPerSecondPerSecond)
       table.put("hopperAppliedVoltage", hopperAppliedVoltage.inVolts)
       table.put("hopperStatorCurrent", hopperStatorCurrent.inAmperes)
@@ -39,8 +38,8 @@ interface HopperIO {
     }
 
     override fun fromLog(table: LogTable) {
-      table.get("hopperVelocityPerSecond", hopperVelocity.inDegreesPerSecond).let {
-        hopperVelocity = it.degrees.perSecond
+      table.get("hopperVelocityPerSecond", hopperAngularVelocity.inDegreesPerSecond).let {
+        hopperAngularVelocity = it.degrees.perSecond
       }
       table.get("hopperAcceleration", hopperAcceleration.inDegreesPerSecondPerSecond).let {
         hopperAcceleration = it.degrees.perSecond.perSecond
@@ -56,13 +55,5 @@ interface HopperIO {
       }
       table.get("hopperTemp", hopperTemp.inCelsius).let { hopperTemp = it.celsius }
     }
-
-    fun updateInputs(inputs: String) {}
-
-    fun setVoltage(voltage: Double) {}
-
-    fun setVelocity(velocity: Double) {}
-
-    fun setBrakeMode(brake: Boolean) {}
   }
 }

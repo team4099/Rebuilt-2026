@@ -3,22 +3,22 @@ package com.team4099.robot2026.subsystems.superstructure.hopper
 import com.ctre.phoenix6.BaseStatusSignal
 import com.ctre.phoenix6.StatusSignal
 import com.ctre.phoenix6.configs.TalonFXConfiguration
-import com.ctre.phoenix6.controls.MotionMagicVoltage
+import com.ctre.phoenix6.controls.VoltageOut
 import com.ctre.phoenix6.hardware.TalonFX
+import com.ctre.phoenix6.signals.NeutralModeValue
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.HopperConstants
-import com.team4099.robot2026.subsystems.hopper.HopperIO
 import edu.wpi.first.units.measure.AngularAcceleration as WPIAngularAcceleration
 import edu.wpi.first.units.measure.AngularVelocity as WPIAngularVelocity
 import edu.wpi.first.units.measure.Current
 import edu.wpi.first.units.measure.Temperature as WPITemp
 import edu.wpi.first.units.measure.Voltage
-import org.team4099.lib.units.Value
-import org.team4099.lib.units.base.Ampere
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
-import org.team4099.lib.units.derived.degrees
-import org.team4099.lib.units.derived.inDegrees
+import org.team4099.lib.units.base.inAmperes
+import org.team4099.lib.units.ctreAngularMechanismSensor
+import org.team4099.lib.units.derived.ElectricalPotential
+import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
@@ -26,23 +26,11 @@ import org.team4099.lib.units.perSecond
 object HopperIOTalon : HopperIO {
 
   private val hopperTalon: TalonFX = TalonFX(Constants.Hopper.HOPPER_MOTOR_ID)
-  private val motionMagicControl: MotionMagicVoltage = MotionMagicVoltage(-1337.degrees.inDegrees)
+  private val voltageOut = VoltageOut(-1337.volts.inVolts)
   private val configs: TalonFXConfiguration = TalonFXConfiguration()
   private val hopperSensor =
       ctreAngularMechanismSensor(
           hopperTalon, HopperConstants.GEAR_RATIO, HopperConstants.VOLTAGE_COMPENSATION)
-
-  private fun ctreAngularMechanismSensor(
-      controller: TalonFX,
-      ratio: Double,
-      compensationVoltage: Value<Ampere>
-  ) {
-    TODO("Not yet implemented")
-  }
-
-  override fun setBrakeMode(brake: Boolean) {
-    TODO("Not yet implemented")
-  }
 
   var statorCurrentSignal: StatusSignal<Current>
   var supplyCurrentSignal: StatusSignal<Voltage>
@@ -55,17 +43,11 @@ object HopperIOTalon : HopperIO {
   init {
     hopperTalon.clearStickyFaults()
 
-    // setup these constants for every subsystem (see below for more info)
-    configs.CurrentLimits.SupplyCurrentLimit = -1337.0
-    configs.CurrentLimits.StatorCurrentLimit = -1337.0
+    configs.CurrentLimits.SupplyCurrentLimit = HopperConstants.SUPPLY_CURRENT_LIMIT.inAmperes
+    configs.CurrentLimits.StatorCurrentLimit = HopperConstants.STATOR_CURRENT_LIMIT.inAmperes
     configs.CurrentLimits.SupplyCurrentLimitEnable = true
     configs.CurrentLimits.StatorCurrentLimitEnable = true
-    configs.MotorOutput.NeutralMode = null
-
-    configs.MotionMagic.MotionMagicCruiseVelocity =
-        HopperConstants.MAX_VELOCITY //     constants file when
-    configs.MotionMagic.MotionMagicAcceleration =
-        HopperConstants.MAX_ACCELERATION //  (code reusing mmmm)
+    configs.MotorOutput.NeutralMode = NeutralModeValue.Coast
 
     hopperTalon.configurator.apply(configs)
 
@@ -96,9 +78,14 @@ object HopperIOTalon : HopperIO {
     inputs.hopperSupplyCurrent = supplyCurrentSignal.valueAsDouble.amps
     inputs.hopperTemp = tempSignal.valueAsDouble.celsius
     inputs.hopperAcceleration =
-        (motorAccelSignal.valueAsDouble / HopperConstants.ENCODER_TO_MECHANISM_GEAR_RATIO)
-            .rotations
-            .perSecond
-            .perSecond
+        (motorAccelSignal.valueAsDouble / HopperConstants.GEAR_RATIO).rotations.perSecond.perSecond
+  }
+
+  override fun setVoltage(voltage: ElectricalPotential) {
+    hopperTalon.setControl(voltageOut.withOutput(voltage.inVolts))
+  }
+
+  override fun setBrakeMode(brake: Boolean) {
+    hopperTalon.setNeutralMode(if (brake) NeutralModeValue.Brake else NeutralModeValue.Coast)
   }
 }
