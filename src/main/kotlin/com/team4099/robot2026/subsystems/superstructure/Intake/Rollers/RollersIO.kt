@@ -46,8 +46,8 @@ interface RollersIO {
       table?.get("rollerAppliedVolts", rollerAppliedVoltage.inVolts)?.let{
         rollerAppliedVoltage = it.volts
       }
-      table?.get("rollerVelocityRPM", rollerVelocity.inRotationsPerMinute)?.let {
-        rollerVelocity = it.rotations.perMinute
+      table?.get("rollerVelocityDegreesPerSecond", rollerVelocity.inRotationsPerMinute)?.let {
+        rollerVelocity = it.degrees.perSecond
       }
       table?.get("rollerStatorCurrentAmps", rollerStatorCurrent.inAmperes)?.let{
         rollerStatorCurrent = it.amps
@@ -55,8 +55,8 @@ interface RollersIO {
       table?.get("rollerSupplyCurrentAmps", rollerSupplyCurrent.inAmperes)?.let{
         rollerSupplyCurrent = it.amps
       }
-      table?.get("rollerAccelerationRPMPerSecond", rollerAcceleration.inRotationsPerMinutePerMinute)?.let {
-        rollerAcceleration = it.rotations.perMinute.perMinute
+      table?.get("rollerAccelerationDegreesPerSecondPerSecond", rollerAcceleration.inRotationsPerMinutePerMinute)?.let {
+        rollerAcceleration = it.degrees.perSecond.perSecond
       }
       table?.get("rollerDutyCycle", rollerDutyCycle.inVolts)?.let {
         rollerDutyCycle = it.volts
