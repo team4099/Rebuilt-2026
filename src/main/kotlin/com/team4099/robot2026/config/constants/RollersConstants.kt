@@ -11,10 +11,8 @@ object RollersConstants {
   val GEAR_RATIO = 1.0 / 1.0
   val VOLTAGE_COMPENSATION = 12.volts
 
-  val CORAL_CURRENT_THRESHOLD = 17.5.amps
-  val CORAL_DETECTION_THRESHOLD = 0.5.seconds
-  val ALGAE_CURRENT_THRESHOLD = 30.0.amps
-  val ALGAE_DETECTION_THRESHOLD = 2.0.seconds
+  val FUEL_CURRENT_THRESHOLD = 30.0.amps
+  val FUEL_DETECTION_THRESHOLD = 2.0.seconds
 
   val IDLE_VOLTAGE = 0.0.volts
   val EJECT_VOLTAGE = (-3.0).volts

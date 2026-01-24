@@ -6,7 +6,10 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration
 import com.ctre.phoenix6.controls.VoltageOut
 import com.ctre.phoenix6.hardware.TalonFX
 import com.ctre.phoenix6.signals.InvertedValue
+import com.team4099.lib.math.clamp
+import com.team4099.robot2025.config.constants.IntakeConstants
 import com.team4099.robot2025.config.constants.RollersConstants
+import com.team4099.robot2025.subsystems.superstructure.Intake.Rollers.RollersIO
 import com.team4099.robot2026.config.constants.Constants
 import edu.wpi.first.units.measure.AngularAcceleration
 import edu.wpi.first.units.measure.Current
@@ -17,16 +20,18 @@ import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.inAmperes
 import org.team4099.lib.units.ctreAngularMechanismSensor
 import org.team4099.lib.units.derived.ElectricalPotential
+import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inVolts
+import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
+import org.team4099.lib.units.perMinute
+import org.team4099.lib.units.perSecond
 
 object RollersIOTalon : RollersIO {
 
   private val rollerTalon: TalonFX = TalonFX(Constants.Intake.INTAKE_ROLLERS_MOTOR_ID)
 
   private val rollerConfig: TalonFXConfiguration = TalonFXConfiguration()
-
-  private val configs: TalonFXConfiguration = TalonFXConfiguration()
 
   var statorCurrent: StatusSignal<Current>
 
@@ -51,11 +56,11 @@ object RollersIOTalon : RollersIO {
   init {
     rollerTalon.clearStickyFaults()
 
-    configs.CurrentLimits.SupplyCurrentLimit = RollersConstants.SUPPLY_CURRENT_LIMIT.inAmperes
-    configs.CurrentLimits.StatorCurrentLimit = RollersConstants.STATOR_CURRENT_LIMIT.inAmperes
-    configs.CurrentLimits.SupplyCurrentLimitEnable = true
-    configs.CurrentLimits.StatorCurrentLimitEnable = true
-    configs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive
+    rollerConfig.CurrentLimits.SupplyCurrentLimit = RollersConstants.SUPPLY_CURRENT_LIMIT.inAmperes
+    rollerConfig.CurrentLimits.StatorCurrentLimit = RollersConstants.STATOR_CURRENT_LIMIT.inAmperes
+    rollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true
+    rollerConfig.CurrentLimits.StatorCurrentLimitEnable = true
+    rollerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive
 
     statorCurrent = rollerTalon.statorCurrent
     supplyCurrent = rollerTalon.supplyCurrent
@@ -65,16 +70,18 @@ object RollersIOTalon : RollersIO {
     motorVoltage = rollerTalon.motorVoltage
     motorAccel = rollerTalon.acceleration
 
-    rollerTalon.configurator.apply(configs)
+    rollerTalon.configurator.apply(rollerConfig)
   }
 
   override fun updateInputs(inputs: RollersIO.RollerInputs) {
     refreshStatusSignals()
-    inputs.rollerAppliedVoltage = motorVoltage.valueAsDouble.volts
     inputs.rollerVelocity = rollerSensor.velocity
-    inputs.rollerTemp = tempSignal.valueAsDouble.celsius
+    inputs.rollerAppliedVoltage = motorVoltage.valueAsDouble.volts
     inputs.rollerStatorCurrent = statorCurrent.valueAsDouble.amps
     inputs.rollerSupplyCurrent = supplyCurrent.valueAsDouble.amps
+    inputs.rollerTemperature = tempSignal.valueAsDouble.celsius
+    inputs.rollerAcceleration = motorAccel.valueAsDouble.degrees.perSecond.perSecond
+    inputs.rollerDutyCycle = dutyCycleSignal.valueAsDouble.volts
   }
 
   fun refreshStatusSignals() {
@@ -89,6 +96,7 @@ object RollersIOTalon : RollersIO {
   }
 
   override fun setVoltage(voltage: ElectricalPotential) {
-    rollerTalon.setControl(voltageControl.withOutput(voltage.inVolts))
+    val clampedVoltage = clamp(voltage, -RollersConstants.VOLTAGE_COMPENSATION, RollersConstants.VOLTAGE_COMPENSATION)
+    rollerTalon.setControl(voltageControl.withOutput(clampedVoltage.inVolts))
   }
 }
