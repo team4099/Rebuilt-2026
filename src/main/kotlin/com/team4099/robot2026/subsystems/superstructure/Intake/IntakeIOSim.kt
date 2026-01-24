@@ -51,7 +51,6 @@ class IntakeIOSim(drivetrainSimulation: AbstractDriveTrainSimulation) : IntakeIO
               IntakeConstants.SIM_VELOCITY, IntakeConstants.SIM_ACCELERATION))
 
   private var pivotAppliedVoltage = 0.0.volts
-  private var rollersAppliedVoltage = 0.0.volts
 
   override val intakeSimulation =
       IntakeSimulation.OverTheBumperIntake(
