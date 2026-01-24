@@ -7,7 +7,6 @@ import com.ctre.phoenix6.controls.VoltageOut
 import com.ctre.phoenix6.hardware.TalonFX
 import com.ctre.phoenix6.signals.InvertedValue
 import com.team4099.lib.math.clamp
-import com.team4099.robot2025.config.constants.IntakeConstants
 import com.team4099.robot2025.config.constants.RollersConstants
 import com.team4099.robot2025.subsystems.superstructure.Intake.Rollers.RollersIO
 import com.team4099.robot2026.config.constants.Constants
@@ -22,9 +21,7 @@ import org.team4099.lib.units.ctreAngularMechanismSensor
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inVolts
-import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
-import org.team4099.lib.units.perMinute
 import org.team4099.lib.units.perSecond
 
 object RollersIOTalon : RollersIO {
@@ -83,16 +80,13 @@ object RollersIOTalon : RollersIO {
 
   fun refreshStatusSignals() {
     BaseStatusSignal.refreshAll(
-        supplyCurrent,
-        statorCurrent,
-        dutyCycleSignal,
-        motorVoltage,
-        motorAccel,
-        tempSignal)
+        supplyCurrent, statorCurrent, dutyCycleSignal, motorVoltage, motorAccel, tempSignal)
   }
 
   override fun setVoltage(voltage: ElectricalPotential) {
-    val clampedVoltage = clamp(voltage, -RollersConstants.VOLTAGE_COMPENSATION, RollersConstants.VOLTAGE_COMPENSATION)
+    val clampedVoltage =
+        clamp(
+            voltage, -RollersConstants.VOLTAGE_COMPENSATION, RollersConstants.VOLTAGE_COMPENSATION)
     rollerTalon.setControl(voltageControl.withOutput(clampedVoltage.inVolts))
   }
 }

@@ -8,15 +8,12 @@ import org.team4099.lib.units.base.inAmperes
 import org.team4099.lib.units.base.inCelsius
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.degrees
-import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inVolts
-import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inDegreesPerSecond
 import org.team4099.lib.units.inDegreesPerSecondPerSecond
 import org.team4099.lib.units.inRotationsPerMinute
 import org.team4099.lib.units.inRotationsPerMinutePerMinute
-import org.team4099.lib.units.perMinute
 import org.team4099.lib.units.perSecond
 
 interface RollersIO {
@@ -35,7 +32,9 @@ interface RollersIO {
       table?.put("rollerVelocityDegreesPerSecond", rollerVelocity.inDegreesPerSecond)
       table?.put("rollerStatorCurrentAmps", rollerStatorCurrent.inAmperes)
       table?.put("rollerSupplyCurrentAmps", rollerSupplyCurrent.inAmperes)
-      table?.put("rollerAccelerationDegreesPerSecondPerSecond", rollerAcceleration.inDegreesPerSecondPerSecond)
+      table?.put(
+          "rollerAccelerationDegreesPerSecondPerSecond",
+          rollerAcceleration.inDegreesPerSecondPerSecond)
       table?.put("rollerDutyCycle", rollerDutyCycle.inVolts)
     }
 
@@ -43,24 +42,24 @@ interface RollersIO {
       table?.get("rollerTemperatureCelsius", rollerTemperature.inCelsius)?.let {
         rollerTemperature = it.celsius
       }
-      table?.get("rollerAppliedVolts", rollerAppliedVoltage.inVolts)?.let{
+      table?.get("rollerAppliedVolts", rollerAppliedVoltage.inVolts)?.let {
         rollerAppliedVoltage = it.volts
       }
       table?.get("rollerVelocityDegreesPerSecond", rollerVelocity.inRotationsPerMinute)?.let {
         rollerVelocity = it.degrees.perSecond
       }
-      table?.get("rollerStatorCurrentAmps", rollerStatorCurrent.inAmperes)?.let{
+      table?.get("rollerStatorCurrentAmps", rollerStatorCurrent.inAmperes)?.let {
         rollerStatorCurrent = it.amps
       }
-      table?.get("rollerSupplyCurrentAmps", rollerSupplyCurrent.inAmperes)?.let{
+      table?.get("rollerSupplyCurrentAmps", rollerSupplyCurrent.inAmperes)?.let {
         rollerSupplyCurrent = it.amps
       }
-      table?.get("rollerAccelerationDegreesPerSecondPerSecond", rollerAcceleration.inRotationsPerMinutePerMinute)?.let {
-        rollerAcceleration = it.degrees.perSecond.perSecond
-      }
-      table?.get("rollerDutyCycle", rollerDutyCycle.inVolts)?.let {
-        rollerDutyCycle = it.volts
-      }
+      table
+          ?.get(
+              "rollerAccelerationDegreesPerSecondPerSecond",
+              rollerAcceleration.inRotationsPerMinutePerMinute)
+          ?.let { rollerAcceleration = it.degrees.perSecond.perSecond }
+      table?.get("rollerDutyCycle", rollerDutyCycle.inVolts)?.let { rollerDutyCycle = it.volts }
     }
   }
 
