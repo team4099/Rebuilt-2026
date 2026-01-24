@@ -41,8 +41,6 @@ object RollersIOTalon : RollersIO {
 
   var dutyCycleSignal: StatusSignal<Double>
 
-  var motorTorque: StatusSignal<Current>
-
   var motorVoltage: StatusSignal<Voltage>
 
   var motorAccel: StatusSignal<AngularAcceleration>
@@ -66,7 +64,6 @@ object RollersIOTalon : RollersIO {
     supplyCurrent = rollerTalon.supplyCurrent
     tempSignal = rollerTalon.deviceTemp
     dutyCycleSignal = rollerTalon.dutyCycle
-    motorTorque = rollerTalon.torqueCurrent
     motorVoltage = rollerTalon.motorVoltage
     motorAccel = rollerTalon.acceleration
 
@@ -91,8 +88,7 @@ object RollersIOTalon : RollersIO {
         dutyCycleSignal,
         motorVoltage,
         motorAccel,
-        tempSignal,
-        motorTorque)
+        tempSignal)
   }
 
   override fun setVoltage(voltage: ElectricalPotential) {

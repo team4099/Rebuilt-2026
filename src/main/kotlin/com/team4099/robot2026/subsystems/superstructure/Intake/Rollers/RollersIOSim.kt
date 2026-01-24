@@ -38,7 +38,7 @@ object RollersIOSim : RollersIO {
 
     override fun updateInputs(inputs: RollersIO.RollerInputs) {
         rollerSim.update(Constants.Universal.LOOP_PERIOD_TIME.inSeconds)
-        inputs.rollerVelocity = rollerSim.angularVelocityRPM.rotations.perMinute
+        inputs.rollerVelocity = rollerSim.angularVelocityRPM.degrees.perSecond
         inputs.rollerAcceleration = rollerSim.angularAccelerationRadPerSecSq.radians.perSecond.perSecond.inDegreesPerSecondPerSecond.degrees.perSecond.perSecond
         inputs.rollerAppliedVoltage = appliedVoltage
         inputs.rollerStatorCurrent = rollerSim.currentDrawAmps.amps
@@ -52,8 +52,7 @@ object RollersIOSim : RollersIO {
      * @param voltage the voltage to set the roller motor to
      */
     override fun setVoltage(voltage: ElectricalPotential) {
-        val clampedVoltage = clamp(voltage, -RollersConstants.VOLTAGE_COMPENSATION, RollersConstants.VOLTAGE_COMPENSATION)
-        rollerSim.inputVoltage = clampedVoltage.inVolts
-        appliedVoltage = clampedVoltage
+        rollerSim.setInputVoltage(voltage.inVolts)
+        appliedVoltage = voltage
     }
 }
