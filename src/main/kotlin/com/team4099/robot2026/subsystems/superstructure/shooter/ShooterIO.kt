@@ -20,11 +20,11 @@ import org.team4099.lib.units.derived.VelocityFeedforward
 import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inVolts
+import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
-import org.team4099.lib.units.inDegreesPerSecond
-import org.team4099.lib.units.inDegreesPerSecondPerSecond
 import org.team4099.lib.units.inRotationsPerMinute
 import org.team4099.lib.units.inRotationsPerMinutePerMinute
+import org.team4099.lib.units.perMinute
 import org.team4099.lib.units.perSecond
 
 interface ShooterIO {
@@ -81,12 +81,14 @@ interface ShooterIO {
       table.get("ShooterLeaderTemperatureCurrent", shooterLeaderTemperature.inCelsius).let {
         shooterLeaderTemperature = it.celsius
       }
-      table.get("ShooterLeaderVelocity", shooterLeaderVelocity.inDegreesPerSecond).let {
-        shooterLeaderVelocity = it.degrees.perSecond
+      table.get("ShooterLeaderVelocityRPM", shooterLeaderVelocity.inRotationsPerMinute).let {
+        shooterLeaderVelocity = it.rotations.perMinute
       }
       table
-          .get("ShooterLeaderAcceleration", shooterLeaderAcceleration.inDegreesPerSecondPerSecond)
-          .let { shooterLeaderAcceleration = it.degrees.perSecond.perSecond }
+          .get(
+              "ShooterLeaderAccelerationRPM",
+              shooterLeaderAcceleration.inRotationsPerMinutePerMinute)
+          .let { shooterLeaderAcceleration = it.rotations.perMinute.perMinute }
       // follower
       table.get("ShooterFollowerVoltage", shooterFollowerVoltage.inVolts).let {
         shooterFollowerVoltage = it.volts
@@ -100,14 +102,14 @@ interface ShooterIO {
       table.get("ShooterFollowerTemperatureCurrent", shooterFollowerTemperature.inCelsius).let {
         shooterFollowerTemperature = it.celsius
       }
-      table.get("ShooterFollowerVelocity", shooterFollowerVelocity.inDegreesPerSecond).let {
-        shooterFollowerVelocity = it.degrees.perSecond
+      table.get("ShooterFollowerVelocityRPM", shooterFollowerVelocity.inRotationsPerMinute).let {
+        shooterFollowerVelocity = it.rotations.perMinute
       }
       table
           .get(
-              "ShooterFollowerAcceleration",
-              shooterFollowerAcceleration.inDegreesPerSecondPerSecond)
-          .let { shooterFollowerAcceleration = it.degrees.perSecond.perSecond }
+              "ShooterFollowerAccelerationRPM",
+              shooterFollowerAcceleration.inRotationsPerMinutePerMinute)
+          .let { shooterFollowerAcceleration = it.rotations.perMinute.perMinute }
     }
   }
 

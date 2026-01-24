@@ -4,8 +4,10 @@ import com.ctre.phoenix6.BaseStatusSignal
 import com.ctre.phoenix6.StatusSignal
 import com.ctre.phoenix6.configs.SlotConfigs
 import com.ctre.phoenix6.configs.TalonFXConfiguration
+import com.ctre.phoenix6.controls.Follower
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage
 import com.ctre.phoenix6.hardware.TalonFX
+import com.ctre.phoenix6.signals.MotorAlignmentValue
 import com.ctre.phoenix6.signals.NeutralModeValue
 import com.team4099.lib.math.clamp
 import com.team4099.robot2026.config.constants.Constants
@@ -103,6 +105,9 @@ object ShooterIOTalon : ShooterIO {
     followerTempSignal = followerTalon.deviceTemp
     followerVoltageSignal = followerTalon.motorVoltage
     followerAccelSignal = followerTalon.acceleration
+
+    followerTalon.setControl(
+        Follower(Constants.Shooter.LEADER_MOTOR_ID, MotorAlignmentValue.Opposed))
   }
 
   private fun updateSignals() {
