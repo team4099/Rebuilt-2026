@@ -38,23 +38,17 @@ class RotationSequence(sequence: TreeMap<Double, Rotation2d>?) {
       velocityRadiansPerSec = 0.0
     } else {
       val accelerationRadiansPerSec2 =
-        (
-          4 * nextPoint.value.minus(lastPoint.value).radians /
-            Math.pow(nextPoint.key - lastPoint.key, 2.0)
-          )
+          (4 * nextPoint.value.minus(lastPoint.value).radians /
+              Math.pow(nextPoint.key - lastPoint.key, 2.0))
       if (timeSeconds < (nextPoint.key + lastPoint.key) / 2) { // Accelerating
         positionRadians =
-          (
-            lastPoint.value.radians +
-              (accelerationRadiansPerSec2 / 2 * Math.pow(timeSeconds - lastPoint.key, 2.0))
-            )
+            (lastPoint.value.radians +
+                (accelerationRadiansPerSec2 / 2 * Math.pow(timeSeconds - lastPoint.key, 2.0)))
         velocityRadiansPerSec = (timeSeconds - lastPoint.key) * accelerationRadiansPerSec2
       } else { // Decelerating
         positionRadians =
-          (
-            nextPoint.value.radians -
-              (accelerationRadiansPerSec2 / 2 * Math.pow(timeSeconds - nextPoint.key, 2.0))
-            )
+            (nextPoint.value.radians -
+                (accelerationRadiansPerSec2 / 2 * Math.pow(timeSeconds - nextPoint.key, 2.0)))
         velocityRadiansPerSec = (nextPoint.key - timeSeconds) * accelerationRadiansPerSec2
       }
     }

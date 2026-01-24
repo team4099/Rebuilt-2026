@@ -1,5 +1,5 @@
 # team4099 added stuff
-/src/main/kotlin/com/team4099/robot2025/BuildConstants.kt
+**/BuildConstants.kt
 
 **/*.hprof
 
@@ -176,6 +176,7 @@ out/
 # Simulation GUI and other tools window save file
 networktables.json
 simgui.json
+simgui-ds.json
 *-window.json
 
 # Simulation data log directory

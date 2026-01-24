@@ -1,6 +1,6 @@
 package com.team4099.lib.logging
 
-import com.team4099.robot2025.config.constants.Constants
+import com.team4099.robot2026.config.constants.Constants
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 
 /**
@@ -57,7 +57,7 @@ class TunableNumber(dashboardKey: String) {
    * Checks whether the number has changed since our last check
    *
    * @return True if the number has changed since the last time this method was called, false
-   * otherwise
+   *   otherwise
    */
   fun hasChanged(): Boolean {
     val currentValue = get()
