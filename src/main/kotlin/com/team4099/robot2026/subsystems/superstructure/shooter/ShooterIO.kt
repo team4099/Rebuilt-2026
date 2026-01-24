@@ -23,6 +23,8 @@ import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inDegreesPerSecond
 import org.team4099.lib.units.inDegreesPerSecondPerSecond
+import org.team4099.lib.units.inRotationsPerMinute
+import org.team4099.lib.units.inRotationsPerMinutePerMinute
 import org.team4099.lib.units.perSecond
 
 interface ShooterIO {
@@ -50,17 +52,18 @@ interface ShooterIO {
       table?.put("ShooterLeaderSupplyCurrent", shooterLeaderSupplyCurrent.inAmperes)
       table?.put("ShooterLeaderStatorCurrent", shooterLeaderStatorCurrent.inAmperes)
       table?.put("ShooterLeaderTemperature", shooterLeaderTemperature.inCelsius)
-      table?.put("ShooterLeaderVelocity", shooterLeaderVelocity.inDegreesPerSecond)
-      table?.put("ShooterLeaderAcceleration", shooterLeaderAcceleration.inDegreesPerSecondPerSecond)
+      table?.put("ShooterLeaderVelocityRPM", shooterLeaderVelocity.inRotationsPerMinute)
+      table?.put(
+          "ShooterLeaderAccelerationRPM", shooterLeaderAcceleration.inRotationsPerMinutePerMinute)
       // follower
       table?.put("ShooterFollowerVoltage", shooterFollowerVoltage.inVolts)
       table?.put("ShooterFollowerSupplyCurrent", shooterFollowerSupplyCurrent.inAmperes)
       table?.put("ShooterFollowerStatorCurrent", shooterFollowerStatorCurrent.inAmperes)
       table?.put("ShooterFollowerTemperature", shooterFollowerTemperature.inCelsius)
-      table?.put("ShooterFollowerVelocity", shooterFollowerVelocity.inDegreesPerSecond)
+      table?.put("ShooterFollowerVelocityRPM", shooterFollowerVelocity.inRotationsPerMinute)
       table?.put(
-        "ShooterFollowerAcceleration", shooterFollowerAcceleration.inDegreesPerSecondPerSecond
-      )
+          "ShooterFollowerAccelerationRPM",
+          shooterFollowerAcceleration.inRotationsPerMinutePerMinute)
     }
 
     override fun fromLog(table: LogTable) {
@@ -81,8 +84,9 @@ interface ShooterIO {
       table.get("ShooterLeaderVelocity", shooterLeaderVelocity.inDegreesPerSecond).let {
         shooterLeaderVelocity = it.degrees.perSecond
       }
-      table.get("ShooterLeaderAcceleration", shooterLeaderAcceleration.inDegreesPerSecondPerSecond)
-        .let { shooterLeaderAcceleration = it.degrees.perSecond.perSecond }
+      table
+          .get("ShooterLeaderAcceleration", shooterLeaderAcceleration.inDegreesPerSecondPerSecond)
+          .let { shooterLeaderAcceleration = it.degrees.perSecond.perSecond }
       // follower
       table.get("ShooterFollowerVoltage", shooterFollowerVoltage.inVolts).let {
         shooterFollowerVoltage = it.volts
@@ -99,24 +103,29 @@ interface ShooterIO {
       table.get("ShooterFollowerVelocity", shooterFollowerVelocity.inDegreesPerSecond).let {
         shooterFollowerVelocity = it.degrees.perSecond
       }
-      table.get(
-        "ShooterFollowerAcceleration",
-        shooterFollowerAcceleration.inDegreesPerSecondPerSecond
-      )
-        .let { shooterFollowerAcceleration = it.degrees.perSecond.perSecond }
+      table
+          .get(
+              "ShooterFollowerAcceleration",
+              shooterFollowerAcceleration.inDegreesPerSecondPerSecond)
+          .let { shooterFollowerAcceleration = it.degrees.perSecond.perSecond }
     }
   }
+
   fun updateInputs(inputs: ShooterInputs) {}
+
   fun setVoltage(voltage: ElectricalPotential) {}
+
   fun configurePID(
-    kP: ProportionalGain<Fraction<Radian, Second>, Volt>,
-    kI: IntegralGain<Fraction<Radian, Second>, Volt>,
-    kD: DerivativeGain<Fraction<Radian, Second>, Volt>
+      kP: ProportionalGain<Fraction<Radian, Second>, Volt>,
+      kI: IntegralGain<Fraction<Radian, Second>, Volt>,
+      kD: DerivativeGain<Fraction<Radian, Second>, Volt>
   ) {}
+
   fun configureFF(
-    kS: StaticFeedforward<Volt>,
-    kV: VelocityFeedforward<Radian, Volt>,
-    kA: AccelerationFeedforward<Radian, Volt>,
+      kS: StaticFeedforward<Volt>,
+      kV: VelocityFeedforward<Radian, Volt>,
+      kA: AccelerationFeedforward<Radian, Volt>,
   ) {}
-  fun setVelocity(velocity: AngularVelocity) {} // <- do we even need this function
+
+  fun setVelocity(velocity: AngularVelocity) {}
 }

@@ -10,6 +10,11 @@ import com.ctre.phoenix6.signals.NeutralModeValue
 import com.team4099.lib.math.clamp
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.ShooterConstants
+import edu.wpi.first.units.measure.AngularAcceleration as WPILibAngularAcceleration
+import edu.wpi.first.units.measure.AngularVelocity as WPILibAngularVelocity
+import edu.wpi.first.units.measure.Current as WPILibCurrent
+import edu.wpi.first.units.measure.Temperature as WPILibTemperature
+import edu.wpi.first.units.measure.Voltage as WPILibVoltage
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.Fraction
 import org.team4099.lib.units.base.Second
@@ -34,11 +39,6 @@ import org.team4099.lib.units.derived.inVoltsPerRadiansPerSecondPerSecond
 import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
-import edu.wpi.first.units.measure.AngularAcceleration as WPILibAngularAcceleration
-import edu.wpi.first.units.measure.AngularVelocity as WPILibAngularVelocity
-import edu.wpi.first.units.measure.Current as WPILibCurrent
-import edu.wpi.first.units.measure.Temperature as WPILibTemperature
-import edu.wpi.first.units.measure.Voltage as WPILibVoltage
 
 object ShooterIOTalon : ShooterIO {
   private val leaderTalon: TalonFX = TalonFX(Constants.Shooter.LEADER_MOTOR_ID)
@@ -46,13 +46,11 @@ object ShooterIOTalon : ShooterIO {
   private val motionMagicControl: MotionMagicVelocityVoltage = MotionMagicVelocityVoltage(-1337.0)
   private val configs: TalonFXConfiguration = TalonFXConfiguration()
   private val leaderSensor =
-    ctreAngularMechanismSensor(
-      leaderTalon, ShooterConstants.GEAR_RATIO, ShooterConstants.VOLTAGE_COMPENSATION
-    )
+      ctreAngularMechanismSensor(
+          leaderTalon, ShooterConstants.GEAR_RATIO, ShooterConstants.VOLTAGE_COMPENSATION)
   private val followerSensor =
-    ctreAngularMechanismSensor(
-      followerTalon, ShooterConstants.GEAR_RATIO, ShooterConstants.VOLTAGE_COMPENSATION
-    )
+      ctreAngularMechanismSensor(
+          followerTalon, ShooterConstants.GEAR_RATIO, ShooterConstants.VOLTAGE_COMPENSATION)
 
   private var leaderStatorCurrentSignal: StatusSignal<WPILibCurrent>
   private var leaderSupplyCurrentSignal: StatusSignal<WPILibCurrent>
@@ -85,7 +83,7 @@ object ShooterIOTalon : ShooterIO {
     configs.MotorOutput.NeutralMode = NeutralModeValue.Coast
 
     configs.MotionMagic.MotionMagicAcceleration =
-      leaderSensor.accelerationToRawUnits(ShooterConstants.MAX_ACCELERATION)
+        leaderSensor.accelerationToRawUnits(ShooterConstants.MAX_ACCELERATION)
 
     leaderTalon.configurator.apply(configs)
     followerTalon.configurator.apply(configs)
@@ -109,20 +107,20 @@ object ShooterIOTalon : ShooterIO {
 
   private fun updateSignals() {
     BaseStatusSignal.refreshAll(
-      leaderSupplyCurrentSignal,
-      leaderStatorCurrentSignal,
-      leaderVelocitySignal,
-      leaderDutyCycleSignal,
-      leaderTempSignal,
-      leaderVoltageSignal,
-      leaderAccelSignal,
-      followerStatorCurrentSignal,
-      followerSupplyCurrentSignal,
-      followerVelocitySignal,
-      followerDutyCycleSignal,
-      followerTempSignal,
-      followerVoltageSignal,
-      followerAccelSignal,
+        leaderSupplyCurrentSignal,
+        leaderStatorCurrentSignal,
+        leaderVelocitySignal,
+        leaderDutyCycleSignal,
+        leaderTempSignal,
+        leaderVoltageSignal,
+        leaderAccelSignal,
+        followerStatorCurrentSignal,
+        followerSupplyCurrentSignal,
+        followerVelocitySignal,
+        followerDutyCycleSignal,
+        followerTempSignal,
+        followerVoltageSignal,
+        followerAccelSignal,
     )
   }
 
@@ -132,15 +130,15 @@ object ShooterIOTalon : ShooterIO {
     inputs.shooterLeaderVelocity = leaderSensor.velocity
     inputs.shooterFollowerVelocity = followerSensor.velocity
     inputs.shooterLeaderAcceleration =
-      (followerAccelSignal.valueAsDouble / ShooterConstants.GEAR_RATIO)
-        .rotations
-        .perSecond
-        .perSecond
+        (followerAccelSignal.valueAsDouble / ShooterConstants.GEAR_RATIO)
+            .rotations
+            .perSecond
+            .perSecond
     inputs.shooterFollowerAcceleration =
-      (followerAccelSignal.valueAsDouble / ShooterConstants.GEAR_RATIO)
-        .rotations
-        .perSecond
-        .perSecond
+        (followerAccelSignal.valueAsDouble / ShooterConstants.GEAR_RATIO)
+            .rotations
+            .perSecond
+            .perSecond
 
     inputs.shooterLeaderTemperature = leaderTempSignal.valueAsDouble.celsius
     inputs.shooterLeaderSupplyCurrent = leaderSupplyCurrentSignal.valueAsDouble.amps
@@ -154,9 +152,9 @@ object ShooterIOTalon : ShooterIO {
   }
 
   override fun configurePID(
-    kP: ProportionalGain<Fraction<Radian, Second>, Volt>,
-    kI: IntegralGain<Fraction<Radian, Second>, Volt>,
-    kD: DerivativeGain<Fraction<Radian, Second>, Volt>
+      kP: ProportionalGain<Fraction<Radian, Second>, Volt>,
+      kI: IntegralGain<Fraction<Radian, Second>, Volt>,
+      kD: DerivativeGain<Fraction<Radian, Second>, Volt>
   ) {
     val slot0Configs = SlotConfigs()
     slot0Configs.kP = kP.inVoltsPerRadiansPerSecond
@@ -167,9 +165,9 @@ object ShooterIOTalon : ShooterIO {
   }
 
   override fun configureFF(
-    kS: StaticFeedforward<Volt>,
-    kV: VelocityFeedforward<Radian, Volt>,
-    kA: AccelerationFeedforward<Radian, Volt>
+      kS: StaticFeedforward<Volt>,
+      kV: VelocityFeedforward<Radian, Volt>,
+      kA: AccelerationFeedforward<Radian, Volt>
   ) {
     val slot0Configs = SlotConfigs()
     slot0Configs.kS = kS.inVolts
@@ -181,17 +179,16 @@ object ShooterIOTalon : ShooterIO {
 
   override fun setVoltage(voltage: ElectricalPotential) {
     val clampedVoltage =
-      clamp(
-        voltage,
-        lowerBound = -ShooterConstants.VOLTAGE_COMPENSATION,
-        upperBound = ShooterConstants.VOLTAGE_COMPENSATION
-      )
+        clamp(
+            voltage,
+            lowerBound = -ShooterConstants.VOLTAGE_COMPENSATION,
+            upperBound = ShooterConstants.VOLTAGE_COMPENSATION)
     leaderTalon.setVoltage(clampedVoltage.inVolts)
   }
 
   override fun setVelocity(velocity: AngularVelocity) {
     leaderTalon.setControl(
-      motionMagicControl.withVelocity(leaderSensor.velocityToRawUnits(velocity)),
+        motionMagicControl.withVelocity(leaderSensor.velocityToRawUnits(velocity)),
     )
   }
 }

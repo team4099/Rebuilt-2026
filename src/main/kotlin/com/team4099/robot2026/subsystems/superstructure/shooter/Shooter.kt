@@ -1,10 +1,9 @@
 package com.team4099.robot2026.subsystems.superstructure.shooter
 
+import com.team4099.robot2026.config.constants.ShooterConstants
 import com.team4099.robot2026.subsystems.superstructure.Request
-import com.team4099.robot2026.subsystems.superstructure.shooter.ShooterIO
 import com.team4099.robot2026.util.ControlledByStateMachine
 import com.team4099.robot2026.util.CustomLogger
-import com.team4099.robot2026.config.constants.ShooterConstants
 import edu.wpi.first.wpilibj.RobotBase
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.derived.ElectricalPotential
@@ -18,15 +17,15 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
   val inputs = ShooterIO.ShooterInputs()
   var shooterVoltageTarget: ElectricalPotential = 0.0.volts
     private set
+
   var shooterVelocityTarget: AngularVelocity = 0.0.degrees.perSecond
     private set
+
   val isAtTargetedVelocity: Boolean
     get() =
-      (
-        currentRequest is Request.ShooterRequest.TargetVelocity &&
-          (inputs.shooterLeaderVelocity - shooterVelocityTarget).absoluteValue <
-          ShooterConstants.SHOOTER_TOLERANCE
-        )
+        (currentRequest is Request.ShooterRequest.TargetVelocity &&
+            (inputs.shooterLeaderVelocity - shooterVelocityTarget).absoluteValue <
+                ShooterConstants.SHOOTER_TOLERANCE)
 
   var currentState: ShooterState = ShooterState.UNINITIALIZED
   var currentRequest: Request.ShooterRequest = Request.ShooterRequest.OpenLoop(0.0.volts)
@@ -46,18 +45,14 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
   init {
     if (RobotBase.isReal()) {
       io.configurePID(
-        ShooterConstants.PID.REAL_KP, ShooterConstants.PID.REAL_KI, ShooterConstants.PID.REAL_KD
-      )
+          ShooterConstants.PID.REAL_KP, ShooterConstants.PID.REAL_KI, ShooterConstants.PID.REAL_KD)
       io.configureFF(
-        ShooterConstants.PID.REAL_KS, ShooterConstants.PID.REAL_KV, ShooterConstants.PID.REAL_KA
-      )
+          ShooterConstants.PID.REAL_KS, ShooterConstants.PID.REAL_KV, ShooterConstants.PID.REAL_KA)
     } else {
       io.configurePID(
-        ShooterConstants.PID.SIM_KP, ShooterConstants.PID.SIM_KI, ShooterConstants.PID.SIM_KD
-      )
+          ShooterConstants.PID.SIM_KP, ShooterConstants.PID.SIM_KI, ShooterConstants.PID.SIM_KD)
       io.configureFF(
-        ShooterConstants.PID.SIM_KS, ShooterConstants.PID.SIM_KV, ShooterConstants.PID.SIM_KA
-      )
+          ShooterConstants.PID.SIM_KS, ShooterConstants.PID.SIM_KV, ShooterConstants.PID.SIM_KA)
     }
   }
 
@@ -65,8 +60,7 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
     io.updateInputs(inputs)
     CustomLogger.processInputs("Shooter", inputs)
     CustomLogger.recordOutput(
-      "Shooter/targetAngularVelocity", shooterVelocityTarget.inDegreesPerSecond
-    )
+        "Shooter/targetAngularVelocity", shooterVelocityTarget.inDegreesPerSecond)
     CustomLogger.recordOutput("Shooter/targetVoltage", shooterVoltageTarget.inVolts)
     CustomLogger.recordOutput("Shooter/currentState", currentState)
     CustomLogger.recordOutput("Shooter/currentRequest", currentRequest.javaClass.simpleName)
@@ -87,7 +81,7 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
         nextState = fromShooterRequestToState(currentRequest)
       }
       ShooterState.IDLE -> {
-        io.setVoltage(0.volts)
+        io.setVoltage(ShooterConstants.IDLE_VOLTAGE)
         nextState = fromShooterRequestToState(currentRequest)
       }
     }

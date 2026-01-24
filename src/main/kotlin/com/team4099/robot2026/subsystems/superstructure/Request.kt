@@ -8,7 +8,9 @@ sealed interface Request {
 
   sealed interface ShooterRequest : Request {
     class OpenLoop(val shooterVoltage: ElectricalPotential) : ShooterRequest
+
     class TargetVelocity(val targetVelocity: AngularVelocity) : ShooterRequest
+
     class Idle() : ShooterRequest
   }
 }
