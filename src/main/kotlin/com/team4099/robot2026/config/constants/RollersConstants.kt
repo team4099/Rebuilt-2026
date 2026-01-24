@@ -1,0 +1,27 @@
+package com.team4099.robot2025.config.constants
+
+import org.team4099.lib.units.base.amps
+import org.team4099.lib.units.base.grams
+import org.team4099.lib.units.base.seconds
+import org.team4099.lib.units.derived.meterSquared
+import org.team4099.lib.units.derived.volts
+import org.team4099.lib.units.kilo
+
+object RollersConstants {
+  val GEAR_RATIO = 1.0 / 1.0
+  val VOLTAGE_COMPENSATION = 12.volts
+
+  val CORAL_CURRENT_THRESHOLD = 17.5.amps
+  val CORAL_DETECTION_THRESHOLD = 0.5.seconds
+  val ALGAE_CURRENT_THRESHOLD = 30.0.amps
+  val ALGAE_DETECTION_THRESHOLD = 2.0.seconds
+
+  val IDLE_VOLTAGE = 0.0.volts
+  val EJECT_VOLTAGE = (-3.0).volts
+  val INTAKE_VOLTAGE = 6.0.volts
+
+  val MOMENT_OF_INERTIA = 0.0.kilo.grams.meterSquared // TODO: Change
+
+  val SUPPLY_CURRENT_LIMIT = 40.0.amps
+  val STATOR_CURRENT_LIMIT = 40.0.amps
+}
