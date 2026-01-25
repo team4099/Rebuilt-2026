@@ -97,7 +97,7 @@ interface ShooterIO {
       table.get("ShooterFollowerStatorCurrent", shooterFollowerStatorCurrent.inAmperes).let {
         shooterFollowerStatorCurrent = it.amps
       }
-      table.get("ShooterFollowerTemperatureCurrent", shooterFollowerTemperature.inCelsius).let {
+      table.get("ShooterFollowerTemperature", shooterFollowerTemperature.inCelsius).let {
         shooterFollowerTemperature = it.celsius
       }
       table.get("ShooterFollowerVelocityRPM", shooterFollowerVelocity.inRotationsPerMinute).let {
