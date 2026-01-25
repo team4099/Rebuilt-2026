@@ -54,7 +54,7 @@ interface ShooterIO {
       table?.put("ShooterLeaderTemperature", shooterLeaderTemperature.inCelsius)
       table?.put("ShooterLeaderVelocityRPM", shooterLeaderVelocity.inRotationsPerMinute)
       table?.put(
-          "ShooterLeaderAccelerationRPM", shooterLeaderAcceleration.inRotationsPerMinutePerMinute)
+          "ShooterLeaderAccelerationRPMPM", shooterLeaderAcceleration.inRotationsPerMinutePerMinute)
       // follower
       table?.put("ShooterFollowerVoltage", shooterFollowerVoltage.inVolts)
       table?.put("ShooterFollowerSupplyCurrent", shooterFollowerSupplyCurrent.inAmperes)
@@ -62,7 +62,7 @@ interface ShooterIO {
       table?.put("ShooterFollowerTemperature", shooterFollowerTemperature.inCelsius)
       table?.put("ShooterFollowerVelocityRPM", shooterFollowerVelocity.inRotationsPerMinute)
       table?.put(
-          "ShooterFollowerAccelerationRPM",
+          "ShooterFollowerAccelerationRPMPM",
           shooterFollowerAcceleration.inRotationsPerMinutePerMinute)
     }
 
@@ -78,7 +78,7 @@ interface ShooterIO {
       table.get("ShooterLeaderStatorCurrent", shooterLeaderStatorCurrent.inAmperes).let {
         shooterLeaderStatorCurrent = it.amps
       }
-      table.get("ShooterLeaderTemperatureCurrent", shooterLeaderTemperature.inCelsius).let {
+      table.get("ShooterLeaderTemperature", shooterLeaderTemperature.inCelsius).let {
         shooterLeaderTemperature = it.celsius
       }
       table.get("ShooterLeaderVelocityRPM", shooterLeaderVelocity.inRotationsPerMinute).let {
@@ -86,7 +86,7 @@ interface ShooterIO {
       }
       table
           .get(
-              "ShooterLeaderAccelerationRPM",
+              "ShooterLeaderAccelerationRPMPM",
               shooterLeaderAcceleration.inRotationsPerMinutePerMinute)
           .let { shooterLeaderAcceleration = it.rotations.perMinute.perMinute }
       // follower
@@ -107,7 +107,7 @@ interface ShooterIO {
       }
       table
           .get(
-              "ShooterFollowerAccelerationRPM",
+              "ShooterFollowerAccelerationRPMPM",
               shooterFollowerAcceleration.inRotationsPerMinutePerMinute)
           .let { shooterFollowerAcceleration = it.rotations.perMinute.perMinute }
     }

@@ -10,7 +10,7 @@ import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.volts
-import org.team4099.lib.units.inDegreesPerSecond
+import org.team4099.lib.units.inRotationsPerMinute
 import org.team4099.lib.units.perSecond
 
 class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
@@ -60,7 +60,7 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
     io.updateInputs(inputs)
     CustomLogger.processInputs("Shooter", inputs)
     CustomLogger.recordOutput(
-        "Shooter/targetAngularVelocity", shooterVelocityTarget.inDegreesPerSecond)
+        "Shooter/targetAngularVelocity", shooterVelocityTarget.inRotationsPerMinute)
     CustomLogger.recordOutput("Shooter/targetVoltage", shooterVoltageTarget.inVolts)
     CustomLogger.recordOutput("Shooter/currentState", currentState)
     CustomLogger.recordOutput("Shooter/currentRequest", currentRequest.javaClass.simpleName)
