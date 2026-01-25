@@ -13,7 +13,6 @@ import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inDegreesPerSecond
 import org.team4099.lib.units.inDegreesPerSecondPerSecond
 import org.team4099.lib.units.inRotationsPerMinute
-import org.team4099.lib.units.inRotationsPerMinutePerMinute
 import org.team4099.lib.units.perSecond
 
 interface RollersIO {
@@ -57,7 +56,7 @@ interface RollersIO {
       table
           ?.get(
               "rollerAccelerationDegreesPerSecondPerSecond",
-              rollerAcceleration.inRotationsPerMinutePerMinute)
+              rollerAcceleration.inDegreesPerSecondPerSecond)
           ?.let { rollerAcceleration = it.degrees.perSecond.perSecond }
       table?.get("rollerDutyCycle", rollerDutyCycle.inVolts)?.let { rollerDutyCycle = it.volts }
     }

@@ -29,6 +29,7 @@ import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.StaticFeedforward
 import org.team4099.lib.units.derived.VelocityFeedforward
 import org.team4099.lib.units.derived.Volt
+import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.inVoltsPerRadian
 import org.team4099.lib.units.derived.inVoltsPerRadianPerSecond
@@ -61,9 +62,6 @@ object IntakeIOTalon : IntakeIO {
     intakeConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true
     intakeConfiguration.CurrentLimits.SupplyCurrentLimit =
         IntakeConstants.SUPPLY_CURRENT_LIMIT.inAmperes
-
-    intakeConfiguration.SoftwareLimitSwitch.ForwardSoftLimitEnable = true
-    intakeConfiguration.SoftwareLimitSwitch.ReverseSoftLimitEnable = true
 
     intakeConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake
     intakeConfiguration.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive
@@ -127,10 +125,6 @@ object IntakeIOTalon : IntakeIO {
 
   override fun updateInputs(inputs: IntakeIO.IntakeIOInputs) {
     updateSignals()
-
-    intakeTalon.rotorPosition.refresh()
-    intakeTalon.position.refresh()
-
     inputs.velocity = intakeSensor.velocity
     inputs.intakeAppliedVoltage = voltageSignal.valueAsDouble.volts
     inputs.intakeStatorCurrent = statorCurrentSignal.valueAsDouble.amps
@@ -139,6 +133,6 @@ object IntakeIOTalon : IntakeIO {
   }
 
   override fun zeroPivot() {
-    intakeTalon.setPosition(0.0)
+    intakeTalon.setPosition(IntakeConstants.ZERO_OFFSET.inDegrees)
   }
 }

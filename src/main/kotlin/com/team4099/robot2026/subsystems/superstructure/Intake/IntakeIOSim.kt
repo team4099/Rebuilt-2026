@@ -54,7 +54,7 @@ class IntakeIOSim(drivetrainSimulation: AbstractDriveTrainSimulation) : IntakeIO
 
   override val intakeSimulation =
       IntakeSimulation.OverTheBumperIntake(
-          "Coral",
+          "Fuel",
           drivetrainSimulation,
           Meters.of(DrivetrainConstants.DRIVETRAIN_WIDTH.inMeters),
           Meters.of(IntakeConstants.LENGTH_EXTENDED.inMeters),

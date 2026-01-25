@@ -44,14 +44,14 @@ interface IntakeIO {
       table?.put("intakePositionRad", position.inRadians)
       table?.put("intakeStatorCurrentAmps", intakeStatorCurrent.inAmperes)
       table?.put("intakeSupplyCurrentAmps", intakeSupplyCurrent.inAmperes)
-      table?.put("IntakeVelocity", velocity.inRotationsPerMinute)
+      table?.put("intakeVelocityRPM", velocity.inRotationsPerMinute)
     }
 
     override fun fromLog(table: LogTable?) {
       table?.get("intakeTemperatureCelsius", intakeTemperature.inCelsius)?.let {
         intakeTemperature = it.celsius
       }
-      table?.get("intakeVelocity", velocity.inRotationsPerMinute)?.let {
+      table?.get("intakeVelocityRPM", velocity.inRotationsPerMinute)?.let {
         velocity = it.rotations.perMinute
       }
       table?.get("intakeAppliedVolts", intakeAppliedVoltage.inVolts)?.let {
