@@ -3,7 +3,6 @@ package com.team4099.robot2026.subsystems.superstructure.shooter
 import com.team4099.lib.math.clamp
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.ShooterConstants
-import com.team4099.robot2026.util.CustomLogger
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.math.system.plant.LinearSystemId
 import edu.wpi.first.wpilibj.simulation.FlywheelSim
@@ -68,7 +67,6 @@ object ShooterIOSim : ShooterIO {
   }
 
   override fun setVoltage(voltage: ElectricalPotential) {
-    CustomLogger.recordOutput("Shooter/attemptedVoltage", voltage.inVolts)
     val clampedVoltage =
         clamp(
             voltage, -ShooterConstants.VOLTAGE_COMPENSATION, ShooterConstants.VOLTAGE_COMPENSATION)
@@ -83,8 +81,6 @@ object ShooterIOSim : ShooterIO {
     val ffOutput =
         shooterFFController.calculateWithVelocities(
             shooterSim.angularVelocityRadPerSec.radians.perSecond, velocity)
-    CustomLogger.recordOutput("Shooter/appliedPIDOutput", pidOutput.inVolts)
-    CustomLogger.recordOutput("Shooter/appliedFFOutput", ffOutput.inVolts)
     setVoltage(pidOutput + ffOutput)
   }
 
