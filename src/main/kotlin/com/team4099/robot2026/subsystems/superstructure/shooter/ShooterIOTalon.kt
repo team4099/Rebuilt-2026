@@ -87,7 +87,6 @@ object ShooterIOTalon : ShooterIO {
     leaderSupplyCurrentSignal = leaderTalon.supplyCurrent
     leaderStatorCurrentSignal = leaderTalon.statorCurrent
     leaderVelocitySignal = leaderTalon.velocity
-    leaderDutyCycleSignal = leaderTalon.dutyCycle
     leaderTempSignal = leaderTalon.deviceTemp
     leaderVoltageSignal = leaderTalon.motorVoltage
     leaderAccelSignal = leaderTalon.acceleration
@@ -95,7 +94,6 @@ object ShooterIOTalon : ShooterIO {
     followerSupplyCurrentSignal = followerTalon.supplyCurrent
     followerStatorCurrentSignal = followerTalon.statorCurrent
     followerVelocitySignal = followerTalon.velocity
-    followerDutyCycleSignal = followerTalon.dutyCycle
     followerTempSignal = followerTalon.deviceTemp
     followerVoltageSignal = followerTalon.motorVoltage
     followerAccelSignal = followerTalon.acceleration
@@ -109,14 +107,12 @@ object ShooterIOTalon : ShooterIO {
         leaderSupplyCurrentSignal,
         leaderStatorCurrentSignal,
         leaderVelocitySignal,
-        leaderDutyCycleSignal,
         leaderTempSignal,
         leaderVoltageSignal,
         leaderAccelSignal,
         followerStatorCurrentSignal,
         followerSupplyCurrentSignal,
         followerVelocitySignal,
-        followerDutyCycleSignal,
         followerTempSignal,
         followerVoltageSignal,
         followerAccelSignal,
