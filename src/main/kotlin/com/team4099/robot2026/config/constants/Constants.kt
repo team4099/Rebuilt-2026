@@ -54,4 +54,9 @@ object Constants {
   object Alert {
     val TABS = arrayOf("Pre-match", "In-match")
   }
+
+  object Shooter {
+    const val LEADER_MOTOR_ID = 42
+    const val FOLLOWER_MOTOR_ID = 43
+  }
 }
