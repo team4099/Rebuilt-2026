@@ -18,14 +18,12 @@ import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.StaticFeedforward
 import org.team4099.lib.units.derived.VelocityFeedforward
 import org.team4099.lib.units.derived.Volt
-import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inRotationsPerMinute
 import org.team4099.lib.units.inRotationsPerMinutePerMinute
 import org.team4099.lib.units.perMinute
-import org.team4099.lib.units.perSecond
 
 interface ShooterIO {
   class ShooterInputs : LoggableInputs {
@@ -34,16 +32,16 @@ interface ShooterIO {
     var shooterLeaderSupplyCurrent = 0.0.amps
     var shooterLeaderStatorCurrent = 0.0.amps
     var shooterLeaderTemperature = 0.0.celsius
-    var shooterLeaderVelocity = 0.0.degrees.perSecond
-    var shooterLeaderAcceleration = 0.0.degrees.perSecond.perSecond
+    var shooterLeaderVelocity = 0.0.rotations.perMinute
+    var shooterLeaderAcceleration = 0.0.rotations.perMinute.perMinute
 
     // follower variables
     var shooterFollowerVoltage = 0.0.volts
     var shooterFollowerSupplyCurrent = 0.0.amps
     var shooterFollowerStatorCurrent = 0.0.amps
     var shooterFollowerTemperature = 0.0.celsius
-    var shooterFollowerVelocity = 0.0.degrees.perSecond
-    var shooterFollowerAcceleration = 0.0.degrees.perSecond.perSecond
+    var shooterFollowerVelocity = 0.0.rotations.perMinute
+    var shooterFollowerAcceleration = 0.0.rotations.perMinute.perMinute
 
     override fun toLog(table: LogTable?) {
 

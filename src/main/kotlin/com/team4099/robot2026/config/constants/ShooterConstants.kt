@@ -29,11 +29,11 @@ object ShooterConstants {
   val VOLTAGE_COMPENSATION = 12.0.volts
   val MOMENT_OF_INERTIA = 0.002341.kilo.grams.meterSquared
 
-  val MAX_ACCELERATION: AngularAcceleration = 1000000.radians.perMinute.perMinute
+  val MAX_ACCELERATION: AngularAcceleration = 1000000.rotations.perMinute.perMinute
 
   val SHOOTER_TOLERANCE = 75.0.rotations.perMinute
 
-  val IDLE_VOLTAGE = 0.0.volts
+  val IDLE_VOLTAGE = 1.5.volts
 
   object PID {
     val REAL_KP: ProportionalGain<Velocity<Radian>, Volt> = 0.0.volts / 1.0.degrees.perSecond
