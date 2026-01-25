@@ -57,21 +57,15 @@ object ShooterIOTalon : ShooterIO {
   private var leaderStatorCurrentSignal: StatusSignal<WPILibCurrent>
   private var leaderSupplyCurrentSignal: StatusSignal<WPILibCurrent>
   private var leaderTempSignal: StatusSignal<WPILibTemperature>
-  private var leaderDutyCycleSignal: StatusSignal<Double>
-  private var leaderAccelSignal: StatusSignal<WPILibAngularAcceleration>
-
   private var leaderVoltageSignal: StatusSignal<WPILibVoltage>
-
+  private var leaderAccelSignal: StatusSignal<WPILibAngularAcceleration>
   private var leaderVelocitySignal: StatusSignal<WPILibAngularVelocity>
 
   private var followerStatorCurrentSignal: StatusSignal<WPILibCurrent>
   private var followerSupplyCurrentSignal: StatusSignal<WPILibCurrent>
   private var followerTempSignal: StatusSignal<WPILibTemperature>
-  private var followerDutyCycleSignal: StatusSignal<Double>
-
   private var followerVoltageSignal: StatusSignal<WPILibVoltage>
   private var followerAccelSignal: StatusSignal<WPILibAngularAcceleration>
-
   private var followerVelocitySignal: StatusSignal<WPILibAngularVelocity>
 
   init {
