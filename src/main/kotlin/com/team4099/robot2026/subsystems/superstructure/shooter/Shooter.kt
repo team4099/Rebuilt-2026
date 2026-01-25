@@ -28,7 +28,7 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
                 ShooterConstants.SHOOTER_TOLERANCE)
 
   var currentState: ShooterState = ShooterState.UNINITIALIZED
-  var currentRequest: Request.ShooterRequest = Request.ShooterRequest.OpenLoop(0.0.volts)
+  var currentRequest: Request.ShooterRequest = Request.ShooterRequest.Idle()
     set(value) {
       when (value) {
         is Request.ShooterRequest.OpenLoop -> {
@@ -39,7 +39,6 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
         }
         else -> {}
       }
-      field = value
     }
 
   init {
