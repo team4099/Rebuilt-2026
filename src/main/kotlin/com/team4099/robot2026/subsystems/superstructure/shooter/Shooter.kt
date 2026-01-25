@@ -60,7 +60,7 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
     io.updateInputs(inputs)
     CustomLogger.processInputs("Shooter", inputs)
     CustomLogger.recordOutput(
-        "Shooter/targetAngularVelocity", shooterVelocityTarget.inRotationsPerMinute)
+        "Shooter/targetAngularVelocityRPM", shooterVelocityTarget.inRotationsPerMinute)
     CustomLogger.recordOutput("Shooter/targetVoltage", shooterVoltageTarget.inVolts)
     CustomLogger.recordOutput("Shooter/currentState", currentState)
     CustomLogger.recordOutput("Shooter/currentRequest", currentRequest.javaClass.simpleName)
