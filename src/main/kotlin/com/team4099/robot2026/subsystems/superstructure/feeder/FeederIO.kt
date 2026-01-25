@@ -29,7 +29,6 @@ interface FeederIO {
       table?.put("FeederStatorCurrentAmps", feederStatorCurrent.inAmperes)
       table?.put("FeederSupplyCurrentAmps", feederSupplyCurrent.inAmperes)
       table?.put("FeederTempCelsius", feederTemp.inCelsius)
-      // table?.put("beamBroken", beamBroken)
     }
 
     override fun fromLog(table: LogTable?) {

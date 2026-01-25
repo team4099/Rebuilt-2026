@@ -5,6 +5,8 @@ import com.team4099.robot2026.subsystems.superstructure.Request.FeederRequest
 import com.team4099.robot2026.util.ControlledByStateMachine
 import com.team4099.robot2026.util.CustomLogger
 import org.team4099.lib.units.derived.volts
+import com.team4099.robot2026.config.constants.FeederConstants
+
 
 class Feeder(private val io: FeederIO) : ControlledByStateMachine() {
   val inputs = FeederIO.FeederIOInputs()
@@ -36,7 +38,7 @@ class Feeder(private val io: FeederIO) : ControlledByStateMachine() {
         nextState = fromRequestToState(currentRequest)
       }
       FeederState.IDLE -> {
-        io.setVoltage(0.0.volts)
+        io.setVoltage(FeederConstants.IDLE_VOLTAGE)
         nextState = fromRequestToState(currentRequest)
       }
       FeederState.OPEN_LOOP -> {

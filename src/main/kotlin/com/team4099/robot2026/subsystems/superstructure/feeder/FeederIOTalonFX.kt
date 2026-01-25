@@ -38,6 +38,7 @@ object FeederIOTalonFX : FeederIO {
   val voltageControl: VoltageOut = VoltageOut(0.volts.inVolts)
 
   init {
+    feederTalon.clearStickyFaults()
 
     // configurations
     feederConfiguration.CurrentLimits.StatorCurrentLimit =
@@ -46,8 +47,7 @@ object FeederIOTalonFX : FeederIO {
         FeederConstants.SUPPLY_CURRENT_LIMIT.inAmperes
     feederConfiguration.CurrentLimits.StatorCurrentLimitEnable = true
     feederConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true
-    feederConfiguration.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive
-    feederConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake
+    feederConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Coast
 
     feederTalon.configurator.apply(feederConfiguration)
 
@@ -73,7 +73,6 @@ object FeederIOTalonFX : FeederIO {
     inputs.feederStatorCurrent = feederStatorCurrentStatusSignal.valueAsDouble.amps
     inputs.feederSupplyCurrent = feederSupplyCurrentStatusSignal.valueAsDouble.amps
     inputs.feederTemp = feederTempStatusSignal.valueAsDouble.celsius
-    // inputs.beamBroken = beamBreakStatusSignal.value
   }
 
   override fun setVoltage(voltage: ElectricalPotential) {

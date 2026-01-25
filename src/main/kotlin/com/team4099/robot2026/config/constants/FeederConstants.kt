@@ -7,9 +7,10 @@ import org.team4099.lib.units.derived.volts
 
 object FeederConstants {
   val STATOR_CURRENT_LIMIT = 40.0.amps
-  val SUPPLY_CURRENT_LIMIT = 60.0.amps
-  val GEAR_RATIO = 24.0 / 12.0
+  val SUPPLY_CURRENT_LIMIT = 40.0.amps
+  val GEAR_RATIO = 12.0 / 24.0
   val VOLTAGE_COMPENSATION = 12.0.volts
+  val IDLE_VOLTAGE = 0.0.volts
   // TODO: Change this value later
-  val MOMENT_OF_INERTIA = 0.0.grams.meterSquared
+  val MOMENT_OF_INERTIA = 0.35.grams.meterSquared
 }
