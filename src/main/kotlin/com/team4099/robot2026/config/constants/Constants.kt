@@ -54,4 +54,8 @@ object Constants {
   object Alert {
     val TABS = arrayOf("Pre-match", "In-match")
   }
+
+  object Climb {
+      val MOTOR_ID = -1 // TODO: change when motor is mounted on robot
+  }
 }
