@@ -39,6 +39,7 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
         }
         else -> {}
       }
+      field = value
     }
 
   init {
