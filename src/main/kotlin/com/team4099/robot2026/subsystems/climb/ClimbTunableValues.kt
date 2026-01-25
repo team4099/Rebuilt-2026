@@ -11,13 +11,11 @@ import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
 
 object ClimbTunableValues {
-    val kP = LoggedTunableValue("Climb/kP", Pair({ it.inVoltsPerInch }, { it.volts.perInch }))
-    val kI =
-        LoggedTunableValue(
-            "Climb/kI", Pair({ it.inVoltsPerInchSeconds }, { it.volts.perInchSeconds })
-        )
-    val kD =
-        LoggedTunableValue(
-            "Climb/kI", Pair({ it.inVoltsPerInchPerSecond }, { it.volts / 1.0.inches.perSecond })
-        )
+  val kP = LoggedTunableValue("Climb/kP", Pair({ it.inVoltsPerInch }, { it.volts.perInch }))
+  val kI =
+      LoggedTunableValue(
+          "Climb/kI", Pair({ it.inVoltsPerInchSeconds }, { it.volts.perInchSeconds }))
+  val kD =
+      LoggedTunableValue(
+          "Climb/kI", Pair({ it.inVoltsPerInchPerSecond }, { it.volts / 1.0.inches.perSecond }))
 }

@@ -56,6 +56,6 @@ object Constants {
   }
 
   object Climb {
-      val MOTOR_ID = -1 // TODO: change when motor is mounted on robot
+    val MOTOR_ID = -1 // TODO: change when motor is mounted on robot
   }
 }

@@ -7,7 +7,8 @@ sealed interface Request {
   sealed interface SuperstructureRequest : Request
 
   sealed interface ClimbRequest : Request {
-      class TargetingPosition(val position: Length) : ClimbRequest
-      class OpenLoop(val voltage: ElectricalPotential) : ClimbRequest
+    class TargetingPosition(val position: Length) : ClimbRequest
+
+    class OpenLoop(val voltage: ElectricalPotential) : ClimbRequest
   }
 }
