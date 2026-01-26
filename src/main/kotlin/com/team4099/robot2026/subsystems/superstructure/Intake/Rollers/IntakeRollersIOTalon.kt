@@ -8,9 +8,10 @@ import com.ctre.phoenix6.hardware.TalonFX
 import com.ctre.phoenix6.signals.InvertedValue
 import com.team4099.lib.math.clamp
 import com.team4099.robot2025.config.constants.RollersConstants
-import com.team4099.robot2025.subsystems.superstructure.Intake.Rollers.RollersIO
+import com.team4099.robot2025.subsystems.superstructure.Intake.Rollers.IntakeRollersIO
 import com.team4099.robot2026.config.constants.Constants
 import edu.wpi.first.units.measure.AngularAcceleration
+import edu.wpi.first.units.measure.AngularVelocity
 import edu.wpi.first.units.measure.Current
 import edu.wpi.first.units.measure.Temperature
 import edu.wpi.first.units.measure.Voltage
@@ -24,7 +25,7 @@ import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
 
-object RollersIOTalon : RollersIO {
+object IntakeRollersIOTalon : IntakeRollersIO {
 
   private val rollerTalon: TalonFX = TalonFX(Constants.Intake.INTAKE_ROLLERS_MOTOR_ID)
 
@@ -41,6 +42,8 @@ object RollersIOTalon : RollersIO {
   var motorVoltage: StatusSignal<Voltage>
 
   var motorAccel: StatusSignal<AngularAcceleration>
+
+  var motorVelo: StatusSignal<AngularVelocity>
 
   val voltageControl = VoltageOut(0.0.volts.inVolts)
 
@@ -63,11 +66,12 @@ object RollersIOTalon : RollersIO {
     dutyCycleSignal = rollerTalon.dutyCycle
     motorVoltage = rollerTalon.motorVoltage
     motorAccel = rollerTalon.acceleration
+    motorVelo = rollerTalon.velocity
 
     rollerTalon.configurator.apply(rollerConfig)
   }
 
-  override fun updateInputs(inputs: RollersIO.RollerInputs) {
+  override fun updateInputs(inputs: IntakeRollersIO.RollerInputs) {
     refreshStatusSignals()
     inputs.rollerVelocity = rollerSensor.velocity
     inputs.rollerAppliedVoltage = motorVoltage.valueAsDouble.volts
@@ -80,7 +84,13 @@ object RollersIOTalon : RollersIO {
 
   fun refreshStatusSignals() {
     BaseStatusSignal.refreshAll(
-        supplyCurrent, statorCurrent, dutyCycleSignal, motorVoltage, motorAccel, tempSignal)
+        supplyCurrent,
+        statorCurrent,
+        dutyCycleSignal,
+        motorVoltage,
+        motorAccel,
+        tempSignal,
+        motorVelo)
   }
 
   override fun setVoltage(voltage: ElectricalPotential) {

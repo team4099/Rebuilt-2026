@@ -11,6 +11,8 @@ import com.ctre.phoenix6.signals.NeutralModeValue
 import com.team4099.lib.math.clamp
 import com.team4099.robot2025.config.constants.IntakeConstants
 import com.team4099.robot2026.config.constants.Constants
+import edu.wpi.first.units.measure.Angle
+import edu.wpi.first.units.measure.AngularAcceleration
 import edu.wpi.first.units.measure.AngularVelocity
 import edu.wpi.first.units.measure.Current
 import edu.wpi.first.units.measure.Temperature
@@ -48,8 +50,10 @@ object IntakeIOTalon : IntakeIO {
   private var temperatureSignal: StatusSignal<Temperature>
   private var voltageSignal: StatusSignal<Voltage>
   private var velocitySignal: StatusSignal<AngularVelocity>
+  private var acelSignal: StatusSignal<AngularAcceleration>
   private var statorCurrentSignal: StatusSignal<Current>
   private var supplyCurrentSignal: StatusSignal<Current>
+  private var positionSignal: StatusSignal<Angle>
 
   override val intakeSimulation: IntakeSimulation? = null
 
@@ -72,6 +76,8 @@ object IntakeIOTalon : IntakeIO {
     velocitySignal = intakeTalon.velocity
     statorCurrentSignal = intakeTalon.statorCurrent
     supplyCurrentSignal = intakeTalon.supplyCurrent
+    acelSignal = intakeTalon.acceleration
+    positionSignal = intakeTalon.position
   }
 
   override fun setBrakeMode(brake: Boolean) {
@@ -94,7 +100,13 @@ object IntakeIOTalon : IntakeIO {
 
   private fun updateSignals() {
     BaseStatusSignal.refreshAll(
-        statorCurrentSignal, supplyCurrentSignal, temperatureSignal, voltageSignal, velocitySignal)
+        statorCurrentSignal,
+        supplyCurrentSignal,
+        temperatureSignal,
+        voltageSignal,
+        velocitySignal,
+        positionSignal,
+        acelSignal)
   }
 
   override fun configPID(

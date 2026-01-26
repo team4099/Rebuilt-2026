@@ -53,7 +53,6 @@ class Intake(private val io: IntakeIO) : ControlledByStateMachine() {
     CustomLogger.recordOutput("Intake/currentState", currentState.toString())
 
     var nextState = currentState
-    CustomLogger.recordOutput("Intake/nextState", nextState.toString())
     CustomLogger.recordOutput("Intake/pivotTargetPosition", pivotPositionTarget.inDegrees)
     CustomLogger.recordOutput("Intake/pivotTargetVoltage", pivotVoltageTarget.inVolts)
     CustomLogger.recordOutput("Intake/rollerVoltageTarget", rollerVoltageTarget.inVolts)

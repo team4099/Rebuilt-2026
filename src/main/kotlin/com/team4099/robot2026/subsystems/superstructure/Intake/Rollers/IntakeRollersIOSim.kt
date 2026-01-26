@@ -1,7 +1,7 @@
 package com.team4099.robot2026.subsystems.superstructure.Intake.Rollers
 
 import com.team4099.robot2025.config.constants.RollersConstants
-import com.team4099.robot2025.subsystems.superstructure.Intake.Rollers.RollersIO
+import com.team4099.robot2025.subsystems.superstructure.Intake.Rollers.IntakeRollersIO
 import com.team4099.robot2026.config.constants.Constants
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.math.system.plant.LinearSystemId
@@ -10,15 +10,13 @@ import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.derived.ElectricalPotential
-import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inKilogramsMeterSquared
 import org.team4099.lib.units.derived.inVolts
-import org.team4099.lib.units.derived.radians
+import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
-import org.team4099.lib.units.inDegreesPerSecondPerSecond
-import org.team4099.lib.units.perSecond
+import org.team4099.lib.units.perMinute
 
-object RollersIOSim : RollersIO {
+object IntakeRollersIOSim : IntakeRollersIO {
   private val rollerSim: FlywheelSim =
       FlywheelSim(
           LinearSystemId.createFlywheelSystem(
@@ -30,27 +28,15 @@ object RollersIOSim : RollersIO {
 
   private var appliedVoltage = 0.volts
 
-  override fun updateInputs(inputs: RollersIO.RollerInputs) {
+  override fun updateInputs(inputs: IntakeRollersIO.RollerInputs) {
     rollerSim.update(Constants.Universal.LOOP_PERIOD_TIME.inSeconds)
-    inputs.rollerVelocity = rollerSim.angularVelocityRPM.degrees.perSecond
-    inputs.rollerAcceleration =
-        rollerSim.angularAccelerationRadPerSecSq.radians.perSecond.perSecond
-            .inDegreesPerSecondPerSecond
-            .degrees
-            .perSecond
-            .perSecond
+    inputs.rollerVelocity = rollerSim.angularVelocityRPM.rotations.perMinute
     inputs.rollerAppliedVoltage = appliedVoltage
     inputs.rollerStatorCurrent = rollerSim.currentDrawAmps.amps
     inputs.rollerSupplyCurrent = 0.amps
     inputs.rollerTemperature = 25.celsius
   }
 
-  /**
-   * Sets the intake motor voltage and ensures the voltage is within the bounds of the battery
-   * voltage compensation
-   *
-   * @param voltage the voltage to set the roller motor to
-   */
   override fun setVoltage(voltage: ElectricalPotential) {
     rollerSim.setInputVoltage(voltage.inVolts)
     appliedVoltage = voltage

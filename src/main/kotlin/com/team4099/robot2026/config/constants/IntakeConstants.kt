@@ -26,16 +26,6 @@ object IntakeConstants {
   val PIVOT_MAX_ANGLE = 120.0.degrees
   val PIVOT_MIN_ANGLE = 0.0.degrees
 
-  val PIVOT_KA = 0.0.volts / 1.0.radians.perSecond.perSecond
-  val PIVOT_KV = 0.0.volts / 1.0.radians.perSecond
-  val PIVOT_KG = 0.0.volts
-  val PIVOT_KS = 0.0.volts
-
-  val SIM_PIVOT_KA = 0.0.volts / 1.0.radians.perSecond.perSecond
-  val SIM_PIVOT_KV = 0.0.volts / 1.0.radians.perSecond
-  val SIM_PIVOT_KG = 0.0.volts
-  val SIM_PIVOT_KS = 0.0.volts
-
   val STATOR_CURRENT_LIMIT = 30.amps
   val SUPPLY_CURRENT_LIMIT = 30.amps
 
@@ -63,5 +53,15 @@ object IntakeConstants {
     val REAL_PIVOT_KP: ProportionalGain<Radian, Volt> = 0.0.volts / 1.0.degrees
     val REAL_PIVOT_KI: IntegralGain<Radian, Volt> = 0.0.volts / (1.0.degrees * 1.0.seconds)
     val REAL_PIVOT_KD: DerivativeGain<Radian, Volt> = 0.0.volts / 1.0.degrees.perSecond
+
+    val PIVOT_KA = 0.0.volts / 1.0.radians.perSecond.perSecond
+    val PIVOT_KV = 0.0.volts / 1.0.radians.perSecond
+    val PIVOT_KG = 0.0.volts
+    val PIVOT_KS = 0.0.volts
+
+    val SIM_PIVOT_KA = 0.0.volts / 1.0.radians.perSecond.perSecond
+    val SIM_PIVOT_KV = 0.0.volts / 1.0.radians.perSecond
+    val SIM_PIVOT_KG = 0.0.volts
+    val SIM_PIVOT_KS = 0.0.volts
   }
 }

@@ -17,7 +17,8 @@ import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.StaticFeedforward
 import org.team4099.lib.units.derived.VelocityFeedforward
 import org.team4099.lib.units.derived.Volt
-import org.team4099.lib.units.derived.inRadians
+import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.rotations
@@ -41,7 +42,7 @@ interface IntakeIO {
     override fun toLog(table: LogTable?) {
       table?.put("intakeTemperatureCelsius", intakeTemperature.inCelsius)
       table?.put("intakeAppliedVolts", intakeAppliedVoltage.inVolts)
-      table?.put("intakePositionRad", position.inRadians)
+      table?.put("intakePositionDeg", position.inDegrees)
       table?.put("intakeStatorCurrentAmps", intakeStatorCurrent.inAmperes)
       table?.put("intakeSupplyCurrentAmps", intakeSupplyCurrent.inAmperes)
       table?.put("intakeVelocityRPM", velocity.inRotationsPerMinute)
@@ -57,7 +58,7 @@ interface IntakeIO {
       table?.get("intakeAppliedVolts", intakeAppliedVoltage.inVolts)?.let {
         intakeAppliedVoltage = it.volts
       }
-      table?.get("intakePositionRad", position.inRadians)?.let { position = it.radians }
+      table?.get("intakePositionDeg", position.inDegrees)?.let { position = it.degrees }
       table?.get("intakeStatorCurrentAmps", intakeStatorCurrent.inAmperes)?.let {
         intakeStatorCurrent = it.amps
       }

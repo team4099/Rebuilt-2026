@@ -15,7 +15,7 @@ import org.team4099.lib.units.inDegreesPerSecondPerSecond
 import org.team4099.lib.units.inRotationsPerMinute
 import org.team4099.lib.units.perSecond
 
-interface RollersIO {
+interface IntakeRollersIO {
   class RollerInputs : LoggableInputs {
     var rollerVelocity = 0.degrees.perSecond
     var rollerAcceleration = 0.degrees.perSecond.perSecond
