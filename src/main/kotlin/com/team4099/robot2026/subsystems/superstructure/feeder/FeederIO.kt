@@ -17,6 +17,7 @@ interface FeederIO {
   class FeederIOInputs : LoggableInputs {
     // Feeder Inputs
     var feederVelocity = 0.rotations.perMinute
+    var feederAcceleration = 0.rotations.perMinute.perMinute
     var feederAppliedVoltage = 0.0.volts
     var feederStatorCurrent = 0.0.amps
     var feederSupplyCurrent = 0.0.amps
@@ -25,6 +26,7 @@ interface FeederIO {
 
     override fun toLog(table: LogTable?) {
       table?.put("FeederVelocityRPM", feederVelocity.inRotationsPerMinute)
+      table?.put("FeederAccelerationRPMPM", feederAcceleration.inRotationsPerMinutePerMinute)
       table?.put("FeederAppliedVoltage", feederAppliedVoltage.inVolts)
       table?.put("FeederStatorCurrentAmps", feederStatorCurrent.inAmperes)
       table?.put("FeederSupplyCurrentAmps", feederSupplyCurrent.inAmperes)
@@ -34,6 +36,9 @@ interface FeederIO {
     override fun fromLog(table: LogTable?) {
       table?.get("FeederVelocityRPM", feederVelocity.inRotationsPerMinute)?.let {
         feederVelocity = it.rotations.perMinute
+      }
+      table?.get("FeederAccelerationRPMPM", feederAcceleration.inRotationsPerMinutePerMinute)?.let {
+        feederAcceleration = it.rotations.perMinute.perMinute
       }
       table?.get("FeederAppliedVoltage", feederAppliedVoltage.inVolts)?.let {
         feederAppliedVoltage = it.volts
