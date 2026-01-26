@@ -1,4 +1,4 @@
-package com.team4099.robot2026.subsystems.superstructure.Intake
+package com.team4099.robot2026.subsystems.superstructure.intake
 
 import com.ctre.phoenix6.BaseStatusSignal
 import com.ctre.phoenix6.StatusSignal
@@ -9,8 +9,8 @@ import com.ctre.phoenix6.hardware.TalonFX
 import com.ctre.phoenix6.signals.InvertedValue
 import com.ctre.phoenix6.signals.NeutralModeValue
 import com.team4099.lib.math.clamp
-import com.team4099.robot2025.config.constants.IntakeConstants
 import com.team4099.robot2026.config.constants.Constants
+import com.team4099.robot2026.config.constants.IntakeConstants
 import edu.wpi.first.units.measure.Angle
 import edu.wpi.first.units.measure.AngularAcceleration
 import edu.wpi.first.units.measure.AngularVelocity

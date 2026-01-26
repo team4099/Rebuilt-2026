@@ -1,4 +1,4 @@
-package com.team4099.robot2026.subsystems.superstructure.Intake.Rollers
+package com.team4099.robot2026.subsystems.superstructure.intake.rollers
 
 import com.ctre.phoenix6.BaseStatusSignal
 import com.ctre.phoenix6.StatusSignal
@@ -7,9 +7,9 @@ import com.ctre.phoenix6.controls.VoltageOut
 import com.ctre.phoenix6.hardware.TalonFX
 import com.ctre.phoenix6.signals.InvertedValue
 import com.team4099.lib.math.clamp
-import com.team4099.robot2025.config.constants.RollersConstants
-import com.team4099.robot2025.subsystems.superstructure.Intake.Rollers.IntakeRollersIO
 import com.team4099.robot2026.config.constants.Constants
+import com.team4099.robot2026.config.constants.RollersConstants
+import com.team4099.robot2026.subsystems.superstructure.Intake.Rollers.IntakeRollersIO
 import edu.wpi.first.units.measure.AngularAcceleration
 import edu.wpi.first.units.measure.AngularVelocity
 import edu.wpi.first.units.measure.Current

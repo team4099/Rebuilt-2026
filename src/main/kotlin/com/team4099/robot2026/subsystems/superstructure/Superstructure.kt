@@ -1,20 +1,20 @@
 package com.team4099.robot2026.subsystems.superstructure
 
 import com.team4099.lib.hal.Clock
-import com.team4099.robot2025.config.constants.IntakeConstants
-import com.team4099.robot2025.config.constants.RollersConstants
 import com.team4099.robot2026.config.constants.ClimbConstants
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.FeederConstants
 import com.team4099.robot2026.config.constants.HopperConstants
+import com.team4099.robot2026.config.constants.IntakeConstants
+import com.team4099.robot2026.config.constants.RollersConstants
 import com.team4099.robot2026.config.constants.ShooterConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
-import com.team4099.robot2026.subsystems.superstructure.Intake.Intake
-import com.team4099.robot2026.subsystems.superstructure.Intake.Rollers.IntakeRollers
 import com.team4099.robot2026.subsystems.superstructure.Request.SuperstructureRequest
 import com.team4099.robot2026.subsystems.superstructure.climb.Climb
 import com.team4099.robot2026.subsystems.superstructure.feeder.Feeder
 import com.team4099.robot2026.subsystems.superstructure.hopper.Hopper
+import com.team4099.robot2026.subsystems.superstructure.intake.Intake
+import com.team4099.robot2026.subsystems.superstructure.intake.rollers.IntakeRollers
 import com.team4099.robot2026.subsystems.superstructure.shooter.Shooter
 import com.team4099.robot2026.subsystems.vision.Vision
 import com.team4099.robot2026.util.CustomLogger
@@ -26,14 +26,14 @@ import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMilliseconds
 
 class Superstructure(
-  private val drivetrain: Drive,
-  private val vision: Vision,
-  private val climb: Climb,
-  private val feeder: Feeder,
-  private val hopper: Hopper,
-  private val intake: Intake,
-  private val intakeRollers: IntakeRollers,
-  private val shooter: Shooter
+    private val drivetrain: Drive,
+    private val vision: Vision,
+    private val climb: Climb,
+    private val feeder: Feeder,
+    private val hopper: Hopper,
+    private val intake: Intake,
+    private val intakeRollers: IntakeRollers,
+    private val shooter: Shooter
 ) : SubsystemBase() {
   var currentState: SuperstructureStates = SuperstructureStates.UNINITALIZED
     private set

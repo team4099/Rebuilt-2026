@@ -1,4 +1,4 @@
-package com.team4099.robot2025.config.constants
+package com.team4099.robot2026.config.constants
 
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.grams
