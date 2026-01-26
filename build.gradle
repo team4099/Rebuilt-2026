@@ -176,7 +176,7 @@ gversion {
 	srcDir       = "src/main/kotlin/"           // path is relative to the sub-project by default
 	// Gradle variables can also be used
 	// E.g. "${project.rootDir}/module/src/main/java"
-	classPackage = "com.team4099.robot2025"
+	classPackage = "com.team4099.robot2026"
 	className    = "BuildConstants"                // optional. If not specified GVersion is used
 	dateFormat   = "yyyy-MM-dd'T'HH:mm:ss'Z'" // optional. This is the default
 	timeZone     = "EST"                      // optional. UTC is default
