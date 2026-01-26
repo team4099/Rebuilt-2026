@@ -172,5 +172,5 @@ object PhoenixUtil {
   }
 }
 
-private typealias ConfiguredSwerveModuleConstants =
+typealias ConfiguredSwerveModuleConstants =
     SwerveModuleConstants<TalonFXConfiguration?, TalonFXConfiguration?, CANcoderConfiguration?>

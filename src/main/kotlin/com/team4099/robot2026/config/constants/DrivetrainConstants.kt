@@ -1,9 +1,15 @@
 package com.team4099.robot2026.config.constants
 
+import com.team4099.robot2026.subsystems.drivetrain.generated.AlphaBotTunerConstants
+import com.team4099.robot2026.subsystems.drivetrain.generated.CompBotTunerConstants
+import com.team4099.robot2026.subsystems.drivetrain.generated.TestBotTunerConstants
+import com.team4099.robot2026.subsystems.drivetrain.generated.TunerConstants
+import com.team4099.robot2026.util.ArgParser
 import edu.wpi.first.wpilibj.RobotBase
 import kotlin.math.sqrt
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.units.Velocity
+import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.feet
@@ -11,9 +17,13 @@ import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.seconds
+import org.team4099.lib.units.derived.AccelerationFeedforward
 import org.team4099.lib.units.derived.DerivativeGain
 import org.team4099.lib.units.derived.IntegralGain
 import org.team4099.lib.units.derived.ProportionalGain
+import org.team4099.lib.units.derived.Radian
+import org.team4099.lib.units.derived.VelocityFeedforward
+import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.metersPerSecondPerMetersPerSecond
 import org.team4099.lib.units.derived.perDegreePerSecond
@@ -26,13 +36,42 @@ import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.perSecond
 
 object DrivetrainConstants {
+  val TunerConstants: TunerConstants =
+      when (ArgParser.robotType) {
+        Constants.RobotType.COMPBOT -> CompBotTunerConstants
+        Constants.RobotType.ALPHABOT -> AlphaBotTunerConstants
+        Constants.RobotType.TESTBOT -> TestBotTunerConstants
+      }
+
   const val TELEOP_TURNING_SPEED_PERCENT = 0.6
 
-  val WHEEL_DIAMETER = (2 * 2).inches
-  val DRIVETRAIN_LENGTH = 28.5.inches
-  val DRIVETRAIN_WIDTH = 28.5.inches
+  val WHEEL_DIAMETER: Length
+    get() {
+      return when (ArgParser.robotType) {
+        else -> (2 * 2).inches
+      }
+    }
 
-  val BUMPER_WIDTH = 3.25.inches
+  val DRIVETRAIN_LENGTH: Length
+    get() {
+      return when (ArgParser.robotType) {
+        else -> 28.5.inches
+      }
+    }
+
+  val DRIVETRAIN_WIDTH: Length
+    get() {
+      return when (ArgParser.robotType) {
+        else -> 28.5.inches
+      }
+    }
+
+  val BUMPER_WIDTH: Length
+    get() {
+      return when (ArgParser.robotType) {
+        else -> 28.5.inches
+      }
+    }
 
   var DRIVE_SETPOINT_MAX = 16.feet.perSecond
   val TURN_SETPOINT_MAX =
@@ -48,10 +87,6 @@ object DrivetrainConstants {
   val MAX_AUTO_ACCEL = 4.meters.perSecond.perSecond // 3
 
   val OBJECT_APPROACH_SPEED = 2.meters.perSecond
-
-  const val MK4_DRIVE_SENSOR_GEAR_RATIO = (16.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0)
-  const val MK4I_STEERING_SENSOR_GEAR_RATIO = 7.0 / 150.0
-  const val MK4N_STEERING_SENSOR_GEAR_RATIO = 1.0 / 18.75
 
   val STEERING_SUPPLY_CURRENT_LIMIT = 20.0.amps
   val DRIVE_SUPPLY_CURRENT_LIMIT = 50.0.amps
@@ -143,15 +178,31 @@ object DrivetrainConstants {
     val STEERING_KP = 10.0.volts / 45.degrees
     val STEERING_KI = 0.0.volts.perDegreeSeconds
     val STEERING_KD = 0.0.volts.perDegreePerSecond
-    val STEERING_KV = 0.0.volts / 1.0.radians.perSecond
+    val STEERING_KV: VelocityFeedforward<Radian, Volt>
+      get() {
+        return when (ArgParser.robotType) {
+          else -> 0.0.volts / 1.0.radians.perSecond
+        }
+      }
 
     val DRIVE_KP = 1.52.volts / 1.meters.perSecond
     val DRIVE_KI = 0.0.volts / (1.meters.perSecond * 1.seconds)
     val DRIVE_KD = 0.1.volts / 1.meters.perSecond.perSecond
 
     val DRIVE_KS = 0.236.volts
-    val DRIVE_KV = 2.117.volts / 1.0.meters.perSecond
-    val DRIVE_KA = 0.0.volts / 1.0.meters.perSecond.perSecond
+    val DRIVE_KV: VelocityFeedforward<Meter, Volt>
+      get() {
+        return when (ArgParser.robotType) {
+          else -> 2.117.volts / 1.0.meters.perSecond
+        }
+      }
+
+    val DRIVE_KA: AccelerationFeedforward<Meter, Volt>
+      get() {
+        return when (ArgParser.robotType) {
+          else -> 0.0.volts / 1.0.meters.perSecond.perSecond
+        }
+      }
 
     val SIM_DRIVE_KP = DRIVE_KP
     val SIM_DRIVE_KI = DRIVE_KI
