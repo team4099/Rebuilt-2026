@@ -1,7 +1,6 @@
 package com.team4099.robot2026.config.constants
 
 import com.team4099.robot2026.config.constants.Constants.WHOAMI
-import com.team4099.robot2026.util.ArgParser
 import edu.wpi.first.math.Matrix
 import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.math.numbers.N1
@@ -27,7 +26,7 @@ object VisionConstants {
   val CONFIDENCE_THRESHOLD = 0.75
 
   val CAMERA_TRANSFORMS: List<Transform3d> =
-      when (ArgParser.whoami) {
+      when (Constants.Universal.whoami) {
         WHOAMI.TESTBOT ->
             listOf(
                 Transform3d(
@@ -41,7 +40,7 @@ object VisionConstants {
       }
 
   val CAMERA_NAMES: List<String> =
-      when (ArgParser.whoami) {
+      when (Constants.Universal.whoami) {
         WHOAMI.TESTBOT -> listOf("raven_1, raven_2")
         else -> listOf()
       }
