@@ -55,8 +55,6 @@ object IntakeIOTalon : IntakeIO {
   private var supplyCurrentSignal: StatusSignal<Current>
   private var positionSignal: StatusSignal<Angle>
 
-  override val intakeSimulation: IntakeSimulation? = null
-
   init {
     intakeTalon.clearStickyFaults()
 

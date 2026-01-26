@@ -26,7 +26,7 @@ import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
 
-class IntakeIOSim(drivetrainSimulation: AbstractDriveTrainSimulation) : IntakeIO {
+object IntakeIOSim : IntakeIO {
 
   private val armSim: SingleJointedArmSim =
       SingleJointedArmSim(

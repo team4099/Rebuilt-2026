@@ -54,8 +54,6 @@ class Intake(private val io: IntakeIO) : ControlledByStateMachine() {
 
     CustomLogger.recordOutput("Intake/isAtTargetedPosition", isAtTargetedPosition)
 
-    if (RobotBase.isSimulation()) {}
-
     when (currentState) {
       IntakeState.UNINITIALIZED -> {
         nextState = fromRequestToState(currentRequest)
