@@ -68,6 +68,8 @@ object Constants {
 
   object Hopper {
     const val HOPPER_MOTOR_ID = -1337
+  }
+
   object Feeder {
     const val FEEDER_MOTOR_ID = 61
   }
