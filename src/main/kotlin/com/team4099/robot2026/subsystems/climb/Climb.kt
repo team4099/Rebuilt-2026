@@ -75,6 +75,12 @@ class Climb(val io: ClimbIO) : ControlledByStateMachine() {
           ClimbTunableValues.kP.get(), ClimbTunableValues.kI.get(), ClimbTunableValues.kD.get())
     }
 
+    if (ClimbTunableValues.kS.hasChanged() ||
+      ClimbTunableValues.kG.hasChanged()) {
+      io.configFF(
+        ClimbTunableValues.kS.get(), ClimbTunableValues.kG.get())
+    }
+
     CustomLogger.processInputs("Climb", inputs)
 
     CustomLogger.recordOutput("Climb/currentState", currentState.name)
