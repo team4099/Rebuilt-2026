@@ -37,25 +37,13 @@ object VisionConstants {
                     Translation3d(10.3.inches, -11.255.inches, 8.397.inches),
                     Rotation3d(0.0.degrees, -20.degrees, 30.degrees)), // raven_2
             )
-        else ->
-            listOf(
-                Transform3d(
-                    Translation3d(-10.398.inches, -11.593.inches, 8.36.inches),
-                    Rotation3d(0.0.degrees, -20.degrees, 145.degrees)), // raven_1
-                Transform3d(
-                    Translation3d(-10.398.inches, 11.593.inches, 8.36.inches),
-                    Rotation3d(0.0.degrees, -20.degrees, -145.degrees)), // raven_2
-                Transform3d(
-                    Translation3d(10.398.inches, -11.593.inches, 8.36.inches)
-                        .plus(Translation3d(4.342.inches, 18.23.inches, 32.372.inches)),
-                    Rotation3d(0.0.degrees, 30.degrees, 0.degrees)) // raven_o1
-                )
+        else -> listOf()
       }
 
   val CAMERA_NAMES: List<String> =
       when (ArgParser.robotType) {
         RobotType.TESTBOT -> listOf("raven_1, raven_2")
-        else -> listOf("raven_1", "raven_2", "raven_o1")
+        else -> listOf()
       }
 
   // x, y, θ

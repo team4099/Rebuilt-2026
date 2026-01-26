@@ -5,7 +5,7 @@ import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants
 import com.team4099.lib.phoenix6.ConfiguredSwerveModuleConstants
 import org.team4099.lib.units.LinearVelocity
 
-interface TunerConstants {
+sealed interface TunerConstants {
   val kCANBus: CANBus
   val kSpeedAt12Volts: LinearVelocity
 
