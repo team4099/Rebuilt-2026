@@ -9,12 +9,19 @@ import org.team4099.lib.math.clamp
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.inSeconds
+import org.team4099.lib.units.derived.DegreesPerSecondPerDegreesPerSecond
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.inKilogramsMeterSquared
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.radians
+import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
+import org.team4099.lib.units.inRotationsPerMinute
+import org.team4099.lib.units.inRotationsPerMinutePerMinute
+import org.team4099.lib.units.perMinute
+import org.team4099.lib.units.derived.rotations
+import org.team4099.lib.units.derived.degrees
 
 object HopperIOSim : HopperIO {
   private var appliedVoltage = 0.0.volts
@@ -31,10 +38,10 @@ object HopperIOSim : HopperIO {
   override fun updateInputs(inputs: HopperIO.HopperIOInputs) {
     hopperSim.update(Constants.Universal.LOOP_PERIOD_TIME.inSeconds)
 
-    inputs.hopperAngularVelocity = hopperSim.angularVelocityRadPerSec.radians.perSecond
-
+    inputs.hopperAngularVelocity = hopperSim.angularVelocityRadPerSec.rotations.perMinute
+    inputs.hopperAngularAcceleration = hopperSim.angularAccelerationRadPerSecSq.radians.perSecond.perSecond
     inputs.hopperAppliedVoltage = appliedVoltage
-    inputs.hopperSupplyCurrent = 0.amps
+    inputs.hopperSupplyCurrent = 0.0.amps
     inputs.hopperStatorCurrent = hopperSim.currentDrawAmps.amps
     inputs.hopperTemp = 0.0.celsius
   }

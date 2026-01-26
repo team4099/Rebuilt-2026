@@ -9,20 +9,14 @@ import org.team4099.lib.units.base.inCelsius
 import org.team4099.lib.units.derived.*
 import org.team4099.lib.units.inDegreesPerSecond
 import org.team4099.lib.units.inDegreesPerSecondPerSecond
+import org.team4099.lib.units.perMinute
 import org.team4099.lib.units.perSecond
 
 interface HopperIO {
-
-  fun updateInputs(inputs: HopperIOInputs) {}
-
-  fun setVoltage(voltage: ElectricalPotential) {}
-
-  fun setBrakeMode(brake: Boolean) {}
-
   class HopperIOInputs : LoggableInputs {
     // Hopper Inputs
     var hopperAngularVelocity = 0.0.degrees.perSecond
-    var hopperAcceleration = 0.0.degrees.perSecond.perSecond
+    var hopperAngularAcceleration = 0.0.rotations.perMinute.perMinute
     var hopperAppliedVoltage = 0.0.volts
     var hopperStatorCurrent = 0.0.amps
     var hopperSupplyCurrent = 0.0.amps
@@ -30,7 +24,7 @@ interface HopperIO {
 
     override fun toLog(table: LogTable) {
       table.put("hopperVelocityPerSecond", hopperAngularVelocity.inDegreesPerSecond)
-      table.put("hopperAccelerationDPSPS", hopperAcceleration.inDegreesPerSecondPerSecond)
+      table.put("hopperAccelerationDPSPS", hopperAngularAcceleration.inDegreesPerSecondPerSecond)
       table.put("hopperAppliedVoltage", hopperAppliedVoltage.inVolts)
       table.put("hopperStatorCurrent", hopperStatorCurrent.inAmperes)
       table.put("hopperSupplyCurrent", hopperSupplyCurrent.inAmperes)
@@ -38,14 +32,14 @@ interface HopperIO {
     }
 
     override fun fromLog(table: LogTable) {
-      table.get("hopperVelocityPerSecond", hopperAngularVelocity.inDegreesPerSecond).let {
+      table.get("hopperDPS", hopperAngularVelocity.inDegreesPerSecond).let {
         hopperAngularVelocity = it.degrees.perSecond
       }
-      table.get("hopperAcceleration", hopperAcceleration.inDegreesPerSecondPerSecond).let {
-        hopperAcceleration = it.degrees.perSecond.perSecond
+      table.get("hopperAcceleration", hopperAngularAcceleration.inDegreesPerSecondPerSecond).let {
+        hopperAngularAcceleration = it.degrees.perSecond.perSecond
       }
       table.get("hopperAppliedVoltage", hopperAppliedVoltage.inVolts).let {
-        hopperAppliedVoltage = it.volts // idk if this is right
+        hopperAppliedVoltage = it.volts
       }
       table.get("hopperStatorCurrent", hopperStatorCurrent.inAmperes).let {
         hopperStatorCurrent = it.amps
@@ -56,4 +50,10 @@ interface HopperIO {
       table.get("hopperTemp", hopperTemp.inCelsius).let { hopperTemp = it.celsius }
     }
   }
+
+  fun updateInputs(inputs: HopperIOInputs) {}
+
+  fun setVoltage(voltage: ElectricalPotential) {}
+
+  fun setBrakeMode(brake: Boolean) {}
 }

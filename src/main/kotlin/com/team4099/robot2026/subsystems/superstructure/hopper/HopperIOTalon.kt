@@ -77,7 +77,12 @@ object HopperIOTalon : HopperIO {
     inputs.hopperStatorCurrent = statorCurrentSignal.valueAsDouble.amps
     inputs.hopperSupplyCurrent = supplyCurrentSignal.valueAsDouble.amps
     inputs.hopperTemp = tempSignal.valueAsDouble.celsius
-    inputs.hopperAcceleration =
+    inputs.hopperAngularVelocity = hopperSensor.velocity
+    inputs.hopperAngularAcceleration =
+      (motorAccelSignal.valueAsDouble / HopperConstants.GEAR_RATIO)
+        .rotations
+        .perSecond
+        .perSecond
         (motorAccelSignal.valueAsDouble / HopperConstants.GEAR_RATIO).rotations.perSecond.perSecond
   }
 
