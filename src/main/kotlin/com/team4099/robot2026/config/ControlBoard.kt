@@ -1,11 +1,9 @@
 package com.team4099.robot2026.config
 
 import com.team4099.robot2026.config.constants.Constants
-import com.team4099.robot2026.config.constants.DrivetrainConstants
 import edu.wpi.first.wpilibj.GenericHID
 import edu.wpi.first.wpilibj2.command.button.Trigger
 import java.util.function.Consumer
-import kotlin.math.absoluteValue
 import org.team4099.lib.joystick.XboxOneGamepad
 
 object ControlBoard {
@@ -31,16 +29,24 @@ object ControlBoard {
     get() = -driver.leftYAxis
 
   val turn: Double
-    get() {
-      return if (driver.rightXAxis.absoluteValue < 0.90) {
-        driver.rightXAxis * DrivetrainConstants.TELEOP_TURNING_SPEED_PERCENT
-      } else {
-        driver.rightXAxis
-      }
-    }
+    get() = driver.rightXAxis
 
   val slowMode: Boolean
     get() = driver.rightJoystickButton
 
   val resetGyro = Trigger { driver.startButton && driver.selectButton }
+
+  val intake = Trigger { driver.leftTriggerAxis > .5 }
+  val score = Trigger { driver.rightTriggerAxis > .5 }
+  val climb = Trigger { driver.aButton }
+  val forceIdle = Trigger { driver.dPadDown }
+  //  val leftTrenchOTF = Trigger { driver.dPadLeft }
+  //  val rightTrenchOTF = Trigger { driver.dPadRight }
+
+  val prepScore = Trigger { operator.rightTriggerAxis > .5 }
+  val forceIntakeUp = Trigger { operator.yButton }
+  val forceIntakeDown = Trigger { operator.bButton }
+  val prepClimb = Trigger { operator.aButton }
+
+  val eject = Trigger { driver.dPadUp || operator.dPadUp }
 }

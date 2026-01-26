@@ -35,7 +35,7 @@ class Hopper(private val io: HopperIO) : ControlledByStateMachine() {
         nextState = fromRequestToState(currentRequest)
       }
       HopperState.IDLE -> {
-        io.setVoltage(HopperConstants.IDLE_VOLTAGE)
+        io.setVoltage(HopperConstants.Voltages.IDLE_VOLTAGE)
         nextState = fromRequestToState(currentRequest)
       }
       HopperState.OPEN_LOOP -> {

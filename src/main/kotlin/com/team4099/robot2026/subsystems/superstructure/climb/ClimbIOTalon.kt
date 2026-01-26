@@ -1,4 +1,4 @@
-package com.team4099.robot2026.subsystems.climb
+package com.team4099.robot2026.subsystems.superstructure.climb
 
 import com.ctre.phoenix6.BaseStatusSignal
 import com.ctre.phoenix6.StatusSignal
@@ -10,11 +10,11 @@ import com.team4099.robot2026.config.constants.ClimbConstants
 import com.team4099.robot2026.config.constants.ClimbConstants.MAX_ACCELERATION
 import com.team4099.robot2026.config.constants.ClimbConstants.MAX_VELOCITY
 import com.team4099.robot2026.config.constants.Constants
+import edu.wpi.first.units.measure.Angle
 import edu.wpi.first.units.measure.AngularVelocity
 import edu.wpi.first.units.measure.Current as WPILibCurrent
 import edu.wpi.first.units.measure.Temperature as WPILibTemperature
 import edu.wpi.first.units.measure.Voltage as WPILibVoltage
-import kotlin.time.times
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.amps
@@ -53,7 +53,7 @@ object ClimbIOTalon : ClimbIO {
   private var statorCurrentSignal: StatusSignal<WPILibCurrent>
   private var supplyCurrentSignal: StatusSignal<WPILibCurrent>
   private var tempSignal: StatusSignal<WPILibTemperature>
-  private var positionSignal: StatusSignal<edu.wpi.first.units.measure.Angle>
+  private var positionSignal: StatusSignal<Angle>
   private var velocitySignal: StatusSignal<AngularVelocity>
 
   private var motorVoltage: StatusSignal<WPILibVoltage>
