@@ -77,7 +77,7 @@ object HopperIOTalon : HopperIO {
     inputs.hopperTemp = tempSignal.valueAsDouble.celsius
     inputs.hopperAngularVelocity = hopperSensor.velocity
     inputs.hopperAngularAcceleration =
-        (motorAccelSignal.valueAsDouble * HopperConstants.GEAR_RATIO).rotations.perMinute
+        (motorAccelSignal.valueAsDouble * HopperConstants.GEAR_RATIO).rotations.perMinute.perMinute
   }
 
   override fun setVoltage(voltage: ElectricalPotential) {
