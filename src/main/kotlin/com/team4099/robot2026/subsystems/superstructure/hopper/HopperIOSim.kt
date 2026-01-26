@@ -13,9 +13,7 @@ import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.inKilogramsMeterSquared
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.radians
-import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
-import org.team4099.lib.units.perMinute
 import org.team4099.lib.units.perSecond
 
 object HopperIOSim : HopperIO {
@@ -34,7 +32,8 @@ object HopperIOSim : HopperIO {
     hopperSim.update(Constants.Universal.LOOP_PERIOD_TIME.inSeconds)
 
     inputs.hopperAngularVelocity = hopperSim.angularVelocityRadPerSec.radians.perSecond
-    inputs.hopperAngularAcceleration = hopperSim.angularAccelerationRadPerSecSq.radians.perSecond.perSecond
+    inputs.hopperAngularAcceleration =
+        hopperSim.angularAccelerationRadPerSecSq.radians.perSecond.perSecond
     inputs.hopperAppliedVoltage = appliedVoltage
     inputs.hopperSupplyCurrent = 0.0.amps
     inputs.hopperStatorCurrent = hopperSim.currentDrawAmps.amps

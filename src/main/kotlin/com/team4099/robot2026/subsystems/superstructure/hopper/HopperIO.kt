@@ -26,7 +26,7 @@ interface HopperIO {
 
     override fun toLog(table: LogTable) {
       table.put("hopperVelocityRPM", hopperAngularVelocity.inRotationsPerMinute)
-      table.put("hopperAccelerationRPM", hopperAngularAcceleration.inRotationsPerMinutePerMinute)
+      table.put("hopperAccelerationRPMPM", hopperAngularAcceleration.inRotationsPerMinutePerMinute)
       table.put("hopperAppliedVoltage", hopperAppliedVoltage.inVolts)
       table.put("hopperStatorCurrent", hopperStatorCurrent.inAmperes)
       table.put("hopperSupplyCurrent", hopperSupplyCurrent.inAmperes)
@@ -37,9 +37,9 @@ interface HopperIO {
       table.get("HopperVelocityRPM", hopperAngularVelocity.inRotationsPerMinute).let {
         hopperAngularVelocity = it.rotations.perMinute
       }
-      table.get("hopperAccelerationRPM", hopperAngularAcceleration.inRotationsPerMinutePerMinute).let {
-        hopperAngularAcceleration = it.rotations.perMinute.perMinute
-      }
+      table
+          .get("hopperAccelerationRPMPM", hopperAngularAcceleration.inRotationsPerMinutePerMinute)
+          .let { hopperAngularAcceleration = it.rotations.perMinute.perMinute }
       table.get("hopperAppliedVoltage", hopperAppliedVoltage.inVolts).let {
         hopperAppliedVoltage = it.volts
       }

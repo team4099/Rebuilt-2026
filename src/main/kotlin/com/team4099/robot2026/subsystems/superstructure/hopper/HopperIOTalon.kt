@@ -3,7 +3,6 @@ package com.team4099.robot2026.subsystems.superstructure.hopper
 import com.ctre.phoenix6.BaseStatusSignal
 import com.ctre.phoenix6.StatusSignal
 import com.ctre.phoenix6.configs.TalonFXConfiguration
-import com.ctre.phoenix6.controls.VoltageOut
 import com.ctre.phoenix6.hardware.TalonFX
 import com.ctre.phoenix6.signals.NeutralModeValue
 import com.team4099.lib.math.clamp
@@ -27,7 +26,6 @@ import org.team4099.lib.units.perMinute
 object HopperIOTalon : HopperIO {
 
   private val hopperTalon: TalonFX = TalonFX(Constants.Hopper.HOPPER_MOTOR_ID)
-  private val voltageOut = VoltageOut(-1337.volts.inVolts)
   private val configs: TalonFXConfiguration = TalonFXConfiguration()
   private val hopperSensor =
       ctreAngularMechanismSensor(
