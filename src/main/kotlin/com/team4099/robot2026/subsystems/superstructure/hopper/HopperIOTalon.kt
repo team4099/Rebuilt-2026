@@ -6,6 +6,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration
 import com.ctre.phoenix6.controls.VoltageOut
 import com.ctre.phoenix6.hardware.TalonFX
 import com.ctre.phoenix6.signals.NeutralModeValue
+import com.team4099.lib.math.clamp
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.HopperConstants
 import edu.wpi.first.units.measure.AngularAcceleration as WPIAngularAcceleration
@@ -76,12 +77,16 @@ object HopperIOTalon : HopperIO {
     inputs.hopperTemp = tempSignal.valueAsDouble.celsius
     inputs.hopperAngularVelocity = hopperSensor.velocity
     inputs.hopperAngularAcceleration =
-        (motorAccelSignal.valueAsDouble / HopperConstants.GEAR_RATIO).rotations.perMinute
-    (motorAccelSignal.valueAsDouble / HopperConstants.GEAR_RATIO).rotations.perMinute.perMinute
+        (motorAccelSignal.valueAsDouble * HopperConstants.GEAR_RATIO).rotations.perMinute
   }
 
   override fun setVoltage(voltage: ElectricalPotential) {
-    hopperTalon.setControl(voltageOut.withOutput(voltage.inVolts))
+    val clampedVoltage =
+        clamp(
+            voltage,
+            lowerBound = -HopperConstants.VOLTAGE_COMPENSATION,
+            upperBound = HopperConstants.VOLTAGE_COMPENSATION)
+    hopperTalon.setVoltage(clampedVoltage.inVolts)
   }
 
   override fun setBrakeMode(brake: Boolean) {

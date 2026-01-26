@@ -33,10 +33,10 @@ interface HopperIO {
     }
 
     override fun fromLog(table: LogTable) {
-      table
-          .get("HopperVelocityRotationsPerMinuite", hopperAngularVelocity.inRotationsPerMinute)
-          .let { hopperAngularVelocity = it.rotations.perMinute }
-      table.get("hopperAcceleration", hopperAngularAcceleration.inRotationsPerMinute).let {
+      table.get("HopperVelocityRPM", hopperAngularVelocity.inRotationsPerMinute).let {
+        hopperAngularVelocity = it.rotations.perMinute
+      }
+      table.get("hopperAccelerationRPM", hopperAngularAcceleration.inRotationsPerMinute).let {
         hopperAngularAcceleration = it.rotations.perMinute
       }
       table.get("hopperAppliedVoltage", hopperAppliedVoltage.inVolts).let {
