@@ -17,8 +17,10 @@ class Intake(private val io: IntakeIO) : ControlledByStateMachine() {
   val inputs = IntakeIO.IntakeIOInputs()
 
   var pivotPositionTarget: Angle = 0.0.degrees
+  private set
 
   var pivotVoltageTarget: ElectricalPotential = 0.0.volts
+  private set
 
   var currentState: IntakeState = IntakeState.UNINITIALIZED
 
@@ -42,8 +44,6 @@ class Intake(private val io: IntakeIO) : ControlledByStateMachine() {
             (inputs.position - pivotPositionTarget).absoluteValue <=
                 IntakeConstants.INTAKE_TOLERANCE)
 
-  val gintakeSimulation: IntakeSimulation?
-    get() = io.intakeSimulation
 
   override fun onLoop() {
     io.updateInputs(inputs)
@@ -57,8 +57,6 @@ class Intake(private val io: IntakeIO) : ControlledByStateMachine() {
     CustomLogger.recordOutput("Intake/isAtTargetedPosition", isAtTargetedPosition)
 
     if (RobotBase.isSimulation()) {
-      CustomLogger.recordOutput(
-          "Intake/intakeSimulationGamePieceNumber", gintakeSimulation!!.gamePiecesAmount)
     }
 
     when (currentState) {
@@ -71,10 +69,6 @@ class Intake(private val io: IntakeIO) : ControlledByStateMachine() {
       }
       IntakeState.OPEN_LOOP -> {
         io.setVoltage(pivotVoltageTarget)
-
-        if (pivotVoltageTarget < 0.volts) io.intakeSimulation?.startIntake()
-        else io.intakeSimulation?.stopIntake()
-
         nextState = fromRequestToState(currentRequest)
       }
       IntakeState.TARGETING_POSITION -> {

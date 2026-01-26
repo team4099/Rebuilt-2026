@@ -11,7 +11,7 @@ class IntakeRollers(private val io: IntakeRollersIO) : ControlledByStateMachine(
 
   val inputs = IntakeRollersIO.RollerInputs()
 
-  var currentState = rollerStates.UNINITIALIZED
+  var currentState = RollerStates.UNINITIALIZED
 
   var targetVoltage: ElectricalPotential = 0.volts
     private set
@@ -33,10 +33,10 @@ class IntakeRollers(private val io: IntakeRollersIO) : ControlledByStateMachine(
 
     var nextState = currentState
     when (currentState) {
-      rollerStates.UNINITIALIZED -> {
+      RollerStates.UNINITIALIZED -> {
         nextState = fromRequestToState(currentRequest)
       }
-      rollerStates.OPEN_LOOP -> {
+      RollerStates.OPEN_LOOP -> {
         io.setVoltage(targetVoltage)
         nextState = fromRequestToState(currentRequest)
       }
@@ -45,14 +45,14 @@ class IntakeRollers(private val io: IntakeRollersIO) : ControlledByStateMachine(
   }
 
   companion object {
-    enum class rollerStates {
+    enum class RollerStates {
       OPEN_LOOP,
       UNINITIALIZED
     }
 
-    fun fromRequestToState(request: Request.RollersRequest): rollerStates {
+    fun fromRequestToState(request: Request.RollersRequest): RollerStates {
       return when (request) {
-        is Request.RollersRequest.OpenLoop -> rollerStates.OPEN_LOOP
+        is Request.RollersRequest.OpenLoop -> RollerStates.OPEN_LOOP
       }
     }
   }

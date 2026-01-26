@@ -18,9 +18,8 @@ import org.team4099.lib.units.perSecond
 interface IntakeRollersIO {
   class RollerInputs : LoggableInputs {
     var rollerVelocity = 0.rotations.perMinute
-    var rollerAcceleration = 0.rotations.perMinute.perSecond
+    var rollerAcceleration = 0.rotations.perMinute.perMinute
     var rollerAppliedVoltage = 0.volts
-    var rollerDutyCycle = 0.volts
     var rollerStatorCurrent = 0.amps
     var rollerSupplyCurrent = 0.amps
     var rollerTemperature = 0.celsius
@@ -32,7 +31,6 @@ interface IntakeRollersIO {
       table?.put("rollerStatorCurrentAmps", rollerStatorCurrent.inAmperes)
       table?.put("rollerSupplyCurrentAmps", rollerSupplyCurrent.inAmperes)
       table?.put("rollerAccelerationRPMPM", rollerAcceleration.inRotationsPerMinutePerMinute)
-      table?.put("rollerDutyCycle", rollerDutyCycle.inVolts)
     }
 
     override fun fromLog(table: LogTable?) {
@@ -54,11 +52,11 @@ interface IntakeRollersIO {
       table?.get("rollerAccelerationRPMPM", rollerAcceleration.inRotationsPerMinutePerMinute)?.let {
         rollerAcceleration = it.rotations.perMinute.perMinute
       }
-      table?.get("rollerDutyCycle", rollerDutyCycle.inVolts)?.let { rollerDutyCycle = it.volts }
     }
   }
 
-  fun updateInputs(inputs: RollerInputs) {}
+    fun updateInputs(inputs: RollerInputs) {}
 
-  fun setVoltage(voltage: ElectricalPotential) {}
+    fun setVoltage(voltage: ElectricalPotential) {}
+
 }

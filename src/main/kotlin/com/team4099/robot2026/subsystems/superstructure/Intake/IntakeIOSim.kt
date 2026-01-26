@@ -52,15 +52,6 @@ class IntakeIOSim(drivetrainSimulation: AbstractDriveTrainSimulation) : IntakeIO
 
   private var pivotAppliedVoltage = 0.0.volts
 
-  override val intakeSimulation =
-      IntakeSimulation.OverTheBumperIntake(
-          "Fuel",
-          drivetrainSimulation,
-          Meters.of(DrivetrainConstants.DRIVETRAIN_WIDTH.inMeters),
-          Meters.of(IntakeConstants.LENGTH_EXTENDED.inMeters),
-          IntakeSimulation.IntakeSide.FRONT,
-          1)
-
   init {
     armSim.setState(0.0, 0.0)
   }

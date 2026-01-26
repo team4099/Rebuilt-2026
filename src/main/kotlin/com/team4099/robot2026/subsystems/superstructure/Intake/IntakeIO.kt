@@ -27,7 +27,6 @@ import org.team4099.lib.units.inRotationsPerMinute
 import org.team4099.lib.units.perMinute
 
 interface IntakeIO {
-  val intakeSimulation: IntakeSimulation?
 
   class IntakeIOInputs : LoggableInputs {
     var position = 0.radians
