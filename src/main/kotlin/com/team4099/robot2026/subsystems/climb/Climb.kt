@@ -19,8 +19,6 @@ class Climb(val io: ClimbIO) : ControlledByStateMachine() {
   val lowerLimitReached: Boolean
     get() = inputs.climbPosition <= ClimbConstants.DOWNWARDS_EXTENSION_LIMIT
 
-  var isHomed = false
-
   var currentState: ClimbState = ClimbState.UNINITIALIZED
   var currentRequest: ClimbRequest = ClimbRequest.OpenLoop(0.0.volts)
     set(value) {

@@ -54,8 +54,8 @@ object ClimbIOSim : ClimbIO {
     inputs.climbPosition = climbSim.positionMeters.meters
 
     inputs.temperature = 0.0.celsius
-    inputs.statorCurrent = 0.0.amps
-    inputs.supplyCurrent = climbSim.currentDrawAmps.amps
+    inputs.statorCurrent = climbSim.currentDrawAmps.amps
+    inputs.supplyCurrent = 0.0.amps
     inputs.appliedVoltage = lastAppliedVoltage
 
     inputs.isSimulating = true

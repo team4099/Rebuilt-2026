@@ -53,14 +53,10 @@ object ClimbIOTalon : ClimbIO {
   private var statorCurrentSignal: StatusSignal<WPILibCurrent>
   private var supplyCurrentSignal: StatusSignal<WPILibCurrent>
   private var tempSignal: StatusSignal<WPILibTemperature>
-  private var dutyCycle: StatusSignal<Double>
   private var positionSignal: StatusSignal<edu.wpi.first.units.measure.Angle>
   private var velocitySignal: StatusSignal<AngularVelocity>
 
   private var motorVoltage: StatusSignal<WPILibVoltage>
-
-  private var motionMagicTargetVelocity: StatusSignal<Double>
-  private var motionMagicTargetPosition: StatusSignal<Double>
 
   init {
     talon.clearStickyFaults()
@@ -80,15 +76,9 @@ object ClimbIOTalon : ClimbIO {
     statorCurrentSignal = talon.statorCurrent
     supplyCurrentSignal = talon.supplyCurrent
     tempSignal = talon.deviceTemp
-    dutyCycle = talon.dutyCycle
 
     motorVoltage = talon.motorVoltage
 
-    motionMagicTargetPosition = talon.closedLoopReference
-    motionMagicTargetVelocity = talon.closedLoopReferenceSlope
-
-    motionMagicTargetPosition.setUpdateFrequency(250.0)
-    motionMagicTargetVelocity.setUpdateFrequency(250.0)
 
     talon.configurator.apply(configs)
   }
@@ -99,11 +89,8 @@ object ClimbIOTalon : ClimbIO {
         positionSignal,
         velocitySignal,
         tempSignal,
-        dutyCycle,
         statorCurrentSignal,
-        supplyCurrentSignal,
-        motionMagicTargetPosition,
-        motionMagicTargetVelocity)
+        supplyCurrentSignal)
   }
 
   override fun updateInputs(inputs: ClimbIO.ClimbInputs) {
@@ -114,7 +101,7 @@ object ClimbIOTalon : ClimbIO {
     inputs.temperature = tempSignal.valueAsDouble.celsius
     inputs.supplyCurrent = supplyCurrentSignal.valueAsDouble.amps
     inputs.statorCurrent = statorCurrentSignal.valueAsDouble.amps
-    inputs.appliedVoltage = (dutyCycle.valueAsDouble * 12).volts
+    inputs.appliedVoltage = motorVoltage.valueAsDouble.volts
   }
 
   override fun configPID(
