@@ -92,4 +92,6 @@ object ClimbIOSim : ClimbIO {
   ) {
     climbPIDController.setPID(kP, kI, kD)
   }
+
+  override fun configFF(kS: ElectricalPotential, kG: ElectricalPotential) {}
 }

@@ -2,15 +2,15 @@ package com.team4099.robot2026.subsystems.climb
 
 import com.team4099.robot2026.config.constants.ClimbConstants
 import com.team4099.robot2026.subsystems.superstructure.Request.ClimbRequest as ClimbRequest
+import com.team4099.robot2026.util.ControlledByStateMachine
 import com.team4099.robot2026.util.CustomLogger
 import edu.wpi.first.wpilibj.RobotBase
-import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.team4099.lib.units.base.inInches
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.volts
 
-class Climb(val io: ClimbIO) : SubsystemBase() {
+class Climb(val io: ClimbIO) : ControlledByStateMachine() {
   val inputs = ClimbIO.ClimbInputs()
 
   val upperLimitReached: Boolean
@@ -61,7 +61,7 @@ class Climb(val io: ClimbIO) : SubsystemBase() {
     // Removed FF because a telescoping climber shouldn't need FF and can suffice with pure PID
   }
 
-  override fun periodic() {
+  override fun onLoop() {
     io.updateInputs(inputs)
 
     if (ClimbTunableValues.kP.hasChanged() ||

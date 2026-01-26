@@ -57,4 +57,6 @@ interface ClimbIO {
       kI: IntegralGain<Meter, Volt>,
       kD: DerivativeGain<Meter, Volt>
   ) {}
+
+  fun configFF(kS: ElectricalPotential, kG: ElectricalPotential) {}
 }

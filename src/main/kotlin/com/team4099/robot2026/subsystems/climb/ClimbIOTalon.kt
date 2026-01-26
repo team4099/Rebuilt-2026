@@ -15,13 +15,11 @@ import edu.wpi.first.units.measure.Current as WPILibCurrent
 import edu.wpi.first.units.measure.Temperature as WPILibTemperature
 import edu.wpi.first.units.measure.Voltage as WPILibVoltage
 import kotlin.time.times
-import org.littletonrobotics.junction.Logger
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.inAmperes
-import org.team4099.lib.units.base.inInches
 import org.team4099.lib.units.ctreLinearMechanismSensor
 import org.team4099.lib.units.derived.DerivativeGain
 import org.team4099.lib.units.derived.ElectricalPotential
@@ -60,7 +58,6 @@ object ClimbIOTalon : ClimbIO {
   private var velocitySignal: StatusSignal<AngularVelocity>
 
   private var motorVoltage: StatusSignal<WPILibVoltage>
-  private var motorTorque: StatusSignal<WPILibCurrent>
 
   private var motionMagicTargetVelocity: StatusSignal<Double>
   private var motionMagicTargetPosition: StatusSignal<Double>
@@ -86,7 +83,6 @@ object ClimbIOTalon : ClimbIO {
     dutyCycle = talon.dutyCycle
 
     motorVoltage = talon.motorVoltage
-    motorTorque = talon.torqueCurrent
 
     motionMagicTargetPosition = talon.closedLoopReference
     motionMagicTargetVelocity = talon.closedLoopReferenceSlope
@@ -99,7 +95,6 @@ object ClimbIOTalon : ClimbIO {
 
   private fun updateSignals() {
     BaseStatusSignal.refreshAll(
-        motorTorque,
         motorVoltage,
         positionSignal,
         velocitySignal,
@@ -120,17 +115,6 @@ object ClimbIOTalon : ClimbIO {
     inputs.supplyCurrent = supplyCurrentSignal.valueAsDouble.amps
     inputs.statorCurrent = statorCurrentSignal.valueAsDouble.amps
     inputs.appliedVoltage = (dutyCycle.valueAsDouble * 12).volts
-
-    Logger.recordOutput(
-        "Climb/motionMagicPosition",
-        motionMagicTargetPosition.value *
-            ClimbConstants.GEAR_RATIO *
-            (Math.PI * ClimbConstants.DRUM_DIAMETER.inInches))
-    Logger.recordOutput(
-        "Climb/motionMagicVelocity",
-        motionMagicTargetVelocity.value *
-            ClimbConstants.GEAR_RATIO *
-            (Math.PI * ClimbConstants.DRUM_DIAMETER.inInches))
   }
 
   override fun configPID(
@@ -141,6 +125,13 @@ object ClimbIOTalon : ClimbIO {
     slot0Configs.kP = kP.inVoltsPerInch
     slot0Configs.kI = kI.inVoltsPerInchSeconds
     slot0Configs.kD = kD.inVoltsPerInchPerSecond
+
+    talon.configurator.apply(slot0Configs)
+  }
+
+  override fun configFF(kS: ElectricalPotential, kG: ElectricalPotential) {
+    slot0Configs.kS = kS.inVolts
+    slot0Configs.kG = kG.inVolts
 
     talon.configurator.apply(slot0Configs)
   }
