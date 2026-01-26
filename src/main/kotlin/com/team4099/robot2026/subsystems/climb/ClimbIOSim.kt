@@ -36,8 +36,7 @@ object ClimbIOSim : ClimbIO {
           ClimbConstants.DOWNWARDS_EXTENSION_LIMIT.inMeters,
           ClimbConstants.UPWARDS_EXTENSION_LIMIT.inMeters,
           false,
-          0.0
-      )
+          0.0)
 
   private var lastAppliedVoltage = 0.0.volts
 

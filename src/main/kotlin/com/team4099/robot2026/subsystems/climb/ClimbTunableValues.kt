@@ -19,10 +19,6 @@ object ClimbTunableValues {
   val kD =
       LoggedTunableValue(
           "Climb/kI", Pair({ it.inVoltsPerInchPerSecond }, { it.volts / 1.0.inches.perSecond }))
-  val kS =
-    LoggedTunableValue(
-      "Climb/kS", Pair({ it.inVolts }, { it.volts }))
-  val kG =
-    LoggedTunableValue(
-      "Climb/kG", Pair({ it.inVolts }, { it.volts }))
+  val kS = LoggedTunableValue("Climb/kS", Pair({ it.inVolts }, { it.volts }))
+  val kG = LoggedTunableValue("Climb/kG", Pair({ it.inVolts }, { it.volts }))
 }

@@ -32,7 +32,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue
 import com.ctre.phoenix6.signals.SensorDirectionValue
 import com.ctre.phoenix6.swerve.SwerveModuleConstants
 import com.team4099.lib.phoenix6.PhoenixUtil.tryUntilOk
-import com.team4099.robot2026.subsystems.drivetrain.generated.TunerConstants
+import com.team4099.robot2026.config.constants.DrivetrainConstants
 import edu.wpi.first.math.filter.Debouncer
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.util.Units
@@ -86,9 +86,9 @@ abstract class ModuleIOTalonFX(
   private val turnEncoderConnectedDebounce: Debouncer = Debouncer(0.5)
 
   init {
-    driveTalon = TalonFX(constants.DriveMotorId, TunerConstants.kCANBus)
-    turnTalon = TalonFX(constants.SteerMotorId, TunerConstants.kCANBus)
-    cancoder = CANcoder(constants.EncoderId, TunerConstants.kCANBus)
+    driveTalon = TalonFX(constants.DriveMotorId, DrivetrainConstants.TunerConstants.kCANBus)
+    turnTalon = TalonFX(constants.SteerMotorId, DrivetrainConstants.TunerConstants.kCANBus)
+    cancoder = CANcoder(constants.EncoderId, DrivetrainConstants.TunerConstants.kCANBus)
 
     // Configure drive motor
     val driveConfig = constants.DriveMotorInitialConfigs!!

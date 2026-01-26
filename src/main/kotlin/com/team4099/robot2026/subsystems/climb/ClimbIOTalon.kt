@@ -79,7 +79,6 @@ object ClimbIOTalon : ClimbIO {
 
     motorVoltage = talon.motorVoltage
 
-
     talon.configurator.apply(configs)
   }
 
