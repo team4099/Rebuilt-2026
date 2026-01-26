@@ -49,16 +49,20 @@ class Climb(val io: ClimbIO) : ControlledByStateMachine() {
       ClimbTunableValues.kP.initDefault(ClimbConstants.PID.REAL_KP)
       ClimbTunableValues.kI.initDefault(ClimbConstants.PID.REAL_KI)
       ClimbTunableValues.kD.initDefault(ClimbConstants.PID.REAL_KD)
+      ClimbTunableValues.kS.initDefault(ClimbConstants.PID.REAL_KS)
+      ClimbTunableValues.kS.initDefault(ClimbConstants.PID.REAL_KG)
     } else {
       ClimbTunableValues.kP.initDefault(ClimbConstants.PID.SIM_KP)
       ClimbTunableValues.kI.initDefault(ClimbConstants.PID.SIM_KI)
       ClimbTunableValues.kD.initDefault(ClimbConstants.PID.SIM_KD)
+      ClimbTunableValues.kS.initDefault(ClimbConstants.PID.SIM_KS)
+      ClimbTunableValues.kS.initDefault(ClimbConstants.PID.SIM_KG)
     }
 
     io.configPID(
         ClimbTunableValues.kP.get(), ClimbTunableValues.kI.get(), ClimbTunableValues.kD.get())
 
-    // Removed FF because a telescoping climber shouldn't need FF and can suffice with pure PID
+    io.configFF(ClimbTunableValues.kS.get(), ClimbTunableValues.kG.get())
   }
 
   override fun onLoop() {

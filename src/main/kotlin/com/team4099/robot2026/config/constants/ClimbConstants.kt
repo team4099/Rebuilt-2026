@@ -9,15 +9,13 @@ import org.team4099.lib.units.perSecond
 
 object ClimbConstants {
   val DOWNWARDS_EXTENSION_LIMIT = 0.0.inches
-  val UPWARDS_EXTENSION_LIMIT = 8.inches // not exact, change later after mounting the climber on
+  val UPWARDS_EXTENSION_LIMIT = 8.inches // TODO: might need to tune height
   val CLIMB_MASS = 5.5444326.pounds
 
   val CLIMB_TOLERANCE = 0.5.inches
 
   val GEAR_RATIO = 30 / 1.0 // TODO: change as needed depending on our use case/need for torque
-  val DRUM_DIAMETER =
-      1.inches // TODO: figure out diameter of the drum that we wind the spool around for climb,
-  // or the code won't work
+  val DRUM_DIAMETER = 1.inches
   val VOLTAGE_COMPENSATION = 12.volts
 
   val SUPPLY_CURRENT_LIMIT = 40.amps
