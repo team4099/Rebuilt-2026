@@ -93,7 +93,7 @@ object ShooterIOTalon : ShooterIO {
                 leaderTalon.setControl(voltReq.withOutput(volts!!.`in`(Volts)))
               },
               null,
-              object : SubsystemBase() {}))
+              object : SubsystemBase("Shooter") {}))
 
   init {
     leaderTalon.clearStickyFaults()
