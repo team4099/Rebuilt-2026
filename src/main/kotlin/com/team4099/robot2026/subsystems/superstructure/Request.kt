@@ -7,6 +7,12 @@ import org.team4099.lib.units.derived.ElectricalPotential
 sealed interface Request {
   sealed interface SuperstructureRequest : Request
 
+  sealed interface FeederRequest : Request {
+    class Idle : FeederRequest
+
+    class OpenLoop(val voltage: ElectricalPotential) : FeederRequest
+  }
+
   sealed interface RollersRequest : Request {
     class OpenLoop(val voltage: ElectricalPotential) : RollersRequest
   }
