@@ -25,7 +25,6 @@ interface ClimbIO {
     var temperature = 0.0.celsius
     var supplyCurrent = 0.0.amps
     var statorCurrent = 0.0.amps
-    var isSimulating = false
 
     override fun toLog(table: LogTable?) {
       table?.put("climbPositionInches", climbPosition.inInches)
