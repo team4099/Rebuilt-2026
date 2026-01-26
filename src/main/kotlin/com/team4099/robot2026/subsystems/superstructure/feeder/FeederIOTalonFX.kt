@@ -9,20 +9,17 @@ import com.ctre.phoenix6.signals.NeutralModeValue
 import com.team4099.robot2025.subsystems.Feeders.FeederIO
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.FeederConstants
-import org.team4099.lib.units.base.amps
-import org.team4099.lib.units.base.celsius
-import org.team4099.lib.units.ctreAngularMechanismSensor
-import org.team4099.lib.units.derived.ElectricalPotential
-import org.team4099.lib.units.derived.volts
+import edu.wpi.first.units.measure.Angle as WPILibAngle
 import edu.wpi.first.units.measure.AngularAcceleration as WPILibAngularAcceleration
 import edu.wpi.first.units.measure.AngularVelocity as WPILibAngularVelocity
 import edu.wpi.first.units.measure.Current as WPILibCurrent
 import edu.wpi.first.units.measure.Temperature as WPILibTemperature
 import edu.wpi.first.units.measure.Voltage as WPILibVoltage
-import edu.wpi.first.units.measure.Angle as WPILibAngle
-
-import org.team4099.lib.units.inRotationsPerMinute
-import org.team4099.lib.units.inRotationsPerMinutePerMinute
+import org.team4099.lib.units.base.amps
+import org.team4099.lib.units.base.celsius
+import org.team4099.lib.units.ctreAngularMechanismSensor
+import org.team4099.lib.units.derived.ElectricalPotential
+import org.team4099.lib.units.derived.volts
 
 object FeederIOTalonFX : FeederIO {
 
@@ -30,8 +27,8 @@ object FeederIOTalonFX : FeederIO {
   private val feederConfiguration: TalonFXConfiguration = TalonFXConfiguration()
 
   private val feederSensor =
-    ctreAngularMechanismSensor(
-      feederTalon, FeederConstants.GEAR_RATIO, FeederConstants.VOLTAGE_COMPENSATION)
+      ctreAngularMechanismSensor(
+          feederTalon, FeederConstants.GEAR_RATIO, FeederConstants.VOLTAGE_COMPENSATION)
 
   var feederAppliedVoltageStatusSignal: StatusSignal<WPILibVoltage>
   var feederStatorCurrentStatusSignal: StatusSignal<WPILibCurrent>
@@ -48,9 +45,9 @@ object FeederIOTalonFX : FeederIO {
 
     // configurations
     feederConfiguration.CurrentLimits.StatorCurrentLimit =
-      FeederConstants.STATOR_CURRENT_LIMIT.inAmperes
+        FeederConstants.STATOR_CURRENT_LIMIT.inAmperes
     feederConfiguration.CurrentLimits.SupplyCurrentLimit =
-      FeederConstants.SUPPLY_CURRENT_LIMIT.inAmperes
+        FeederConstants.SUPPLY_CURRENT_LIMIT.inAmperes
     feederConfiguration.CurrentLimits.StatorCurrentLimitEnable = true
     feederConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true
     feederConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Coast
@@ -69,13 +66,13 @@ object FeederIOTalonFX : FeederIO {
 
   private fun refreshStatusSignals() {
     BaseStatusSignal.refreshAll(
-      feederPositionStatusSignal,
-      feederAppliedVoltageStatusSignal,
-      feederStatorCurrentStatusSignal,
-      feederSupplyCurrentStatusSignal,
-      feederTempStatusSignal,
-      feederVelocityStatusSignal,
-      feederAccelerationStatusSignal)
+        feederPositionStatusSignal,
+        feederAppliedVoltageStatusSignal,
+        feederStatorCurrentStatusSignal,
+        feederSupplyCurrentStatusSignal,
+        feederTempStatusSignal,
+        feederVelocityStatusSignal,
+        feederAccelerationStatusSignal)
   }
 
   override fun updateInputs(inputs: FeederIO.FeederIOInputs) {
@@ -86,7 +83,11 @@ object FeederIOTalonFX : FeederIO {
     inputs.feederSupplyCurrent = feederSupplyCurrentStatusSignal.valueAsDouble.amps
     inputs.feederTemp = feederTempStatusSignal.valueAsDouble.celsius
     inputs.feederVelocity = feederSensor.velocity
-    inputs.feederAcceleration = (feederAccelerationStatusSignal.valueAsDouble / FeederConstants.GEAR_RATIO).rotations.perMinute.perMinute
+    inputs.feederAcceleration =
+        (feederAccelerationStatusSignal.valueAsDouble / FeederConstants.GEAR_RATIO)
+            .rotations
+            .perMinute
+            .perMinute
   }
 
   override fun setVoltage(voltage: ElectricalPotential) {

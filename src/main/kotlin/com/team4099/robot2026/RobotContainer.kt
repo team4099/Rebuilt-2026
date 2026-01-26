@@ -21,6 +21,7 @@ import com.team4099.robot2026.util.driver.Jessika
 import edu.wpi.first.wpilibj.RobotBase
 import org.ironmaple.simulation.SimulatedArena
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation
+import org.ironmaple.simulation.seasonspecific.rebuilt2026.Arena2026Rebuilt
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Pose3d
@@ -37,6 +38,8 @@ object RobotContainer {
   var driveSimulation: SwerveDriveSimulation? = null
 
   init {
+    SimulatedArena.overrideInstance(Arena2026Rebuilt(false))
+
     if (Constants.Universal.DISABLE_COLLISIONS)
         SimulatedArena.overrideInstance(FieldConstants.EMPTY_MAPLESIM_FIELD)
 
