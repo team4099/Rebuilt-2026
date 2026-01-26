@@ -1,22 +1,31 @@
 package com.team4099.robot2026.subsystems.superstructure.shooter
 
 import com.ctre.phoenix6.BaseStatusSignal
+import com.ctre.phoenix6.SignalLogger
 import com.ctre.phoenix6.StatusSignal
 import com.ctre.phoenix6.configs.SlotConfigs
 import com.ctre.phoenix6.configs.TalonFXConfiguration
 import com.ctre.phoenix6.controls.Follower
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage
+import com.ctre.phoenix6.controls.VoltageOut
 import com.ctre.phoenix6.hardware.TalonFX
 import com.ctre.phoenix6.signals.MotorAlignmentValue
 import com.ctre.phoenix6.signals.NeutralModeValue
 import com.team4099.lib.math.clamp
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.ShooterConstants
+import edu.wpi.first.units.Units.Volts
 import edu.wpi.first.units.measure.AngularAcceleration as WPILibAngularAcceleration
 import edu.wpi.first.units.measure.AngularVelocity as WPILibAngularVelocity
 import edu.wpi.first.units.measure.Current as WPILibCurrent
 import edu.wpi.first.units.measure.Temperature as WPILibTemperature
 import edu.wpi.first.units.measure.Voltage as WPILibVoltage
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog
+import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.SubsystemBase
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Mechanism
+import java.util.function.Consumer
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.Fraction
 import org.team4099.lib.units.base.Second
@@ -46,6 +55,7 @@ object ShooterIOTalon : ShooterIO {
   private val leaderTalon: TalonFX = TalonFX(Constants.Shooter.LEADER_MOTOR_ID)
   private val followerTalon: TalonFX = TalonFX(Constants.Shooter.FOLLOWER_MOTOR_ID)
   private val motionMagicControl: MotionMagicVelocityVoltage = MotionMagicVelocityVoltage(-1337.0)
+  private val voltReq = VoltageOut(0.0)
   private val configs: TalonFXConfiguration = TalonFXConfiguration()
   private val leaderSensor =
       ctreAngularMechanismSensor(
@@ -67,6 +77,23 @@ object ShooterIOTalon : ShooterIO {
   private var followerVoltageSignal: StatusSignal<WPILibVoltage>
   private var followerAccelSignal: StatusSignal<WPILibAngularAcceleration>
   private var followerVelocitySignal: StatusSignal<WPILibAngularVelocity>
+
+  private val m_sysIdRoutine =
+      SysIdRoutine(
+          SysIdRoutine.Config(
+              null, // Use default ramp rate (1 V/s)
+              Volts.of(4.0), // Reduce dynamic step voltage to 4 to prevent brownout
+              null, // Use default timeout (10 s)
+              // Log state with Phoenix SignalLogger class
+              Consumer { state: SysIdRoutineLog.State? ->
+                SignalLogger.writeString("state", state.toString())
+              }),
+          Mechanism(
+              Consumer { volts: WPILibVoltage? ->
+                leaderTalon.setControl(voltReq.withOutput(volts!!.`in`(Volts)))
+              },
+              null,
+              object : SubsystemBase("Shooter") {}))
 
   init {
     leaderTalon.clearStickyFaults()
@@ -185,5 +212,13 @@ object ShooterIOTalon : ShooterIO {
     leaderTalon.setControl(
         motionMagicControl.withVelocity(leaderSensor.velocityToRawUnits(velocity)),
     )
+  }
+
+  fun sysIdQuasistatic(direction: SysIdRoutine.Direction?): Command? {
+    return m_sysIdRoutine.quasistatic(direction)
+  }
+
+  fun sysIdDynamic(direction: SysIdRoutine.Direction?): Command? {
+    return m_sysIdRoutine.dynamic(direction)
   }
 }
