@@ -35,8 +35,9 @@ object ClimbIOSim : ClimbIO {
           ClimbConstants.DRUM_DIAMETER.inMeters / 2.0,
           ClimbConstants.DOWNWARDS_EXTENSION_LIMIT.inMeters,
           ClimbConstants.UPWARDS_EXTENSION_LIMIT.inMeters,
-          true,
-          0.0)
+          false,
+          0.0
+      )
 
   private var lastAppliedVoltage = 0.0.volts
 
@@ -57,8 +58,6 @@ object ClimbIOSim : ClimbIO {
     inputs.statorCurrent = climbSim.currentDrawAmps.amps
     inputs.supplyCurrent = 0.0.amps
     inputs.appliedVoltage = lastAppliedVoltage
-
-    inputs.isSimulating = true
 
     RoboRioSim.setVInVoltage(
         BatterySim.calculateDefaultBatteryLoadedVoltage(climbSim.currentDrawAmps))
@@ -82,7 +81,7 @@ object ClimbIOSim : ClimbIO {
   }
 
   override fun zeroEncoder() {
-    // optional: climbSim.setState(0.0, 0.0)
+    climbSim.setState(0.0, 0.0)
   }
 
   override fun configPID(
