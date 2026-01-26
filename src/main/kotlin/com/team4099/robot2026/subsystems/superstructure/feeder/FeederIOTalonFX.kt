@@ -17,13 +17,17 @@ import edu.wpi.first.units.measure.Temperature as WPILibTemperature
 import edu.wpi.first.units.measure.Voltage as WPILibVoltage
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
+import org.team4099.lib.units.base.inAmperes
 import org.team4099.lib.units.ctreAngularMechanismSensor
 import org.team4099.lib.units.derived.ElectricalPotential
+import org.team4099.lib.units.derived.inVolts
+import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
+import org.team4099.lib.units.perMinute
 
 object FeederIOTalonFX : FeederIO {
 
-  private val feederTalon: TalonFX = TalonFX(Constants.feeder.FEEDER_MOTOR_ID)
+  private val feederTalon: TalonFX = TalonFX(Constants.Feeder.FEEDER_MOTOR_ID)
   private val feederConfiguration: TalonFXConfiguration = TalonFXConfiguration()
 
   private val feederSensor =
