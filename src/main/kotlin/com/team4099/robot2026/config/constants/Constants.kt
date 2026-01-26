@@ -1,5 +1,7 @@
 package com.team4099.robot2026.config.constants
 
+import com.team4099.robot2026.util.ArgParser.argToBool
+import com.team4099.robot2026.util.ArgParser.argToEnum
 import org.team4099.lib.units.base.grams
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.pounds
@@ -30,10 +32,18 @@ object Constants {
 
     val ROBOT_WEIGHT = 135.pounds
     val ROBOT_MOI = 6.76.kilo.grams.meterSquared
+
+    val whoami = argToEnum<WHOAMI>(System.getProperty("robot"))
+  }
+
+  enum class WHOAMI {
+    COMPBOT,
+    ALPHABOT,
+    TESTBOT
   }
 
   object Tuning {
-    const val TUNING_MODE = false
+    val TUNING_MODE = argToBool(System.getProperty("tuning"))
     const val DEBUGING_MODE = false
 
     enum class SimType {
