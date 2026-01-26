@@ -5,7 +5,6 @@ import com.team4099.robot2026.subsystems.superstructure.Request
 import com.team4099.robot2026.util.ControlledByStateMachine
 import com.team4099.robot2026.util.CustomLogger
 import edu.wpi.first.wpilibj.RobotBase
-import org.ironmaple.simulation.IntakeSimulation
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.degrees
@@ -17,10 +16,10 @@ class Intake(private val io: IntakeIO) : ControlledByStateMachine() {
   val inputs = IntakeIO.IntakeIOInputs()
 
   var pivotPositionTarget: Angle = 0.0.degrees
-  private set
+    private set
 
   var pivotVoltageTarget: ElectricalPotential = 0.0.volts
-  private set
+    private set
 
   var currentState: IntakeState = IntakeState.UNINITIALIZED
 
@@ -44,7 +43,6 @@ class Intake(private val io: IntakeIO) : ControlledByStateMachine() {
             (inputs.position - pivotPositionTarget).absoluteValue <=
                 IntakeConstants.INTAKE_TOLERANCE)
 
-
   override fun onLoop() {
     io.updateInputs(inputs)
     CustomLogger.processInputs("Intake", inputs)
@@ -56,8 +54,7 @@ class Intake(private val io: IntakeIO) : ControlledByStateMachine() {
 
     CustomLogger.recordOutput("Intake/isAtTargetedPosition", isAtTargetedPosition)
 
-    if (RobotBase.isSimulation()) {
-    }
+    if (RobotBase.isSimulation()) {}
 
     when (currentState) {
       IntakeState.UNINITIALIZED -> {

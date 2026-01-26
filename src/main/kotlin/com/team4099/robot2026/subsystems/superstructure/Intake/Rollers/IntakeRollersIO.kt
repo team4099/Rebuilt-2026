@@ -13,7 +13,6 @@ import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inRotationsPerMinute
 import org.team4099.lib.units.inRotationsPerMinutePerMinute
 import org.team4099.lib.units.perMinute
-import org.team4099.lib.units.perSecond
 
 interface IntakeRollersIO {
   class RollerInputs : LoggableInputs {
@@ -55,8 +54,7 @@ interface IntakeRollersIO {
     }
   }
 
-    fun updateInputs(inputs: RollerInputs) {}
+  fun updateInputs(inputs: RollerInputs) {}
 
-    fun setVoltage(voltage: ElectricalPotential) {}
-
+  fun setVoltage(voltage: ElectricalPotential) {}
 }

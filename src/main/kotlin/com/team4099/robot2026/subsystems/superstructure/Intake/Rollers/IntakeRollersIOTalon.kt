@@ -20,7 +20,6 @@ import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.inAmperes
 import org.team4099.lib.units.ctreAngularMechanismSensor
 import org.team4099.lib.units.derived.ElectricalPotential
-import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
@@ -71,18 +70,13 @@ object IntakeRollersIOTalon : IntakeRollersIO {
     inputs.rollerStatorCurrent = statorCurrent.valueAsDouble.amps
     inputs.rollerSupplyCurrent = supplyCurrent.valueAsDouble.amps
     inputs.rollerTemperature = tempSignal.valueAsDouble.celsius
-    inputs.rollerAcceleration = motorAccel.valueAsDouble.rotations.perSecond.perSecond * RollersConstants.GEAR_RATIO
+    inputs.rollerAcceleration =
+        motorAccel.valueAsDouble.rotations.perSecond.perSecond * RollersConstants.GEAR_RATIO
   }
 
   fun refreshStatusSignals() {
     BaseStatusSignal.refreshAll(
-        supplyCurrent,
-        statorCurrent,
-        motorVoltage,
-        motorAccel,
-        tempSignal,
-        motorVelo
-      )
+        supplyCurrent, statorCurrent, motorVoltage, motorAccel, tempSignal, motorVelo)
   }
 
   override fun setVoltage(voltage: ElectricalPotential) {

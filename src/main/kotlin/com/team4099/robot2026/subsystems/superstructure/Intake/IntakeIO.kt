@@ -1,6 +1,5 @@
 package com.team4099.robot2026.subsystems.superstructure.Intake
 
-import org.ironmaple.simulation.IntakeSimulation
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
 import org.team4099.lib.units.base.amps
