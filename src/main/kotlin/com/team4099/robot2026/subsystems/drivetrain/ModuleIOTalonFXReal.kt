@@ -15,7 +15,7 @@ package com.team4099.robot2026.subsystems.drivetrain
 import com.ctre.phoenix6.configs.CANcoderConfiguration
 import com.ctre.phoenix6.configs.TalonFXConfiguration
 import com.ctre.phoenix6.swerve.SwerveModuleConstants
-import com.team4099.robot2026.subsystems.drivetrain.generated.TunerConstants
+import com.team4099.robot2026.config.constants.DrivetrainConstants
 import java.util.Queue
 import org.team4099.lib.units.derived.rotations
 
@@ -53,10 +53,10 @@ class ModuleIOTalonFXReal(
   companion object {
     fun generateModules(): Array<ModuleIO> {
       return arrayOf(
-          ModuleIOTalonFXReal(TunerConstants.FrontLeft),
-          ModuleIOTalonFXReal(TunerConstants.FrontRight),
-          ModuleIOTalonFXReal(TunerConstants.BackLeft),
-          ModuleIOTalonFXReal(TunerConstants.BackRight))
+          ModuleIOTalonFXReal(DrivetrainConstants.TunerConstants.FrontLeft),
+          ModuleIOTalonFXReal(DrivetrainConstants.TunerConstants.FrontRight),
+          ModuleIOTalonFXReal(DrivetrainConstants.TunerConstants.BackLeft),
+          ModuleIOTalonFXReal(DrivetrainConstants.TunerConstants.BackRight))
     }
   }
 }
