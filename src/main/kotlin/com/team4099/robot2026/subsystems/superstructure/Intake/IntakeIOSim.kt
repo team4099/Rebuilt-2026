@@ -5,7 +5,6 @@ import com.team4099.robot2025.config.constants.IntakeConstants
 import com.team4099.robot2026.config.constants.Constants
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim
-import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation
 import org.team4099.lib.controller.ProfiledPIDController
 import org.team4099.lib.controller.TrapezoidProfile
 import org.team4099.lib.units.base.amps

@@ -1,7 +1,7 @@
 package com.team4099.robot2026.subsystems.superstructure
 
-import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.AngularVelocity
+import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.ElectricalPotential
 
 sealed interface Request {
@@ -17,6 +17,8 @@ sealed interface Request {
     class TargetingPosition(val pivotPosition: Angle) : IntakeRequest
 
     class ZeroPivot() : IntakeRequest
+  }
+
   sealed interface ShooterRequest : Request {
     class OpenLoop(val shooterVoltage: ElectricalPotential) : ShooterRequest
 

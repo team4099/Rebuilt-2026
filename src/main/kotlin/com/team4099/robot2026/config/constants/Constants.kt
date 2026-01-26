@@ -68,6 +68,8 @@ object Constants {
   object Intake {
     const val INTAKE_ROLLERS_MOTOR_ID = -1337
     const val INTAKE_PIVOT_MOTOR_ID = -1337
+  }
+
   object Shooter {
     const val LEADER_MOTOR_ID = 42
     const val FOLLOWER_MOTOR_ID = 43
