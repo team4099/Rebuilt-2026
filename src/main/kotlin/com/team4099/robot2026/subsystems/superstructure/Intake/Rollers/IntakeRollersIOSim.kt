@@ -15,6 +15,7 @@ import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perMinute
+import org.team4099.lib.units.perSecond
 
 object IntakeRollersIOSim : IntakeRollersIO {
   private val rollerSim: FlywheelSim =
@@ -31,6 +32,7 @@ object IntakeRollersIOSim : IntakeRollersIO {
   override fun updateInputs(inputs: IntakeRollersIO.RollerInputs) {
     rollerSim.update(Constants.Universal.LOOP_PERIOD_TIME.inSeconds)
     inputs.rollerVelocity = rollerSim.angularVelocityRPM.rotations.perMinute
+    inputs.rollerAcceleration = rollerSim.angularVelocityRPM.rotations.perSecond.perSecond
     inputs.rollerAppliedVoltage = appliedVoltage
     inputs.rollerStatorCurrent = rollerSim.currentDrawAmps.amps
     inputs.rollerSupplyCurrent = 0.amps
