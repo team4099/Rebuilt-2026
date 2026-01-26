@@ -20,8 +20,6 @@ class Intake(private val io: IntakeIO) : ControlledByStateMachine() {
 
   var pivotVoltageTarget: ElectricalPotential = 0.0.volts
 
-  var rollerVoltageTarget: ElectricalPotential = 0.0.volts
-
   var currentState: IntakeState = IntakeState.UNINITIALIZED
 
   var currentRequest: Request.IntakeRequest = Request.IntakeRequest.ZeroPivot()
@@ -55,7 +53,6 @@ class Intake(private val io: IntakeIO) : ControlledByStateMachine() {
     var nextState = currentState
     CustomLogger.recordOutput("Intake/pivotTargetPosition", pivotPositionTarget.inDegrees)
     CustomLogger.recordOutput("Intake/pivotTargetVoltage", pivotVoltageTarget.inVolts)
-    CustomLogger.recordOutput("Intake/rollerVoltageTarget", rollerVoltageTarget.inVolts)
 
     CustomLogger.recordOutput("Intake/isAtTargetedPosition", isAtTargetedPosition)
 

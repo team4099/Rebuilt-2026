@@ -2,7 +2,6 @@ package com.team4099.robot2025.config.constants
 
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.grams
-import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.meterSquared
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.kilo

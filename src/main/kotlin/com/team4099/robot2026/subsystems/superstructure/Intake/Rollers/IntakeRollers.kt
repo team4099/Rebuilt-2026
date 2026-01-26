@@ -14,6 +14,7 @@ class IntakeRollers(private val io: IntakeRollersIO) : ControlledByStateMachine(
   var currentState = rollerStates.UNINITIALIZED
 
   var targetVoltage: ElectricalPotential = 0.volts
+    private set
 
   var currentRequest: Request.RollersRequest = Request.RollersRequest.OpenLoop(0.0.volts)
     set(value) {
