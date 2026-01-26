@@ -33,7 +33,7 @@ object Constants {
     val ROBOT_MOI = 6.76.kilo.grams.meterSquared
   }
 
-  enum class RobotType {
+  enum class WHOAMI {
     COMPBOT,
     ALPHABOT,
     TESTBOT

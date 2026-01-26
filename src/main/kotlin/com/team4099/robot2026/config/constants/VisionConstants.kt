@@ -1,6 +1,6 @@
 package com.team4099.robot2026.config.constants
 
-import com.team4099.robot2026.config.constants.Constants.RobotType
+import com.team4099.robot2026.config.constants.Constants.WHOAMI
 import com.team4099.robot2026.util.ArgParser
 import edu.wpi.first.math.Matrix
 import edu.wpi.first.math.VecBuilder
@@ -27,8 +27,8 @@ object VisionConstants {
   val CONFIDENCE_THRESHOLD = 0.75
 
   val CAMERA_TRANSFORMS: List<Transform3d> =
-      when (ArgParser.robotType) {
-        RobotType.TESTBOT ->
+      when (ArgParser.whoami) {
+        WHOAMI.TESTBOT ->
             listOf(
                 Transform3d(
                     Translation3d(10.3.inches, 11.255.inches, 8.397.inches),
@@ -41,8 +41,8 @@ object VisionConstants {
       }
 
   val CAMERA_NAMES: List<String> =
-      when (ArgParser.robotType) {
-        RobotType.TESTBOT -> listOf("raven_1, raven_2")
+      when (ArgParser.whoami) {
+        WHOAMI.TESTBOT -> listOf("raven_1, raven_2")
         else -> listOf()
       }
 

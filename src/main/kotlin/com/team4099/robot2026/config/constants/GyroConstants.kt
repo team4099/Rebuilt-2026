@@ -5,15 +5,15 @@ import org.team4099.lib.units.derived.degrees
 
 object GyroConstants {
   val mountPitch =
-    when (ArgParser.robotType) {
-      else -> 180.0.degrees
-    }
+      when (ArgParser.whoami) {
+        else -> 180.0.degrees
+      }
   val mountRoll =
-    when (ArgParser.robotType) {
-      else -> 0.0.degrees
-    }
+      when (ArgParser.whoami) {
+        else -> 0.0.degrees
+      }
   val mountYaw =
-    when (ArgParser.robotType) {
-      else -> -90.0.degrees
-    }
+      when (ArgParser.whoami) {
+        else -> -90.0.degrees
+      }
 }

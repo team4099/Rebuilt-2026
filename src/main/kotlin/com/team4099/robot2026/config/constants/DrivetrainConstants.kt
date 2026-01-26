@@ -37,38 +37,38 @@ import org.team4099.lib.units.perSecond
 
 object DrivetrainConstants {
   val TunerConstants: TunerConstants =
-      when (ArgParser.robotType) {
-        Constants.RobotType.COMPBOT -> CompBotTunerConstants
-        Constants.RobotType.ALPHABOT -> AlphaBotTunerConstants
-        Constants.RobotType.TESTBOT -> TestBotTunerConstants
+      when (ArgParser.whoami) {
+        Constants.WHOAMI.COMPBOT -> CompBotTunerConstants
+        Constants.WHOAMI.ALPHABOT -> AlphaBotTunerConstants
+        Constants.WHOAMI.TESTBOT -> TestBotTunerConstants
       }
 
   const val TELEOP_TURNING_SPEED_PERCENT = 0.6
 
   val WHEEL_DIAMETER: Length
     get() {
-      return when (ArgParser.robotType) {
+      return when (ArgParser.whoami) {
         else -> (2 * 2).inches
       }
     }
 
   val DRIVETRAIN_LENGTH: Length
     get() {
-      return when (ArgParser.robotType) {
+      return when (ArgParser.whoami) {
         else -> 28.5.inches
       }
     }
 
   val DRIVETRAIN_WIDTH: Length
     get() {
-      return when (ArgParser.robotType) {
+      return when (ArgParser.whoami) {
         else -> 28.5.inches
       }
     }
 
   val BUMPER_WIDTH: Length
     get() {
-      return when (ArgParser.robotType) {
+      return when (ArgParser.whoami) {
         else -> 28.5.inches
       }
     }
@@ -180,7 +180,7 @@ object DrivetrainConstants {
     val STEERING_KD = 0.0.volts.perDegreePerSecond
     val STEERING_KV: VelocityFeedforward<Radian, Volt>
       get() {
-        return when (ArgParser.robotType) {
+        return when (ArgParser.whoami) {
           else -> 0.0.volts / 1.0.radians.perSecond
         }
       }
@@ -192,14 +192,14 @@ object DrivetrainConstants {
     val DRIVE_KS = 0.236.volts
     val DRIVE_KV: VelocityFeedforward<Meter, Volt>
       get() {
-        return when (ArgParser.robotType) {
+        return when (ArgParser.whoami) {
           else -> 2.117.volts / 1.0.meters.perSecond
         }
       }
 
     val DRIVE_KA: AccelerationFeedforward<Meter, Volt>
       get() {
-        return when (ArgParser.robotType) {
+        return when (ArgParser.whoami) {
           else -> 0.0.volts / 1.0.meters.perSecond.perSecond
         }
       }

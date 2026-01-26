@@ -1,6 +1,6 @@
 package com.team4099.robot2026.util
 
-import com.team4099.robot2026.config.constants.Constants.RobotType
+import com.team4099.robot2026.config.constants.Constants.WHOAMI
 
 /**
  * Parse command-line arguments from the build.gradle P-args into their proper type. Make sure that
@@ -33,5 +33,5 @@ object ArgParser {
   }
 
   val tuningMode = argToBool(System.getProperty("tuning"))
-  val robotType = argToEnum<RobotType>(System.getProperty("robot"))
+  val whoami = argToEnum<WHOAMI>(System.getProperty("robot"))
 }
