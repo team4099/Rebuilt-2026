@@ -18,7 +18,7 @@ import com.ctre.phoenix6.StatusCode
 import com.ctre.phoenix6.StatusSignal
 import com.ctre.phoenix6.configs.Pigeon2Configuration
 import com.ctre.phoenix6.hardware.Pigeon2
-import com.team4099.robot2026.subsystems.drivetrain.generated.TunerConstants
+import com.team4099.robot2026.config.constants.DrivetrainConstants
 import edu.wpi.first.units.measure.AngularVelocity
 import java.util.Queue
 import org.team4099.lib.units.derived.degrees
@@ -28,8 +28,8 @@ import org.team4099.lib.units.perSecond
 object GyroIOPigeon2 : GyroIO {
   private val pigeon: Pigeon2 =
       Pigeon2(
-          TunerConstants.CTREDrivetrainConstants.Pigeon2Id,
-          CANBus(TunerConstants.CTREDrivetrainConstants.CANBusName))
+          DrivetrainConstants.TunerConstants.CTREDrivetrainConstants.Pigeon2Id,
+          CANBus(DrivetrainConstants.TunerConstants.CTREDrivetrainConstants.CANBusName))
 
   private val roll: StatusSignal<edu.wpi.first.units.measure.Angle> = pigeon.roll
   private val rollPositionQueue: Queue<Double>

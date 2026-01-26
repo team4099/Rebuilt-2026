@@ -17,7 +17,7 @@ import com.ctre.phoenix6.configs.CANcoderConfiguration
 import com.ctre.phoenix6.configs.TalonFXConfiguration
 import com.ctre.phoenix6.swerve.SwerveModuleConstants
 import com.team4099.lib.phoenix6.PhoenixUtil
-import com.team4099.robot2026.subsystems.drivetrain.generated.TunerConstants
+import com.team4099.robot2026.config.constants.DrivetrainConstants
 import edu.wpi.first.units.Units.Radians
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation
 import org.ironmaple.simulation.drivesims.SwerveModuleSimulation
@@ -50,10 +50,10 @@ class ModuleIOTalonFXSim(
   companion object {
     fun generateModules(simulation: SwerveDriveSimulation): Array<ModuleIO> {
       return arrayOf(
-          ModuleIOTalonFXSim(TunerConstants.FrontLeft, simulation.modules[0]),
-          ModuleIOTalonFXSim(TunerConstants.FrontRight, simulation.modules[1]),
-          ModuleIOTalonFXSim(TunerConstants.BackLeft, simulation.modules[2]),
-          ModuleIOTalonFXSim(TunerConstants.BackRight, simulation.modules[3]))
+          ModuleIOTalonFXSim(DrivetrainConstants.TunerConstants.FrontLeft, simulation.modules[0]),
+          ModuleIOTalonFXSim(DrivetrainConstants.TunerConstants.FrontRight, simulation.modules[1]),
+          ModuleIOTalonFXSim(DrivetrainConstants.TunerConstants.BackLeft, simulation.modules[2]),
+          ModuleIOTalonFXSim(DrivetrainConstants.TunerConstants.BackRight, simulation.modules[3]))
     }
   }
 }

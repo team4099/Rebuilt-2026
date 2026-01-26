@@ -226,3 +226,53 @@ task(eventDeploy) {
 	}
 }
 createVersionFile.dependsOn(eventDeploy)
+
+def argSpec = [
+		robot: [
+				allowed: ["compbot", "alphabot", "testbot"],
+				required: true
+		],
+		tuning: [
+				allowed: ["true", "t", "false", "f"],
+				required: true,
+		],
+]
+
+tasks.register("validateArgs") {
+	doFirst {
+		argSpec.each { key, spec ->
+			def value = project.findProperty(key) ?: spec.default
+
+			if (value == null && spec.required) {
+				throw new GradleException("Missing required argument: -P$key. Allowed: ${spec.allowed}")
+			}
+
+			if (spec.allowed && !spec.allowed.contains(value.toLowerCase())) {
+				throw new GradleException(
+						"Invalid -P$key=$value. Allowed: ${spec.allowed}"
+				)
+			}
+
+			if (spec.pattern && !(value ==~ spec.pattern)) {
+				throw new GradleException(
+						"Invalid -P$key=$value. Must match ${spec.pattern}"
+				)
+			}
+		}
+	}
+}
+
+["simulateJava", "deploy"].each { taskName ->
+	tasks.named(taskName).configure {
+		dependsOn validateArgs
+	}
+}
+
+tasks.withType(JavaExec).configureEach {
+	argSpec.keySet().each { key ->
+		def value = project.findProperty(key) ?: argSpec[key].default
+		if (value != null) {
+			systemProperty key.toLowerCase(), value
+		}
+	}
+}
