@@ -22,7 +22,6 @@ interface FeederIO {
     var feederStatorCurrent = 0.0.amps
     var feederSupplyCurrent = 0.0.amps
     var feederTemp = 0.0.celsius
-    var isSimulating = false
 
     override fun toLog(table: LogTable?) {
       table?.put("FeederVelocityRPM", feederVelocity.inRotationsPerMinute)

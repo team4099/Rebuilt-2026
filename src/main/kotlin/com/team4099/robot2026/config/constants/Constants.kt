@@ -56,7 +56,7 @@ object Constants {
     val TABS = arrayOf("Pre-match", "In-match")
   }
 
-  object feeder {
+  object Feeder {
     const val FEEDER_MOTOR_ID = 61
   }
 }

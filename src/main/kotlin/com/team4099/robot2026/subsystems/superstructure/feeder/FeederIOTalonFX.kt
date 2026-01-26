@@ -67,7 +67,7 @@ object FeederIOTalonFX : FeederIO {
     feederPositionStatusSignal = feederTalon.position
   }
 
-  fun refreshStatusSignals() {
+  private fun refreshStatusSignals() {
     BaseStatusSignal.refreshAll(
       feederPositionStatusSignal,
       feederAppliedVoltageStatusSignal,
