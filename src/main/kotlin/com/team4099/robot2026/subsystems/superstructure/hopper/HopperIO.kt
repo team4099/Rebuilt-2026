@@ -6,25 +6,26 @@ import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.inAmperes
 import org.team4099.lib.units.base.inCelsius
-import org.team4099.lib.units.derived.*
-import org.team4099.lib.units.inDegreesPerSecond
-import org.team4099.lib.units.inDegreesPerSecondPerSecond
+import org.team4099.lib.units.derived.ElectricalPotential
+import org.team4099.lib.units.derived.inVolts
+import org.team4099.lib.units.derived.rotations
+import org.team4099.lib.units.derived.volts
+import org.team4099.lib.units.inRotationsPerMinute
 import org.team4099.lib.units.perMinute
-import org.team4099.lib.units.perSecond
 
 interface HopperIO {
   class HopperIOInputs : LoggableInputs {
     // Hopper Inputs
-    var hopperAngularVelocity = 0.0.degrees.perSecond
-    var hopperAngularAcceleration = 0.0.rotations.perMinute.perMinute
+    var hopperAngularVelocity = 0.0.rotations.perMinute
+    var hopperAngularAcceleration = 0.0.rotations.perMinute
     var hopperAppliedVoltage = 0.0.volts
     var hopperStatorCurrent = 0.0.amps
     var hopperSupplyCurrent = 0.0.amps
     var hopperTemp = 0.0.celsius
 
     override fun toLog(table: LogTable) {
-      table.put("hopperVelocityPerSecond", hopperAngularVelocity.inDegreesPerSecond)
-      table.put("hopperAccelerationDPSPS", hopperAngularAcceleration.inDegreesPerSecondPerSecond)
+      table.put("hopperVelocityRPM", hopperAngularVelocity.inRotationsPerMinute)
+      table.put("hopperAccelerationRPM", hopperAngularAcceleration.inRotationsPerMinute)
       table.put("hopperAppliedVoltage", hopperAppliedVoltage.inVolts)
       table.put("hopperStatorCurrent", hopperStatorCurrent.inAmperes)
       table.put("hopperSupplyCurrent", hopperSupplyCurrent.inAmperes)
@@ -32,11 +33,11 @@ interface HopperIO {
     }
 
     override fun fromLog(table: LogTable) {
-      table.get("hopperDPS", hopperAngularVelocity.inDegreesPerSecond).let {
-        hopperAngularVelocity = it.degrees.perSecond
-      }
-      table.get("hopperAcceleration", hopperAngularAcceleration.inDegreesPerSecondPerSecond).let {
-        hopperAngularAcceleration = it.degrees.perSecond.perSecond
+      table
+          .get("HopperVelocityRotationsPerMinuite", hopperAngularVelocity.inRotationsPerMinute)
+          .let { hopperAngularVelocity = it.rotations.perMinute }
+      table.get("hopperAcceleration", hopperAngularAcceleration.inRotationsPerMinute).let {
+        hopperAngularAcceleration = it.rotations.perMinute
       }
       table.get("hopperAppliedVoltage", hopperAppliedVoltage.inVolts).let {
         hopperAppliedVoltage = it.volts

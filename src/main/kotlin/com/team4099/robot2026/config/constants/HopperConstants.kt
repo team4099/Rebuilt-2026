@@ -9,8 +9,8 @@ import org.team4099.lib.units.kilo
 object HopperConstants {
   const val GEAR_RATIO: Double = 1.0 / 27.0
 
-  val STATOR_CURRENT_LIMIT = 20.amps
-  val SUPPLY_CURRENT_LIMIT = 20.amps
+  val STATOR_CURRENT_LIMIT = 60.amps
+  val SUPPLY_CURRENT_LIMIT = 60.amps
 
   val VOLTAGE_COMPENSATION = 12.volts
 

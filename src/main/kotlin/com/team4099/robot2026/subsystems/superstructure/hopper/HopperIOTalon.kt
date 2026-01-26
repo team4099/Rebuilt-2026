@@ -21,7 +21,7 @@ import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
-import org.team4099.lib.units.perSecond
+import org.team4099.lib.units.perMinute
 
 object HopperIOTalon : HopperIO {
 
@@ -35,7 +35,6 @@ object HopperIOTalon : HopperIO {
   var statorCurrentSignal: StatusSignal<Current>
   var supplyCurrentSignal: StatusSignal<Voltage>
   var tempSignal: StatusSignal<WPITemp>
-  var dutyCycleSignal: StatusSignal<Double>
   var motorVoltageSignal: StatusSignal<Voltage>
   var motorAccelSignal: StatusSignal<WPIAngularAcceleration>
   var rotorVelocitySignal: StatusSignal<WPIAngularVelocity>
@@ -55,7 +54,6 @@ object HopperIOTalon : HopperIO {
     statorCurrentSignal = hopperTalon.supplyCurrent
     supplyCurrentSignal = hopperTalon.supplyVoltage
     tempSignal = hopperTalon.deviceTemp
-    dutyCycleSignal = hopperTalon.dutyCycle
     motorVoltageSignal = hopperTalon.motorVoltage
     motorAccelSignal = hopperTalon.acceleration
   }
@@ -65,7 +63,6 @@ object HopperIOTalon : HopperIO {
         statorCurrentSignal,
         supplyCurrentSignal,
         tempSignal,
-        dutyCycleSignal,
         motorVoltageSignal,
         motorAccelSignal,
         rotorVelocitySignal)
@@ -79,11 +76,8 @@ object HopperIOTalon : HopperIO {
     inputs.hopperTemp = tempSignal.valueAsDouble.celsius
     inputs.hopperAngularVelocity = hopperSensor.velocity
     inputs.hopperAngularAcceleration =
-      (motorAccelSignal.valueAsDouble / HopperConstants.GEAR_RATIO)
-        .rotations
-        .perSecond
-        .perSecond
-        (motorAccelSignal.valueAsDouble / HopperConstants.GEAR_RATIO).rotations.perSecond.perSecond
+        (motorAccelSignal.valueAsDouble / HopperConstants.GEAR_RATIO).rotations.perMinute
+    (motorAccelSignal.valueAsDouble / HopperConstants.GEAR_RATIO).rotations.perMinute.perMinute
   }
 
   override fun setVoltage(voltage: ElectricalPotential) {

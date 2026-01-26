@@ -1,7 +1,6 @@
 package com.team4099.robot2026.subsystems.superstructure.hopper
 
 import com.team4099.robot2026.config.constants.HopperConstants
-import com.team4099.robot2026.subsystems.superstructure.hopper.HopperIO
 import com.team4099.robot2026.subsystems.superstructure.Request.HopperRequest
 import com.team4099.robot2026.util.ControlledByStateMachine
 import com.team4099.robot2026.util.CustomLogger
