@@ -34,7 +34,6 @@ import com.team4099.robot2026.subsystems.superstructure.shooter.Shooter
 import com.team4099.robot2026.subsystems.superstructure.shooter.ShooterIOSim
 import com.team4099.robot2026.subsystems.superstructure.shooter.ShooterIOTalon
 import com.team4099.robot2026.subsystems.vision.Vision
-import com.team4099.robot2026.subsystems.vision.camera.CameraIO
 import com.team4099.robot2026.subsystems.vision.camera.CameraIOPVSim
 import com.team4099.robot2026.subsystems.vision.camera.CameraIOPhotonvision
 import com.team4099.robot2026.util.driver.Jessika
@@ -46,7 +45,6 @@ import org.littletonrobotics.junction.Logger
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Rotation3d
-import org.team4099.lib.geometry.Transform3d
 import org.team4099.lib.smoothDeadband
 
 object RobotContainer {
@@ -77,18 +75,15 @@ object RobotContainer {
               { pose -> {} })
       vision =
           Vision(
-              CameraIOPhotonvision(
-                  CameraIO.DetectionPipeline.APRIL_TAG,
-                  VisionConstants.CAMERA_NAMES[0],
-                  VisionConstants.CAMERA_TRANSFORMS[0],
-                  drivetrain::addVisionMeasurement,
-                  { drivetrain.rotation }),
-              CameraIOPhotonvision(
-                  CameraIO.DetectionPipeline.APRIL_TAG,
-                  VisionConstants.CAMERA_NAMES[1],
-                  VisionConstants.CAMERA_TRANSFORMS[1],
-                  drivetrain::addVisionMeasurement,
-                  { drivetrain.rotation }),
+              *VisionConstants.CAMERAS.map {
+                    CameraIOPhotonvision(
+                        it.value.first,
+                        it.key,
+                        it.value.second,
+                        drivetrain::addVisionMeasurement,
+                        { drivetrain.rotation })
+                  }
+                  .toTypedArray(),
               poseSupplier = { drivetrain.pose })
 
       climb = Climb(ClimbIOTalon)
@@ -110,17 +105,20 @@ object RobotContainer {
               driveSimulation!!::getSimulatedDriveTrainPose,
               driveSimulation!!::setSimulationWorldPose)
 
-      if (Constants.Universal.SIMULATE_VISION)
-          vision =
+      vision =
+          if (Constants.Universal.SIMULATE_VISION)
               Vision(
-                  CameraIOPVSim(
-                      CameraIO.DetectionPipeline.OBJECT_DETECTION,
-                      "raven1",
-                      Transform3d(),
-                      drivetrain::addVisionMeasurement,
-                      { drivetrain.rotation }),
+                  *VisionConstants.CAMERAS.map {
+                        CameraIOPVSim(
+                            it.value.first,
+                            it.key,
+                            it.value.second,
+                            drivetrain::addVisionMeasurement,
+                            { drivetrain.rotation })
+                      }
+                      .toTypedArray(),
                   poseSupplier = { drivetrain.pose })
-      else vision = Vision(poseSupplier = { Pose3d() })
+          else Vision(poseSupplier = { Pose3d() })
 
       climb = Climb(ClimbIOSim)
       feeder = Feeder(FeederIOSim)
