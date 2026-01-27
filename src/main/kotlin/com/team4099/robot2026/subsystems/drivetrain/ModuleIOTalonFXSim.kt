@@ -32,9 +32,6 @@ class ModuleIOTalonFXSim(
     simulation.useDriveMotorController(PhoenixUtil.TalonFXMotorControllerSim(driveTalon))
     simulation.useSteerMotorController(
         PhoenixUtil.TalonFXMotorControllerWithRemoteCancoderSim(turnTalon, cancoder))
-
-    //    super.positionTorqueCurrentRequest.withUpdateFreqHz(50.0).withUseTimesync(false)
-    //    super.positionVoltageRequest.withUpdateFreqHz(50.0).withUseTimesync(false)
   }
 
   override fun updateInputs(inputs: ModuleIO.ModuleIOInputs) {

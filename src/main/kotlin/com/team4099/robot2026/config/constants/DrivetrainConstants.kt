@@ -5,7 +5,8 @@ import com.team4099.robot2026.subsystems.drivetrain.generated.CompBotTunerConsta
 import com.team4099.robot2026.subsystems.drivetrain.generated.TestBotTunerConstants
 import edu.wpi.first.wpilibj.RobotBase
 import kotlin.math.sqrt
-import org.team4099.lib.geometry.Pose2d
+import org.team4099.lib.geometry.Pose3d
+import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
@@ -49,26 +50,20 @@ object DrivetrainConstants {
       }
     }
 
-  val DRIVETRAIN_LENGTH: Length
-    get() {
-      return when (Constants.Universal.whoami) {
+  val DRIVETRAIN_LENGTH: Length =
+      when (Constants.Universal.whoami) {
         else -> 28.5.inches
       }
-    }
 
-  val DRIVETRAIN_WIDTH: Length
-    get() {
-      return when (Constants.Universal.whoami) {
+  val DRIVETRAIN_WIDTH: Length =
+      when (Constants.Universal.whoami) {
         else -> 28.5.inches
       }
-    }
 
-  val BUMPER_WIDTH: Length
-    get() {
-      return when (Constants.Universal.whoami) {
+  val BUMPER_WIDTH: Length =
+      when (Constants.Universal.whoami) {
         else -> 3.25.inches
       }
-    }
 
   val DRIVE_SETPOINT_MAX
     get() = tunerConstants.kSpeedAt12Volts
@@ -98,7 +93,7 @@ object DrivetrainConstants {
 
   const val NITRILE_WHEEL_COF = 1.2
 
-  val INITIAL_SIM_POSE = Pose2d(3.meters, 3.meters, 0.radians).pose2d
+  val INITIAL_SIM_POSE = Pose3d(3.meters, 3.meters, 0.meters, Rotation3d()).pose3d
 
   object PID {
     val AUTO_POS_KP: ProportionalGain<Meter, Velocity<Meter>>
