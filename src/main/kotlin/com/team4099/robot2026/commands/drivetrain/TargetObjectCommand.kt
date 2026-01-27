@@ -174,7 +174,7 @@ class TargetObjectCommand(
     CustomLogger.recordOutput("TargetObjectCommand/thetaerror", thetaPID.error.inDegrees)
     CustomLogger.recordOutput("TargetObjectCommand/hasThetaAligned", hasThetaAligned)
 
-    if ((hasThetaAligned || thetaPID.error.absoluteValue < 8.36.degrees)) {
+    if (hasThetaAligned || thetaPID.error.absoluteValue < 8.36.degrees) {
       hasThetaAligned = true
 
       drivetrain.runSpeeds(
