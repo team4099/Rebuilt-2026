@@ -14,9 +14,10 @@
 package com.team4099.robot2026.subsystems.drivetrain
 
 import com.ctre.phoenix6.BaseStatusSignal
-import com.ctre.phoenix6.CANBus
 import com.ctre.phoenix6.StatusSignal
-import com.team4099.robot2026.config.constants.DrivetrainConstants
+import com.team4099.robot2026.config.constants.Constants
+import com.team4099.robot2026.subsystems.drivetrain.generated.AlphaBotTunerConstants
+import com.team4099.robot2026.subsystems.drivetrain.generated.CompBotTunerConstants
 import com.team4099.robot2026.subsystems.drivetrain.generated.TestBotTunerConstants
 import edu.wpi.first.units.measure.Angle
 import edu.wpi.first.wpilibj.RobotController
@@ -48,7 +49,7 @@ class PhoenixOdometryThread private constructor() : Thread() {
   }
 
   override fun start() {
-    if (timestampQueues.size > 0) {
+    if (timestampQueues.isNotEmpty()) {
       super.start()
     }
   }
@@ -150,8 +151,15 @@ class PhoenixOdometryThread private constructor() : Thread() {
   }
 
   companion object {
-    private val isCANFD =
-        CANBus(TestBotTunerConstants.CTREDrivetrainConstants.CANBusName).isNetworkFD
+    // trust me, keep the when statement - nathan
+    val isCANFD =
+        when (Constants.Universal.whoami) {
+              Constants.WHOAMI.TESTBOT -> TestBotTunerConstants
+              Constants.WHOAMI.COMPBOT -> CompBotTunerConstants
+              Constants.WHOAMI.ALPHABOT -> AlphaBotTunerConstants
+            }
+            .kCANBus
+            .isNetworkFD
 
     @JvmStatic var instance: PhoenixOdometryThread = PhoenixOdometryThread()
   }

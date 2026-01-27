@@ -33,7 +33,6 @@ import com.ctre.phoenix6.signals.SensorDirectionValue
 import com.ctre.phoenix6.swerve.SwerveModuleConstants
 import com.team4099.lib.phoenix6.PhoenixUtil.tryUntilOk
 import com.team4099.robot2026.config.constants.DrivetrainConstants
-import com.team4099.robot2026.subsystems.drivetrain.generated.TestBotTunerConstants
 import edu.wpi.first.math.filter.Debouncer
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.util.Units
@@ -51,9 +50,12 @@ abstract class ModuleIOTalonFX(
     val constants:
         SwerveModuleConstants<TalonFXConfiguration?, TalonFXConfiguration?, CANcoderConfiguration?>
 ) : ModuleIO {
-  protected val driveTalon: TalonFX
-  protected val turnTalon: TalonFX
-  protected val cancoder: CANcoder
+  protected val driveTalon: TalonFX =
+      TalonFX(constants.DriveMotorId, DrivetrainConstants.tunerConstants.kCANBus)
+  protected val turnTalon: TalonFX =
+      TalonFX(constants.SteerMotorId, DrivetrainConstants.tunerConstants.kCANBus)
+  protected val cancoder: CANcoder =
+      CANcoder(constants.EncoderId, DrivetrainConstants.tunerConstants.kCANBus)
 
   protected val voltageRequest = VoltageOut(0.0).withEnableFOC(true)
   protected val positionVoltageRequest = MotionMagicVoltage(0.0).withEnableFOC(true)
@@ -87,10 +89,6 @@ abstract class ModuleIOTalonFX(
   private val turnEncoderConnectedDebounce: Debouncer = Debouncer(0.5)
 
   init {
-    driveTalon = TalonFX(constants.DriveMotorId, TestBotTunerConstants.kCANBus)
-    turnTalon = TalonFX(constants.SteerMotorId, TestBotTunerConstants.kCANBus)
-    cancoder = CANcoder(constants.EncoderId, TestBotTunerConstants.kCANBus)
-
     // Configure drive motor
     val driveConfig = constants.DriveMotorInitialConfigs!!
     driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake

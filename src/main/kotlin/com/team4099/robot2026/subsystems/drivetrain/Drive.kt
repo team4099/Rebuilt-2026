@@ -12,7 +12,6 @@
 // GNU General Public License for more details.
 package com.team4099.robot2026.subsystems.drivetrain
 
-import com.ctre.phoenix6.CANBus
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.config.ModuleConfig
 import com.pathplanner.lib.config.PIDConstants
@@ -23,7 +22,6 @@ import com.pathplanner.lib.util.PathPlannerLogging
 import com.team4099.lib.hal.Clock
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.DrivetrainConstants
-import com.team4099.robot2026.subsystems.drivetrain.generated.TestBotTunerConstants
 import com.team4099.robot2026.util.AllianceFlipUtil
 import com.team4099.robot2026.util.CustomLogger
 import edu.wpi.first.hal.FRCNetComm
@@ -119,10 +117,10 @@ class Drive(
           DrivetrainConstants.INITIAL_SIM_POSE)
 
   init {
-    modules[0] = Module(moduleIOs[0], 0, TestBotTunerConstants.FrontLeft)
-    modules[1] = Module(moduleIOs[1], 1, TestBotTunerConstants.FrontRight)
-    modules[2] = Module(moduleIOs[2], 2, TestBotTunerConstants.BackLeft)
-    modules[3] = Module(moduleIOs[3], 3, TestBotTunerConstants.BackRight)
+    modules[0] = Module(moduleIOs[0], 0, DrivetrainConstants.tunerConstants.FrontLeft)
+    modules[1] = Module(moduleIOs[1], 1, DrivetrainConstants.tunerConstants.FrontRight)
+    modules[2] = Module(moduleIOs[2], 2, DrivetrainConstants.tunerConstants.BackLeft)
+    modules[3] = Module(moduleIOs[3], 3, DrivetrainConstants.tunerConstants.BackRight)
 
     // Usage reporting for swerve template
     HAL.report(
@@ -261,7 +259,7 @@ class Drive(
         kinematics.toSwerveModuleStates(discreteSpeeds.chassisSpeedsWPILIB)
 
     SwerveDriveKinematics.desaturateWheelSpeeds(
-        setpointStates, TestBotTunerConstants.kSpeedAt12Volts.inMetersPerSecond)
+        setpointStates, DrivetrainConstants.tunerConstants.kSpeedAt12Volts.inMetersPerSecond)
 
     // Log unoptimized setpoints and setpoint speeds
     Logger.recordOutput("SwerveStates/Setpoints", *setpointStates)
@@ -388,7 +386,7 @@ class Drive(
 
   val maxLinearSpeedMetersPerSec: Double
     /** Returns the maximum linear speed in meters per sec. */
-    get() = TestBotTunerConstants.kSpeedAt12Volts.inMetersPerSecond
+    get() = DrivetrainConstants.tunerConstants.kSpeedAt12Volts.inMetersPerSecond
 
   val maxAngularSpeedRadPerSec: Double
     /** Returns the maximum angular speed in radians per sec. */
@@ -396,28 +394,24 @@ class Drive(
 
   companion object {
     // TunerConstants doesn't include these constants, so they are declared locally
-    @JvmField
-    val ODOMETRY_FREQUENCY: Double =
-        if (CANBus(TestBotTunerConstants.CTREDrivetrainConstants.CANBusName)
-            .isNetworkFD)
-            250.0
-        else 100.0
+    @JvmField val ODOMETRY_FREQUENCY: Double = if (PhoenixOdometryThread.isCANFD) 250.0 else 100.0
+
     val DRIVE_BASE_RADIUS: Double =
         max(
             max(
                 hypot(
-                    TestBotTunerConstants.FrontLeft.LocationX,
-                    TestBotTunerConstants.FrontLeft.LocationY),
+                    DrivetrainConstants.tunerConstants.FrontLeft.LocationX,
+                    DrivetrainConstants.tunerConstants.FrontLeft.LocationY),
                 hypot(
-                    TestBotTunerConstants.FrontRight.LocationX,
-                    TestBotTunerConstants.FrontRight.LocationY)),
+                    DrivetrainConstants.tunerConstants.FrontRight.LocationX,
+                    DrivetrainConstants.tunerConstants.FrontRight.LocationY)),
             max(
                 hypot(
-                    TestBotTunerConstants.BackLeft.LocationX,
-                    TestBotTunerConstants.BackLeft.LocationY),
+                    DrivetrainConstants.tunerConstants.BackLeft.LocationX,
+                    DrivetrainConstants.tunerConstants.BackLeft.LocationY),
                 hypot(
-                    TestBotTunerConstants.BackRight.LocationX,
-                    TestBotTunerConstants.BackRight.LocationY)))
+                    DrivetrainConstants.tunerConstants.BackRight.LocationX,
+                    DrivetrainConstants.tunerConstants.BackRight.LocationY)))
 
     // PathPlanner config constants
     val PP_CONFIG: RobotConfig =
@@ -425,13 +419,13 @@ class Drive(
             Constants.Universal.ROBOT_WEIGHT.inKilograms,
             Constants.Universal.ROBOT_MOI.inKilogramsMeterSquared,
             ModuleConfig(
-                TestBotTunerConstants.FrontLeft.WheelRadius,
-                TestBotTunerConstants.kSpeedAt12Volts.inMetersPerSecond,
+                DrivetrainConstants.tunerConstants.FrontLeft.WheelRadius,
+                DrivetrainConstants.tunerConstants.kSpeedAt12Volts.inMetersPerSecond,
                 DrivetrainConstants.NITRILE_WHEEL_COF,
                 DCMotor.getKrakenX60Foc(1)
                     .withReduction(
-                        TestBotTunerConstants.FrontLeft.DriveMotorGearRatio),
-                TestBotTunerConstants.FrontLeft.SlipCurrent,
+                        DrivetrainConstants.tunerConstants.FrontLeft.DriveMotorGearRatio),
+                DrivetrainConstants.tunerConstants.FrontLeft.SlipCurrent,
                 1),
             *(moduleTranslations
                 .map { translation: Translation2d -> translation.translation2d }
@@ -443,17 +437,17 @@ class Drive(
       get() =
           arrayOf(
               Translation2d(
-                  TestBotTunerConstants.FrontLeft.LocationX.meters,
-                  TestBotTunerConstants.FrontLeft.LocationY.meters),
+                  DrivetrainConstants.tunerConstants.FrontLeft.LocationX.meters,
+                  DrivetrainConstants.tunerConstants.FrontLeft.LocationY.meters),
               Translation2d(
-                  TestBotTunerConstants.FrontRight.LocationX.meters,
-                  TestBotTunerConstants.FrontRight.LocationY.meters),
+                  DrivetrainConstants.tunerConstants.FrontRight.LocationX.meters,
+                  DrivetrainConstants.tunerConstants.FrontRight.LocationY.meters),
               Translation2d(
-                  TestBotTunerConstants.BackLeft.LocationX.meters,
-                  TestBotTunerConstants.BackLeft.LocationY.meters),
+                  DrivetrainConstants.tunerConstants.BackLeft.LocationX.meters,
+                  DrivetrainConstants.tunerConstants.BackLeft.LocationY.meters),
               Translation2d(
-                  TestBotTunerConstants.BackRight.LocationX.meters,
-                  TestBotTunerConstants.BackRight.LocationY.meters))
+                  DrivetrainConstants.tunerConstants.BackRight.LocationX.meters,
+                  DrivetrainConstants.tunerConstants.BackRight.LocationY.meters))
 
     val mapleSimConfig: DriveTrainSimulationConfig =
         DriveTrainSimulationConfig.Default()
@@ -466,11 +460,11 @@ class Drive(
                         .inMeters))
             .withTrackLengthTrackWidth(
                 Meters.of(
-                  TestBotTunerConstants.FrontLeft.LocationX.absoluteValue +
-                      TestBotTunerConstants.BackRight.LocationX.absoluteValue),
+                    DrivetrainConstants.tunerConstants.FrontLeft.LocationX.absoluteValue +
+                        DrivetrainConstants.tunerConstants.BackRight.LocationX.absoluteValue),
                 Meters.of(
-                  TestBotTunerConstants.FrontLeft.LocationY.absoluteValue +
-                      TestBotTunerConstants.BackRight.LocationY.absoluteValue))
+                    DrivetrainConstants.tunerConstants.FrontLeft.LocationY.absoluteValue +
+                        DrivetrainConstants.tunerConstants.BackRight.LocationY.absoluteValue))
             .withRobotMass(Kilograms.of(Constants.Universal.ROBOT_WEIGHT.inKilograms))
             .withGyro(COTS.ofPigeon2())
             .withSwerveModules(
@@ -478,10 +472,10 @@ class Drive(
                 // reason we map the factories is in case we have seperate
                 // modules (aka seperate ratios/constants) on some corners
                 *(arrayOf(
-                  TestBotTunerConstants.FrontLeft,
-                  TestBotTunerConstants.FrontRight,
-                  TestBotTunerConstants.BackLeft,
-                  TestBotTunerConstants.BackRight)
+                        DrivetrainConstants.tunerConstants.FrontLeft,
+                        DrivetrainConstants.tunerConstants.FrontRight,
+                        DrivetrainConstants.tunerConstants.BackLeft,
+                        DrivetrainConstants.tunerConstants.BackRight)
                     .map {
                       SwerveModuleSimulationConfig(
                           DCMotor.getKrakenX60Foc(1),
