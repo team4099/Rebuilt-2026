@@ -70,7 +70,9 @@ object DrivetrainConstants {
       }
     }
 
-  val DRIVE_SETPOINT_MAX get() = tunerConstants.kSpeedAt12Volts
+  val DRIVE_SETPOINT_MAX
+    get() = tunerConstants.kSpeedAt12Volts
+
   val TURN_SETPOINT_MAX =
       (DRIVE_SETPOINT_MAX.inMetersPerSecond / DRIVETRAIN_LENGTH.inMeters / 2 * sqrt(2.0))
           .radians
