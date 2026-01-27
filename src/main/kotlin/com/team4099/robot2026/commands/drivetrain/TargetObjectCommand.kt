@@ -140,7 +140,6 @@ class TargetObjectCommand(
     val lastUpdate = vision.lastObjectVisionUpdate[targetObjectClass.id]
     if (RobotBase.isSimulation()) {
       var fuelTranslations = vision.objectsDetected[0]
-      println(fuelTranslations)
       if (fuelTranslations.isEmpty()) return
       val target =
           ClusterScore.calculateClusterScores(
