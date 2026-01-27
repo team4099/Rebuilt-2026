@@ -6,6 +6,9 @@ import com.team4099.robot2026.subsystems.drivetrain.generated.TestBotTunerConsta
 import edu.wpi.first.wpilibj.RobotBase
 import kotlin.math.sqrt
 import org.team4099.lib.geometry.Pose2d
+import org.team4099.lib.geometry.Pose3d
+import org.team4099.lib.geometry.Rotation3d
+import org.team4099.lib.geometry.Translation3d
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
@@ -69,6 +72,8 @@ object DrivetrainConstants {
         else -> 3.25.inches
       }
     }
+
+  val STARTING_POSE = Pose3d(Translation3d(2.meters, 2.meters, 0.meters), Rotation3d())
 
   val DRIVE_SETPOINT_MAX
     get() = tunerConstants.kSpeedAt12Volts

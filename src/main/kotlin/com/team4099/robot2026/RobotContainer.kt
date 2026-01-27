@@ -43,10 +43,13 @@ import org.ironmaple.simulation.SimulatedArena
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.Arena2026Rebuilt
 import org.littletonrobotics.junction.Logger
+import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.geometry.Transform3d
 import org.team4099.lib.smoothDeadband
+import org.team4099.lib.units.base.meters
+import org.team4099.lib.units.derived.radians
 
 object RobotContainer {
   private val drivetrain: Drive
@@ -98,8 +101,7 @@ object RobotContainer {
       shooter = Shooter(ShooterIOTalon)
     } else {
       driveSimulation =
-          SwerveDriveSimulation(
-              Drive.mapleSimConfig, DrivetrainConstants.STARTING_POSE.pose3d.toPose2d())
+        SwerveDriveSimulation(Drive.mapleSimConfig, DrivetrainConstants.STARTING_POSE.pose3d.toPose2d())
       SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation)
 
       drivetrain =
