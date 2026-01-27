@@ -3,6 +3,9 @@ package com.team4099.robot2026.config.constants
 import edu.wpi.first.apriltag.AprilTagFieldLayout
 import edu.wpi.first.apriltag.AprilTagFields
 import org.ironmaple.simulation.SimulatedArena
+import org.team4099.lib.geometry.Translation3d
+import org.team4099.lib.units.base.Length
+import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 
 /**
@@ -23,4 +26,13 @@ object FieldConstants {
       object : SimulatedArena(object : FieldMap() {}) {
         override fun placeGamePiecesOnField() {}
       }
+
+  val ALLIANCE_LINE_X: Length
+    get() = 158.6.inches
+
+  val HUB_POSE: Translation3d
+    get() = Translation3d(182.11.inches, 158.84.inches, 72.inches)
+
+  val ALLIANCE_ZONE_CENTER: Translation3d
+    get() = Translation3d(120.inches, 158.84.inches, 72.inches)
 }

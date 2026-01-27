@@ -1,16 +1,50 @@
 package com.team4099.robot2026.subsystems.superstructure.shooter
 
+import com.team4099.robot2026.config.constants.Constants
+import com.team4099.robot2026.config.constants.FieldConstants
 import com.team4099.robot2026.config.constants.ShooterConstants
 import com.team4099.robot2026.subsystems.superstructure.Request
+import com.team4099.robot2026.util.AllianceFlipUtil
 import com.team4099.robot2026.util.ControlledByStateMachine
 import com.team4099.robot2026.util.CustomLogger
+import com.team4099.robot2026.util.Velocity2d
+import edu.wpi.first.math.MathUtil
+import edu.wpi.first.math.Matrix
+import edu.wpi.first.math.Nat.N1
+import edu.wpi.first.math.Nat.N2
+import edu.wpi.first.math.Vector
+import edu.wpi.first.math.interpolation.InterpolatingTreeMap
 import edu.wpi.first.wpilibj.RobotBase
+import kotlin.math.atan2
+import kotlin.math.max
+import kotlin.math.pow
+import kotlin.math.sqrt
+import org.team4099.lib.geometry.Pose2d
+import org.team4099.lib.geometry.Translation3d
+import org.team4099.lib.kinematics.ChassisSpeeds
 import org.team4099.lib.units.AngularVelocity
+import org.team4099.lib.units.LinearVelocity
+import org.team4099.lib.units.base.Length
+import org.team4099.lib.units.base.Time
+import org.team4099.lib.units.base.inMeters
+import org.team4099.lib.units.base.inSeconds
+import org.team4099.lib.units.base.meters
+import org.team4099.lib.units.base.seconds
+import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.ElectricalPotential
+import org.team4099.lib.units.derived.cos
 import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.inRotation2ds
 import org.team4099.lib.units.derived.inVolts
+import org.team4099.lib.units.derived.radians
+import org.team4099.lib.units.derived.rotations
+import org.team4099.lib.units.derived.sin
 import org.team4099.lib.units.derived.volts
+import org.team4099.lib.units.inMetersPerSecond
+import org.team4099.lib.units.inMetersPerSecondPerSecond
+import org.team4099.lib.units.inRadiansPerSecond
 import org.team4099.lib.units.inRotationsPerMinute
+import org.team4099.lib.units.perMinute
 import org.team4099.lib.units.perSecond
 
 class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
@@ -81,7 +115,7 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
         nextState = fromShooterRequestToState(currentRequest)
       }
       ShooterState.IDLE -> {
-        io.setVoltage(ShooterConstants.IDLE_VOLTAGE)
+        io.setVelocity(ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY)
         nextState = fromShooterRequestToState(currentRequest)
       }
     }
@@ -102,6 +136,277 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
         is Request.ShooterRequest.OpenLoop -> ShooterState.OPEN_LOOP
         is Request.ShooterRequest.Idle -> ShooterState.IDLE
       }
+    }
+
+    /**
+     * Result of a launch velocity calculation.
+     *
+     * @property distanceToTarget The distance from the robot to the target
+     * @property launchVelocity The velocity of the object after being launched
+     * @property timeOfFlight The time of flight of the object
+     * @property wantedRotation The angle the drivetrain needs to be rotated to face the target.
+     */
+    data class CalculatedLaunchData(
+        val distanceToTarget: Length,
+        val launchVelocity: LinearVelocity,
+        val timeOfFlight: Time,
+        val wantedRotation: Angle
+    )
+
+    /**
+     * Calculates the required velocity to shoot towards the HUB or the ALLIANCE zone, depending on
+     * what's legal based off the current pose.
+     *
+     * Bases the required velocity off of the momentum provided by the inertia of the drivetrain, as
+     * well as drag. A linear feedforward term is calculated based off distance from the adjusted
+     * target position.
+     *
+     * TODO Currently, this assumes the shooter is facing in the +x direction. This can be changed.
+     *
+     * @param drivetrainPose Instantaneous field-relative pose of the drivetrain
+     * @param chassisSpeeds Instantaneous robot-relative speeds of the chassis
+     * @return [CalculatedLaunchData] A data class containing the following information about the
+     *   trajectory and other information: shooter position, launch velocity on the field plane,
+     *   launch velocity in the vertical direction, time of flight, and the desired rotation to aim
+     *   in that direction.
+     * @see com.team4099.robot2026.commands.drivetrain.AimOTFCommand
+     */
+    fun calculateLaunchData(
+        drivetrainPose: Pose2d,
+        chassisSpeeds: ChassisSpeeds
+    ): CalculatedLaunchData {
+      return calculateLaunchData(
+          drivetrainPose,
+          chassisSpeeds,
+          if (AllianceFlipUtil.shouldFlip() && drivetrainPose.x > FieldConstants.ALLIANCE_LINE_X ||
+              !AllianceFlipUtil.shouldFlip() && drivetrainPose.x < FieldConstants.ALLIANCE_LINE_X) {
+            FieldConstants.HUB_POSE
+          } else {
+            FieldConstants.ALLIANCE_ZONE_CENTER
+          })
+    }
+
+    /**
+     * Calculates the required velocity to shoot towards a targeted pose, based off the drivetrain's
+     * current position and chassis speeds.
+     *
+     * Bases the required velocity off of the momentum provided by the inertia of the drivetrain, as
+     * well as drag. A linear feedforward term is calculated based off distance from the adjusted
+     * target position.
+     *
+     * TODO Currently, this assumes the shooter is facing in the +x direction. This can be changed.
+     *
+     * @param drivetrainPose Instantaneous field-relative pose of the drivetrain
+     * @param chassisSpeeds Instantaneous robot-relative speeds of the chassis
+     * @param targetTranslation The non-adjusted field-relative pose of the target.
+     * @return [CalculatedLaunchData] A data class containing the following information about the
+     *   trajectory and other information: shooter position, launch velocity on the field plane,
+     *   launch velocity in the vertical direction, time of flight, and the desired rotation to aim
+     *   in that direction.
+     * @see com.team4099.robot2026.commands.drivetrain.AimOTFCommand
+     */
+    fun calculateLaunchData(
+        drivetrainPose: Pose2d,
+        chassisSpeeds: ChassisSpeeds,
+        targetTranslation: Translation3d
+    ): CalculatedLaunchData {
+      val shooterPosition =
+          drivetrainPose.translation +
+              ShooterConstants.SHOOTER_OFFSET.translation.rotateBy(drivetrainPose.rotation)
+
+      val targetHeight = targetTranslation.z
+
+      // Calculate the distance to the HUB
+      val distanceToTargetX = targetTranslation.x - shooterPosition.x
+      val distanceToTargetY = targetTranslation.y - shooterPosition.y
+      val distanceToTargetMag =
+          sqrt(distanceToTargetX.inMeters.pow(2) + distanceToTargetY.inMeters.pow(2)).meters
+
+      // Get field-relative drivetrain velocity, and convert it into a vector.
+      val fieldSpeeds =
+          ChassisSpeeds(
+              edu.wpi.first.math.kinematics.ChassisSpeeds.fromRobotRelativeSpeeds(
+                  chassisSpeeds.chassisSpeedsWPILIB, drivetrainPose.rotation.inRotation2ds))
+
+      // Shooter tangential velocity
+      val shooterCurrentTransform =
+          ShooterConstants.SHOOTER_OFFSET.translation.rotateBy(drivetrainPose.rotation)
+      val shooterSpeeds =
+          Velocity2d(
+                  (shooterCurrentTransform.x * fieldSpeeds.omega.inRadiansPerSecond).perSecond,
+                  (shooterCurrentTransform.y * fieldSpeeds.omega.inRadiansPerSecond).perSecond)
+              .rotateBy(90.degrees * fieldSpeeds.omega.sign)
+
+      val driveVector =
+          Vector(
+              Matrix(
+                  N2(),
+                  N1(),
+                  doubleArrayOf(
+                      (fieldSpeeds.vx + shooterSpeeds.x).inMetersPerSecond,
+                      (fieldSpeeds.vy + shooterSpeeds.y).inMetersPerSecond)))
+
+      val robotTHubVector =
+          Vector(
+              Matrix(
+                  N2(),
+                  N1(),
+                  doubleArrayOf(distanceToTargetX.inMeters, distanceToTargetY.inMeters)))
+
+      // Get the distance (signed) between the robot and the HUB
+      val hubUnitVector = robotTHubVector.times(1.0 / distanceToTargetMag.inMeters)
+      val parallelScalar = driveVector.dot(hubUnitVector).meters
+
+      /**
+       * Time for the math...
+       *
+       * We must solve for v_launch, but that depends on the distance the ball will be displaced by
+       * the drivetrain velocity times the time of flight. The time of flight is, unfortunately,
+       * also based off of v_launch. We combine the following kinematics equations to derive
+       * v_launch independently from time of flight.
+       *
+       * Variables:
+       * ```
+       * v_launch = Launch velocity, represented as a number (vector) in 2D.
+       *            Multiply by SHOOTER_ANGLE.cos or SHOOTER_ANGLE.sin for
+       *            v_launch_x or v_launch_y.
+       * h = Height of the hub.
+       * s = Height of the shooter.
+       * d = Distance shooterTRobot + robotTHub.
+       * v_parallel = Movement of drivetrain, parallel to the robotTHub vector.
+       * ```
+       *
+       * From the following kinematics equations:
+       * ```
+       * d = (v_launch * SHOOTER_ANGLE.cos + v_parallel) * t (1)
+       * h = s + (v_launch * SHOOTER_ANGLE.sin) * t + (-g / 2) * t^2 (2)
+       * ```
+       *
+       * Multiply (1) by (v_launch * SHOOTER_ANGLE.sin)
+       *
+       * ```
+       * (v_launch * SHOOTER_ANGLE.sin) * d = (v_launch * SHOOTER_ANGLE.sin) * (v_launch * SHOOTER_ANGLE.cos + v_parallel) * t (3)
+       * ```
+       *
+       * From (2):
+       * ```
+       * (v_launch * SHOOTER_ANGLE.sin) * t = (h - s) + (g / 2) * t^2 (4)
+       * ```
+       *
+       * Plug (4) into (3):
+       * ```
+       * (v_launch * SHOOTER_ANGLE.sin) * d = ((h - s) + (g / 2) * t^2) * (v_launch * SHOOTER_ANGLE.cos + v_parallel) (5)
+       * ```
+       *
+       * From (1):
+       * ```
+       * t = d / (v_launch * SHOOTER_ANGLE.cos + v_parallel) (6)
+       * ```
+       *
+       * Substitute (6) into (5):
+       * ```
+       * (v_launch * SHOOTER_ANGLE.sin) * d = = ((h - s) + (g / 2) * (d / (v_launch * SHOOTER_ANGLE.cos + v_parallel))^2) * (v_launch * SHOOTER_ANGLE.cos + v_parallel)`
+       *
+       * (v_launch * SHOOTER_ANGLE.sin) * d = (h - s) * (v_launch * SHOOTER_ANGLE.cos + v_parallel) + g * d^2 / (2 * (v_launch * SHOOTER_ANGLE.cos + v_p))` (7)
+       * ```
+       *
+       * Multiply by (v_launch * SHOOTER_ANGLE.cos + v_parallel):
+       * ```
+       * v_launch * SHOOTER_ANGLE.sin * d * (v_launch * SHOOTER_ANGLE.cos + v_parallel) = (h - s) * (v_launch * SHOOTER_ANGLE.cos + v_parallel)^2 + g * d^2 / 2
+       *
+       * 0 = (h - s) * (v_launch * SHOOTER_ANGLE.cos + v_parallel)^2 + g * d^2 / 2 - v_launch * SHOOTER_ANGLE.sin * d * (v_launch * SHOOTER_ANGLE.cos + v_parallel)
+       *
+       * 0 = (h - s) * (v_launch * SHOOTER_ANGLE.cos)^2 + (h - s) * v_parallel^2 + (h - s) * (2 * v_launch * SHOOTER_ANGLE.cos * v_parallel) + g * d^2 / 2 - v_launch^2 * SHOOTER_ANGLE.sin * d * SHOOTER_ANGLE.cos - v_launch * SHOOTER_ANGLE.sin * d * v_parallel
+       *
+       * 0 =    (h - s) * (SHOOTER_ANGLE.cos)^2 * v_launch^2                (Quadratic term)
+       *        - SHOOTER_ANGLE.sin * d * SHOOTER_ANGLE.cos * v_launch^2    (Quadratic term)
+       *        + (h - s) * 2 * SHOOTER_ANGLE.cos * v_parallel * v_launch   (Linear term)
+       *        - SHOOTER_ANGLE.sin * d * v_parallel * v_launch             (Linear term)
+       *        + (h - s) * v_parallel^2 + g * d^2 / 2                      (Constant)
+       * ```
+       *
+       * We know have a quadratic in terms of v_launch.
+       *
+       * ```
+       * A = (h - s) * (SHOOTER_ANGLE.cos)^2 - SHOOTER_ANGLE.sin * SHOOTER_ANGLE.cos * d
+       * B = 2 * (h - s) * SHOOTER_ANGLE.cos * v_parallel - SHOOTER_ANGLE.sin * d * v_parallel
+       * C = (h - s) * v_parallel^2 + g * d^2 / 2
+       * ```
+       */
+      val a =
+          (targetHeight.inMeters - ShooterConstants.SHOOTER_HEIGHT.inMeters) *
+              ShooterConstants.SHOOTER_ANGLE.cos.pow(2) -
+              ShooterConstants.SHOOTER_ANGLE.sin *
+                  ShooterConstants.SHOOTER_ANGLE.cos *
+                  distanceToTargetMag.inMeters
+      val b =
+          2 *
+              (targetHeight.inMeters - ShooterConstants.SHOOTER_HEIGHT.inMeters) *
+              ShooterConstants.SHOOTER_ANGLE.cos *
+              parallelScalar.inMeters -
+              ShooterConstants.SHOOTER_ANGLE.sin *
+                  distanceToTargetMag.inMeters *
+                  parallelScalar.inMeters
+      val c =
+          (targetHeight.inMeters - ShooterConstants.SHOOTER_HEIGHT.inMeters) *
+              parallelScalar.inMeters.pow(2) +
+              Constants.Universal.gravity.inMetersPerSecondPerSecond *
+                  distanceToTargetMag.inMeters.pow(2) / 2.0
+
+      // To account for things like resistive forces, we add a small
+      // feedforward boost proportional to the distance
+      val launchSpeedFF = (distanceToTargetMag.inMeters * 0.1).meters.perSecond
+      val launchSpeed =
+          max(
+                  (-b + sqrt(b.pow(2) - 4.0 * a * c)) / (2 * a),
+                  (-b - sqrt(b.pow(2) - 4.0 * a * c)) / (2 * a))
+              .meters
+              .perSecond + launchSpeedFF
+      val launchSpeedField = launchSpeed * ShooterConstants.SHOOTER_ANGLE.cos
+      val launchSpeedZ = launchSpeed * ShooterConstants.SHOOTER_ANGLE.sin
+
+      val timeOfFlight =
+          (distanceToTargetMag.inMeters /
+                  (launchSpeed.inMetersPerSecond * ShooterConstants.SHOOTER_ANGLE.cos +
+                      parallelScalar.inMeters))
+              .seconds
+
+      // The distance the ball travels while in the air due to momentum
+      val ballDistanceOffset = driveVector.times(timeOfFlight.inSeconds)
+
+      // The wanted rotation is recieved by offsetting the usual angle
+      // (the slope connecting the robot and the HUB) by the offset the
+      // ball would travel in the air.
+      val wantedRot =
+          atan2(
+                  distanceToTargetY.inMeters - ballDistanceOffset.get(1),
+                  distanceToTargetX.inMeters - ballDistanceOffset.get(0))
+              .radians
+
+      return CalculatedLaunchData(
+          distanceToTargetMag,
+          sqrt(launchSpeedField.inMetersPerSecond.pow(2) + launchSpeedZ.inMetersPerSecond.pow(2))
+              .meters
+              .perSecond,
+          timeOfFlight,
+          wantedRot)
+    }
+
+    val launchVelToShooterRPMMap: InterpolatingTreeMap<LinearVelocity, AngularVelocity> =
+        InterpolatingTreeMap(
+            { startValue, endValue, q ->
+              MathUtil.inverseInterpolate(startValue.value, endValue.value, q.value)
+            },
+            { startValue, endValue, t ->
+              AngularVelocity(MathUtil.interpolate(startValue.value, endValue.value, t))
+            })
+
+    init {
+      // TODO: add values to this treemap
+      launchVelToShooterRPMMap.put(0.meters.perSecond, 0.rotations.perMinute)
+      launchVelToShooterRPMMap.put(
+          2.88.meters.perSecond, ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY)
+      Unit
     }
   }
 }
