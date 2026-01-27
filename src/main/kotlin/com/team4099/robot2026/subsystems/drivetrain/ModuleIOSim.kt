@@ -19,6 +19,7 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.DrivetrainConstants
 import com.team4099.robot2026.subsystems.drivetrain.ModuleIO.ModuleIOInputs
+import com.team4099.robot2026.subsystems.drivetrain.generated.TestBotTunerConstants
 import edu.wpi.first.math.MathUtil
 import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.math.geometry.Rotation2d
@@ -162,10 +163,10 @@ class ModuleIOSim(
 
     fun generateModules(): Array<ModuleIO> {
       return arrayOf(
-          ModuleIOSim(DrivetrainConstants.tunerConstants.FrontLeft),
-          ModuleIOSim(DrivetrainConstants.tunerConstants.FrontRight),
-          ModuleIOSim(DrivetrainConstants.tunerConstants.BackLeft),
-          ModuleIOSim(DrivetrainConstants.tunerConstants.BackRight))
+          ModuleIOSim(TestBotTunerConstants.FrontLeft),
+          ModuleIOSim(TestBotTunerConstants.FrontRight),
+          ModuleIOSim(TestBotTunerConstants.BackLeft),
+          ModuleIOSim(TestBotTunerConstants.BackRight))
     }
   }
 }

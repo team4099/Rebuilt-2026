@@ -17,6 +17,7 @@ import com.ctre.phoenix6.BaseStatusSignal
 import com.ctre.phoenix6.CANBus
 import com.ctre.phoenix6.StatusSignal
 import com.team4099.robot2026.config.constants.DrivetrainConstants
+import com.team4099.robot2026.subsystems.drivetrain.generated.TestBotTunerConstants
 import edu.wpi.first.units.measure.Angle
 import edu.wpi.first.wpilibj.RobotController
 import java.util.Queue
@@ -150,7 +151,7 @@ class PhoenixOdometryThread private constructor() : Thread() {
 
   companion object {
     private val isCANFD =
-        CANBus(DrivetrainConstants.tunerConstants.CTREDrivetrainConstants.CANBusName).isNetworkFD
+        CANBus(TestBotTunerConstants.CTREDrivetrainConstants.CANBusName).isNetworkFD
 
     @JvmStatic var instance: PhoenixOdometryThread = PhoenixOdometryThread()
   }

@@ -6,6 +6,7 @@ import com.team4099.robot2026.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2026.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2026.config.ControlBoard
 import com.team4099.robot2026.config.constants.Constants
+import com.team4099.robot2026.config.constants.DrivetrainConstants
 import com.team4099.robot2026.config.constants.FieldConstants
 import com.team4099.robot2026.config.constants.VisionConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
@@ -100,7 +101,8 @@ object RobotContainer {
       shooter = Shooter(ShooterIOTalon)
     } else {
       driveSimulation =
-          SwerveDriveSimulation(Drive.mapleSimConfig, Pose2d(3.meters, 3.meters, 0.radians).pose2d)
+          SwerveDriveSimulation(
+              Drive.mapleSimConfig, DrivetrainConstants.INITIAL_SIM_POSE.toPose2d())
       SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation)
 
       drivetrain =
