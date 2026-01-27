@@ -112,7 +112,10 @@ class Drive(
           SwerveModulePosition())
   private val poseEstimator: SwerveDrivePoseEstimator3d =
       SwerveDrivePoseEstimator3d(
-          kinematics, rawGyroRotation.rotation3d, lastModulePositions, Pose3d().pose3d)
+          kinematics,
+          rawGyroRotation.rotation3d,
+          lastModulePositions,
+          DrivetrainConstants.STARTING_POSE.pose3d)
 
   init {
     modules[0] = Module(moduleIOs[0], 0, DrivetrainConstants.TunerConstants.FrontLeft)
@@ -361,9 +364,7 @@ class Drive(
 
   var pose: Pose3d
     /** Returns the current odometry pose. */
-    get() =
-        if (RobotBase.isReal()) Pose3d(poseEstimator.estimatedPosition)
-        else Pose3d(Pose2d(getSimulationPoseCallback.get()))
+    get() = Pose3d(poseEstimator.estimatedPosition)
 
     /** Resets the current odometry pose. */
     set(pose) {

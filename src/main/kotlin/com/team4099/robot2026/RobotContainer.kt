@@ -6,6 +6,7 @@ import com.team4099.robot2026.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2026.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2026.config.ControlBoard
 import com.team4099.robot2026.config.constants.Constants
+import com.team4099.robot2026.config.constants.DrivetrainConstants
 import com.team4099.robot2026.config.constants.FieldConstants
 import com.team4099.robot2026.config.constants.VisionConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
@@ -23,13 +24,10 @@ import org.ironmaple.simulation.SimulatedArena
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.Arena2026Rebuilt
 import org.littletonrobotics.junction.Logger
-import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.geometry.Transform3d
 import org.team4099.lib.smoothDeadband
-import org.team4099.lib.units.base.meters
-import org.team4099.lib.units.derived.radians
 
 object RobotContainer {
   private val drivetrain: Drive
@@ -67,7 +65,8 @@ object RobotContainer {
               poseSupplier = { drivetrain.pose })
     } else {
       driveSimulation =
-          SwerveDriveSimulation(Drive.mapleSimConfig, Pose2d(3.meters, 3.meters, 0.radians).pose2d)
+          SwerveDriveSimulation(
+              Drive.mapleSimConfig, DrivetrainConstants.STARTING_POSE.pose3d.toPose2d())
       SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation)
 
       drivetrain =
@@ -124,7 +123,7 @@ object RobotContainer {
   fun resetSimulationField() {
     if (!RobotBase.isSimulation()) return
 
-    driveSimulation!!.setSimulationWorldPose(Pose2d(3.meters, 3.meters, 0.radians).pose2d)
+    driveSimulation!!.setSimulationWorldPose(DrivetrainConstants.STARTING_POSE.pose3d.toPose2d())
     SimulatedArena.getInstance().resetFieldForAuto()
   }
 

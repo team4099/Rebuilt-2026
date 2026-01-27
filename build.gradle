@@ -102,6 +102,11 @@ dependencies {
 	implementation "io.javalin:javalin:5.3.2"
 	implementation "gov.nist.math:jama:1.0.3"
 
+	implementation "org.tribuo:tribuo-core:4.3.2"
+	implementation "org.tribuo:tribuo-classification-core:4.3.2"
+	implementation "org.tribuo:tribuo-clustering-core:4.3.2"
+	implementation "org.tribuo:tribuo-clustering-hdbscan:4.3.2"
+	implementation "org.tribuo:tribuo-math:4.3.2"
 
 	def akitJson = new groovy.json.JsonSlurper().parseText(new File(projectDir.getAbsolutePath() + "/vendordeps/AdvantageKit.json").text)
 	annotationProcessor "org.littletonrobotics.akit:akit-autolog:$akitJson.version"
