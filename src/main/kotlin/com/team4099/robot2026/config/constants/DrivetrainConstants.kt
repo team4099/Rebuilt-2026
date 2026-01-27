@@ -3,18 +3,13 @@ package com.team4099.robot2026.config.constants
 import com.team4099.robot2026.subsystems.drivetrain.generated.AlphaBotTunerConstants
 import com.team4099.robot2026.subsystems.drivetrain.generated.CompBotTunerConstants
 import com.team4099.robot2026.subsystems.drivetrain.generated.TestBotTunerConstants
-import com.team4099.robot2026.subsystems.drivetrain.generated.TunerConstants
 import edu.wpi.first.wpilibj.RobotBase
 import kotlin.math.sqrt
 import org.team4099.lib.geometry.Pose2d
-import org.team4099.lib.geometry.Pose3d
-import org.team4099.lib.geometry.Rotation3d
-import org.team4099.lib.geometry.Translation3d
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.amps
-import org.team4099.lib.units.base.feet
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
@@ -38,7 +33,7 @@ import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.perSecond
 
 object DrivetrainConstants {
-  val TunerConstants: TunerConstants =
+  val tunerConstants =
       when (Constants.Universal.whoami) {
         Constants.WHOAMI.COMPBOT -> CompBotTunerConstants
         Constants.WHOAMI.ALPHABOT -> AlphaBotTunerConstants
@@ -75,9 +70,9 @@ object DrivetrainConstants {
       }
     }
 
-  val STARTING_POSE = Pose3d(Translation3d(2.meters, 2.meters, 0.meters), Rotation3d())
+  val DRIVE_SETPOINT_MAX
+    get() = tunerConstants.kSpeedAt12Volts
 
-  var DRIVE_SETPOINT_MAX = 16.feet.perSecond
   val TURN_SETPOINT_MAX =
       (DRIVE_SETPOINT_MAX.inMetersPerSecond / DRIVETRAIN_LENGTH.inMeters / 2 * sqrt(2.0))
           .radians

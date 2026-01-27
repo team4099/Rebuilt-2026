@@ -17,12 +17,12 @@ import org.team4099.lib.units.perSecond
 
 object IntakeConstants {
   val ZERO_OFFSET = ANGLES.STOW_ANGLE
-  val GEAR_RATIO = 0.0 / 1.0
+  val GEAR_RATIO = 1.0 / 1.0
 
   val INTAKE_TOLERANCE = 1.0.degrees
 
-  val PIVOT_INERTIA = 0.0.grams.meterSquared
-  val PIVOT_LENGTH = 0.0.inches
+  val PIVOT_INERTIA = 1.0.grams.meterSquared
+  val PIVOT_LENGTH = 1.0.inches
   val PIVOT_MAX_ANGLE = 120.0.degrees
   val PIVOT_MIN_ANGLE = 0.0.degrees
   // todo changed later

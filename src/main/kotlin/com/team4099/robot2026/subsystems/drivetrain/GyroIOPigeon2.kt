@@ -28,8 +28,8 @@ import org.team4099.lib.units.perSecond
 object GyroIOPigeon2 : GyroIO {
   private val pigeon: Pigeon2 =
       Pigeon2(
-          DrivetrainConstants.TunerConstants.CTREDrivetrainConstants.Pigeon2Id,
-          CANBus(DrivetrainConstants.TunerConstants.CTREDrivetrainConstants.CANBusName))
+          DrivetrainConstants.tunerConstants.CTREDrivetrainConstants.Pigeon2Id,
+          CANBus(DrivetrainConstants.tunerConstants.CTREDrivetrainConstants.CANBusName))
 
   private val roll: StatusSignal<edu.wpi.first.units.measure.Angle> = pigeon.roll
   private val rollPositionQueue: Queue<Double>

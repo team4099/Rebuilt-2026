@@ -1,4 +1,4 @@
-package com.team4099.robot2026.subsystems.Feeders
+package com.team4099.robot2026.subsystems.superstructure.feeder
 
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs

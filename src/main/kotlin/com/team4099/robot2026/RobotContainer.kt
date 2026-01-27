@@ -14,13 +14,13 @@ import com.team4099.robot2026.subsystems.drivetrain.GyroIOPigeon2
 import com.team4099.robot2026.subsystems.drivetrain.GyroIOSim
 import com.team4099.robot2026.subsystems.drivetrain.ModuleIOTalonFXReal
 import com.team4099.robot2026.subsystems.drivetrain.ModuleIOTalonFXSim
-import com.team4099.robot2026.subsystems.feeders.FeederIOTalonFX
 import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import com.team4099.robot2026.subsystems.superstructure.climb.Climb
 import com.team4099.robot2026.subsystems.superstructure.climb.ClimbIOSim
 import com.team4099.robot2026.subsystems.superstructure.climb.ClimbIOTalon
 import com.team4099.robot2026.subsystems.superstructure.feeder.Feeder
 import com.team4099.robot2026.subsystems.superstructure.feeder.FeederIOSim
+import com.team4099.robot2026.subsystems.superstructure.feeder.FeederIOTalonFX
 import com.team4099.robot2026.subsystems.superstructure.hopper.Hopper
 import com.team4099.robot2026.subsystems.superstructure.hopper.HopperIOSim
 import com.team4099.robot2026.subsystems.superstructure.hopper.HopperIOTalon

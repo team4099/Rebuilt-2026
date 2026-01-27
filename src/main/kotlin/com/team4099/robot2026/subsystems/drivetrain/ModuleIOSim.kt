@@ -162,10 +162,10 @@ class ModuleIOSim(
 
     fun generateModules(): Array<ModuleIO> {
       return arrayOf(
-          ModuleIOSim(DrivetrainConstants.TunerConstants.FrontLeft),
-          ModuleIOSim(DrivetrainConstants.TunerConstants.FrontRight),
-          ModuleIOSim(DrivetrainConstants.TunerConstants.BackLeft),
-          ModuleIOSim(DrivetrainConstants.TunerConstants.BackRight))
+          ModuleIOSim(DrivetrainConstants.tunerConstants.FrontLeft),
+          ModuleIOSim(DrivetrainConstants.tunerConstants.FrontRight),
+          ModuleIOSim(DrivetrainConstants.tunerConstants.BackLeft),
+          ModuleIOSim(DrivetrainConstants.tunerConstants.BackRight))
     }
   }
 }
