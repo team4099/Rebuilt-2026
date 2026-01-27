@@ -109,7 +109,6 @@ class AimOTFCommand(
     val (distanceToHub, launchSpeed, timeOfFlight, wantedRotation) =
         Shooter.calculateLaunchData(drivetrain.pose.toPose2d(), drivetrain.chassisSpeeds)
 
-    // PID and clamping of the calculated theta velocity
     val thetaVel = thetaPID.calculate(drivetrain.rotation.z, wantedRotation)
 
     CustomLogger.recordOutput("FaceHubCommand/thetaError", thetaPID.error.inDegrees)
@@ -117,6 +116,12 @@ class AimOTFCommand(
     CustomLogger.recordOutput(
         "FaceHubCommand/wantedPose",
         Pose2d(drivetrain.pose.x, drivetrain.pose.y, wantedRotation).pose2d)
+
+    // Instead of using just angle to check if the robot is aligned, base
+    // error on if the arc length surpasses the inradius of the HUB opening
+    hasAligned = distanceToHub * thetaPID.error.absoluteValue.inRadians < 41.73.inches / 2
+
+    CustomLogger.recordOutput("FaceHubCommand/hasAligned", hasAligned)
 
     // Take the drivers speed being inputted, and clamp the magnitude
     // of the drive vector to < MAX_VELOCITY_RADIUS meters per second
@@ -137,12 +142,6 @@ class AimOTFCommand(
     } else {
       drivetrain.stopWithX()
     }
-
-    // Instead of using just angle to check if the robot is aligned, base
-    // error on if the arc length surpasses the inradius of the HUB opening
-    hasAligned = distanceToHub * thetaPID.error.absoluteValue.inRadians < 41.73.inches / 2
-
-    CustomLogger.recordOutput("FaceHubCommand/hasAligned", hasAligned)
 
     if (RobotBase.isSimulation() &&
         hasAligned &&
