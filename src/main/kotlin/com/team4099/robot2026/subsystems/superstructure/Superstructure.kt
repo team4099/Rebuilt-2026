@@ -22,14 +22,9 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
-import org.team4099.lib.geometry.Pose2dWPILIB
-import org.team4099.lib.geometry.Rotation2dWPILIB
 import org.team4099.lib.geometry.Rotation3d
-import org.team4099.lib.geometry.Rotation3dWPILIB
-import org.team4099.lib.geometry.Transform2dWPILIB
 import org.team4099.lib.geometry.Transform3d
 import org.team4099.lib.units.base.Time
-import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inMilliseconds
 
 class Superstructure(
@@ -94,9 +89,10 @@ class Superstructure(
         (Clock.fpgaTime - shooterStartTime).inMilliseconds)
 
     field.robotPose = drivetrain.pose.toPose2d().pose2d
-    field.getObject("FUEL").poses = vision.objectsDetected[0].map {
-      drivetrain.pose.transformBy(Transform3d(it, Rotation3d())).toPose2d().pose2d
-    }
+    field.getObject("FUEL").poses =
+        vision.objectsDetected[0].map {
+          drivetrain.pose.transformBy(Transform3d(it, Rotation3d())).toPose2d().pose2d
+        }
 
     var nextState = currentState
 

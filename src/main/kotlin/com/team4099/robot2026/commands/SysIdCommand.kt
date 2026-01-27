@@ -20,9 +20,9 @@ class SysIdCommand : Command {
 
   /** Creates a new SysIdCommand for a drive train. */
   constructor(
-    subsystem: Subsystem,
-    driveTrainSetter: BiConsumer<Double, Double>,
-    driveTrainGetter: Supplier<DriveTrainSysIdData>
+      subsystem: Subsystem,
+      driveTrainSetter: BiConsumer<Double, Double>,
+      driveTrainGetter: Supplier<DriveTrainSysIdData>
   ) {
     addRequirements(subsystem)
     isDriveTrain = true
@@ -32,9 +32,9 @@ class SysIdCommand : Command {
 
   /** Creates a new SysIdCommand for a generic mechanism. */
   constructor(
-    subsystem: Subsystem,
-    mechanismSetter: Consumer<Double>,
-    mechanismGetter: Supplier<MechanismSysIdData>
+      subsystem: Subsystem,
+      mechanismSetter: Consumer<Double>,
+      mechanismGetter: Supplier<MechanismSysIdData>
   ) {
     addRequirements(subsystem)
     isDriveTrain = false
@@ -57,11 +57,11 @@ class SysIdCommand : Command {
     // Check if running the correct test
     val test = SmartDashboard.getString("SysIdTest", "Drivetrain")
     val correctTest: Boolean =
-      if (isDriveTrain) {
-        test == "Drivetrain" || test == "Drivetrain (Angular)"
-      } else {
-        test == "Arm" || test == "Elevator" || test == "Simple"
-      }
+        if (isDriveTrain) {
+          test == "Drivetrain" || test == "Drivetrain (Angular)"
+        } else {
+          test == "Arm" || test == "Elevator" || test == "Simple"
+        }
     SmartDashboard.putBoolean("SysIdWrongMech", !correctTest)
 
     // Wrong test, prevent movement
@@ -79,11 +79,11 @@ class SysIdCommand : Command {
     val voltageCommand = SmartDashboard.getNumber("SysIdVoltageCommand", 0.0)
     val rotate = SmartDashboard.getBoolean("SysIdRotate", false)
     val baseVoltage: Double =
-      when (testType) {
-        "Quasistatic" -> voltageCommand * (timestamp - startTime)
-        "Dynamic" -> voltageCommand
-        else -> 0.0
-      }
+        when (testType) {
+          "Quasistatic" -> voltageCommand * (timestamp - startTime)
+          "Dynamic" -> voltageCommand
+          else -> 0.0
+        }
     val primaryVoltage = baseVoltage * if (rotate) -1 else 1
 
     // Set output and get new data
@@ -143,12 +143,12 @@ class SysIdCommand : Command {
    * @param gyroVelRadPerSec Gyro position (radians per second)
    */
   class DriveTrainSysIdData(
-    val leftPosRad: Double,
-    val rightPosRad: Double,
-    val leftVelRadPerSec: Double,
-    val rightVelRadPerSec: Double,
-    val gyroPosRad: Double,
-    val gyroVelRadPerSec: Double
+      val leftPosRad: Double,
+      val rightPosRad: Double,
+      val leftVelRadPerSec: Double,
+      val rightVelRadPerSec: Double,
+      val gyroPosRad: Double,
+      val gyroVelRadPerSec: Double
   )
 
   /** SysId data for a generic mechanism, returned by the subsystem. */
@@ -159,5 +159,5 @@ class SysIdCommand : Command {
    * @param posRad Position (radians)
    * @param velRadPerSec Velocity (radians per second)
    */
-    (val posRad: Double, val velRadPerSec: Double)
+  (val posRad: Double, val velRadPerSec: Double)
 }
