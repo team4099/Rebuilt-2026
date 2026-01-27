@@ -50,10 +50,10 @@ class ModuleIOTalonFXSim(
   companion object {
     fun generateModules(simulation: SwerveDriveSimulation): Array<ModuleIO> {
       return arrayOf(
-          ModuleIOTalonFXSim(DrivetrainConstants.TunerConstants.FrontLeft, simulation.modules[0]),
-          ModuleIOTalonFXSim(DrivetrainConstants.TunerConstants.FrontRight, simulation.modules[1]),
-          ModuleIOTalonFXSim(DrivetrainConstants.TunerConstants.BackLeft, simulation.modules[2]),
-          ModuleIOTalonFXSim(DrivetrainConstants.TunerConstants.BackRight, simulation.modules[3]))
+          ModuleIOTalonFXSim(DrivetrainConstants.tunerConstants.FrontLeft, simulation.modules[0]),
+          ModuleIOTalonFXSim(DrivetrainConstants.tunerConstants.FrontRight, simulation.modules[1]),
+          ModuleIOTalonFXSim(DrivetrainConstants.tunerConstants.BackLeft, simulation.modules[2]),
+          ModuleIOTalonFXSim(DrivetrainConstants.tunerConstants.BackRight, simulation.modules[3]))
     }
   }
 }

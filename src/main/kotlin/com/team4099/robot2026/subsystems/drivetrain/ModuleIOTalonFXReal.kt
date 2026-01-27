@@ -53,10 +53,10 @@ class ModuleIOTalonFXReal(
   companion object {
     fun generateModules(): Array<ModuleIO> {
       return arrayOf(
-          ModuleIOTalonFXReal(DrivetrainConstants.TunerConstants.FrontLeft),
-          ModuleIOTalonFXReal(DrivetrainConstants.TunerConstants.FrontRight),
-          ModuleIOTalonFXReal(DrivetrainConstants.TunerConstants.BackLeft),
-          ModuleIOTalonFXReal(DrivetrainConstants.TunerConstants.BackRight))
+          ModuleIOTalonFXReal(DrivetrainConstants.tunerConstants.FrontLeft),
+          ModuleIOTalonFXReal(DrivetrainConstants.tunerConstants.FrontRight),
+          ModuleIOTalonFXReal(DrivetrainConstants.tunerConstants.BackLeft),
+          ModuleIOTalonFXReal(DrivetrainConstants.tunerConstants.BackRight))
     }
   }
 }

@@ -150,7 +150,7 @@ class PhoenixOdometryThread private constructor() : Thread() {
 
   companion object {
     private val isCANFD =
-        CANBus(DrivetrainConstants.TunerConstants.CTREDrivetrainConstants.CANBusName).isNetworkFD
+        CANBus(DrivetrainConstants.tunerConstants.CTREDrivetrainConstants.CANBusName).isNetworkFD
 
     @JvmStatic var instance: PhoenixOdometryThread = PhoenixOdometryThread()
   }
