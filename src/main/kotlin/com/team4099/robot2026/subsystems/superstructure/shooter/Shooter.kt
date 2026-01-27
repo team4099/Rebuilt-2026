@@ -37,12 +37,14 @@ import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inRotation2ds
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.radians
+import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.sin
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.inMetersPerSecondPerSecond
 import org.team4099.lib.units.inRadiansPerSecond
 import org.team4099.lib.units.inRotationsPerMinute
+import org.team4099.lib.units.perMinute
 import org.team4099.lib.units.perSecond
 
 class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
@@ -113,7 +115,7 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
         nextState = fromShooterRequestToState(currentRequest)
       }
       ShooterState.IDLE -> {
-        io.setVoltage(ShooterConstants.IDLE_VOLTAGE)
+        io.setVelocity(ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY)
         nextState = fromShooterRequestToState(currentRequest)
       }
     }
@@ -401,7 +403,8 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
 
     init {
       // TODO: add values to this treemap
-      // launchVelToShooterRPMMap.put()
+      launchVelToShooterRPMMap.put(0.meters.perSecond, 0.rotations.perMinute)
+      launchVelToShooterRPMMap.put(2.88.meters.perSecond, ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY)
       Unit
     }
   }

@@ -40,10 +40,8 @@ object ShooterConstants {
 
   val SHOOTER_TOLERANCE = 75.0.rotations.perMinute
 
-  val IDLE_VOLTAGE = 1.5.volts // todo change
-
   object VELOCITIES {
-    val MINIMUM_LAUNCH_VELOCITY = 500.0.rotations.perMinute // todo also to be changed later
+    val MINIMUM_LAUNCH_VELOCITY = 1200.0.rotations.perMinute
   }
 
   object PID {
