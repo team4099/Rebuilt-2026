@@ -363,8 +363,9 @@ class Drive(
 
   var pose: Pose3d
     /** Returns the current odometry pose. */
-    get() = Pose3d(poseEstimator.estimatedPosition)
-
+    get() =
+        if (RobotBase.isReal()) Pose3d(poseEstimator.estimatedPosition)
+        else Pose3d(Pose2d(getSimulationPoseCallback.get()))
     /** Resets the current odometry pose. */
     set(pose) {
       resetSimulationPoseCallback.accept(pose.toPose2d().pose2d)

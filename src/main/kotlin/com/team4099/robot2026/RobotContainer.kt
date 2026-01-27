@@ -48,8 +48,6 @@ import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.geometry.Transform3d
 import org.team4099.lib.smoothDeadband
-import org.team4099.lib.units.base.meters
-import org.team4099.lib.units.derived.radians
 
 object RobotContainer {
   private val drivetrain: Drive
@@ -183,7 +181,7 @@ object RobotContainer {
   fun resetSimulationField() {
     if (!RobotBase.isSimulation()) return
 
-    driveSimulation!!.setSimulationWorldPose(Pose2d(3.meters, 3.meters, 0.radians).pose2d)
+    driveSimulation!!.setSimulationWorldPose(DrivetrainConstants.INITIAL_SIM_POSE.toPose2d())
     SimulatedArena.getInstance().resetFieldForAuto()
   }
 
