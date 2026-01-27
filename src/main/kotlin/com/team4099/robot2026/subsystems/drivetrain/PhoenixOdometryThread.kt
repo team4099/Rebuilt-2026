@@ -152,8 +152,8 @@ class PhoenixOdometryThread private constructor() : Thread() {
 
   companion object {
     // trust me, keep the when statement - nathan
-    val isCANFD =
-        when (Constants.Universal.whoami) {
+    val isCANFD
+        get() = when (Constants.Universal.whoami) {
               Constants.WHOAMI.TESTBOT -> TestBotTunerConstants
               Constants.WHOAMI.COMPBOT -> CompBotTunerConstants
               Constants.WHOAMI.ALPHABOT -> AlphaBotTunerConstants

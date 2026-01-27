@@ -25,8 +25,8 @@ object VisionConstants {
 
   val CONFIDENCE_THRESHOLD = 0.75
 
-  val CAMERA_TRANSFORMS: List<Transform3d> =
-      when (Constants.Universal.whoami) {
+  val CAMERA_TRANSFORMS: List<Transform3d>
+    get() = when (Constants.Universal.whoami) {
         WHOAMI.TESTBOT ->
             listOf(
                 Transform3d(
@@ -39,8 +39,8 @@ object VisionConstants {
         else -> listOf()
       }
 
-  val CAMERA_NAMES: List<String> =
-      when (Constants.Universal.whoami) {
+  val CAMERA_NAMES: List<String>
+    get() = when (Constants.Universal.whoami) {
         WHOAMI.TESTBOT -> listOf("raven_1, raven_2")
         else -> listOf()
       }

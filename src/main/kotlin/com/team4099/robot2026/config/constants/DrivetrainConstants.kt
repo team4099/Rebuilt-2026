@@ -11,6 +11,7 @@ import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.amps
+import org.team4099.lib.units.base.feet
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
@@ -34,8 +35,8 @@ import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.perSecond
 
 object DrivetrainConstants {
-  val tunerConstants =
-      when (Constants.Universal.whoami) {
+  val tunerConstants
+    get() = when (Constants.Universal.whoami) {
         Constants.WHOAMI.COMPBOT -> CompBotTunerConstants
         Constants.WHOAMI.ALPHABOT -> AlphaBotTunerConstants
         Constants.WHOAMI.TESTBOT -> TestBotTunerConstants
@@ -44,32 +45,32 @@ object DrivetrainConstants {
   const val TELEOP_TURNING_SPEED_PERCENT = 0.6
 
   val WHEEL_DIAMETER: Length
-    get() {
-      return when (Constants.Universal.whoami) {
+    get() = when (Constants.Universal.whoami) {
         else -> (2 * 2).inches
       }
-    }
 
-  val DRIVETRAIN_LENGTH: Length =
+  val DRIVETRAIN_LENGTH: Length
+    get() =
       when (Constants.Universal.whoami) {
         else -> 28.5.inches
       }
 
-  val DRIVETRAIN_WIDTH: Length =
+  val DRIVETRAIN_WIDTH: Length
+    get() =
       when (Constants.Universal.whoami) {
         else -> 28.5.inches
       }
 
-  val BUMPER_WIDTH: Length =
-      when (Constants.Universal.whoami) {
+  val BUMPER_WIDTH: Length
+    get() = when (Constants.Universal.whoami) {
         else -> 3.25.inches
       }
 
   val DRIVE_SETPOINT_MAX
     get() = tunerConstants.kSpeedAt12Volts
 
-  val TURN_SETPOINT_MAX =
-      (DRIVE_SETPOINT_MAX.inMetersPerSecond / DRIVETRAIN_LENGTH.inMeters / 2 * sqrt(2.0))
+  val TURN_SETPOINT_MAX
+    get() = (DRIVE_SETPOINT_MAX.inMetersPerSecond / DRIVETRAIN_LENGTH.inMeters / 2 * sqrt(2.0))
           .radians
           .perSecond // 648
 
@@ -172,8 +173,8 @@ object DrivetrainConstants {
     val STEERING_KP = 10.0.volts / 45.degrees
     val STEERING_KI = 0.0.volts.perDegreeSeconds
     val STEERING_KD = 0.0.volts.perDegreePerSecond
-    val STEERING_KV: VelocityFeedforward<Radian, Volt> =
-        when (Constants.Universal.whoami) {
+    val STEERING_KV: VelocityFeedforward<Radian, Volt>
+      get() = when (Constants.Universal.whoami) {
           else -> 0.0.volts / 1.0.radians.perSecond
         }
 
@@ -181,17 +182,17 @@ object DrivetrainConstants {
     val DRIVE_KI = 0.0.volts / (1.meters.perSecond * 1.seconds)
     val DRIVE_KD = 0.1.volts / 1.meters.perSecond.perSecond
 
-    val DRIVE_KS =
-        when (Constants.Universal.whoami) {
+    val DRIVE_KS
+      get() = when (Constants.Universal.whoami) {
           else -> 0.236.volts
         }
-    val DRIVE_KV: VelocityFeedforward<Meter, Volt> =
-        when (Constants.Universal.whoami) {
+    val DRIVE_KV: VelocityFeedforward<Meter, Volt>
+      get() = when (Constants.Universal.whoami) {
           else -> 2.117.volts / 1.0.meters.perSecond
         }
 
-    val DRIVE_KA: AccelerationFeedforward<Meter, Volt> =
-        when (Constants.Universal.whoami) {
+    val DRIVE_KA: AccelerationFeedforward<Meter, Volt>
+      get() = when (Constants.Universal.whoami) {
           else -> 0.0.volts / 1.0.meters.perSecond.perSecond
         }
 
