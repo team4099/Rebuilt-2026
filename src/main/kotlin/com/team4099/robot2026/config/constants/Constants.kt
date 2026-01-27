@@ -87,4 +87,10 @@ object Constants {
     const val LEADER_MOTOR_ID = -1337
     const val FOLLOWER_MOTOR_ID = -1337
   }
+
+  object ClusterScore {
+    val COMPACTNESS_WEIGHT = 1.0
+    val DISTANCE_WEIGHT = 1.0
+    val MIN_SCORE_CLUSTER_SIZE = 1.0
+  }
 }
