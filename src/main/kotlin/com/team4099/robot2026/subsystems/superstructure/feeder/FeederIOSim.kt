@@ -3,7 +3,6 @@ package com.team4099.robot2026.subsystems.superstructure.feeder
 import com.team4099.lib.math.clamp
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.FeederConstants
-import com.team4099.robot2026.subsystems.Feeders.FeederIO
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.math.system.plant.LinearSystemId
 import edu.wpi.first.wpilibj.simulation.FlywheelSim

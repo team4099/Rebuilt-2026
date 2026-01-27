@@ -9,7 +9,6 @@ import com.ctre.phoenix6.signals.InvertedValue
 import com.team4099.lib.math.clamp
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.RollersConstants
-import com.team4099.robot2026.subsystems.superstructure.Intake.Rollers.IntakeRollersIO
 import edu.wpi.first.units.measure.AngularAcceleration
 import edu.wpi.first.units.measure.AngularVelocity
 import edu.wpi.first.units.measure.Current

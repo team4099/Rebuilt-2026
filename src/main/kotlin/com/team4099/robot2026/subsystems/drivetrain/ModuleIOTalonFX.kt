@@ -86,9 +86,9 @@ abstract class ModuleIOTalonFX(
   private val turnEncoderConnectedDebounce: Debouncer = Debouncer(0.5)
 
   init {
-    driveTalon = TalonFX(constants.DriveMotorId, DrivetrainConstants.TunerConstants.kCANBus)
-    turnTalon = TalonFX(constants.SteerMotorId, DrivetrainConstants.TunerConstants.kCANBus)
-    cancoder = CANcoder(constants.EncoderId, DrivetrainConstants.TunerConstants.kCANBus)
+    driveTalon = TalonFX(constants.DriveMotorId, DrivetrainConstants.tunerConstants.kCANBus)
+    turnTalon = TalonFX(constants.SteerMotorId, DrivetrainConstants.tunerConstants.kCANBus)
+    cancoder = CANcoder(constants.EncoderId, DrivetrainConstants.tunerConstants.kCANBus)
 
     // Configure drive motor
     val driveConfig = constants.DriveMotorInitialConfigs!!

@@ -18,6 +18,7 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerMotorArrangement
 import com.ctre.phoenix6.swerve.SwerveModuleConstantsFactory
 import com.team4099.robot2026.config.constants.DrivetrainConstants
 import com.team4099.robot2026.config.constants.GyroConstants
+import org.team4099.lib.units.base.feet
 import org.team4099.lib.units.base.grams
 import org.team4099.lib.units.base.inAmperes
 import org.team4099.lib.units.base.inMeters
@@ -39,6 +40,7 @@ import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.kilo
+import org.team4099.lib.units.perSecond
 
 // TODO THESE ARE FAKE
 object CompBotTunerConstants : TunerConstants {
@@ -139,7 +141,7 @@ object CompBotTunerConstants : TunerConstants {
 
   // Theoretical free speed (m/s) at 12 V applied output;
   // This needs to be tuned to your individual robot
-  override val kSpeedAt12Volts = DrivetrainConstants.DRIVE_SETPOINT_MAX
+  override val kSpeedAt12Volts = 16.feet.perSecond
 
   // Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;
   // This may need to be tuned to your individual robot

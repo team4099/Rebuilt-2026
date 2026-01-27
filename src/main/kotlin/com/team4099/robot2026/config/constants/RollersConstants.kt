@@ -15,7 +15,7 @@ object RollersConstants {
   val EJECT_VOLTAGE = (-3.0).volts
   val INTAKE_VOLTAGE = 6.0.volts
 
-  val MOMENT_OF_INERTIA = 0.0.kilo.grams.meterSquared // TODO: Change
+  val MOMENT_OF_INERTIA = 1.0.grams.meterSquared // TODO: Change
 
   val SUPPLY_CURRENT_LIMIT = 40.0.amps
   val STATOR_CURRENT_LIMIT = 40.0.amps
