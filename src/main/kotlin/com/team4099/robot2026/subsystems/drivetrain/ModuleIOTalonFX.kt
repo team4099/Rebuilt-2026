@@ -50,9 +50,12 @@ abstract class ModuleIOTalonFX(
     val constants:
         SwerveModuleConstants<TalonFXConfiguration?, TalonFXConfiguration?, CANcoderConfiguration?>
 ) : ModuleIO {
-  protected val driveTalon: TalonFX
-  protected val turnTalon: TalonFX
-  protected val cancoder: CANcoder
+  protected val driveTalon: TalonFX =
+      TalonFX(constants.DriveMotorId, DrivetrainConstants.tunerConstants.kCANBus)
+  protected val turnTalon: TalonFX =
+      TalonFX(constants.SteerMotorId, DrivetrainConstants.tunerConstants.kCANBus)
+  protected val cancoder: CANcoder =
+      CANcoder(constants.EncoderId, DrivetrainConstants.tunerConstants.kCANBus)
 
   protected val voltageRequest = VoltageOut(0.0).withEnableFOC(true)
   protected val positionVoltageRequest = MotionMagicVoltage(0.0).withEnableFOC(true)
@@ -86,10 +89,6 @@ abstract class ModuleIOTalonFX(
   private val turnEncoderConnectedDebounce: Debouncer = Debouncer(0.5)
 
   init {
-    driveTalon = TalonFX(constants.DriveMotorId, DrivetrainConstants.tunerConstants.kCANBus)
-    turnTalon = TalonFX(constants.SteerMotorId, DrivetrainConstants.tunerConstants.kCANBus)
-    cancoder = CANcoder(constants.EncoderId, DrivetrainConstants.tunerConstants.kCANBus)
-
     // Configure drive motor
     val driveConfig = constants.DriveMotorInitialConfigs!!
     driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake
