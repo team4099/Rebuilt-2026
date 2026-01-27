@@ -144,7 +144,11 @@ class AimOTFCommand(
 
     CustomLogger.recordOutput("FaceHubCommand/hasAligned", hasAligned)
 
-    if (RobotBase.isSimulation() && hasAligned && Clock.fpgaTime.inSeconds % .25 < 0.05 && RobotContainer.superstructure.currentState == Superstructure.Companion.SuperstructureStates.SCORE) {
+    if (RobotBase.isSimulation() &&
+        hasAligned &&
+        Clock.fpgaTime.inSeconds % .25 < 0.05 &&
+        RobotContainer.superstructure.currentState ==
+            Superstructure.Companion.SuperstructureStates.SCORE) {
       SimulatedArena.getInstance()
           .addGamePieceProjectile(
               RebuiltFuelOnFly(

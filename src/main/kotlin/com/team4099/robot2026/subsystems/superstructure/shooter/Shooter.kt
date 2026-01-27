@@ -404,7 +404,8 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
     init {
       // TODO: add values to this treemap
       launchVelToShooterRPMMap.put(0.meters.perSecond, 0.rotations.perMinute)
-      launchVelToShooterRPMMap.put(2.88.meters.perSecond, ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY)
+      launchVelToShooterRPMMap.put(
+          2.88.meters.perSecond, ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY)
       Unit
     }
   }
