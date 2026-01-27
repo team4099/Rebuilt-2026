@@ -1,4 +1,4 @@
-package com.team4099.robot2026.subsystems.climb
+package com.team4099.robot2026.subsystems.superstructure.climb
 
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs

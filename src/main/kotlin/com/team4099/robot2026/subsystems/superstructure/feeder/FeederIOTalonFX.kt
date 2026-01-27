@@ -1,4 +1,4 @@
-package com.team4099.robot2025.subsystems.feeders
+package com.team4099.robot2026.subsystems.feeders
 
 import com.ctre.phoenix6.BaseStatusSignal
 import com.ctre.phoenix6.StatusSignal
@@ -6,9 +6,9 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration
 import com.ctre.phoenix6.controls.VoltageOut
 import com.ctre.phoenix6.hardware.TalonFX
 import com.ctre.phoenix6.signals.NeutralModeValue
-import com.team4099.robot2025.subsystems.Feeders.FeederIO
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.FeederConstants
+import com.team4099.robot2026.subsystems.Feeders.FeederIO
 import edu.wpi.first.units.measure.Angle as WPILibAngle
 import edu.wpi.first.units.measure.AngularAcceleration as WPILibAngularAcceleration
 import edu.wpi.first.units.measure.AngularVelocity as WPILibAngularVelocity

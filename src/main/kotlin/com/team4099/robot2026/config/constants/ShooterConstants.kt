@@ -33,7 +33,11 @@ object ShooterConstants {
 
   val SHOOTER_TOLERANCE = 75.0.rotations.perMinute
 
-  val IDLE_VOLTAGE = 1.5.volts
+  val IDLE_VOLTAGE = 1.5.volts // todo change
+
+  object VELOCITIES {
+    val SCORING_VELOCITY = 600.0.rotations.perMinute // todo also to be changed later
+  }
 
   object PID {
     val REAL_KP: ProportionalGain<Velocity<Radian>, Volt> = 0.0.volts / 1.0.degrees.perSecond

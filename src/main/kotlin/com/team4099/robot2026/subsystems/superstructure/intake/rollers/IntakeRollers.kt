@@ -1,6 +1,6 @@
-package com.team4099.robot2026.subsystems.superstructure.Intake.Rollers
+package com.team4099.robot2026.subsystems.superstructure.intake.rollers
 
-import com.team4099.robot2025.subsystems.superstructure.Intake.Rollers.IntakeRollersIO
+import com.team4099.robot2026.subsystems.superstructure.Intake.Rollers.IntakeRollersIO
 import com.team4099.robot2026.subsystems.superstructure.Request
 import com.team4099.robot2026.util.ControlledByStateMachine
 import com.team4099.robot2026.util.CustomLogger
@@ -28,8 +28,8 @@ class IntakeRollers(private val io: IntakeRollersIO) : ControlledByStateMachine(
 
   override fun onLoop() {
     io.updateInputs(inputs)
-    CustomLogger.processInputs("Rollers", inputs)
-    CustomLogger.recordOutput("Rollers/currentState", currentState.toString())
+    CustomLogger.processInputs("rollers", inputs)
+    CustomLogger.recordOutput("rollers/currentState", currentState.toString())
 
     var nextState = currentState
     when (currentState) {

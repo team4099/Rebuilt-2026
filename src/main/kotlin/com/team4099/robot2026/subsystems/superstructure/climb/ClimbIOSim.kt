@@ -1,4 +1,4 @@
-package com.team4099.robot2026.subsystems.climb
+package com.team4099.robot2026.subsystems.superstructure.climb
 
 import com.team4099.lib.math.clamp
 import com.team4099.robot2026.config.constants.ClimbConstants

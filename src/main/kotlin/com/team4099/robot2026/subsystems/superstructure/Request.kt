@@ -6,7 +6,21 @@ import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.ElectricalPotential
 
 sealed interface Request {
-  sealed interface SuperstructureRequest : Request
+  sealed interface SuperstructureRequest : Request {
+    class Idle() : SuperstructureRequest
+
+    class ExtendClimb() : SuperstructureRequest
+
+    class RetractClimb() : SuperstructureRequest
+
+    class PrepScore() : SuperstructureRequest
+
+    class Score() : SuperstructureRequest
+
+    class Intake() : SuperstructureRequest
+
+    class Eject() : SuperstructureRequest
+  }
 
   sealed interface ClimbRequest : Request {
     class TargetingPosition(val position: Length) : ClimbRequest

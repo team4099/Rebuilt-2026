@@ -1,8 +1,8 @@
-package com.team4099.robot2026.subsystems.superstructure.Intake
+package com.team4099.robot2026.subsystems.superstructure.intake
 
 import com.team4099.lib.math.clamp
-import com.team4099.robot2025.config.constants.IntakeConstants
 import com.team4099.robot2026.config.constants.Constants
+import com.team4099.robot2026.config.constants.IntakeConstants
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim
 import org.team4099.lib.controller.ProfiledPIDController
