@@ -12,7 +12,6 @@ import org.team4099.lib.units.milli
 import org.team4099.lib.units.perSecond
 
 object Constants {
-
   object Universal {
     val gravity = 9.81.meters.perSecond.perSecond
     val SIM_MODE = Tuning.SimType.SIM
@@ -66,12 +65,17 @@ object Constants {
     val TABS = arrayOf("Pre-match", "In-match")
   }
 
+  // TODO: change when motors are mounted on robot
+  object Climb {
+    val MOTOR_ID = -1337
+  }
+
   object Hopper {
     const val HOPPER_MOTOR_ID = -1337
   }
 
   object Feeder {
-    const val FEEDER_MOTOR_ID = 61
+    const val FEEDER_MOTOR_ID = -1337
   }
 
   object Intake {
@@ -80,8 +84,8 @@ object Constants {
   }
 
   object Shooter {
-    const val LEADER_MOTOR_ID = 42
-    const val FOLLOWER_MOTOR_ID = 43
+    const val LEADER_MOTOR_ID = -1337
+    const val FOLLOWER_MOTOR_ID = -1337
   }
 
   object ClusterScore {

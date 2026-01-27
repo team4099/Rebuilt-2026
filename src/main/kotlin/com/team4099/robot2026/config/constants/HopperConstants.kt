@@ -14,6 +14,10 @@ object HopperConstants {
 
   val VOLTAGE_COMPENSATION = 12.volts
 
-  val IDLE_VOLTAGE = 0.0.volts
+  object Voltages {
+    val SCORE_VOLTAGE = 6.7.volts // to be changed later ig
+    val IDLE_VOLTAGE = 0.0.volts
+  }
+
   val MOMENT_OF_INERTIA = 0.0008656281.kilo.grams.meterSquared
 }

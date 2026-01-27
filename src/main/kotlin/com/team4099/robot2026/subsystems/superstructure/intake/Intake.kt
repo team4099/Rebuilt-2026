@@ -1,6 +1,6 @@
-package com.team4099.robot2026.subsystems.superstructure.Intake
+package com.team4099.robot2026.subsystems.superstructure.intake
 
-import com.team4099.robot2025.config.constants.IntakeConstants
+import com.team4099.robot2026.config.constants.IntakeConstants
 import com.team4099.robot2026.subsystems.superstructure.Request
 import com.team4099.robot2026.util.ControlledByStateMachine
 import com.team4099.robot2026.util.CustomLogger
@@ -44,14 +44,14 @@ class Intake(private val io: IntakeIO) : ControlledByStateMachine() {
 
   override fun onLoop() {
     io.updateInputs(inputs)
-    CustomLogger.processInputs("Intake", inputs)
-    CustomLogger.recordOutput("Intake/currentState", currentState.toString())
+    CustomLogger.processInputs("intake", inputs)
+    CustomLogger.recordOutput("intake/currentState", currentState.toString())
 
     var nextState = currentState
-    CustomLogger.recordOutput("Intake/pivotTargetPosition", pivotPositionTarget.inDegrees)
-    CustomLogger.recordOutput("Intake/pivotTargetVoltage", pivotVoltageTarget.inVolts)
+    CustomLogger.recordOutput("intake/pivotTargetPosition", pivotPositionTarget.inDegrees)
+    CustomLogger.recordOutput("intake/pivotTargetVoltage", pivotVoltageTarget.inVolts)
 
-    CustomLogger.recordOutput("Intake/isAtTargetedPosition", isAtTargetedPosition)
+    CustomLogger.recordOutput("intake/isAtTargetedPosition", isAtTargetedPosition)
 
     when (currentState) {
       IntakeState.UNINITIALIZED -> {

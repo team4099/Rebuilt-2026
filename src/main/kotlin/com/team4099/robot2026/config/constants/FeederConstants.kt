@@ -12,5 +12,6 @@ object FeederConstants {
   val VOLTAGE_COMPENSATION = 12.0.volts
   val IDLE_VOLTAGE = 0.0.volts
   // TODO: Change this value later
+  val SCORE_VOLTAGE = 5.0.volts // TODO: CHANGE THIS LATER
   val MOMENT_OF_INERTIA = 0.35.grams.meterSquared
 }

@@ -1,4 +1,4 @@
-package com.team4099.robot2025.config.constants
+package com.team4099.robot2026.config.constants
 
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.grams
@@ -25,6 +25,8 @@ object IntakeConstants {
   val PIVOT_LENGTH = 0.0.inches
   val PIVOT_MAX_ANGLE = 120.0.degrees
   val PIVOT_MIN_ANGLE = 0.0.degrees
+  // todo changed later
+  val PIVOT_VOLTAGE = 0.0.volts
 
   val STATOR_CURRENT_LIMIT = 30.amps
   val SUPPLY_CURRENT_LIMIT = 30.amps
@@ -42,6 +44,7 @@ object IntakeConstants {
   object ANGLES {
     val INTAKE_ANGLE = 0.0.degrees
     val STOW_ANGLE = 0.0.degrees
+    val EJECT_ANGLE = 0.degrees
   }
 
   object PID {
