@@ -38,7 +38,6 @@ import org.littletonrobotics.junction.LoggedRobot
 import org.littletonrobotics.junction.Logger
 import org.littletonrobotics.junction.wpilog.WPILOGReader
 import org.littletonrobotics.junction.wpilog.WPILOGWriter
-import org.team4099.lib.smoothDeadband
 import org.team4099.lib.units.base.inMilliseconds
 
 object Robot : LoggedRobot() {

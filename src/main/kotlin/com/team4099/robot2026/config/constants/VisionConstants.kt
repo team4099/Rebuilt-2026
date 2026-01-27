@@ -26,24 +26,26 @@ object VisionConstants {
   val CONFIDENCE_THRESHOLD = 0.75
 
   val CAMERA_TRANSFORMS: List<Transform3d>
-    get() = when (Constants.Universal.whoami) {
-        WHOAMI.TESTBOT ->
-            listOf(
-                Transform3d(
-                    Translation3d(10.3.inches, 11.255.inches, 8.397.inches),
-                    Rotation3d(0.0.degrees, -20.degrees, -30.degrees)), // raven_1
-                Transform3d(
-                    Translation3d(10.3.inches, -11.255.inches, 8.397.inches),
-                    Rotation3d(0.0.degrees, -20.degrees, 30.degrees)), // raven_2
-            )
-        else -> listOf()
-      }
+    get() =
+        when (Constants.Universal.whoami) {
+          WHOAMI.TESTBOT ->
+              listOf(
+                  Transform3d(
+                      Translation3d(10.3.inches, 11.255.inches, 8.397.inches),
+                      Rotation3d(0.0.degrees, -20.degrees, -30.degrees)), // raven_1
+                  Transform3d(
+                      Translation3d(10.3.inches, -11.255.inches, 8.397.inches),
+                      Rotation3d(0.0.degrees, -20.degrees, 30.degrees)), // raven_2
+              )
+          else -> listOf()
+        }
 
   val CAMERA_NAMES: List<String>
-    get() = when (Constants.Universal.whoami) {
-        WHOAMI.TESTBOT -> listOf("raven_1, raven_2")
-        else -> listOf()
-      }
+    get() =
+        when (Constants.Universal.whoami) {
+          WHOAMI.TESTBOT -> listOf("raven_1, raven_2")
+          else -> listOf()
+        }
 
   // x, y, θ
   // TODO tune
