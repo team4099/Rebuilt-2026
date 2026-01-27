@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMilliseconds
+import org.team4099.lib.units.max
 
 class Superstructure(
     private val drivetrain: Drive,
@@ -123,7 +124,8 @@ class Superstructure(
       }
       SuperstructureStates.PREP_SCORE -> {
         shooter.currentRequest =
-            Request.ShooterRequest.TargetVelocity(ShooterConstants.VELOCITIES.SCORING_VELOCITY)
+            Request.ShooterRequest.TargetVelocity(
+                ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY)
 
         when (currentRequest) {
           is SuperstructureRequest.Idle -> nextState = SuperstructureStates.IDLE
@@ -139,8 +141,15 @@ class Superstructure(
         feeder.currentRequest = Request.FeederRequest.OpenLoop(FeederConstants.SCORE_VOLTAGE)
         hopper.currentRequest =
             Request.HopperRequest.OpenLoop(HopperConstants.Voltages.SCORE_VOLTAGE)
-        shooter.currentRequest =
-            Request.ShooterRequest.TargetVelocity(ShooterConstants.VELOCITIES.SCORING_VELOCITY)
+
+        val launchData =
+            Shooter.calculateLaunchData(drivetrain.pose.toPose2d(), drivetrain.chassisSpeeds)
+        val shooterTargetRPM =
+            max(
+                Shooter.launchVelToShooterRPMMap.get(launchData.launchVelocity),
+                ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY)
+
+        shooter.currentRequest = Request.ShooterRequest.TargetVelocity(shooterTargetRPM)
 
         when (currentRequest) {
           is SuperstructureRequest.Idle -> nextState = SuperstructureStates.IDLE

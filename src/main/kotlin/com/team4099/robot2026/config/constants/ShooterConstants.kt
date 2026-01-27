@@ -1,9 +1,12 @@
 package com.team4099.robot2026.config.constants
 
+import org.team4099.lib.geometry.Transform2d
+import org.team4099.lib.geometry.Translation2d
 import org.team4099.lib.units.AngularAcceleration
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.grams
+import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.AccelerationFeedforward
 import org.team4099.lib.units.derived.DerivativeGain
@@ -23,6 +26,10 @@ import org.team4099.lib.units.perMinute
 import org.team4099.lib.units.perSecond
 
 object ShooterConstants {
+  val SHOOTER_HEIGHT = 14.876.inches
+  val SHOOTER_ANGLE = 70.degrees
+  val SHOOTER_OFFSET = Transform2d(Translation2d(0.inches, 0.inches), 0.radians)
+
   val GEAR_RATIO: Double = 24.0 / 24.0
   val SUPPLY_CURRENT_LIMIT = 40.0.amps
   val STATOR_CURRENT_LIMIT = 40.0.amps
@@ -36,7 +43,7 @@ object ShooterConstants {
   val IDLE_VOLTAGE = 1.5.volts // todo change
 
   object VELOCITIES {
-    val SCORING_VELOCITY = 600.0.rotations.perMinute // todo also to be changed later
+    val MINIMUM_LAUNCH_VELOCITY = 500.0.rotations.perMinute // todo also to be changed later
   }
 
   object PID {
