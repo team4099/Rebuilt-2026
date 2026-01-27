@@ -48,8 +48,6 @@ import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.geometry.Transform3d
 import org.team4099.lib.smoothDeadband
-import org.team4099.lib.units.base.meters
-import org.team4099.lib.units.derived.radians
 
 object RobotContainer {
   private val drivetrain: Drive
@@ -101,7 +99,8 @@ object RobotContainer {
       shooter = Shooter(ShooterIOTalon)
     } else {
       driveSimulation =
-        SwerveDriveSimulation(Drive.mapleSimConfig, DrivetrainConstants.STARTING_POSE.pose3d.toPose2d())
+          SwerveDriveSimulation(
+              Drive.mapleSimConfig, DrivetrainConstants.INITIAL_SIM_POSE.toPose2d())
       SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation)
 
       drivetrain =
@@ -182,7 +181,7 @@ object RobotContainer {
   fun resetSimulationField() {
     if (!RobotBase.isSimulation()) return
 
-    driveSimulation!!.setSimulationWorldPose(DrivetrainConstants.STARTING_POSE.pose3d.toPose2d())
+    driveSimulation!!.setSimulationWorldPose(DrivetrainConstants.INITIAL_SIM_POSE.toPose2d())
     SimulatedArena.getInstance().resetFieldForAuto()
   }
 

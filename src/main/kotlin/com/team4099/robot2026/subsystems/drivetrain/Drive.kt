@@ -12,7 +12,6 @@
 // GNU General Public License for more details.
 package com.team4099.robot2026.subsystems.drivetrain
 
-import com.ctre.phoenix6.CANBus
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.config.ModuleConfig
 import com.pathplanner.lib.config.PIDConstants
@@ -115,7 +114,7 @@ class Drive(
           kinematics,
           rawGyroRotation.rotation3d,
           lastModulePositions,
-          DrivetrainConstants.STARTING_POSE.pose3d)
+          DrivetrainConstants.INITIAL_SIM_POSE)
 
   init {
     modules[0] = Module(moduleIOs[0], 0, DrivetrainConstants.tunerConstants.FrontLeft)
@@ -364,8 +363,9 @@ class Drive(
 
   var pose: Pose3d
     /** Returns the current odometry pose. */
-    get() = Pose3d(poseEstimator.estimatedPosition)
-
+    get() =
+        if (RobotBase.isReal()) Pose3d(poseEstimator.estimatedPosition)
+        else Pose3d(Pose2d(getSimulationPoseCallback.get()))
     /** Resets the current odometry pose. */
     set(pose) {
       resetSimulationPoseCallback.accept(pose.toPose2d().pose2d)
@@ -395,12 +395,8 @@ class Drive(
 
   companion object {
     // TunerConstants doesn't include these constants, so they are declared locally
-    @JvmField
-    val ODOMETRY_FREQUENCY: Double =
-        if (CANBus(DrivetrainConstants.tunerConstants.CTREDrivetrainConstants.CANBusName)
-            .isNetworkFD)
-            250.0
-        else 100.0
+    @JvmField val ODOMETRY_FREQUENCY: Double = if (PhoenixOdometryThread.isCANFD) 250.0 else 100.0
+
     val DRIVE_BASE_RADIUS: Double =
         max(
             max(
@@ -483,8 +479,8 @@ class Drive(
                         DrivetrainConstants.tunerConstants.BackRight)
                     .map {
                       SwerveModuleSimulationConfig(
-                          DCMotor.getKrakenX60(1),
-                          DCMotor.getKrakenX60(1),
+                          DCMotor.getKrakenX60Foc(1),
+                          DCMotor.getKrakenX60Foc(1),
                           it.DriveMotorGearRatio,
                           it.SteerMotorGearRatio,
                           Volts.of(it.DriveFrictionVoltage),
