@@ -12,6 +12,7 @@ import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.DrivetrainConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.util.AllianceFlipUtil
+import com.team4099.robot2026.util.FMSData
 import edu.wpi.first.math.geometry.Pose2d as WPIPose2d
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.kinematics.ChassisSpeeds as WPIChassisSpeeds
@@ -206,7 +207,9 @@ class DrivePathOTF(
           { drivetrain.pose.toPose2d().pose2d },
           DrivetrainConstants.OTF_PATHS.LEFT_TO_NEUTRAL,
           0.0.degrees,
-          GoalEndState(0.0.meters.perSecond, 180.degrees))
+        if (FMSData.isBlue){
+          GoalEndState(0.0.meters.perSecond, 180.degrees)}else{GoalEndState(0.0.meters.perSecond, 0.degrees)}
+      )
     }
 
     fun allianceZoneToNeutralInRightTrench(drivetrain: Drive): DrivePathOTF {
@@ -218,7 +221,8 @@ class DrivePathOTF(
           { drivetrain.pose.toPose2d().pose2d },
           DrivetrainConstants.OTF_PATHS.RIGHT_TO_NEUTRAL,
           0.0.degrees,
-          GoalEndState(0.0.meters.perSecond, 180.degrees))
+        if (FMSData.isBlue){
+          GoalEndState(0.0.meters.perSecond, 180.degrees)}else{GoalEndState(0.0.meters.perSecond, 0.degrees)})
     }
 
     fun neutralZoneToAllianceInLeftTrench(drivetrain: Drive): DrivePathOTF {
@@ -230,7 +234,8 @@ class DrivePathOTF(
           { drivetrain.pose.toPose2d().pose2d },
           DrivetrainConstants.OTF_PATHS.LEFT_TO_ALLIANCE,
           0.0.degrees,
-          GoalEndState(0.0.meters.perSecond, 180.degrees))
+        if (FMSData.isBlue){
+          GoalEndState(0.0.meters.perSecond, 0.degrees)}else{GoalEndState(0.0.meters.perSecond, 180.degrees)})
     }
 
     fun neutralZoneToAllianceInRightTrench(drivetrain: Drive): DrivePathOTF {
@@ -242,7 +247,8 @@ class DrivePathOTF(
           { drivetrain.pose.toPose2d().pose2d },
           DrivetrainConstants.OTF_PATHS.RIGHT_TO_ALLIANCE,
           0.0.degrees,
-          GoalEndState(0.0.meters.perSecond, 180.degrees))
+        if (FMSData.isBlue){
+          GoalEndState(0.0.meters.perSecond, 0.degrees)}else{GoalEndState(0.0.meters.perSecond, 180.degrees)})
     }
   }
 }
