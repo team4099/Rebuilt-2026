@@ -1,6 +1,7 @@
 package com.team4099.robot2026.config.constants
 
 import com.team4099.robot2026.config.constants.Constants.WHOAMI
+import com.team4099.robot2026.subsystems.vision.camera.CameraIO
 import edu.wpi.first.math.Matrix
 import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.math.numbers.N1
@@ -25,26 +26,25 @@ object VisionConstants {
 
   val CONFIDENCE_THRESHOLD = 0.75
 
-  val CAMERA_TRANSFORMS: List<Transform3d>
+  val CAMERAS: Map<String, Pair<CameraIO.DetectionPipeline, Transform3d>>
     get() =
         when (Constants.Universal.whoami) {
           WHOAMI.TESTBOT ->
-              listOf(
-                  Transform3d(
-                      Translation3d(10.3.inches, 11.255.inches, 8.397.inches),
-                      Rotation3d(0.0.degrees, -20.degrees, -30.degrees)), // raven_1
-                  Transform3d(
-                      Translation3d(10.3.inches, -11.255.inches, 8.397.inches),
-                      Rotation3d(0.0.degrees, -20.degrees, 30.degrees)), // raven_2
+              mapOf(
+                  "raven_1" to
+                      Pair(
+                          CameraIO.DetectionPipeline.APRIL_TAG,
+                          Transform3d(
+                              Translation3d(10.3.inches, 11.255.inches, 8.397.inches),
+                              Rotation3d(0.0.degrees, -20.degrees, -30.degrees))),
+                  "raven_2" to
+                      Pair(
+                          CameraIO.DetectionPipeline.APRIL_TAG,
+                          Transform3d(
+                              Translation3d(10.3.inches, -11.255.inches, 8.397.inches),
+                              Rotation3d(0.0.degrees, -20.degrees, 30.degrees))),
               )
-          else -> listOf()
-        }
-
-  val CAMERA_NAMES: List<String>
-    get() =
-        when (Constants.Universal.whoami) {
-          WHOAMI.TESTBOT -> listOf("raven_1, raven_2")
-          else -> listOf()
+          else -> mapOf()
         }
 
   // x, y, θ
