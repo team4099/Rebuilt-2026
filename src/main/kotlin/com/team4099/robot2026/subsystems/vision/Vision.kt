@@ -9,8 +9,8 @@ import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.FieldConstants
 import com.team4099.robot2026.config.constants.VisionConstants
 import com.team4099.robot2026.subsystems.vision.camera.CameraIO
+import com.team4099.robot2026.util.AllianceFlipUtil
 import com.team4099.robot2026.util.CustomLogger
-import com.team4099.robot2026.util.FMSData
 import com.team4099.robot2026.util.toPose3d
 import edu.wpi.first.math.geometry.Pose3d as WPIPose3d
 import edu.wpi.first.math.geometry.Rotation3d as WPIRotation3d
@@ -129,8 +129,10 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
           for (tag in tagTargets) {
             if (tag.poseAmbiguity < VisionConstants.AMBIGUITY_THESHOLD) {
               if (DriverStation.getAlliance().isPresent) {
-                if ((tag.fiducialId in VisionConstants.BLUE_TARGET_TAGS && FMSData.isBlue) ||
-                    (tag.fiducialId in VisionConstants.RED_TARGET_TAGS && !FMSData.isBlue)) {
+                if ((tag.fiducialId in VisionConstants.BLUE_TARGET_TAGS &&
+                    !AllianceFlipUtil.shouldFlip()) ||
+                    (tag.fiducialId in VisionConstants.RED_TARGET_TAGS &&
+                        AllianceFlipUtil.shouldFlip())) {
                   val fieldTTag =
                       Pose3d(
                           FieldConstants.fieldLayout
