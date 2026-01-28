@@ -9,7 +9,6 @@ import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.util.Alert
 import com.team4099.robot2026.util.Alert.AlertType
 import com.team4099.robot2026.util.CustomLogger
-import com.team4099.robot2026.util.FMSData
 import com.team4099.robot2026.util.NTSafePublisher
 import edu.wpi.first.hal.AllianceStationID
 import edu.wpi.first.net.WebServer
@@ -161,7 +160,6 @@ object Robot : LoggedRobot() {
   }
 
   override fun disabledPeriodic() {
-    FMSData.allianceColor = DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue)
     autonomousCommand = RobotContainer.getAutonomousCommand()
   }
 
