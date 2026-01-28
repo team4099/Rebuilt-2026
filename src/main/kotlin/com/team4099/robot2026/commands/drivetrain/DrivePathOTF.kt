@@ -7,6 +7,7 @@ import com.pathplanner.lib.path.PathPlannerPath
 import com.pathplanner.lib.path.Waypoint
 import com.pathplanner.lib.util.DriveFeedforwards
 import com.team4099.lib.logging.LoggedTunableValue
+import com.team4099.robot2026.config.ControlBoard
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.DrivetrainConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
@@ -18,6 +19,7 @@ import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.Command
 import java.util.function.DoubleSupplier
 import java.util.function.Supplier
+import org.littletonrobotics.junction.Logger
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.kinematics.ChassisSpeeds
 import org.team4099.lib.pplib.PathPlannerHolonomicDriveController
@@ -25,8 +27,10 @@ import org.team4099.lib.pplib.PathPlannerHolonomicDriveController.Companion.Goal
 import org.team4099.lib.pplib.PathPlannerHolonomicDriveController.Companion.PathConstraints
 import org.team4099.lib.pplib.PathPlannerRotationPID
 import org.team4099.lib.pplib.PathPlannerTranslationPID
+import org.team4099.lib.smoothDeadband
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.Angle
+import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inMetersPerSecondPerMeter
 import org.team4099.lib.units.derived.inMetersPerSecondPerMeterSeconds
 import org.team4099.lib.units.derived.inMetersPerSecondPerMetersPerSecond
@@ -145,16 +149,22 @@ class DrivePathOTF(
             buildList(capacity = poses.size + 1) {
               val pose = poseReferenceSupplier.get()
               add(WPIPose2d(pose.x, pose.y, Rotation2d(initialHeading.inRadians)))
-              addAll(poses.map { it.get().pose2d })
+              addAll(poses.map { AllianceFlipUtil.apply(it.get()).pose2d })
             })
+
+    val path =
+        PathPlannerPath(
+            waypoints, pathConstraints.pplibConstraints, null, goalEndState.pplibGoalEndState)
+
+    Logger.recordOutput("DrivePathOTF/pathTrajectory", *path.pathPoses.toTypedArray())
+
     command =
         FollowPathCommand(
-            PathPlannerPath(
-                waypoints, pathConstraints.pplibConstraints, null, goalEndState.pplibGoalEndState),
+            path,
             { AllianceFlipUtil.apply(Pose2d(poseReferenceSupplier.get())).pose2d },
             { drivetrain.chassisSpeeds.chassisSpeedsWPILIB },
             { speeds: WPIChassisSpeeds, ff: DriveFeedforwards ->
-              drivetrain.runSpeeds(ChassisSpeeds(speeds))
+              drivetrain.runSpeeds(ChassisSpeeds(speeds), flipIfRed = false)
             },
             ppHolonomicDriveController.pplibController,
             Drive.PP_CONFIG,
@@ -185,6 +195,54 @@ class DrivePathOTF(
   companion object {
     fun warmupCommand() {
       FollowPathCommand.warmupCommand()
+    }
+
+    fun allianceZoneToNeutralInLeftTrench(drivetrain: Drive): DrivePathOTF {
+      return DrivePathOTF(
+          drivetrain,
+          { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+          { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+          { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+          { drivetrain.pose.toPose2d().pose2d },
+          DrivetrainConstants.OTF_PATHS.LEFT_TO_NEUTRAL,
+          0.0.degrees,
+          GoalEndState(0.0.meters.perSecond, 180.degrees))
+    }
+
+    fun allianceZoneToNeutralInRightTrench(drivetrain: Drive): DrivePathOTF {
+      return DrivePathOTF(
+          drivetrain,
+          { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+          { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+          { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+          { drivetrain.pose.toPose2d().pose2d },
+          DrivetrainConstants.OTF_PATHS.RIGHT_TO_NEUTRAL,
+          0.0.degrees,
+          GoalEndState(0.0.meters.perSecond, 180.degrees))
+    }
+
+    fun neutralZoneToAllianceInLeftTrench(drivetrain: Drive): DrivePathOTF {
+      return DrivePathOTF(
+          drivetrain,
+          { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+          { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+          { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+          { drivetrain.pose.toPose2d().pose2d },
+          DrivetrainConstants.OTF_PATHS.LEFT_TO_ALLIANCE,
+          0.0.degrees,
+          GoalEndState(0.0.meters.perSecond, 180.degrees))
+    }
+
+    fun neutralZoneToAllianceInRightTrench(drivetrain: Drive): DrivePathOTF {
+      return DrivePathOTF(
+          drivetrain,
+          { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+          { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+          { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+          { drivetrain.pose.toPose2d().pose2d },
+          DrivetrainConstants.OTF_PATHS.RIGHT_TO_ALLIANCE,
+          0.0.degrees,
+          GoalEndState(0.0.meters.perSecond, 180.degrees))
     }
   }
 }

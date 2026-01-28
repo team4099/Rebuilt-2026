@@ -4,7 +4,9 @@ import com.team4099.robot2026.subsystems.drivetrain.generated.AlphaBotTunerConst
 import com.team4099.robot2026.subsystems.drivetrain.generated.CompBotTunerConstants
 import com.team4099.robot2026.subsystems.drivetrain.generated.TestBotTunerConstants
 import edu.wpi.first.wpilibj.RobotBase
+import java.util.function.Supplier
 import kotlin.math.sqrt
+import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.units.Velocity
@@ -220,5 +222,32 @@ object DrivetrainConstants {
     val SIM_STEERING_KI = STEERING_KI
     val SIM_STEERING_KD = STEERING_KD
     val SIM_STEERING_KV = STEERING_KV
+  }
+
+  object OTF_PATHS {
+    val LEFT_TO_NEUTRAL =
+        listOf(
+            Supplier { Pose2d(3.326.meters, 7.341.meters, 0.degrees) },
+            Supplier { Pose2d(4.629.meters, 7.424.meters, 0.degrees) },
+            Supplier { Pose2d(6.meters, 7.317.meters, 0.degrees) },
+        )
+    val LEFT_TO_ALLIANCE =
+        listOf(
+            Supplier { Pose2d(6.046.meters, 7.317.meters, 180.degrees) },
+            Supplier { Pose2d(4.639.meters, 7.424.meters, 180.degrees) },
+            Supplier { Pose2d(3.326.meters, 7.341.meters, 180.degrees) },
+        )
+    val RIGHT_TO_NEUTRAL =
+        listOf(
+            Supplier { Pose2d(3.326.meters, 0.86.meters, 0.degrees) },
+            Supplier { Pose2d(4.629.meters, 0.631.meters, 0.degrees) },
+            Supplier { Pose2d(6.meters, 0.86.meters, 0.degrees) },
+        )
+    val RIGHT_TO_ALLIANCE =
+        listOf(
+            Supplier { Pose2d(6.meters, 0.86.meters, 180.degrees) },
+            Supplier { Pose2d(4.629.meters, 0.631.meters, 180.degrees) },
+            Supplier { Pose2d(3.326.meters, 0.86.meters, 180.degrees) },
+        )
   }
 }
