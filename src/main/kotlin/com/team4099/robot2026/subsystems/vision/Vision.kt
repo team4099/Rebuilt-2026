@@ -55,10 +55,10 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
   var lastTrigVisionUpdate = TimestampedTrigVisionUpdate(Clock.fpgaTime, -1, Transform3d())
 
   var objectsDetected: MutableList<MutableList<Translation3d>> =
-      MutableList(VisionConstants.OBJECT_CLASS.values().size) { mutableListOf() }
+      MutableList(VisionConstants.OBJECT_CLASS.entries.size) { mutableListOf() }
 
   var lastObjectVisionUpdate: MutableList<TimestampedObjectVisionUpdate> =
-      VisionConstants.OBJECT_CLASS.values()
+      VisionConstants.OBJECT_CLASS.entries
           .map { TimestampedObjectVisionUpdate(Clock.fpgaTime, it, Translation3d()) }
           .toMutableList()
 
@@ -214,7 +214,7 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
 
           if (RobotBase.isReal()) {
             objectsDetected =
-                MutableList(VisionConstants.OBJECT_CLASS.values().size) { mutableListOf() }
+                MutableList(VisionConstants.OBJECT_CLASS.entries.size) { mutableListOf() }
 
             for (idx in objTargets.indices) {
               // object pose detection credit to 5990 TRIGON Robot Template on Github, available at
@@ -241,18 +241,18 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
             }
           } else {
             objectsDetected =
-                MutableList(VisionConstants.OBJECT_CLASS.values().size) { mutableListOf() }
+                MutableList(VisionConstants.OBJECT_CLASS.entries.size) { mutableListOf() }
 
-            for (objIdx in VisionConstants.OBJECT_CLASS.values().indices) {
+            for (objIdx in VisionConstants.OBJECT_CLASS.entries.toTypedArray().indices) {
               objectsDetected[objIdx].addAll(
                   SimulatedArena.getInstance()
                       .getGamePiecesByType(
-                          VisionConstants.OBJECT_CLASS.values()[objIdx].mapleSimType!!)
+                          VisionConstants.OBJECT_CLASS.entries[objIdx].mapleSimType!!)
                       .map { Transform3d(poseSupplier.get(), Pose3d(it.pose3d)).translation })
             }
           }
 
-          for (objects in VisionConstants.OBJECT_CLASS.values()) {
+          for (objects in VisionConstants.OBJECT_CLASS.entries) {
             val closestObject = objectsDetected[objects.id].minByOrNull { it.translation3d.norm }
 
             if (closestObject != null) {
