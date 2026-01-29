@@ -65,27 +65,26 @@ object Constants {
     val TABS = arrayOf("Pre-match", "In-match")
   }
 
-  // TODO: change when motors are mounted on robot
-  object Climb {
-    val MOTOR_ID = -1337
+  object Intake {
+    const val INTAKE_PIVOT_MOTOR_ID = 41
+    const val INTAKE_ROLLERS_MOTOR_ID = 42
   }
 
   object Hopper {
-    const val HOPPER_MOTOR_ID = -1337
-  }
-
-  object Feeder {
-    const val FEEDER_MOTOR_ID = -1337
-  }
-
-  object Intake {
-    const val INTAKE_ROLLERS_MOTOR_ID = -1337
-    const val INTAKE_PIVOT_MOTOR_ID = -1337
+    const val HOPPER_MOTOR_ID = 46
   }
 
   object Shooter {
-    const val LEADER_MOTOR_ID = -1337
-    const val FOLLOWER_MOTOR_ID = -1337
+    const val LEADER_MOTOR_ID = 51
+    const val FOLLOWER_MOTOR_ID = 52
+  }
+
+  object Feeder {
+    const val FEEDER_MOTOR_ID = 56
+  }
+
+  object Climb {
+    const val CLIMB_MOTOR_ID = 61
   }
 
   object ClusterScore {

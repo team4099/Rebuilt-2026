@@ -1,5 +1,6 @@
 package com.team4099.robot2026.subsystems.superstructure.shooter
 
+import com.ctre.phoenix6.SignalLogger
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.FieldConstants
 import com.team4099.robot2026.config.constants.ShooterConstants
@@ -14,7 +15,15 @@ import edu.wpi.first.math.Nat.N1
 import edu.wpi.first.math.Nat.N2
 import edu.wpi.first.math.Vector
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap
+import edu.wpi.first.units.Units.Volts
+import edu.wpi.first.units.measure.Voltage as WPILibVoltage
 import edu.wpi.first.wpilibj.RobotBase
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog
+import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.SubsystemBase
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Mechanism
+import java.util.function.Consumer
 import kotlin.math.atan2
 import kotlin.math.max
 import kotlin.math.pow
@@ -76,6 +85,26 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
       field = value
     }
 
+  private val m_sysIdRoutine =
+      SysIdRoutine(
+          SysIdRoutine.Config(
+              null, // Use default ramp rate (1 V/s)
+              Volts.of(4.0), // Reduce dynamic step voltage to 4 to prevent brownout
+              null, // Use default timeout (10 s)
+              // Log state with Phoenix SignalLogger class
+              Consumer { state: SysIdRoutineLog.State? ->
+                run {
+                  SignalLogger.writeString("state", state.toString())
+                  CustomLogger.recordOutput("Shooter/sysIdState", state.toString())
+                }
+              }),
+          Mechanism(
+              { volts: WPILibVoltage ->
+                currentRequest = Request.ShooterRequest.OpenLoop(volts.`in`(Volts).volts)
+              },
+              null,
+              object : SubsystemBase("Shooter") {}))
+
   init {
     if (RobotBase.isReal()) {
       io.configurePID(
@@ -120,6 +149,14 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
       }
     }
     currentState = nextState
+  }
+
+  fun sysIdQuasistatic(direction: SysIdRoutine.Direction): Command {
+    return m_sysIdRoutine.quasistatic(direction)
+  }
+
+  fun sysIdDynamic(direction: SysIdRoutine.Direction): Command {
+    return m_sysIdRoutine.dynamic(direction)
   }
 
   companion object {

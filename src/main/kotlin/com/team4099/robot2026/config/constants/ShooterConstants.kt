@@ -51,9 +51,11 @@ object ShooterConstants {
     val REAL_KD: DerivativeGain<Velocity<Radian>, Volt> =
         0.0.volts / (0.0.degrees.perSecond / 1.0.seconds)
 
-    val REAL_KS: StaticFeedforward<Volt> = 0.0.volts
-    val REAL_KV: VelocityFeedforward<Radian, Volt> = 0.0.volts / 1.radians.perSecond
-    val REAL_KA: AccelerationFeedforward<Radian, Volt> = 0.0.volts / 1.radians.perSecond.perSecond
+    // SYS ID
+    val REAL_KS: StaticFeedforward<Volt> = 0.17726.volts
+    val REAL_KV: VelocityFeedforward<Radian, Volt> = 0.1195.volts / 1.radians.perSecond
+    val REAL_KA: AccelerationFeedforward<Radian, Volt> =
+        0.01765.volts / 1.radians.perSecond.perSecond
 
     val SIM_KP: ProportionalGain<Velocity<Radian>, Volt> = 0.02.volts / 1.0.degrees.perSecond
     val SIM_KI: IntegralGain<Velocity<Radian>, Volt> =
