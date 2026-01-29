@@ -281,3 +281,16 @@ tasks.withType(JavaExec).configureEach {
 		}
 	}
 }
+
+argSpec.keySet().each { key ->
+	def value = project.findProperty(key) ?: argSpec[key].default
+	if (value != null) {
+		// add to roboRIO JVM args (so the robot JVM will see System.getProperty(key))
+		deployArtifact.jvmArgs.add("-D${key.toLowerCase()}=${value}")
+
+		// keep existing behaviour for local JavaExec tasks (simulate/run)
+		tasks.withType(JavaExec).configureEach {
+			systemProperty key.toLowerCase(), value
+		}
+	}
+}

@@ -1,5 +1,6 @@
 package com.team4099.robot2026
 
+import com.ctre.phoenix6.SignalLogger
 import com.pathplanner.lib.commands.FollowPathCommand
 import com.team4099.lib.hal.Clock
 import com.team4099.robot2026.auto.AutonomousSelector
@@ -113,6 +114,9 @@ object Robot : LoggedRobot() {
     Logger.start() // no more configuration allowed
 
     Logger.recordOutput("LogFolder/isLogging", isLogging)
+
+    SignalLogger.setPath("/media/sda1/ctre-logs/")
+    //    SignalLogger.start(); <-- useful for SysID
 
     LiveWindow.disableAllTelemetry()
 

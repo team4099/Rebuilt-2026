@@ -35,7 +35,7 @@ import org.team4099.lib.units.inInchesPerSecond
 import org.team4099.lib.units.inInchesPerSecondPerSecond
 
 object ClimbIOTalon : ClimbIO {
-  private val talon: TalonFX = TalonFX(Constants.Climb.MOTOR_ID)
+  private val talon: TalonFX = TalonFX(Constants.Climb.CLIMB_MOTOR_ID)
 
   private val configs: TalonFXConfiguration = TalonFXConfiguration()
   private val slot0Configs = configs.Slot0
