@@ -6,18 +6,24 @@ object GyroConstants {
   val mountPitch
     get() =
         when (Constants.Universal.whoami) {
-          else -> 180.0.degrees
+          Constants.WHOAMI.ALPHABOT -> 0.degrees
+          Constants.WHOAMI.TESTBOT -> 180.0.degrees
+          else -> 0.degrees
         }
 
   val mountRoll
     get() =
         when (Constants.Universal.whoami) {
-          else -> 0.0.degrees
+          Constants.WHOAMI.ALPHABOT -> 0.degrees
+          Constants.WHOAMI.TESTBOT -> 0.0.degrees
+          else -> 0.degrees
         }
 
   val mountYaw
     get() =
         when (Constants.Universal.whoami) {
-          else -> -90.0.degrees
+          Constants.WHOAMI.ALPHABOT -> 180.degrees
+          Constants.WHOAMI.TESTBOT -> -90.0.degrees
+          else -> 0.degrees
         }
 }
