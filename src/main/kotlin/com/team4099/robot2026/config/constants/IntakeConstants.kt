@@ -16,15 +16,14 @@ import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
 
 object IntakeConstants {
-  val ZERO_OFFSET = ANGLES.STOW_ANGLE
-  val GEAR_RATIO = 1.0 / 1.0
+  const val GEAR_RATIO = 16.0 / 44.0
 
   val INTAKE_TOLERANCE = 1.0.degrees
 
   val PIVOT_INERTIA = 1.0.grams.meterSquared
   val PIVOT_LENGTH = 1.0.inches
-  val PIVOT_MAX_ANGLE = 120.0.degrees
-  val PIVOT_MIN_ANGLE = 0.0.degrees
+  val PIVOT_MAX_ANGLE = 114.5.degrees
+  val PIVOT_MIN_ANGLE = (-15.5).degrees
   // todo changed later
   val PIVOT_VOLTAGE = 0.0.volts
 
@@ -33,8 +32,8 @@ object IntakeConstants {
 
   val VOLTAGE_COMPENSATION = 12.0.volts
 
-  val MAX_VELOCITY = 125.degrees.perSecond
-  val MAX_ACCELERATION = 125.degrees.perSecond.perSecond
+  val MAX_VELOCITY = 200.degrees.perSecond
+  val MAX_ACCELERATION = 200.degrees.perSecond.perSecond
 
   val SIM_VELOCITY = 400.degrees.perSecond
   val SIM_ACCELERATION = 400.degrees.perSecond.perSecond
@@ -42,9 +41,9 @@ object IntakeConstants {
   val LENGTH_EXTENDED = 0.0.inches
 
   object ANGLES {
-    val INTAKE_ANGLE = 0.0.degrees
-    val STOW_ANGLE = 0.0.degrees
-    val EJECT_ANGLE = 0.degrees
+    val INTAKE_ANGLE = (-15.5).degrees
+    val STOW_ANGLE = 114.5.degrees
+    val EJECT_ANGLE = (-15.5).degrees
   }
 
   object PID {
@@ -53,14 +52,14 @@ object IntakeConstants {
     val SIM_PIVOT_KI: IntegralGain<Radian, Volt> = 0.0.volts / (1.0.degrees * 1.0.seconds)
     val SIM_PIVOT_KD: DerivativeGain<Radian, Volt> = 0.0.volts / 1.0.degrees.perSecond
 
-    val REAL_PIVOT_KP: ProportionalGain<Radian, Volt> = 0.0.volts / 1.0.degrees
+    val REAL_PIVOT_KP: ProportionalGain<Radian, Volt> = 5.0.volts / 1.0.degrees
     val REAL_PIVOT_KI: IntegralGain<Radian, Volt> = 0.0.volts / (1.0.degrees * 1.0.seconds)
     val REAL_PIVOT_KD: DerivativeGain<Radian, Volt> = 0.0.volts / 1.0.degrees.perSecond
 
     val PIVOT_KA = 0.0.volts / 1.0.radians.perSecond.perSecond
     val PIVOT_KV = 0.0.volts / 1.0.radians.perSecond
-    val PIVOT_KG = 0.0.volts
-    val PIVOT_KS = 0.0.volts
+    val PIVOT_KG = 0.15.volts
+    val PIVOT_KS = 0.25.volts
 
     val SIM_PIVOT_KA = 0.0.volts / 1.0.radians.perSecond.perSecond
     val SIM_PIVOT_KV = 0.0.volts / 1.0.radians.perSecond

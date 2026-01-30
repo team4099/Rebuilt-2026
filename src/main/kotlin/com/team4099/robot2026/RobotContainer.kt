@@ -28,6 +28,7 @@ import com.team4099.robot2026.subsystems.superstructure.hopper.HopperIOTalon
 import com.team4099.robot2026.subsystems.superstructure.intake.Intake
 import com.team4099.robot2026.subsystems.superstructure.intake.IntakeIO
 import com.team4099.robot2026.subsystems.superstructure.intake.IntakeIOSim
+import com.team4099.robot2026.subsystems.superstructure.intake.IntakeIOTalon
 import com.team4099.robot2026.subsystems.superstructure.intake.rollers.IntakeRollers
 import com.team4099.robot2026.subsystems.superstructure.intake.rollers.IntakeRollersIOSim
 import com.team4099.robot2026.subsystems.superstructure.intake.rollers.IntakeRollersIOTalon
@@ -91,7 +92,7 @@ object RobotContainer {
       climb = Climb(object : ClimbIO {})
       feeder = Feeder(FeederIOTalonFX)
       hopper = Hopper(HopperIOTalon)
-      intake = Intake(object : IntakeIO {})
+      intake = Intake(IntakeIOTalon)
       intakeRollers = IntakeRollers(IntakeRollersIOTalon)
       shooter = Shooter(ShooterIOTalon)
     } else {

@@ -2,12 +2,14 @@ package com.team4099.robot2026.subsystems.superstructure.shooter
 
 import com.ctre.phoenix6.BaseStatusSignal
 import com.ctre.phoenix6.StatusSignal
+import com.ctre.phoenix6.configs.Slot0Configs
 import com.ctre.phoenix6.configs.SlotConfigs
 import com.ctre.phoenix6.configs.TalonFXConfiguration
 import com.ctre.phoenix6.controls.Follower
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage
 import com.ctre.phoenix6.controls.VoltageOut
 import com.ctre.phoenix6.hardware.TalonFX
+import com.ctre.phoenix6.signals.InvertedValue
 import com.ctre.phoenix6.signals.MotorAlignmentValue
 import com.ctre.phoenix6.signals.NeutralModeValue
 import com.team4099.lib.math.clamp
@@ -41,6 +43,7 @@ import org.team4099.lib.units.derived.inVoltsPerRadiansPerSecond
 import org.team4099.lib.units.derived.inVoltsPerRadiansPerSecondPerSecond
 import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
+import org.team4099.lib.units.inRotationsPerSecondPerSecond
 import org.team4099.lib.units.perSecond
 
 object ShooterIOTalon : ShooterIO {
@@ -49,6 +52,7 @@ object ShooterIOTalon : ShooterIO {
   private val motionMagicControl: MotionMagicVelocityVoltage = MotionMagicVelocityVoltage(-1337.0)
   private val voltReq = VoltageOut(0.0)
   private val configs: TalonFXConfiguration = TalonFXConfiguration()
+  private val slot0Configs: Slot0Configs = configs.Slot0
   private val leaderSensor =
       ctreAngularMechanismSensor(
           leaderTalon, ShooterConstants.GEAR_RATIO, ShooterConstants.VOLTAGE_COMPENSATION)
@@ -79,9 +83,7 @@ object ShooterIOTalon : ShooterIO {
     configs.CurrentLimits.SupplyCurrentLimitEnable = true
     configs.CurrentLimits.StatorCurrentLimitEnable = true
     configs.MotorOutput.NeutralMode = NeutralModeValue.Coast
-
-    configs.MotionMagic.MotionMagicAcceleration =
-        leaderSensor.accelerationToRawUnits(ShooterConstants.MAX_ACCELERATION)
+    configs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive
 
     leaderTalon.configurator.apply(configs)
     followerTalon.configurator.apply(configs)
@@ -153,7 +155,6 @@ object ShooterIOTalon : ShooterIO {
       kI: IntegralGain<Fraction<Radian, Second>, Volt>,
       kD: DerivativeGain<Fraction<Radian, Second>, Volt>
   ) {
-    val slot0Configs = SlotConfigs()
     slot0Configs.kP = kP.inVoltsPerRadiansPerSecond
     slot0Configs.kI = kI.inVoltsPerRadians
     slot0Configs.kD = kD.inVoltsPerDegreesPerSecondPerSecond
@@ -166,7 +167,6 @@ object ShooterIOTalon : ShooterIO {
       kV: VelocityFeedforward<Radian, Volt>,
       kA: AccelerationFeedforward<Radian, Volt>
   ) {
-    val slot0Configs = SlotConfigs()
     slot0Configs.kS = kS.inVolts
     slot0Configs.kV = kV.inVoltsPerRadiansPerSecond
     slot0Configs.kA = kA.inVoltsPerRadiansPerSecondPerSecond
@@ -185,7 +185,7 @@ object ShooterIOTalon : ShooterIO {
 
   override fun setVelocity(velocity: AngularVelocity) {
     leaderTalon.setControl(
-        motionMagicControl.withVelocity(leaderSensor.velocityToRawUnits(velocity)),
+        motionMagicControl.withVelocity(leaderSensor.velocityToRawUnits(velocity)).withAcceleration(ShooterConstants.MAX_ACCELERATION.inRotationsPerSecondPerSecond),
     )
   }
 }

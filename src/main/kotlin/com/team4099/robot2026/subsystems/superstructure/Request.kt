@@ -46,10 +46,8 @@ sealed interface Request {
 
   sealed interface IntakeRequest : Request {
     class OpenLoop(val pivotVoltage: ElectricalPotential) : IntakeRequest
-
     class TargetingPosition(val pivotPosition: Angle) : IntakeRequest
-
-    class ZeroPivot() : IntakeRequest
+    class ZeroPivot : IntakeRequest
   }
 
   sealed interface ShooterRequest : Request {
@@ -57,6 +55,6 @@ sealed interface Request {
 
     class TargetVelocity(val targetVelocity: AngularVelocity) : ShooterRequest
 
-    class Idle() : ShooterRequest
+    class Idle : ShooterRequest
   }
 }

@@ -50,7 +50,7 @@ object IntakeRollersIOTalon : IntakeRollersIO {
     rollerConfig.CurrentLimits.StatorCurrentLimit = RollersConstants.STATOR_CURRENT_LIMIT.inAmperes
     rollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true
     rollerConfig.CurrentLimits.StatorCurrentLimitEnable = true
-    rollerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive
+    rollerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive
 
     statorCurrent = rollerTalon.statorCurrent
     supplyCurrent = rollerTalon.supplyCurrent
