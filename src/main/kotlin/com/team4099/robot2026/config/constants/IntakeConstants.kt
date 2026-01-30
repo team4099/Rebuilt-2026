@@ -12,6 +12,7 @@ import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.meterSquared
 import org.team4099.lib.units.derived.radians
+import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
 
@@ -32,8 +33,8 @@ object IntakeConstants {
 
   val VOLTAGE_COMPENSATION = 12.0.volts
 
-  val MAX_VELOCITY = 200.degrees.perSecond
-  val MAX_ACCELERATION = 200.degrees.perSecond.perSecond
+  val MAX_VELOCITY = 200.rotations.perSecond
+  val MAX_ACCELERATION = 200.rotations.perSecond.perSecond
 
   val SIM_VELOCITY = 400.degrees.perSecond
   val SIM_ACCELERATION = 400.degrees.perSecond.perSecond
@@ -48,7 +49,7 @@ object IntakeConstants {
 
   object PID {
     // PID Constants
-    val SIM_PIVOT_KP: ProportionalGain<Radian, Volt> = 0.0.volts / 1.0.degrees
+    val SIM_PIVOT_KP: ProportionalGain<Radian, Volt> = 5.0.volts / 1.0.degrees
     val SIM_PIVOT_KI: IntegralGain<Radian, Volt> = 0.0.volts / (1.0.degrees * 1.0.seconds)
     val SIM_PIVOT_KD: DerivativeGain<Radian, Volt> = 0.0.volts / 1.0.degrees.perSecond
 

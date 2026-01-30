@@ -41,9 +41,12 @@ import org.team4099.lib.units.derived.inVoltsPerRadianPerSecond
 import org.team4099.lib.units.derived.inVoltsPerRadianSeconds
 import org.team4099.lib.units.derived.inVoltsPerRadiansPerSecond
 import org.team4099.lib.units.derived.inVoltsPerRadiansPerSecondPerSecond
+import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inDegreesPerSecond
 import org.team4099.lib.units.inDegreesPerSecondPerSecond
+import org.team4099.lib.units.inRotationsPerSecond
+import org.team4099.lib.units.inRotationsPerSecondPerSecond
 
 object IntakeIOTalon : IntakeIO {
   private val intakeTalon: TalonFX = TalonFX(Constants.Intake.INTAKE_PIVOT_MOTOR_ID)
@@ -73,11 +76,13 @@ object IntakeIOTalon : IntakeIO {
         IntakeConstants.SUPPLY_CURRENT_LIMIT.inAmperes
     intakeConfiguration.Slot0.GravityType = GravityTypeValue.Arm_Cosine
 
-    intakeConfiguration.MotionMagic.MotionMagicCruiseVelocity = IntakeConstants.MAX_VELOCITY.inDegreesPerSecond
-    intakeConfiguration.MotionMagic.MotionMagicAcceleration = IntakeConstants.MAX_ACCELERATION.inDegreesPerSecondPerSecond
+    intakeConfiguration.MotionMagic.MotionMagicCruiseVelocity = IntakeConstants.MAX_VELOCITY.inRotationsPerSecond
+    intakeConfiguration.MotionMagic.MotionMagicAcceleration = IntakeConstants.MAX_ACCELERATION.inRotationsPerSecondPerSecond
 
     intakeConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake
     intakeConfiguration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive
+    intakeConfiguration.Feedback.SensorToMechanismRatio =
+      IntakeConstants.GEAR_RATIO
     intakeTalon.configurator.apply(intakeConfiguration)
 
     temperatureSignal = intakeTalon.deviceTemp
@@ -100,7 +105,7 @@ object IntakeIOTalon : IntakeIO {
   }
 
   override fun setPosition(position: Angle) {
-    intakeTalon.setControl(motionMagicVoltage.withPosition(intakeSensor.positionToRawUnits(position)))
+    intakeTalon.setControl(motionMagicVoltage.withPosition(intakeSensor.positionToRawUnits(position)).withSlot(0))
   }
 
   private fun updateSignals() {
@@ -147,6 +152,7 @@ object IntakeIOTalon : IntakeIO {
     inputs.intakeStatorCurrent = statorCurrentSignal.valueAsDouble.amps
     inputs.intakeSupplyCurrent = supplyCurrentSignal.valueAsDouble.amps
     inputs.intakeTemperature = temperatureSignal.valueAsDouble.celsius
+    inputs.position = positionSignal.valueAsDouble.radians
   }
 
   override fun zeroPivot() {
