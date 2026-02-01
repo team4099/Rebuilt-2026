@@ -9,14 +9,12 @@ import com.team4099.robot2026.config.ControlBoard
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.DrivetrainConstants
 import com.team4099.robot2026.config.constants.FieldConstants
-import com.team4099.robot2026.config.constants.IntakeConstants
 import com.team4099.robot2026.config.constants.VisionConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.subsystems.drivetrain.GyroIOPigeon2
 import com.team4099.robot2026.subsystems.drivetrain.GyroIOSim
 import com.team4099.robot2026.subsystems.drivetrain.ModuleIOTalonFXReal
 import com.team4099.robot2026.subsystems.drivetrain.ModuleIOTalonFXSim
-import com.team4099.robot2026.subsystems.superstructure.Request
 import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import com.team4099.robot2026.subsystems.superstructure.climb.Climb
 import com.team4099.robot2026.subsystems.superstructure.climb.ClimbIO
@@ -30,7 +28,6 @@ import com.team4099.robot2026.subsystems.superstructure.hopper.HopperIOTalon
 import com.team4099.robot2026.subsystems.superstructure.intake.Intake
 import com.team4099.robot2026.subsystems.superstructure.intake.IntakeIO
 import com.team4099.robot2026.subsystems.superstructure.intake.IntakeIOSim
-import com.team4099.robot2026.subsystems.superstructure.intake.IntakeIOTalon
 import com.team4099.robot2026.subsystems.superstructure.intake.rollers.IntakeRollers
 import com.team4099.robot2026.subsystems.superstructure.intake.rollers.IntakeRollersIOSim
 import com.team4099.robot2026.subsystems.superstructure.intake.rollers.IntakeRollersIOTalon
@@ -42,7 +39,6 @@ import com.team4099.robot2026.subsystems.vision.camera.CameraIOPVSim
 import com.team4099.robot2026.subsystems.vision.camera.CameraIOPhotonvision
 import com.team4099.robot2026.util.driver.Jessika
 import edu.wpi.first.wpilibj.RobotBase
-import edu.wpi.first.wpilibj2.command.Commands.runOnce
 import edu.wpi.first.wpilibj2.command.ConditionalCommand
 import org.ironmaple.simulation.SimulatedArena
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation
@@ -95,7 +91,7 @@ object RobotContainer {
       climb = Climb(object : ClimbIO {})
       feeder = Feeder(FeederIOTalonFX)
       hopper = Hopper(HopperIOTalon)
-        intake = Intake(object: IntakeIO{})
+      intake = Intake(object : IntakeIO {})
       intakeRollers = IntakeRollers(IntakeRollersIOTalon)
       shooter = Shooter(ShooterIOTalon)
     } else {

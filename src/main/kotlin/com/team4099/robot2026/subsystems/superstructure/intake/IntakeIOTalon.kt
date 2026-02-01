@@ -2,7 +2,6 @@ package com.team4099.robot2026.subsystems.superstructure.intake
 
 import com.ctre.phoenix6.BaseStatusSignal
 import com.ctre.phoenix6.StatusSignal
-import com.ctre.phoenix6.configs.MotorOutputConfigs
 import com.ctre.phoenix6.configs.TalonFXConfiguration
 import com.ctre.phoenix6.controls.MotionMagicVoltage
 import com.ctre.phoenix6.controls.VoltageOut
@@ -22,7 +21,6 @@ import edu.wpi.first.units.measure.Voltage
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.inAmperes
-import org.team4099.lib.units.ctreAngularMechanismSensor
 import org.team4099.lib.units.derived.AccelerationFeedforward
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.DerivativeGain
@@ -42,11 +40,8 @@ import org.team4099.lib.units.derived.inVoltsPerRadianPerSecond
 import org.team4099.lib.units.derived.inVoltsPerRadianSeconds
 import org.team4099.lib.units.derived.inVoltsPerRadiansPerSecond
 import org.team4099.lib.units.derived.inVoltsPerRadiansPerSecondPerSecond
-import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
-import org.team4099.lib.units.inDegreesPerSecond
-import org.team4099.lib.units.inDegreesPerSecondPerSecond
 import org.team4099.lib.units.inRotationsPerSecond
 import org.team4099.lib.units.inRotationsPerSecondPerSecond
 import org.team4099.lib.units.inRotationsPerSecondPerSecondPerSecond
@@ -77,14 +72,16 @@ object IntakeIOTalon : IntakeIO {
         IntakeConstants.SUPPLY_CURRENT_LIMIT.inAmperes
     intakeConfiguration.Slot0.GravityType = GravityTypeValue.Arm_Cosine
 
-    intakeConfiguration.MotionMagic.MotionMagicCruiseVelocity = IntakeConstants.MAX_VELOCITY.inRotationsPerSecond
-    intakeConfiguration.MotionMagic.MotionMagicAcceleration = IntakeConstants.MAX_ACCELERATION.inRotationsPerSecondPerSecond
-    intakeConfiguration.MotionMagic.MotionMagicJerk = IntakeConstants.MAX_JERK.inRotationsPerSecondPerSecondPerSecond
+    intakeConfiguration.MotionMagic.MotionMagicCruiseVelocity =
+        IntakeConstants.MAX_VELOCITY.inRotationsPerSecond
+    intakeConfiguration.MotionMagic.MotionMagicAcceleration =
+        IntakeConstants.MAX_ACCELERATION.inRotationsPerSecondPerSecond
+    intakeConfiguration.MotionMagic.MotionMagicJerk =
+        IntakeConstants.MAX_JERK.inRotationsPerSecondPerSecondPerSecond
 
     intakeConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake
     intakeConfiguration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive
-    intakeConfiguration.Feedback.SensorToMechanismRatio =
-      1.0 / IntakeConstants.GEAR_RATIO
+    intakeConfiguration.Feedback.SensorToMechanismRatio = 1.0 / IntakeConstants.GEAR_RATIO
     intakeTalon.configurator.apply(intakeConfiguration)
 
     temperatureSignal = intakeTalon.deviceTemp

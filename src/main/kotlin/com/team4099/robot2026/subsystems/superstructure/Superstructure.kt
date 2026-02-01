@@ -7,7 +7,6 @@ import com.team4099.robot2026.config.constants.FeederConstants
 import com.team4099.robot2026.config.constants.HopperConstants
 import com.team4099.robot2026.config.constants.IntakeConstants
 import com.team4099.robot2026.config.constants.RollersConstants
-import com.team4099.robot2026.config.constants.ShooterConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.subsystems.superstructure.Request.SuperstructureRequest
 import com.team4099.robot2026.subsystems.superstructure.climb.Climb
@@ -22,15 +21,12 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
-import io.javalin.validation.REQUEST_BODY
 import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.geometry.Transform3d
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMilliseconds
-import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.rotations
-import org.team4099.lib.units.max
 import org.team4099.lib.units.perMinute
 
 class Superstructure(
@@ -53,13 +49,12 @@ class Superstructure(
   val shooterTargetRPM: AngularVelocity
     get() {
       val launchData =
-        Shooter.calculateLaunchData(drivetrain.pose.toPose2d(), drivetrain.chassisSpeeds)
+          Shooter.calculateLaunchData(drivetrain.pose.toPose2d(), drivetrain.chassisSpeeds)
       return 2000.rotations.perMinute
-//            max(
-//                Shooter.launchVelToShooterRPMMap.get(launchData.launchVelocity),
-//                ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY)
+      //            max(
+      //                Shooter.launchVelToShooterRPMMap.get(launchData.launchVelocity),
+      //                ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY)
     }
-
 
   val field = Field2d()
 
@@ -130,7 +125,7 @@ class Superstructure(
             Request.ClimbRequest.TargetingPosition(ClimbConstants.DOWNWARDS_EXTENSION_LIMIT)
         feeder.currentRequest = Request.FeederRequest.Idle()
         hopper.currentRequest = Request.HopperRequest.Idle()
-       intake.currentRequest =
+        intake.currentRequest =
             Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.IDLE_ANGLE)
         intakeRollers.currentRequest =
             Request.RollersRequest.OpenLoop(RollersConstants.IDLE_VOLTAGE)
@@ -164,8 +159,9 @@ class Superstructure(
         if (shooter.isAtTargetedVelocity) {
           feeder.currentRequest = Request.FeederRequest.OpenLoop(FeederConstants.SCORE_VOLTAGE)
           hopper.currentRequest =
-            Request.HopperRequest.OpenLoop(HopperConstants.Voltages.SCORE_VOLTAGE)
-          intakeRollers.currentRequest = Request.RollersRequest.OpenLoop(RollersConstants.SCORE_ASSISTING_VOLTAGE)
+              Request.HopperRequest.OpenLoop(HopperConstants.Voltages.SCORE_VOLTAGE)
+          intakeRollers.currentRequest =
+              Request.RollersRequest.OpenLoop(RollersConstants.SCORE_ASSISTING_VOLTAGE)
         }
 
         when (currentRequest) {

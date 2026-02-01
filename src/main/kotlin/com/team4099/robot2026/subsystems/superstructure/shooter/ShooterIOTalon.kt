@@ -3,7 +3,6 @@ package com.team4099.robot2026.subsystems.superstructure.shooter
 import com.ctre.phoenix6.BaseStatusSignal
 import com.ctre.phoenix6.StatusSignal
 import com.ctre.phoenix6.configs.Slot0Configs
-import com.ctre.phoenix6.configs.SlotConfigs
 import com.ctre.phoenix6.configs.TalonFXConfiguration
 import com.ctre.phoenix6.controls.Follower
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage
@@ -185,7 +184,9 @@ object ShooterIOTalon : ShooterIO {
 
   override fun setVelocity(velocity: AngularVelocity) {
     leaderTalon.setControl(
-        motionMagicControl.withVelocity(leaderSensor.velocityToRawUnits(velocity)).withAcceleration(ShooterConstants.MAX_ACCELERATION.inRotationsPerSecondPerSecond),
+        motionMagicControl
+            .withVelocity(leaderSensor.velocityToRawUnits(velocity))
+            .withAcceleration(ShooterConstants.MAX_ACCELERATION.inRotationsPerSecondPerSecond),
     )
   }
 }

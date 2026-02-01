@@ -45,11 +45,25 @@ class Intake(private val io: IntakeIO) : ControlledByStateMachine() {
 
   init {
     if (RobotBase.isReal()) {
-      io.configPID(IntakeConstants.PID.REAL_PIVOT_KP, IntakeConstants.PID.REAL_PIVOT_KI, IntakeConstants.PID.REAL_PIVOT_KD)
-      io.configFF(IntakeConstants.PID.PIVOT_KG, IntakeConstants.PID.PIVOT_KS, IntakeConstants.PID.PIVOT_KV, IntakeConstants.PID.PIVOT_KA)
+      io.configPID(
+          IntakeConstants.PID.REAL_PIVOT_KP,
+          IntakeConstants.PID.REAL_PIVOT_KI,
+          IntakeConstants.PID.REAL_PIVOT_KD)
+      io.configFF(
+          IntakeConstants.PID.PIVOT_KG,
+          IntakeConstants.PID.PIVOT_KS,
+          IntakeConstants.PID.PIVOT_KV,
+          IntakeConstants.PID.PIVOT_KA)
     } else {
-      io.configPID(IntakeConstants.PID.SIM_PIVOT_KP, IntakeConstants.PID.SIM_PIVOT_KI, IntakeConstants.PID.SIM_PIVOT_KD)
-      io.configFF(IntakeConstants.PID.SIM_PIVOT_KG, IntakeConstants.PID.SIM_PIVOT_KS, IntakeConstants.PID.SIM_PIVOT_KV, IntakeConstants.PID.SIM_PIVOT_KA)
+      io.configPID(
+          IntakeConstants.PID.SIM_PIVOT_KP,
+          IntakeConstants.PID.SIM_PIVOT_KI,
+          IntakeConstants.PID.SIM_PIVOT_KD)
+      io.configFF(
+          IntakeConstants.PID.SIM_PIVOT_KG,
+          IntakeConstants.PID.SIM_PIVOT_KS,
+          IntakeConstants.PID.SIM_PIVOT_KV,
+          IntakeConstants.PID.SIM_PIVOT_KA)
     }
   }
 

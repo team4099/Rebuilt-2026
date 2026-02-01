@@ -28,7 +28,8 @@ import org.team4099.lib.units.perSecond
 object ShooterConstants {
   val SHOOTER_HEIGHT = 20.085331.inches
   val SHOOTER_ANGLE = 60.degrees
-  val SHOOTER_OFFSET = Transform2d(Translation2d(6.852263.inches, -(4.780512 + 0.75/2).inches), 0.radians)
+  val SHOOTER_OFFSET =
+      Transform2d(Translation2d(6.852263.inches, -(4.780512 + 0.75 / 2).inches), 0.radians)
 
   val GEAR_RATIO: Double = 24.0 / 24.0
   val SUPPLY_CURRENT_LIMIT = 40.0.amps
