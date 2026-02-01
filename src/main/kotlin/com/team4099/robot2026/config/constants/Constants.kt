@@ -30,8 +30,8 @@ object Constants {
     const val SIMULATE_VISION = false
     const val DISABLE_COLLISIONS = true
 
-    val ROBOT_WEIGHT = 135.pounds
-    val ROBOT_MOI = 6.76.kilo.grams.meterSquared
+    val ROBOT_WEIGHT = 85.pounds
+    val ROBOT_MOI = 3.5.kilo.grams.meterSquared
 
     val whoami = argToEnum<WHOAMI>(System.getProperty("robot"))
   }
