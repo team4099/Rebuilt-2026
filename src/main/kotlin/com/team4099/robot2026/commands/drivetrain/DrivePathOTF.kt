@@ -1,7 +1,5 @@
 package com.team4099.robot2026.commands.drivetrain
 
-import com.ctre.phoenix6.swerve.SwerveModule
-import com.ctre.phoenix6.swerve.SwerveRequest
 import com.pathplanner.lib.commands.FollowPathCommand
 import com.pathplanner.lib.path.PathPlannerPath
 import com.pathplanner.lib.path.Waypoint
