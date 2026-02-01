@@ -68,11 +68,11 @@ class Intake(private val io: IntakeIO) : ControlledByStateMachine() {
 
     when (currentState) {
       IntakeState.UNINITIALIZED -> {
-        io.zeroPivot()
         nextState = fromRequestToState(currentRequest)
       }
       IntakeState.ZEROING_PIVOT -> {
         io.zeroPivot()
+        currentRequest = Request.IntakeRequest.OpenLoop(0.volts)
         nextState = fromRequestToState(currentRequest)
       }
       IntakeState.OPEN_LOOP -> {

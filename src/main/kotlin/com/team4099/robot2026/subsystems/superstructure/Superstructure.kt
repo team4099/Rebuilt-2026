@@ -54,7 +54,7 @@ class Superstructure(
     get() {
       val launchData =
         Shooter.calculateLaunchData(drivetrain.pose.toPose2d(), drivetrain.chassisSpeeds)
-      return 3000.rotations.perMinute
+      return 2000.rotations.perMinute
 //            max(
 //                Shooter.launchVelToShooterRPMMap.get(launchData.launchVelocity),
 //                ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY)
@@ -131,7 +131,7 @@ class Superstructure(
         feeder.currentRequest = Request.FeederRequest.Idle()
         hopper.currentRequest = Request.HopperRequest.Idle()
        intake.currentRequest =
-            Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.STOW_ANGLE)
+            Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.IDLE_ANGLE)
         intakeRollers.currentRequest =
             Request.RollersRequest.OpenLoop(RollersConstants.IDLE_VOLTAGE)
         shooter.currentRequest = Request.ShooterRequest.Idle()
@@ -165,6 +165,7 @@ class Superstructure(
           feeder.currentRequest = Request.FeederRequest.OpenLoop(FeederConstants.SCORE_VOLTAGE)
           hopper.currentRequest =
             Request.HopperRequest.OpenLoop(HopperConstants.Voltages.SCORE_VOLTAGE)
+          intakeRollers.currentRequest = Request.RollersRequest.OpenLoop(RollersConstants.SCORE_ASSISTING_VOLTAGE)
         }
 
         when (currentRequest) {

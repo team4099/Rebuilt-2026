@@ -42,15 +42,15 @@ object ShooterConstants {
 
   object VELOCITIES {
     val MINIMUM_LAUNCH_VELOCITY = 1200.0.rotations.perMinute
-    val IDLE_VELOCITY = MINIMUM_LAUNCH_VELOCITY
+    val IDLE_VELOCITY = 600.rotations.perMinute
   }
 
   object PID {
-    val REAL_KP: ProportionalGain<Velocity<Radian>, Volt> = 0.0.volts / 1.0.degrees.perSecond
+    val REAL_KP: ProportionalGain<Velocity<Radian>, Volt> = 0.0.volts / 1.0.radians.perSecond
     val REAL_KI: IntegralGain<Velocity<Radian>, Volt> =
-        0.05.volts / (1.0.radians.perSecond * 1.0.seconds)
+        0.025.volts / (1.0.radians.perSecond * 1.0.seconds)
     val REAL_KD: DerivativeGain<Velocity<Radian>, Volt> =
-        0.0.volts / (1.0.degrees.perSecond / 1.0.seconds)
+        0.0.volts / (1.0.radians.perSecond / 1.0.seconds)
 
     // SYS ID
     val REAL_KS: StaticFeedforward<Volt> = 0.17726.volts

@@ -12,7 +12,8 @@ object RollersConstants {
 
   val IDLE_VOLTAGE = 0.0.volts
   val EJECT_VOLTAGE = (-3.0).volts
-  val INTAKE_VOLTAGE = 6.5.volts
+  val INTAKE_VOLTAGE = 7.volts
+  val SCORE_ASSISTING_VOLTAGE = 5.volts
 
   val MOMENT_OF_INERTIA = 1.0.grams.meterSquared // TODO: Change
 

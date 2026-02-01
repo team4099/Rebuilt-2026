@@ -35,6 +35,7 @@ import org.team4099.lib.units.derived.VelocityFeedforward
 import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
+import org.team4099.lib.units.derived.inRotations
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.inVoltsPerRadian
 import org.team4099.lib.units.derived.inVoltsPerRadianPerSecond
@@ -42,18 +43,18 @@ import org.team4099.lib.units.derived.inVoltsPerRadianSeconds
 import org.team4099.lib.units.derived.inVoltsPerRadiansPerSecond
 import org.team4099.lib.units.derived.inVoltsPerRadiansPerSecondPerSecond
 import org.team4099.lib.units.derived.radians
+import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inDegreesPerSecond
 import org.team4099.lib.units.inDegreesPerSecondPerSecond
 import org.team4099.lib.units.inRotationsPerSecond
 import org.team4099.lib.units.inRotationsPerSecondPerSecond
+import org.team4099.lib.units.inRotationsPerSecondPerSecondPerSecond
+import org.team4099.lib.units.perSecond
 
 object IntakeIOTalon : IntakeIO {
   private val intakeTalon: TalonFX = TalonFX(Constants.Intake.INTAKE_PIVOT_MOTOR_ID)
   private val intakeConfiguration: TalonFXConfiguration = TalonFXConfiguration()
-  private val intakeSensor =
-      ctreAngularMechanismSensor(
-          intakeTalon, IntakeConstants.GEAR_RATIO, IntakeConstants.VOLTAGE_COMPENSATION)
   private val voltageControl = VoltageOut(-1337.volts.inVolts)
   private val motionMagicVoltage = MotionMagicVoltage(-1337.degrees.inDegrees)
 
@@ -78,11 +79,12 @@ object IntakeIOTalon : IntakeIO {
 
     intakeConfiguration.MotionMagic.MotionMagicCruiseVelocity = IntakeConstants.MAX_VELOCITY.inRotationsPerSecond
     intakeConfiguration.MotionMagic.MotionMagicAcceleration = IntakeConstants.MAX_ACCELERATION.inRotationsPerSecondPerSecond
+    intakeConfiguration.MotionMagic.MotionMagicJerk = IntakeConstants.MAX_JERK.inRotationsPerSecondPerSecondPerSecond
 
     intakeConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake
     intakeConfiguration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive
     intakeConfiguration.Feedback.SensorToMechanismRatio =
-      IntakeConstants.GEAR_RATIO
+      1.0 / IntakeConstants.GEAR_RATIO
     intakeTalon.configurator.apply(intakeConfiguration)
 
     temperatureSignal = intakeTalon.deviceTemp
@@ -105,7 +107,7 @@ object IntakeIOTalon : IntakeIO {
   }
 
   override fun setPosition(position: Angle) {
-    intakeTalon.setControl(motionMagicVoltage.withPosition(intakeSensor.positionToRawUnits(position)).withSlot(0))
+    intakeTalon.setControl(motionMagicVoltage.withPosition(position.inRotations).withSlot(0))
   }
 
   private fun updateSignals() {
@@ -147,15 +149,15 @@ object IntakeIOTalon : IntakeIO {
 
   override fun updateInputs(inputs: IntakeIO.IntakeIOInputs) {
     updateSignals()
-    inputs.velocity = intakeSensor.velocity
+    inputs.velocity = intakeTalon.velocity.valueAsDouble.rotations.perSecond
     inputs.intakeAppliedVoltage = voltageSignal.valueAsDouble.volts
     inputs.intakeStatorCurrent = statorCurrentSignal.valueAsDouble.amps
     inputs.intakeSupplyCurrent = supplyCurrentSignal.valueAsDouble.amps
     inputs.intakeTemperature = temperatureSignal.valueAsDouble.celsius
-    inputs.position = positionSignal.valueAsDouble.radians
+    inputs.position = positionSignal.valueAsDouble.rotations
   }
 
   override fun zeroPivot() {
-    intakeTalon.setPosition(intakeSensor.positionToRawUnits(IntakeConstants.ANGLES.STOW_ANGLE))
+    intakeTalon.setPosition(IntakeConstants.ANGLES.STOW_ANGLE.inRotations)
   }
 }
