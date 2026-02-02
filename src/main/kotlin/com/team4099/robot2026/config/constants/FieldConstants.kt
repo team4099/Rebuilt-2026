@@ -12,7 +12,7 @@ import org.team4099.lib.units.base.meters
 
 /**
  * Contains various field dimensions and useful reference points. Dimensions are in meters, and sets
- * of corners start in the lower left moving clockwise. **All units in Meters** <br></br> <br></br>
+ * of corners start in the lower left moving clockwise.
  *
  * All translations and poses are stored with the origin at the rightmost point on the BLUE ALLIANCE
  * wall.<br></br> <br></br> Length refers to the *x* direction (as described by wpilib) <br></br>

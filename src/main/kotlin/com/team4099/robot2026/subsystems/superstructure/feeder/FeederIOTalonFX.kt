@@ -5,6 +5,7 @@ import com.ctre.phoenix6.StatusSignal
 import com.ctre.phoenix6.configs.TalonFXConfiguration
 import com.ctre.phoenix6.controls.VoltageOut
 import com.ctre.phoenix6.hardware.TalonFX
+import com.ctre.phoenix6.signals.InvertedValue
 import com.ctre.phoenix6.signals.NeutralModeValue
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.FeederConstants
@@ -54,6 +55,7 @@ object FeederIOTalonFX : FeederIO {
     feederConfiguration.CurrentLimits.StatorCurrentLimitEnable = true
     feederConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true
     feederConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Coast
+    feederConfiguration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive
 
     feederTalon.configurator.apply(feederConfiguration)
 

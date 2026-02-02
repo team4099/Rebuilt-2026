@@ -201,7 +201,7 @@ object AlphaBotTunerConstants : TunerConstants {
   private const val kFrontLeftDriveMotorId = 11
   private const val kFrontLeftSteerMotorId = 21
   private const val kFrontLeftEncoderId = 31
-  private val kFrontLeftEncoderOffset = -0.46533203125.rotations + .5.rotations
+  private val kFrontLeftEncoderOffset = -0.470947265625.rotations
   private const val kFrontLeftSteerMotorInverted = true
   private const val kFrontLeftEncoderInverted = false
 
@@ -212,7 +212,7 @@ object AlphaBotTunerConstants : TunerConstants {
   private const val kFrontRightDriveMotorId = 12
   private const val kFrontRightSteerMotorId = 22
   private const val kFrontRightEncoderId = 32
-  private val kFrontRightEncoderOffset = -0.1337890625.rotations + .5.rotations
+  private val kFrontRightEncoderOffset = -0.142578125.rotations
   private const val kFrontRightSteerMotorInverted = true
   private const val kFrontRightEncoderInverted = false
 
@@ -223,7 +223,7 @@ object AlphaBotTunerConstants : TunerConstants {
   private const val kBackLeftDriveMotorId = 13
   private const val kBackLeftSteerMotorId = 23
   private const val kBackLeftEncoderId = 33
-  private val kBackLeftEncoderOffset = -0.093505859375.rotations + .5.rotations
+  private val kBackLeftEncoderOffset = -0.095458984375.rotations
   private const val kBackLeftSteerMotorInverted = true
   private const val kBackLeftEncoderInverted = false
 
@@ -234,7 +234,7 @@ object AlphaBotTunerConstants : TunerConstants {
   private const val kBackRightDriveMotorId = 14
   private const val kBackRightSteerMotorId = 24
   private const val kBackRightEncoderId = 34
-  private val kBackRightEncoderOffset = -0.088134765625.rotations + .5.rotations
+  private val kBackRightEncoderOffset = -0.08544921875.rotations
   private const val kBackRightSteerMotorInverted = true
   private const val kBackRightEncoderInverted = false
 

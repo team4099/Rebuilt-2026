@@ -1,7 +1,5 @@
 package com.team4099.robot2026.commands.drivetrain
 
-import com.ctre.phoenix6.swerve.SwerveModule
-import com.ctre.phoenix6.swerve.SwerveRequest
 import com.pathplanner.lib.commands.FollowPathCommand
 import com.pathplanner.lib.path.PathPlannerPath
 import com.pathplanner.lib.path.Waypoint
@@ -111,11 +109,6 @@ class DrivePathOTF(
   private val ppHolonomicDriveController: PathPlannerHolonomicDriveController
   private val pathConstraints: PathConstraints
 
-  private var request =
-      SwerveRequest.ApplyRobotSpeeds()
-          .withDriveRequestType(SwerveModule.DriveRequestType.Velocity)
-          .withSteerRequestType(SwerveModule.SteerRequestType.MotionMagicExpo)
-
   init {
     addRequirements(drivetrain)
 
@@ -144,6 +137,8 @@ class DrivePathOTF(
   }
 
   override fun initialize() {
+    ppHolonomicDriveController.reset(drivetrain.pose.toPose2d(), drivetrain.chassisSpeeds)
+
     val waypoints: List<Waypoint> =
         PathPlannerPath.waypointsFromPoses(
             buildList(capacity = poses.size + 1) {

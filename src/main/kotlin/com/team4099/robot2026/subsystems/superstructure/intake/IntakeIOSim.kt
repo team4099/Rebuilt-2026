@@ -35,7 +35,7 @@ object IntakeIOSim : IntakeIO {
           IntakeConstants.PIVOT_LENGTH.inMeters,
           IntakeConstants.PIVOT_MIN_ANGLE.inRadians,
           IntakeConstants.PIVOT_MAX_ANGLE.inRadians,
-          true,
+          false,
           0.0)
 
   private val armPIDController =

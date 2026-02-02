@@ -49,7 +49,7 @@ sealed interface Request {
 
     class TargetingPosition(val pivotPosition: Angle) : IntakeRequest
 
-    class ZeroPivot() : IntakeRequest
+    class ZeroPivot : IntakeRequest
   }
 
   sealed interface ShooterRequest : Request {
@@ -57,6 +57,6 @@ sealed interface Request {
 
     class TargetVelocity(val targetVelocity: AngularVelocity) : ShooterRequest
 
-    class Idle() : ShooterRequest
+    class Idle : ShooterRequest
   }
 }

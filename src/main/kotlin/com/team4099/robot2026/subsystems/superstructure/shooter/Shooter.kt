@@ -144,7 +144,8 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
         nextState = fromShooterRequestToState(currentRequest)
       }
       ShooterState.IDLE -> {
-        io.setVelocity(ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY)
+        shooterVelocityTarget = ShooterConstants.VELOCITIES.IDLE_VELOCITY
+        io.setVelocity(ShooterConstants.VELOCITIES.IDLE_VELOCITY)
         nextState = fromShooterRequestToState(currentRequest)
       }
     }
