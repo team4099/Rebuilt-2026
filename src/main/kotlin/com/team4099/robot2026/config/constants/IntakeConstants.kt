@@ -43,10 +43,10 @@ object IntakeConstants {
   val LENGTH_EXTENDED = 0.0.inches
 
   object ANGLES {
-    val INTAKE_ANGLE = (-15.5).degrees
-    val STOW_ANGLE = 135.degrees + INTAKE_ANGLE
-    val IDLE_ANGLE = STOW_ANGLE - 80.degrees
-    val EJECT_ANGLE = (-15.5).degrees
+    val INTAKE_ANGLE = (-12).degrees
+    val STOW_ANGLE = 120.degrees
+    val IDLE_ANGLE = 40.degrees
+    val EJECT_ANGLE = STOW_ANGLE
   }
 
   object PID {

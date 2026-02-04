@@ -150,7 +150,7 @@ object AlphaBotTunerConstants : TunerConstants {
 
   private const val kDriveGearRatio = 5.902777777777778
   private const val kSteerGearRatio = 18.75
-  private val kWheelRadius = DrivetrainConstants.WHEEL_DIAMETER / 2
+  private val kWheelRadius = DrivetrainConstants.WHEEL_RADIUS
 
   private const val kInvertLeftSide = false
   private const val kInvertRightSide = true

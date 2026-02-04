@@ -2,7 +2,6 @@ package com.team4099.robot2026
 
 import com.ctre.phoenix6.signals.NeutralModeValue
 import com.team4099.robot2026.auto.AutonomousSelector
-import com.team4099.robot2026.commands.drivetrain.DrivePathOTF
 import com.team4099.robot2026.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2026.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2026.config.ControlBoard
@@ -26,8 +25,8 @@ import com.team4099.robot2026.subsystems.superstructure.hopper.Hopper
 import com.team4099.robot2026.subsystems.superstructure.hopper.HopperIOSim
 import com.team4099.robot2026.subsystems.superstructure.hopper.HopperIOTalon
 import com.team4099.robot2026.subsystems.superstructure.intake.Intake
-import com.team4099.robot2026.subsystems.superstructure.intake.IntakeIO
 import com.team4099.robot2026.subsystems.superstructure.intake.IntakeIOSim
+import com.team4099.robot2026.subsystems.superstructure.intake.IntakeIOTalon
 import com.team4099.robot2026.subsystems.superstructure.intake.rollers.IntakeRollers
 import com.team4099.robot2026.subsystems.superstructure.intake.rollers.IntakeRollersIOSim
 import com.team4099.robot2026.subsystems.superstructure.intake.rollers.IntakeRollersIOTalon
@@ -39,7 +38,6 @@ import com.team4099.robot2026.subsystems.vision.camera.CameraIOPVSim
 import com.team4099.robot2026.subsystems.vision.camera.CameraIOPhotonvision
 import com.team4099.robot2026.util.driver.Jessika
 import edu.wpi.first.wpilibj.RobotBase
-import edu.wpi.first.wpilibj2.command.ConditionalCommand
 import org.ironmaple.simulation.SimulatedArena
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.Arena2026Rebuilt
@@ -55,7 +53,7 @@ object RobotContainer {
   private val climb: Climb
   private val feeder: Feeder
   private val hopper: Hopper
-  private val intake: Intake
+  val intake: Intake
   private val intakeRollers: IntakeRollers
   private val shooter: Shooter
   val superstructure: Superstructure
@@ -91,7 +89,7 @@ object RobotContainer {
       climb = Climb(object : ClimbIO {})
       feeder = Feeder(FeederIOTalonFX)
       hopper = Hopper(HopperIOTalon)
-      intake = Intake(object : IntakeIO {})
+      intake = Intake(IntakeIOTalon)
       intakeRollers = IntakeRollers(IntakeRollersIOTalon)
       shooter = Shooter(ShooterIOTalon)
     } else {
@@ -171,18 +169,18 @@ object RobotContainer {
 
     ControlBoard.eject.onTrue(superstructure.requestEjectCommand())
 
-    ControlBoard.leftTrenchOTF.onTrue(
-        ConditionalCommand(
-            DrivePathOTF.allianceZoneToNeutralInLeftTrench(drivetrain),
-            DrivePathOTF.neutralZoneToAllianceInLeftTrench(drivetrain)) {
-              FieldConstants.inTrenchAllianceZone(drivetrain.pose)
-            })
-    ControlBoard.rightTrenchOTF.onTrue(
-        ConditionalCommand(
-            DrivePathOTF.allianceZoneToNeutralInRightTrench(drivetrain),
-            DrivePathOTF.neutralZoneToAllianceInRightTrench(drivetrain)) {
-              FieldConstants.inTrenchAllianceZone(drivetrain.pose)
-            })
+    //    ControlBoard.leftTrenchOTF.onTrue(
+    //        ConditionalCommand(
+    //            DrivePathOTF.allianceZoneToNeutralInLeftTrench(drivetrain),
+    //            DrivePathOTF.neutralZoneToAllianceInLeftTrench(drivetrain)) {
+    //              FieldConstants.inTrenchAllianceZone(drivetrain.pose)
+    //            })
+    //    ControlBoard.rightTrenchOTF.onTrue(
+    //        ConditionalCommand(
+    //            DrivePathOTF.allianceZoneToNeutralInRightTrench(drivetrain),
+    //            DrivePathOTF.neutralZoneToAllianceInRightTrench(drivetrain)) {
+    //              FieldConstants.inTrenchAllianceZone(drivetrain.pose)
+    //            })
   }
 
   fun mapTestControls() {}
