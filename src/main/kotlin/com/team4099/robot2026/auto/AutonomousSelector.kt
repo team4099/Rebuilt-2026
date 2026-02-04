@@ -25,7 +25,9 @@ object AutonomousSelector {
 
     autonomousModeChooser.addOption(
         "Example Auto DO NOT RUN AT COMPETITION", AutonomousMode.EXAMPLE_AUTO)
-    autonomousModeChooser.addOption("SysID DON'T RUN AT COMP", AutonomousMode.SYSID)
+    autonomousModeChooser.addOption("SysID DO NOT RUN AT COMPETITION", AutonomousMode.SYSID)
+    //    autonomousModeChooser.addOption("WheelRadius DO NOT RUN AT COMPETITION",
+    // AutonomousMode.WHEEL_RADIUS)
 
     autoTab.add("Mode", autonomousModeChooser.sendableChooser).withSize(4, 2).withPosition(2, 0)
 
@@ -48,6 +50,8 @@ object AutonomousSelector {
       AutonomousMode.EXAMPLE_AUTO ->
           return WaitCommand(waitTime.inSeconds).andThen(ExamplePathAuto(drivetrain))
       AutonomousMode.SYSID -> return WaitCommand(waitTime.inSeconds).andThen(SysID(drivetrain))
+      //      AutonomousMode.WHEEL_RADIUS -> return
+      // WaitCommand(waitTime.inSeconds).andThen(WheelRadius(drivetrain))
       else -> return InstantCommand()
     }
   }
@@ -55,5 +59,6 @@ object AutonomousSelector {
 
 private enum class AutonomousMode {
   EXAMPLE_AUTO,
-  SYSID
+  SYSID,
+  //  WHEEL_RADIUS
 }

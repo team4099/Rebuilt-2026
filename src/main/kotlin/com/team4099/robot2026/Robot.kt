@@ -161,6 +161,7 @@ object Robot : LoggedRobot() {
   override fun autonomousInit() {
     val autonCommandWithWait = runOnce({ RobotContainer.zeroSensors() }).andThen(autonomousCommand)
     CommandScheduler.getInstance().schedule(autonCommandWithWait)
+    RobotContainer.intake.setBrakeMode(true)
   }
 
   override fun disabledPeriodic() {
@@ -169,6 +170,7 @@ object Robot : LoggedRobot() {
 
   override fun disabledInit() {
     RobotContainer.resetSimulationField()
+    RobotContainer.intake.setBrakeMode(false)
   }
 
   override fun robotPeriodic() {
@@ -197,6 +199,7 @@ object Robot : LoggedRobot() {
     if (Constants.Tuning.TUNING_MODE) {
       RobotContainer.mapTunableCommands()
     }
+    RobotContainer.intake.setBrakeMode(true)
   }
 
   override fun teleopPeriodic() {}
@@ -204,6 +207,7 @@ object Robot : LoggedRobot() {
   override fun testInit() {
     RobotContainer.mapTestControls()
     RobotContainer.getAutonomousCommand().cancel()
+    RobotContainer.intake.setBrakeMode(true)
   }
 
   override fun simulationPeriodic() {

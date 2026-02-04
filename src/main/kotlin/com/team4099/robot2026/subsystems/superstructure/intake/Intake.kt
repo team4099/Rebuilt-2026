@@ -102,6 +102,10 @@ class Intake(private val io: IntakeIO) : ControlledByStateMachine() {
     currentState = nextState
   }
 
+  fun setBrakeMode(brake: Boolean) {
+    io.setBrakeMode(brake)
+  }
+
   companion object {
     enum class IntakeState {
       UNINITIALIZED,

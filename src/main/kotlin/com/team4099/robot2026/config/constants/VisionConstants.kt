@@ -35,14 +35,14 @@ object VisionConstants {
                       Pair(
                           CameraIO.DetectionPipeline.APRIL_TAG,
                           Transform3d(
-                              Translation3d(10.875.inches, 10.875.inches, 8.397.inches),
-                              Rotation3d(0.0.degrees, -20.degrees, 25.degrees))),
+                              Translation3d(9.773802.inches, 11.230054.inches, 8.495934.inches),
+                              Rotation3d(0.0.degrees, 20.degrees, 30.degrees))),
                   "raven_2" to
                       Pair(
                           CameraIO.DetectionPipeline.APRIL_TAG,
                           Transform3d(
-                              Translation3d(10.875.inches, -10.875.inches, 8.397.inches),
-                              Rotation3d(0.0.degrees, -20.degrees, -30.degrees))),
+                              Translation3d(9.773802.inches, -11.230054.inches, 8.495934.inches),
+                              Rotation3d(0.0.degrees, 20.degrees, -30.degrees))),
               )
           WHOAMI.TESTBOT ->
               mapOf(
@@ -68,8 +68,6 @@ object VisionConstants {
   val multiTagStdDevs: Matrix<N4?, N1?> = VecBuilder.fill(0.5, 0.5, 4.0, 7.0)
 
   val oldStdDevs: Matrix<N3?, N1?> = VecBuilder.fill(XY_STDDEV, XY_STDDEV, THETA_STDDEV)
-
-  val FIELD_POSE_RESET_DISTANCE_THRESHOLD = .75.meters
 
   enum class OBJECT_CLASS(val id: Int, val mapleSimType: String?) {
     FUEL(0, "Fuel")

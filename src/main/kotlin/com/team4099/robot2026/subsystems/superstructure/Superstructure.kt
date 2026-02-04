@@ -27,6 +27,7 @@ import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.derived.rotations
+import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.perMinute
 
 class Superstructure(
@@ -110,6 +111,11 @@ class Superstructure(
 
     CustomLogger.recordOutput("Superstructure/currentState", currentState)
     CustomLogger.recordOutput("Superstructure/currentRequest", currentRequest.javaClass.simpleName)
+    CustomLogger.recordOutput(
+        "Superstructure/expectedLaunchSpeedMPS",
+        Shooter.calculateLaunchData(drivetrain.pose.toPose2d(), drivetrain.chassisSpeeds)
+            .launchVelocity
+            .inMetersPerSecond)
 
     when (currentState) {
       SuperstructureStates.UNINITALIZED -> {

@@ -46,10 +46,10 @@ object DrivetrainConstants {
 
   const val TELEOP_TURNING_SPEED_PERCENT = 0.6
 
-  val WHEEL_DIAMETER: Length
+  val WHEEL_RADIUS: Length
     get() =
         when (Constants.Universal.whoami) {
-          else -> (2 * 2).inches
+          else -> 2.inches
         }
 
   val DRIVETRAIN_LENGTH: Length
@@ -180,7 +180,7 @@ object DrivetrainConstants {
     val SIM_AUTO_THETA_PID_KI = AUTO_REEF_PID_KI
     val SIM_AUTO_THETA_PID_KD = AUTO_REEF_PID_KD
 
-    val STEERING_KP = 10.0.volts / 45.degrees
+    val STEERING_KP = 35.volts / 1.radians
     val STEERING_KI = 0.0.volts.perDegreeSeconds
     val STEERING_KD = 0.0.volts.perDegreePerSecond
     val STEERING_KV: VelocityFeedforward<Radian, Volt>
@@ -196,12 +196,14 @@ object DrivetrainConstants {
     val DRIVE_KS
       get() =
           when (Constants.Universal.whoami) {
+            Constants.WHOAMI.ALPHABOT -> 0.24069.volts
             else -> 0.236.volts
           }
 
     val DRIVE_KV: VelocityFeedforward<Meter, Volt>
       get() =
           when (Constants.Universal.whoami) {
+            Constants.WHOAMI.ALPHABOT -> 0.74646.volts / 1.0.meters.perSecond
             else -> 2.117.volts / 1.0.meters.perSecond
           }
 

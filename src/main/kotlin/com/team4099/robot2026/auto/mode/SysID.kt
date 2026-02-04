@@ -10,6 +10,4 @@ class SysID(val drivetrain: Drive) : SequentialCommandGroup() {
     addRequirements(drivetrain)
     addCommands(WaitCommand(0.5), FeedforwardCharacterizationCommand(drivetrain))
   }
-
-  companion object {}
 }

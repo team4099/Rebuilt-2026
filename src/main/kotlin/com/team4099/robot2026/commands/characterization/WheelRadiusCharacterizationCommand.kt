@@ -7,6 +7,7 @@ package com.team4099.robot2026.commands.characterization
 // at the root directory of this project.
 
 import com.team4099.robot2026.subsystems.drivetrain.Drive
+import com.team4099.robot2026.util.CustomLogger
 import edu.wpi.first.math.filter.SlewRateLimiter
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj2.command.Commands
@@ -78,6 +79,16 @@ class WheelRadiusCharacterizationCommand(drivetrain: Drive) : ParallelCommandGro
                               " meters, " +
                               formatter.format(wheelRadius.meters.inInches) +
                               " inches")
+
+                      CustomLogger.recordOutput(
+                          "WheelRadiusCharacterizationCommand/wheelDeltaRadians",
+                          formatter.format(wheelDelta))
+                      CustomLogger.recordOutput(
+                          "WheelRadiusCharacterizationCommand/gyroDeltaRadians",
+                          formatter.format(state.gyroDelta))
+                      CustomLogger.recordOutput(
+                          "WheelRadiusCharacterizationCommand/wheelRadiusInches",
+                          formatter.format(wheelRadius.meters.inInches))
                     })))
   }
 

@@ -22,7 +22,6 @@ import org.photonvision.targeting.TargetCorner
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Pose3dWPILIB
 import org.team4099.lib.geometry.Rotation3d
-import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.seconds
 
@@ -173,21 +172,13 @@ interface CameraIO {
               val poseEst = visionEst.get().estimatedPose
               inputs.frame = Pose3d(poseEst)
 
-              if (result.bestTarget.bestCameraToTarget.translation.norm <
-                  VisionConstants.FIELD_POSE_RESET_DISTANCE_THRESHOLD.inMeters) {
-                updateEstimationStdDevs(visionEst, result.getTargets())
+              updateEstimationStdDevs(visionEst, result.getTargets())
 
-                poseMeasurementConsumer(
-                    Pose3dWPILIB(
-                        poseEst.x,
-                        poseEst.y,
-                        poseEst.z,
-                        drivetrainRotationSupplier.get().rotation3d),
-                    //                  Pose2d(poseEst2d.x, poseEst.y,
-                    // drivetrainRotationSupplier.get().inRotation2ds),
-                    visionEst.get().timestampSeconds,
-                    curStdDevs)
-              }
+              poseMeasurementConsumer(
+                  Pose3dWPILIB(
+                      poseEst.x, poseEst.y, poseEst.z, drivetrainRotationSupplier.get().rotation3d),
+                  visionEst.get().timestampSeconds,
+                  curStdDevs)
             }
           }
         }

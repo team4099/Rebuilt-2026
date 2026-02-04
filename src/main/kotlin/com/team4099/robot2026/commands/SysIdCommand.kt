@@ -1,5 +1,6 @@
 package com.team4099.robot2026.commands
 
+import com.ctre.phoenix6.SignalLogger
 import com.team4099.robot2026.util.CustomLogger
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
@@ -114,6 +115,7 @@ class SysIdCommand : Command {
   // Called once the command ends or is interrupted.
   override fun end(interrupted: Boolean) {
     if (data.length > 0) {
+      SignalLogger.writeString("state", data.substring(0, data.length - 1))
       SmartDashboard.putString("SysIdTelemetry", data.substring(0, data.length - 1))
       println("Saved " + java.lang.Long.toString(Math.round(data.length / 1024.0)) + " KB of data.")
     } else {

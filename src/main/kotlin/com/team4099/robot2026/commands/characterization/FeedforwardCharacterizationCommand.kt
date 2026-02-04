@@ -1,6 +1,7 @@
 package com.team4099.robot2026.commands.characterization
 
 import com.team4099.robot2026.subsystems.drivetrain.Drive
+import com.team4099.robot2026.util.CustomLogger
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.Command
 import java.text.DecimalFormat
@@ -83,6 +84,10 @@ class FeedforwardCharacterizationCommand(private val drive: Drive) : Command() {
     println("********** Drive FF Characterization Results **********")
     println("\tkS: " + formatter.format(kS))
     println("\tkV: " + formatter.format(kV))
+    CustomLogger.recordOutput(
+        "FeedforwardCharacterizationCommand/outputtedkS", formatter.format(kS))
+    CustomLogger.recordOutput(
+        "FeedforwardCharacterizationCommand/outputtedkV", formatter.format(kV))
   }
 
   override fun isFinished(): Boolean {

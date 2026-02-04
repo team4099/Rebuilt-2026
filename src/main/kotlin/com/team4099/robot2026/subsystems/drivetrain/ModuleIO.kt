@@ -135,5 +135,12 @@ interface ModuleIO {
   fun setTurnPosition(rotation: Rotation2d) {}
 
   /** Enable/disable brake mode on the drive and steer motors */
-  fun toggleBrakeMode(brake: NeutralModeValue)
+  fun toggleBrakeMode(brake: NeutralModeValue) {}
+
+  companion object {
+    fun generateObjectizedModules(): Array<ModuleIO> {
+      return arrayOf(
+          object : ModuleIO {}, object : ModuleIO {}, object : ModuleIO {}, object : ModuleIO {})
+    }
+  }
 }
