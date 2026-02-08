@@ -76,5 +76,7 @@ class AimTagCommand(val drivetrain: Drive, val vision: Vision) : Command() {
     return false
   }
 
-  override fun end(interrupted: Boolean) {}
+  override fun end(interrupted: Boolean) {
+    drivetrain.runSpeeds(ChassisSpeeds())
+  }
 }

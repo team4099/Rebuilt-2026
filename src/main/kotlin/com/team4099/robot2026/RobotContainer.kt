@@ -4,6 +4,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue
 import com.team4099.robot2026.auto.AutonomousSelector
 import com.team4099.robot2026.commands.drivetrain.AimTagCommand
 import com.team4099.robot2026.commands.drivetrain.ResetGyroYawCommand
+import com.team4099.robot2026.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2026.config.ControlBoard
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.DrivetrainConstants
@@ -25,6 +26,7 @@ import com.team4099.robot2026.subsystems.superstructure.hopper.Hopper
 import com.team4099.robot2026.subsystems.superstructure.hopper.HopperIOSim
 import com.team4099.robot2026.subsystems.superstructure.hopper.HopperIOTalon
 import com.team4099.robot2026.subsystems.superstructure.intake.Intake
+import com.team4099.robot2026.subsystems.superstructure.intake.IntakeIO
 import com.team4099.robot2026.subsystems.superstructure.intake.IntakeIOSim
 import com.team4099.robot2026.subsystems.superstructure.intake.IntakeIOTalon
 import com.team4099.robot2026.subsystems.superstructure.intake.rollers.IntakeRollers
@@ -36,6 +38,7 @@ import com.team4099.robot2026.subsystems.superstructure.shooter.ShooterIOTalon
 import com.team4099.robot2026.subsystems.vision.Vision
 import com.team4099.robot2026.subsystems.vision.camera.CameraIOPVSim
 import com.team4099.robot2026.subsystems.vision.camera.CameraIOPhotonvision
+import com.team4099.robot2026.util.driver.Jessika
 import edu.wpi.first.wpilibj.RobotBase
 import org.ironmaple.simulation.SimulatedArena
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation
@@ -43,6 +46,7 @@ import org.ironmaple.simulation.seasonspecific.rebuilt2026.Arena2026Rebuilt
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Rotation3d
+import org.team4099.lib.smoothDeadband
 
 object RobotContainer {
   private val drivetrain: Drive
@@ -130,7 +134,14 @@ object RobotContainer {
   }
 
   fun mapDefaultCommands() {
-    drivetrain.defaultCommand = AimTagCommand(drivetrain, vision)
+    drivetrain.defaultCommand = TeleopDriveCommand(
+      driver = Jessika(),
+      { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+      { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+      { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+      { ControlBoard.slowMode },
+      drivetrain
+    )
   }
 
   fun zeroSensors(isInAutonomous: Boolean = false) {
