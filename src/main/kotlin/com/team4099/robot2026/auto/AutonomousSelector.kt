@@ -3,6 +3,7 @@ package com.team4099.robot2026.auto
 import com.team4099.robot2026.auto.mode.ExamplePathAuto
 import com.team4099.robot2026.auto.mode.SysID
 import com.team4099.robot2026.subsystems.drivetrain.Drive
+import com.team4099.robot2026.subsystems.superstructure.shooter.Shooter
 import com.team4099.robot2026.subsystems.vision.Vision
 import edu.wpi.first.networktables.GenericEntry
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets
@@ -43,7 +44,7 @@ object AutonomousSelector {
   val waitTime: Time
     get() = waitBeforeCommandSlider.getDouble(0.0).seconds
 
-  fun getCommand(drivetrain: Drive, vision: Vision): Command {
+  fun getCommand(drivetrain: Drive, vision: Vision, shooter: Shooter): Command {
     val mode = autonomousModeChooser.get()
 
     when (mode) {

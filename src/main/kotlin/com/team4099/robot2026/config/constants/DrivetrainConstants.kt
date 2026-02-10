@@ -89,7 +89,7 @@ object DrivetrainConstants {
   val OBJECT_APPROACH_SPEED = 2.meters.perSecond
 
   val STEERING_SUPPLY_CURRENT_LIMIT = 20.0.amps
-  val DRIVE_SUPPLY_CURRENT_LIMIT = 50.0.amps
+  val DRIVE_SUPPLY_CURRENT_LIMIT = 40.0.amps
 
   val STEERING_STATOR_CURRENT_LIMIT = 20.0.amps
   val DRIVE_STATOR_CURRENT_LIMIT = 40.0.amps
