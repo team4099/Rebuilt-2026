@@ -27,9 +27,8 @@ import org.team4099.lib.geometry.Transform3d
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMilliseconds
-import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.inMetersPerSecond
-import org.team4099.lib.units.perMinute
+import org.team4099.lib.units.max
 
 class Superstructure(
     private val drivetrain: Drive,
@@ -48,12 +47,11 @@ class Superstructure(
   var lastTransitionTime: Time = Clock.fpgaTime
     private set
 
-  val shooterTargetRPM: AngularVelocity
+  inline val shooterTargetRPM: AngularVelocity
     get() {
-      return 2000.rotations.perMinute
-      //                  max(
-      //                      Shooter.launchVelToShooterRPMMap.get(launchData.launchVelocity),
-      //                      ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY)
+      return max(
+          Shooter.launchVelToShooterRPMMap.get(launchData.launchVelocity),
+          ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY)
     }
 
   val field = Field2d()
@@ -109,6 +107,8 @@ class Superstructure(
         }
 
     var nextState = currentState
+
+    launchData = Shooter.calculateLaunchData(drivetrain.pose.toPose2d(), drivetrain.chassisSpeeds)
 
     CustomLogger.recordOutput("Superstructure/currentState", currentState)
     CustomLogger.recordOutput("Superstructure/currentRequest", currentRequest.javaClass.simpleName)

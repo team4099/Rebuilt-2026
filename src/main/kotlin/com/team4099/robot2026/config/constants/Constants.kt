@@ -37,6 +37,7 @@ object Constants {
   }
 
   object MOTOR_CONSTANTS {
+    // https://ctre.download/files/datasheet/Motor%20Performance%20Analysis%20Report.pdf
     const val KRAKENX60FOC_kT = 0.01981
   }
 

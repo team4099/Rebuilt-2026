@@ -2,6 +2,7 @@ package com.team4099.robot2026
 
 import com.ctre.phoenix6.signals.NeutralModeValue
 import com.team4099.robot2026.auto.AutonomousSelector
+import com.team4099.robot2026.commands.drivetrain.AimOTFCommand
 import com.team4099.robot2026.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2026.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2026.config.ControlBoard
@@ -38,6 +39,8 @@ import com.team4099.robot2026.subsystems.vision.camera.CameraIOPVSim
 import com.team4099.robot2026.subsystems.vision.camera.CameraIOPhotonvision
 import com.team4099.robot2026.util.driver.Jessika
 import edu.wpi.first.wpilibj.RobotBase
+import edu.wpi.first.wpilibj2.command.ConditionalCommand
+import edu.wpi.first.wpilibj2.command.InstantCommand
 import org.ironmaple.simulation.SimulatedArena
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.Arena2026Rebuilt
@@ -168,6 +171,19 @@ object RobotContainer {
     ControlBoard.forceIntakeDown.onTrue(superstructure.requestForceIntakeDownCommand())
 
     ControlBoard.eject.onTrue(superstructure.requestEjectCommand())
+
+    ControlBoard.score.whileTrue(
+        ConditionalCommand(
+            AimOTFCommand(
+                drivetrain,
+                { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+                { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+                { ControlBoard.slowMode },
+                driver = Jessika(),
+            ),
+            InstantCommand()) {
+              superstructure.currentState == Superstructure.Companion.SuperstructureStates.SCORE || superstructure.currentState == Superstructure.Companion.SuperstructureStates.PREP_SCORE
+            })
 
     //    ControlBoard.leftTrenchOTF.onTrue(
     //        ConditionalCommand(

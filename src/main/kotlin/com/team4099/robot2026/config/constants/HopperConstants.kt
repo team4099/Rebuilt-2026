@@ -40,7 +40,7 @@ object HopperConstants {
 
   object VELOCITIES {
     val IDLE_VELOCITY = 0.degrees.perSecond
-    val SCORE_VELOCITY = 5.rotations.perSecond
+    val SCORE_VELOCITY = 10.rotations.perSecond
   }
 
   object PID {

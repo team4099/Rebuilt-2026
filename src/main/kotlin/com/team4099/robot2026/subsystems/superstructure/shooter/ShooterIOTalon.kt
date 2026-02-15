@@ -35,7 +35,6 @@ import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.StaticFeedforward
 import org.team4099.lib.units.derived.VelocityFeedforward
-import org.team4099.lib.units.derived.inAmpsPerDegreesPerSecondPerSecond
 import org.team4099.lib.units.derived.inAmpsPerRadianPerSecond
 import org.team4099.lib.units.derived.inAmpsPerRadians
 import org.team4099.lib.units.derived.inAmpsPerRadiansPerSecond
@@ -43,7 +42,6 @@ import org.team4099.lib.units.derived.inAmpsPerRadiansPerSecondPerSecond
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
-import org.team4099.lib.units.inRotationsPerSecondPerSecond
 import org.team4099.lib.units.perSecond
 
 object ShooterIOTalon : ShooterIO {
@@ -85,6 +83,8 @@ object ShooterIOTalon : ShooterIO {
     configs.CurrentLimits.StatorCurrentLimitEnable = true
     configs.MotorOutput.NeutralMode = NeutralModeValue.Coast
     configs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive
+    configs.TorqueCurrent.PeakReverseTorqueCurrent =
+        ShooterConstants.MAX_REVERSE_TORQUE_CURRENT.inAmperes
 
     leaderTalon.configurator.apply(configs)
     followerTalon.configurator.apply(configs)
@@ -158,7 +158,7 @@ object ShooterIOTalon : ShooterIO {
   ) {
     slot0Configs.kP = kP.inAmpsPerRadianPerSecond
     slot0Configs.kI = kI.inAmpsPerRadians
-    slot0Configs.kD = kD.inAmpsPerDegreesPerSecondPerSecond
+    slot0Configs.kD = kD.inAmpsPerRadiansPerSecondPerSecond
     leaderTalon.configurator.apply(slot0Configs)
     followerTalon.configurator.apply(slot0Configs)
   }
@@ -188,7 +188,8 @@ object ShooterIOTalon : ShooterIO {
     leaderTalon.setControl(
         motionMagicControl
             .withVelocity(leaderSensor.velocityToRawUnits(velocity))
-            .withAcceleration(ShooterConstants.MAX_ACCELERATION.inRotationsPerSecondPerSecond),
+            .withAcceleration(
+                leaderSensor.accelerationToRawUnits(ShooterConstants.MAX_ACCELERATION)),
     )
   }
 }

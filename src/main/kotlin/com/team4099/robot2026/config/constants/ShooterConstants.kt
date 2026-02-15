@@ -28,10 +28,9 @@ import org.team4099.lib.units.perMinute
 import org.team4099.lib.units.perSecond
 
 object ShooterConstants {
-  val SHOOTER_HEIGHT = 20.085331.inches
-  val SHOOTER_ANGLE = 60.degrees
-  val SHOOTER_OFFSET =
-      Transform2d(Translation2d(6.852263.inches, -(4.780512 + 0.75 / 2).inches), 0.radians)
+  val SHOOTER_HEIGHT = 19.3.inches
+  val SHOOTER_ANGLE = 75.degrees
+  val SHOOTER_OFFSET = Transform2d(Translation2d(7.7.inches, -(3.6).inches), 0.radians)
 
   val GEAR_RATIO: Double = 24.0 / 24.0
   val SUPPLY_CURRENT_LIMIT = 40.0.amps
@@ -40,24 +39,25 @@ object ShooterConstants {
   val MOMENT_OF_INERTIA = 0.0035914.kilo.grams.meterSquared
 
   val MAX_ACCELERATION: AngularAcceleration = 1000.rotations.perSecond.perSecond
+  val MAX_REVERSE_TORQUE_CURRENT = -20.amps
 
   val SHOOTER_TOLERANCE = 75.0.rotations.perMinute
 
   object VELOCITIES {
-    val MINIMUM_LAUNCH_VELOCITY = 1200.0.rotations.perMinute
+    val MINIMUM_LAUNCH_VELOCITY = 25.rotations.perSecond
     val IDLE_VELOCITY =
-        if (Constants.Tuning.TUNING_MODE) 0.rotations.perSecond else 600.rotations.perMinute
+        if (Constants.Tuning.TUNING_MODE) 0.rotations.perSecond else .5.rotations.perSecond
   }
 
   object PID {
-    val REAL_KP: ProportionalGain<Velocity<Radian>, Ampere> = 1.4.amps / 1.0.radians.perSecond
+    val REAL_KP: ProportionalGain<Velocity<Radian>, Ampere> = 1.25.amps / 1.0.radians.perSecond
     val REAL_KI: IntegralGain<Velocity<Radian>, Ampere> =
         0.0.amps / (1.0.radians.perSecond * 1.0.seconds)
     val REAL_KD: DerivativeGain<Velocity<Radian>, Ampere> =
-        0.0.amps / (1.0.radians.perSecond / 1.0.seconds)
+        0.002.amps / (1.0.radians.perSecond / 1.0.seconds)
 
-    val REAL_KS: StaticFeedforward<Ampere> = 13.amps
-    val REAL_KV: VelocityFeedforward<Radian, Ampere> = 0.07.amps / 1.radians.perSecond
+    val REAL_KS: StaticFeedforward<Ampere> = 10.8.amps
+    val REAL_KV: VelocityFeedforward<Radian, Ampere> = 0.08.amps / 1.radians.perSecond
     val REAL_KA: AccelerationFeedforward<Radian, Ampere> =
         (MOMENT_OF_INERTIA.inKilogramsMeterSquared /
                 (Constants.MOTOR_CONSTANTS.KRAKENX60FOC_kT / GEAR_RATIO))

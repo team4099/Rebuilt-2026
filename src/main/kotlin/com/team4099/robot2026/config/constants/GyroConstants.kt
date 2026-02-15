@@ -27,7 +27,7 @@ object GyroConstants {
     get() =
         when (Constants.Universal.whoami) {
           Constants.WHOAMI.COMPBOT,
-          Constants.WHOAMI.ALPHABOT -> -89.76551055908203.degrees
+          Constants.WHOAMI.ALPHABOT -> -89.76551055908203.degrees + 90.degrees
           Constants.WHOAMI.ALPHABOT -> 180.degrees
           Constants.WHOAMI.TESTBOT -> -90.0.degrees
           else -> 0.degrees
