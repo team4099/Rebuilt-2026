@@ -157,9 +157,12 @@ interface CameraIO {
     when (pipeline) {
       DetectionPipeline.APRIL_TAG -> {
         for (result in unreadResults) {
+          Logger.recordOutput("Vision/$identifier/inHere1", true)
           inputs.cameraTargets.addAll(result.targets)
 
           if (result.hasTargets()) {
+            Logger.recordOutput("Vision/$identifier/inHere2", true)
+
             var visionEst: Optional<EstimatedRobotPose> =
                 photonEstimator.estimateCoprocMultiTagPose(result)
             if (visionEst.isEmpty)
@@ -167,6 +170,8 @@ interface CameraIO {
             if (visionEst.isEmpty) visionEst = photonEstimator.estimateLowestAmbiguityPose(result)
 
             if (visionEst.isPresent) {
+              Logger.recordOutput("Vision/$identifier/inHere3", true)
+
               inputs.usedTargets = visionEst.get().targetsUsed.map { it.fiducialId }
 
               val poseEst = visionEst.get().estimatedPose
@@ -174,11 +179,9 @@ interface CameraIO {
 
               updateEstimationStdDevs(visionEst, result.getTargets())
 
-              poseMeasurementConsumer(
-                  Pose3dWPILIB(
-                      poseEst.x, poseEst.y, poseEst.z, drivetrainRotationSupplier.get().rotation3d),
-                  visionEst.get().timestampSeconds,
-                  curStdDevs)
+              //              Logger.recordOutput("Vision/$identifier/curStdDevs", curStdDevs)
+
+              poseMeasurementConsumer(poseEst, visionEst.get().timestampSeconds, curStdDevs)
             }
           }
         }

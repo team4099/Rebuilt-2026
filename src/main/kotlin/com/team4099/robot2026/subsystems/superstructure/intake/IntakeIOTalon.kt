@@ -80,7 +80,7 @@ object IntakeIOTalon : IntakeIO {
         IntakeConstants.MAX_JERK.inRotationsPerSecondPerSecondPerSecond
 
     intakeConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake
-    intakeConfiguration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive
+    intakeConfiguration.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive
     intakeConfiguration.Feedback.SensorToMechanismRatio = 1.0 / IntakeConstants.GEAR_RATIO
     intakeTalon.configurator.apply(intakeConfiguration)
 

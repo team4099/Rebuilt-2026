@@ -7,6 +7,7 @@ import com.team4099.robot2026.config.constants.FeederConstants
 import com.team4099.robot2026.config.constants.HopperConstants
 import com.team4099.robot2026.config.constants.IntakeConstants
 import com.team4099.robot2026.config.constants.RollersConstants
+import com.team4099.robot2026.config.constants.ShooterConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.subsystems.superstructure.Request.SuperstructureRequest
 import com.team4099.robot2026.subsystems.superstructure.climb.Climb
@@ -124,7 +125,30 @@ class Superstructure(
             else SuperstructureStates.IDLE
       }
       SuperstructureStates.TUNING -> {
-        // do nothing
+        CustomLogger.recordOutput(
+            "Superstructure/expectedLaunchVelMPS",
+            Shooter.calculateLaunchData(drivetrain.pose.toPose2d(), drivetrain.chassisSpeeds)
+                .launchVelocity
+                .inMetersPerSecond)
+        if (currentRequest is SuperstructureRequest.Score) {
+          shooter.currentRequest =
+              Request.ShooterRequest.TargetVelocity(shooter.shooterTestVel.get())
+
+          if (shooter.isAtTargetedVelocity) {
+            feeder.currentRequest = Request.FeederRequest.OpenLoop(FeederConstants.SCORE_VOLTAGE)
+            hopper.currentRequest =
+                Request.HopperRequest.OpenLoop(HopperConstants.Voltages.SCORE_VOLTAGE)
+            intakeRollers.currentRequest =
+                Request.RollersRequest.OpenLoop(RollersConstants.SCORE_ASSISTING_VOLTAGE)
+          }
+        } else {
+          shooter.currentRequest =
+              Request.ShooterRequest.TargetVelocity(ShooterConstants.VELOCITIES.IDLE_VELOCITY)
+          feeder.currentRequest = Request.FeederRequest.Idle()
+          hopper.currentRequest = Request.HopperRequest.Idle()
+          intakeRollers.currentRequest =
+              Request.RollersRequest.OpenLoop(RollersConstants.IDLE_VOLTAGE)
+        }
       }
       SuperstructureStates.IDLE -> {
         climb.currentRequest =
@@ -141,6 +165,7 @@ class Superstructure(
             when (currentRequest) {
               is SuperstructureRequest.ExtendClimb -> SuperstructureStates.PREP_CLIMB
               is SuperstructureRequest.PrepScore -> SuperstructureStates.PREP_SCORE
+              is SuperstructureRequest.Score -> SuperstructureStates.SCORE
               is SuperstructureRequest.Intake -> SuperstructureStates.INTAKE
               is SuperstructureRequest.Eject -> SuperstructureStates.EJECT
               else -> currentState

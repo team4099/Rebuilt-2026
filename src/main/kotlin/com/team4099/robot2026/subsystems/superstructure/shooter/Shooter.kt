@@ -1,6 +1,7 @@
 package com.team4099.robot2026.subsystems.superstructure.shooter
 
 import com.ctre.phoenix6.SignalLogger
+import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.FieldConstants
 import com.team4099.robot2026.config.constants.ShooterConstants
@@ -53,6 +54,7 @@ import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.inMetersPerSecondPerSecond
 import org.team4099.lib.units.inRadiansPerSecond
 import org.team4099.lib.units.inRotationsPerMinute
+import org.team4099.lib.units.inRotationsPerSecond
 import org.team4099.lib.units.perMinute
 import org.team4099.lib.units.perSecond
 
@@ -85,6 +87,12 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
       field = value
     }
 
+  val shooterTestVel =
+      LoggedTunableValue(
+          "Shooter/testLaunchSpeedRotPerSec",
+          0.rotations.perSecond,
+          Pair({ it.inRotationsPerSecond }, { it.rotations.perSecond }))
+
   private val m_sysIdRoutine =
       SysIdRoutine(
           SysIdRoutine.Config(
@@ -107,14 +115,14 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
 
   init {
     if (RobotBase.isReal()) {
-      io.configurePID(
+      io.configurePIDCurrent(
           ShooterConstants.PID.REAL_KP, ShooterConstants.PID.REAL_KI, ShooterConstants.PID.REAL_KD)
-      io.configureFF(
+      io.configureFFCurrent(
           ShooterConstants.PID.REAL_KS, ShooterConstants.PID.REAL_KV, ShooterConstants.PID.REAL_KA)
     } else {
-      io.configurePID(
+      io.configurePIDVoltage(
           ShooterConstants.PID.SIM_KP, ShooterConstants.PID.SIM_KI, ShooterConstants.PID.SIM_KD)
-      io.configureFF(
+      io.configureFFVoltage(
           ShooterConstants.PID.SIM_KS, ShooterConstants.PID.SIM_KV, ShooterConstants.PID.SIM_KA)
     }
   }

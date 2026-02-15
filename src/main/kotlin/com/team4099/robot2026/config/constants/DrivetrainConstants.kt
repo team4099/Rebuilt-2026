@@ -196,6 +196,7 @@ object DrivetrainConstants {
     val DRIVE_KS
       get() =
           when (Constants.Universal.whoami) {
+            Constants.WHOAMI.COMPBOT,
             Constants.WHOAMI.ALPHABOT -> 0.24069.volts
             else -> 0.236.volts
           }
@@ -203,6 +204,7 @@ object DrivetrainConstants {
     val DRIVE_KV: VelocityFeedforward<Meter, Volt>
       get() =
           when (Constants.Universal.whoami) {
+            Constants.WHOAMI.COMPBOT,
             Constants.WHOAMI.ALPHABOT -> 0.74646.volts / 1.0.meters.perSecond
             else -> 2.117.volts / 1.0.meters.perSecond
           }

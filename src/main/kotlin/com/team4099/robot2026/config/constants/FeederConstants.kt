@@ -14,6 +14,6 @@ object FeederConstants {
   val MOMENT_OF_INERTIA = 0.35.grams.meterSquared
   val VOLTAGE_COMPENSATION = 12.0.volts
 
-  val IDLE_VOLTAGE = -.5.volts
+  val IDLE_VOLTAGE = if (Constants.Tuning.TUNING_MODE) 0.volts else -.5.volts
   val SCORE_VOLTAGE = 5.0.volts
 }

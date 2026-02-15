@@ -36,7 +36,7 @@ class LoggedTunableValue<U : UnitKey>(
   }
 
   fun hasChanged(): Boolean {
-    return tunableNumber.hasChanged()
+    return tunableNumber.hasChanged(hashCode())
   }
 
   fun initDefault(defaultValue: Value<U>) {

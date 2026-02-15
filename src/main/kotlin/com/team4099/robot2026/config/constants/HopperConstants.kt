@@ -15,7 +15,7 @@ object HopperConstants {
   val VOLTAGE_COMPENSATION = 12.volts
 
   object Voltages {
-    val SCORE_VOLTAGE = 9.volts
+    val SCORE_VOLTAGE = 6.volts
     val IDLE_VOLTAGE = 0.1.volts
   }
 

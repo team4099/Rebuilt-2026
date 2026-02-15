@@ -3,6 +3,7 @@ package com.team4099.robot2026.subsystems.superstructure.hopper
 import com.ctre.phoenix6.BaseStatusSignal
 import com.ctre.phoenix6.StatusSignal
 import com.ctre.phoenix6.configs.TalonFXConfiguration
+import com.ctre.phoenix6.controls.VoltageOut
 import com.ctre.phoenix6.hardware.TalonFX
 import com.ctre.phoenix6.signals.NeutralModeValue
 import com.team4099.lib.math.clamp
@@ -37,6 +38,8 @@ object HopperIOTalon : HopperIO {
   var motorVoltageSignal: StatusSignal<Voltage>
   var motorAccelSignal: StatusSignal<WPIAngularAcceleration>
   var rotorVelocitySignal: StatusSignal<WPIAngularVelocity>
+
+  val voltageOut = VoltageOut(0.volts.inVolts).withEnableFOC(true)
 
   init {
     hopperTalon.clearStickyFaults()
@@ -84,7 +87,7 @@ object HopperIOTalon : HopperIO {
             voltage,
             lowerBound = -HopperConstants.VOLTAGE_COMPENSATION,
             upperBound = HopperConstants.VOLTAGE_COMPENSATION)
-    hopperTalon.setVoltage(clampedVoltage.inVolts)
+    hopperTalon.setControl(voltageOut.withOutput(clampedVoltage.inVolts))
   }
 
   override fun setBrakeMode(brake: Boolean) {

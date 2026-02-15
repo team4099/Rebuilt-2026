@@ -71,7 +71,7 @@ object Constants {
   }
 
   object Hopper {
-    const val HOPPER_MOTOR_ID = 46
+    const val HOPPER_MOTOR_ID = 50
   }
 
   object Shooter {
