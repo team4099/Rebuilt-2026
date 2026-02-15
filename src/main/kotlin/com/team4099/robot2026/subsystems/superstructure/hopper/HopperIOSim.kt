@@ -44,14 +44,12 @@ object HopperIOSim : HopperIO {
       )
 
   private val hopperPIDController =
-    PIDController(
-      HopperConstants.PID.SIM_KP, HopperConstants.PID.SIM_KI, HopperConstants.PID.SIM_KD
-    )
+      PIDController(
+          HopperConstants.PID.SIM_KP, HopperConstants.PID.SIM_KI, HopperConstants.PID.SIM_KD)
 
   private var hopperFFController =
-    SimpleMotorFeedforward(
-      ShooterConstants.PID.SIM_KS, ShooterConstants.PID.SIM_KV, ShooterConstants.PID.SIM_KA
-    )
+      SimpleMotorFeedforward(
+          ShooterConstants.PID.SIM_KS, ShooterConstants.PID.SIM_KV, ShooterConstants.PID.SIM_KA)
 
   override fun updateInputs(inputs: HopperIO.HopperIOInputs) {
     hopperSim.update(Constants.Universal.LOOP_PERIOD_TIME.inSeconds)
@@ -75,27 +73,27 @@ object HopperIOSim : HopperIO {
 
   override fun setVelocity(velocity: AngularVelocity) {
     var pidOutput =
-      hopperPIDController.calculate(
-        hopperSim.angularVelocityRadPerSec.radians.perSecond, velocity)
+        hopperPIDController.calculate(
+            hopperSim.angularVelocityRadPerSec.radians.perSecond, velocity)
     if (pidOutput.inVolts.isNaN()) pidOutput = 0.volts
     val ffOutput =
-      hopperFFController.calculateWithVelocities(
-        hopperSim.angularVelocityRadPerSec.radians.perSecond, velocity)
+        hopperFFController.calculateWithVelocities(
+            hopperSim.angularVelocityRadPerSec.radians.perSecond, velocity)
     ShooterIOSim.setVoltage(pidOutput + ffOutput)
   }
 
-  override fun configurePIDVoltage(
-    kP: ProportionalGain<Fraction<Radian, Second>, Volt>,
-    kI: IntegralGain<Fraction<Radian, Second>, Volt>,
-    kD: DerivativeGain<Fraction<Radian, Second>, Volt>
+  override fun configurePID(
+      kP: ProportionalGain<Fraction<Radian, Second>, Volt>,
+      kI: IntegralGain<Fraction<Radian, Second>, Volt>,
+      kD: DerivativeGain<Fraction<Radian, Second>, Volt>
   ) {
     hopperPIDController.setPID(kP, kI, kD)
   }
 
-  override fun configureFFVoltage(
-    kS: StaticFeedforward<Volt>,
-    kV: VelocityFeedforward<Radian, Volt>,
-    kA: AccelerationFeedforward<Radian, Volt>
+  override fun configureFF(
+      kS: StaticFeedforward<Volt>,
+      kV: VelocityFeedforward<Radian, Volt>,
+      kA: AccelerationFeedforward<Radian, Volt>
   ) {
     hopperFFController = SimpleMotorFeedforward(kS, kV, kA)
   }

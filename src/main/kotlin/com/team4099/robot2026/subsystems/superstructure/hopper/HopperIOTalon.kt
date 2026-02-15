@@ -4,7 +4,7 @@ import com.ctre.phoenix6.BaseStatusSignal
 import com.ctre.phoenix6.StatusSignal
 import com.ctre.phoenix6.configs.Slot0Configs
 import com.ctre.phoenix6.configs.TalonFXConfiguration
-import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC
+import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage
 import com.ctre.phoenix6.controls.VoltageOut
 import com.ctre.phoenix6.hardware.TalonFX
 import com.ctre.phoenix6.signals.NeutralModeValue
@@ -18,7 +18,6 @@ import edu.wpi.first.units.measure.Temperature as WPITemp
 import edu.wpi.first.units.measure.Voltage
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.Fraction
-import org.team4099.lib.units.base.Ampere
 import org.team4099.lib.units.base.Second
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
@@ -32,16 +31,15 @@ import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.StaticFeedforward
 import org.team4099.lib.units.derived.VelocityFeedforward
-import org.team4099.lib.units.derived.inAmpsPerDegreesPerSecondPerSecond
-import org.team4099.lib.units.derived.inAmpsPerRadianPerSecond
-import org.team4099.lib.units.derived.inAmpsPerRadians
-import org.team4099.lib.units.derived.inAmpsPerRadiansPerSecond
-import org.team4099.lib.units.derived.inAmpsPerRadiansPerSecondPerSecond
+import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.inVolts
+import org.team4099.lib.units.derived.inVoltsPerDegreesPerSecondPerSecond
+import org.team4099.lib.units.derived.inVoltsPerRadians
+import org.team4099.lib.units.derived.inVoltsPerRadiansPerSecond
+import org.team4099.lib.units.derived.inVoltsPerRadiansPerSecondPerSecond
 import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inRotationsPerSecond
-import org.team4099.lib.units.perMinute
 import org.team4099.lib.units.perSecond
 
 object HopperIOTalon : HopperIO {
@@ -60,7 +58,7 @@ object HopperIOTalon : HopperIO {
   var velocitySignal: StatusSignal<WPIAngularVelocity>
 
   val voltageOut = VoltageOut(0.volts.inVolts).withEnableFOC(true)
-  val velocityControl = MotionMagicVelocityTorqueCurrentFOC(0.rotations.perSecond.inRotationsPerSecond)
+  val velocityControl = MotionMagicVelocityVoltage(0.rotations.perSecond.inRotationsPerSecond)
 
   init {
     hopperTalon.clearStickyFaults()
@@ -88,13 +86,12 @@ object HopperIOTalon : HopperIO {
         tempSignal,
         voltageSignal,
         accelSignal,
-        velocitySignal
-    )
+        velocitySignal)
   }
 
   override fun updateInputs(inputs: HopperIO.HopperIOInputs) {
     updateSignals()
-    
+
     inputs.hopperAppliedVoltage = voltageSignal.valueAsDouble.volts
     inputs.hopperStatorCurrent = statorCurrentSignal.valueAsDouble.amps
     inputs.hopperSupplyCurrent = supplyCurrentSignal.valueAsDouble.amps
@@ -115,35 +112,33 @@ object HopperIOTalon : HopperIO {
 
   override fun setVelocity(velocity: AngularVelocity) {
     hopperTalon.setControl(
-      velocityControl.withVelocity(hopperSensor.velocityToRawUnits(velocity))
-        .withAcceleration(hopperSensor.accelerationToRawUnits(HopperConstants.MAX_ACCELERATION))
-    )
+        velocityControl
+            .withVelocity(hopperSensor.velocityToRawUnits(velocity))
+            .withAcceleration(
+                hopperSensor.accelerationToRawUnits(HopperConstants.MAX_ACCELERATION)))
   }
 
-  override fun configurePIDCurrent(
-    kP: ProportionalGain<Fraction<Radian, Second>, Ampere>,
-    kI: IntegralGain<Fraction<Radian, Second>, Ampere>,
-    kD: DerivativeGain<Fraction<Radian, Second>, Ampere>
+  override fun configurePID(
+      kP: ProportionalGain<Fraction<Radian, Second>, Volt>,
+      kI: IntegralGain<Fraction<Radian, Second>, Volt>,
+      kD: DerivativeGain<Fraction<Radian, Second>, Volt>
   ) {
-    slot0Configs.kP = kP.inAmpsPerRadianPerSecond
-    slot0Configs.kI = kI.inAmpsPerRadians
-    slot0Configs.kD = kD.inAmpsPerDegreesPerSecondPerSecond
-    hopperTalon.configurator.apply(slot0Configs)
+    slot0Configs.kP = kP.inVoltsPerRadiansPerSecond
+    slot0Configs.kI = kI.inVoltsPerRadians
+    slot0Configs.kD = kD.inVoltsPerDegreesPerSecondPerSecond
     hopperTalon.configurator.apply(slot0Configs)
   }
 
-  override fun configureFFCurrent(
-    kS: StaticFeedforward<Ampere>,
-    kV: VelocityFeedforward<Radian, Ampere>,
-    kA: AccelerationFeedforward<Radian, Ampere>
+  override fun configureFF(
+      kS: StaticFeedforward<Volt>,
+      kV: VelocityFeedforward<Radian, Volt>,
+      kA: AccelerationFeedforward<Radian, Volt>
   ) {
-    slot0Configs.kS = kS.inAmperes
-    slot0Configs.kV = kV.inAmpsPerRadiansPerSecond
-    slot0Configs.kA = kA.inAmpsPerRadiansPerSecondPerSecond
-    hopperTalon.configurator.apply(slot0Configs)
+    slot0Configs.kS = kS.inVolts
+    slot0Configs.kV = kV.inVoltsPerRadiansPerSecond
+    slot0Configs.kA = kA.inVoltsPerRadiansPerSecondPerSecond
     hopperTalon.configurator.apply(slot0Configs)
   }
-  
 
   override fun setBrakeMode(brake: Boolean) {
     hopperTalon.setNeutralMode(if (brake) NeutralModeValue.Brake else NeutralModeValue.Coast)

@@ -6,7 +6,6 @@ import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.FieldConstants
 import com.team4099.robot2026.config.constants.ShooterConstants
 import com.team4099.robot2026.subsystems.superstructure.Request
-import com.team4099.robot2026.util.AllianceFlipUtil
 import com.team4099.robot2026.util.ControlledByStateMachine
 import com.team4099.robot2026.util.CustomLogger
 import com.team4099.robot2026.util.Velocity2d
@@ -224,8 +223,7 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
       return calculateLaunchData(
           drivetrainPose,
           chassisSpeeds,
-          if (AllianceFlipUtil.shouldFlip() && drivetrainPose.x > FieldConstants.ALLIANCE_LINE_X ||
-              !AllianceFlipUtil.shouldFlip() && drivetrainPose.x < FieldConstants.ALLIANCE_LINE_X) {
+          if (FieldConstants.inAllianceZone(drivetrainPose)) {
             FieldConstants.HUB_POSE
           } else {
             FieldConstants.ALLIANCE_ZONE_CENTER
@@ -279,8 +277,12 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
           ShooterConstants.SHOOTER_OFFSET.translation.rotateBy(drivetrainPose.rotation)
       val shooterSpeeds =
           Velocity2d(
-                  (shooterCurrentTransform.x * fieldSpeeds.omega.inRadiansPerSecond).perSecond,
-                  (shooterCurrentTransform.y * fieldSpeeds.omega.inRadiansPerSecond).perSecond)
+                  (shooterCurrentTransform.x * fieldSpeeds.omega.inRadiansPerSecond +
+                          Constants.Universal.EPSILON.meters)
+                      .perSecond,
+                  (shooterCurrentTransform.y * fieldSpeeds.omega.inRadiansPerSecond +
+                          Constants.Universal.EPSILON.meters)
+                      .perSecond)
               .rotateBy(90.degrees * fieldSpeeds.omega.sign)
 
       val driveVector =
