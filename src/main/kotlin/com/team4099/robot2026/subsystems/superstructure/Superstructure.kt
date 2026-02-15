@@ -137,7 +137,7 @@ class Superstructure(
           if (shooter.isAtTargetedVelocity) {
             feeder.currentRequest = Request.FeederRequest.OpenLoop(FeederConstants.SCORE_VOLTAGE)
             hopper.currentRequest =
-                Request.HopperRequest.OpenLoop(HopperConstants.Voltages.SCORE_VOLTAGE)
+                Request.HopperRequest.TargetVelocity(HopperConstants.VELOCITIES.SCORE_VELOCITY)
             intakeRollers.currentRequest =
                 Request.RollersRequest.OpenLoop(RollersConstants.SCORE_ASSISTING_VOLTAGE)
           }
@@ -190,7 +190,7 @@ class Superstructure(
         if (shooter.isAtTargetedVelocity) {
           feeder.currentRequest = Request.FeederRequest.OpenLoop(FeederConstants.SCORE_VOLTAGE)
           hopper.currentRequest =
-              Request.HopperRequest.OpenLoop(HopperConstants.Voltages.SCORE_VOLTAGE)
+            Request.HopperRequest.TargetVelocity(HopperConstants.VELOCITIES.SCORE_VELOCITY)
           intakeRollers.currentRequest =
               Request.RollersRequest.OpenLoop(RollersConstants.SCORE_ASSISTING_VOLTAGE)
         }
