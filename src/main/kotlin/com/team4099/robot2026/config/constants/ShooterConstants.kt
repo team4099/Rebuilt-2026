@@ -18,6 +18,7 @@ import org.team4099.lib.units.derived.StaticFeedforward
 import org.team4099.lib.units.derived.VelocityFeedforward
 import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.inKilogramsMeterSquared
 import org.team4099.lib.units.derived.meterSquared
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.rotations
@@ -36,7 +37,7 @@ object ShooterConstants {
   val SUPPLY_CURRENT_LIMIT = 40.0.amps
   val STATOR_CURRENT_LIMIT = 80.0.amps
   val VOLTAGE_COMPENSATION = 12.0.volts
-  val MOMENT_OF_INERTIA = 0.002341.kilo.grams.meterSquared
+  val MOMENT_OF_INERTIA = 0.0035914.kilo.grams.meterSquared
 
   val MAX_ACCELERATION: AngularAcceleration = 1000.rotations.perSecond.perSecond
 
@@ -58,7 +59,9 @@ object ShooterConstants {
     val REAL_KS: StaticFeedforward<Ampere> = 13.amps
     val REAL_KV: VelocityFeedforward<Radian, Ampere> = 0.07.amps / 1.radians.perSecond
     val REAL_KA: AccelerationFeedforward<Radian, Ampere> =
-        (0.0035914 / 0.01981).amps / 1.radians.perSecond.perSecond
+        (MOMENT_OF_INERTIA.inKilogramsMeterSquared /
+                (Constants.MOTOR_CONSTANTS.KRAKENX60FOC_kT / GEAR_RATIO))
+            .amps / 1.radians.perSecond.perSecond
 
     val SIM_KP: ProportionalGain<Velocity<Radian>, Volt> = 0.02.volts / 1.0.degrees.perSecond
     val SIM_KI: IntegralGain<Velocity<Radian>, Volt> =

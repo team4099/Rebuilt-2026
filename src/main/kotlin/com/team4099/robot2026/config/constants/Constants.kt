@@ -18,7 +18,7 @@ object Constants {
     const val REAL_FIELD = false
 
     const val CTRE_CONFIG_TIMEOUT = 0
-    const val EPSILON = 1E-9
+    const val EPSILON = 1E-6
 
     val SLOW_STATUS_FRAME_TIME = 255.milli.seconds
     const val CANIVORE_NAME = "FalconVore"
@@ -34,6 +34,10 @@ object Constants {
     val ROBOT_MOI = 6.3.kilo.grams.meterSquared
 
     val whoami = argToEnum<WHOAMI>(System.getProperty("robot"))
+  }
+
+  object MOTOR_CONSTANTS {
+    const val KRAKENX60FOC_kT = 0.01981
   }
 
   enum class WHOAMI {
