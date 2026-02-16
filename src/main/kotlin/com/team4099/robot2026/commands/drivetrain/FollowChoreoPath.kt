@@ -10,6 +10,7 @@ import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.util.AllianceFlipUtil
 import com.team4099.robot2026.util.CustomLogger
 import com.team4099.robot2026.util.Velocity2d
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.Command
 import java.util.function.Supplier
@@ -166,7 +167,8 @@ class FollowChoreoPath(
   }
 
   override fun isFinished(): Boolean {
-    return Clock.fpgaTime - trajStartTime > trajectory.totalTime.seconds && atSetpoint()
+    return Clock.fpgaTime - trajStartTime > trajectory.totalTime.seconds && atSetpoint() ||
+        !DriverStation.isAutonomous()
   }
 
   override fun end(interrupted: Boolean) {

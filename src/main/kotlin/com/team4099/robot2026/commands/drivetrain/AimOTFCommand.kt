@@ -28,10 +28,12 @@ import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.kinematics.ChassisSpeeds
 import org.team4099.lib.units.LinearVelocity
 import org.team4099.lib.units.Velocity
+import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
+import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inRadians
@@ -62,6 +64,13 @@ class AimOTFCommand(
 ) : Command() {
 
   /**
+   * Aim for the HUB or to pass, depending on current position on the field and which option is
+   * legal. Velocity caluclations intend for this to be used while shooting and moving "on-the-fly".
+   * This command does NOT activate the shooter; that is the responsibility of the superstructure's
+   * state machine.
+   *
+   * This constructor is meant to be used during driver-controlled field-oriented driving.
+   *
    * @param drivetrain
    * @param driveX
    * @param driveY
@@ -79,9 +88,32 @@ class AimOTFCommand(
       Supplier { driver.driveSpeedClampedSupplier(driveX, driveY, slowMode).first },
       Supplier { driver.driveSpeedClampedSupplier(driveX, driveY, slowMode).second })
 
+  /**
+   * Aim for the HUB or to pass, depending on current position on the field and which option is
+   * legal. Velocity caluclations intend for this to be used while shooting and moving "on-the-fly".
+   * This command does NOT activate the shooter; that is the responsibility of the superstructure's
+   * state machine.
+   *
+   * This constructor is meant to be used during autonomous, when another command is controlling the
+   * translation of the robot. You must pass in a timeout.
+   *
+   * @param drivetrain
+   * @param timeout Time for the command to run
+   */
+  constructor(
+      drivetrain: Drive,
+      timeout: Time
+  ) : this(drivetrain, Supplier { 0.meters.perSecond }, Supplier { 0.meters.perSecond }) {
+    this.timeout = timeout
+  }
+
   private val thetaPID: PIDController<Radian, Velocity<Radian>>
 
   private val MAX_VELOCITY_RADIUS = 1.5.meters.perSecond
+  private var timeout = -1.seconds
+  private var startTime = -1.seconds
+
+  private var startedInAuto = false
 
   var hasAligned: Boolean = false
 
@@ -115,6 +147,8 @@ class AimOTFCommand(
     thetaPID.reset()
 
     hasAligned = false
+    startTime = Clock.fpgaTime
+    startedInAuto = DriverStation.isAutonomous()
   }
 
   override fun execute() {
@@ -137,18 +171,18 @@ class AimOTFCommand(
 
     CustomLogger.recordOutput("FaceHubCommand/hasAligned", hasAligned)
 
-    // Take the drivers speed being inputted, and clamp the magnitude
-    // of the drive vector to < MAX_VELOCITY_RADIUS meters per second
-    var speedX = vxSup.get()
-    var speedY = vySup.get()
-    val speedMagnitude =
-        sqrt(speedX.inMetersPerSecond.pow(2) + speedY.inMetersPerSecond.pow(2)).meters.perSecond
+    if (DriverStation.isAutonomous()) {
+      // Use planned path velocities, dont adjust
+      drivetrain.runRotationWhileKeepingTranslation(thetaVel)
+    } else {
+      // Take the drivers speed being inputted, and clamp the magnitude
+      // of the drive vector to < MAX_VELOCITY_RADIUS meters per second
+      var speedX = vxSup.get()
+      var speedY = vySup.get()
+      val speedMagnitude =
+          sqrt(speedX.inMetersPerSecond.pow(2) + speedY.inMetersPerSecond.pow(2)).meters.perSecond
 
-    if (speedMagnitude > 0.1.meters.perSecond || !hasAligned) {
-      if (DriverStation.isAutonomous()) {
-        // use planned path velocities, dont adjust
-        drivetrain.runRotationWhileKeepingTranslation(thetaVel)
-      } else {
+      if (speedMagnitude > 0.1.meters.perSecond || !hasAligned) {
         if (speedMagnitude > MAX_VELOCITY_RADIUS) {
           // Convert to unit vector and then * MAX_VELOCITY_RADIUS
           speedX = speedX / speedMagnitude.inMetersPerSecond * MAX_VELOCITY_RADIUS.inMetersPerSecond
@@ -158,9 +192,9 @@ class AimOTFCommand(
         drivetrain.runSpeeds(
             ChassisSpeeds.fromFieldRelativeSpeeds(
                 speedX, speedY, thetaVel, drivetrain.pose.rotation.z))
+      } else {
+        drivetrain.stopWithX()
       }
-    } else {
-      drivetrain.stopWithX()
     }
 
     if (RobotBase.isSimulation() &&
@@ -186,7 +220,8 @@ class AimOTFCommand(
   }
 
   override fun isFinished(): Boolean {
-    return false
+    return timeout > 0.seconds && Clock.fpgaTime - startTime > timeout ||
+        startedInAuto xor DriverStation.isAutonomous()
   }
 
   override fun end(interrupted: Boolean) {

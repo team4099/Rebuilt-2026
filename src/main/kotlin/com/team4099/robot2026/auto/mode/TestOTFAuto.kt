@@ -8,6 +8,7 @@ import com.team4099.robot2026.subsystems.drivetrain.Drive
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import org.team4099.lib.geometry.Pose2d
+import org.team4099.lib.units.base.seconds
 
 class TestOTFAuto(val drivetrain: Drive) : SequentialCommandGroup() {
   init {
@@ -16,8 +17,7 @@ class TestOTFAuto(val drivetrain: Drive) : SequentialCommandGroup() {
     addCommands(
         ParallelCommandGroup(
             FollowChoreoPath(drivetrain, traj, overrideRotationTrigger = { true }),
-            AimOTFCommand(
-                drivetrain, { drivetrain.targetSpeeds.vx }, { drivetrain.chassisSpeeds.vy })))
+            AimOTFCommand(drivetrain, 5.0.seconds)))
   }
 
   companion object {
