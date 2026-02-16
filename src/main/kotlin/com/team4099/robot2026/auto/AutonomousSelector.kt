@@ -54,10 +54,10 @@ object AutonomousSelector {
     return when (mode) {
       AutonomousMode.EXAMPLE_AUTO ->
           WaitCommand(waitTime.inSeconds)
-            .andThen({
-              drivetrain.pose = Pose3d(AllianceFlipUtil.apply(ExamplePathAuto.startingPose))
-            })
-            .andThen(ExamplePathAuto(drivetrain))
+              .andThen({
+                drivetrain.pose = Pose3d(AllianceFlipUtil.apply(ExamplePathAuto.startingPose))
+              })
+              .andThen(ExamplePathAuto(drivetrain))
       AutonomousMode.SYSID -> WaitCommand(waitTime.inSeconds).andThen(SysID(drivetrain))
       AutonomousMode.WHEEL_RADIUS ->
           DriveCharacterizationCommands.wheelRadiusCharacterization(drivetrain)
