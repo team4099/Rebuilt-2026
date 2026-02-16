@@ -26,6 +26,7 @@ class ExamplePathAuto(val drivetrain: Drive) : SequentialCommandGroup() {
 
     val secondTrajectory =
         Choreo.loadTrajectory<SwerveSample>("Example/2ExamplePathRotation.traj").get()
+
     // shoot
     // don't flip pose: poses are robot relative since field frame estimator was reset
     val startingPose = Pose2d(firstTrajectory.getInitialPose(false).get())
