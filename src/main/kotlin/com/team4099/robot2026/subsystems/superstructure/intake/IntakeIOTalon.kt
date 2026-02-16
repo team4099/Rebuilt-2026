@@ -50,7 +50,7 @@ import org.team4099.lib.units.perSecond
 object IntakeIOTalon : IntakeIO {
   private val intakeTalon: TalonFX = TalonFX(Constants.Intake.INTAKE_PIVOT_MOTOR_ID)
   private val intakeConfiguration: TalonFXConfiguration = TalonFXConfiguration()
-  private val voltageControl = VoltageOut(-1337.volts.inVolts)
+  private val voltageControl = VoltageOut(-1337.volts.inVolts).withEnableFOC(true)
   private val motionMagicVoltage = MotionMagicVoltage(-1337.degrees.inDegrees)
 
   private var temperatureSignal: StatusSignal<Temperature>
@@ -104,7 +104,10 @@ object IntakeIOTalon : IntakeIO {
   }
 
   override fun setPosition(position: Angle) {
-    intakeTalon.setControl(motionMagicVoltage.withPosition(position.inRotations).withSlot(0))
+    intakeTalon.setControl(
+        motionMagicVoltage
+            .withPosition(position.inRotations)
+            .withSlot(if (position < positionSignal.valueAsDouble.rotations) 0 else 1))
   }
 
   private fun updateSignals() {
@@ -119,13 +122,18 @@ object IntakeIOTalon : IntakeIO {
   }
 
   override fun configPID(
-      kP: ProportionalGain<Radian, Volt>,
+      kPDown: ProportionalGain<Radian, Volt>,
+      kPUp: ProportionalGain<Radian, Volt>,
       kI: IntegralGain<Radian, Volt>,
       kD: DerivativeGain<Radian, Volt>,
   ) {
-    intakeConfiguration.Slot0.kP = kP.inVoltsPerRadian
+    intakeConfiguration.Slot0.kP = kPDown.inVoltsPerRadian
     intakeConfiguration.Slot0.kI = kI.inVoltsPerRadianSeconds
     intakeConfiguration.Slot0.kD = kD.inVoltsPerRadianPerSecond
+
+    intakeConfiguration.Slot1.kP = kPUp.inVoltsPerRadian
+    intakeConfiguration.Slot1.kI = kI.inVoltsPerRadianSeconds
+    intakeConfiguration.Slot1.kD = kD.inVoltsPerRadianPerSecond
 
     intakeTalon.configurator.apply(intakeConfiguration.Slot0)
   }

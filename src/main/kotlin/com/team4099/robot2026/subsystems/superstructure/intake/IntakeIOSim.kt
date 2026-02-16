@@ -81,10 +81,11 @@ object IntakeIOSim : IntakeIO {
   override fun zeroPivot() {}
 
   override fun configPID(
-      kP: ProportionalGain<Radian, Volt>,
+      kPUp: ProportionalGain<Radian, Volt>,
+      kPDown: ProportionalGain<Radian, Volt>,
       kI: IntegralGain<Radian, Volt>,
       kD: DerivativeGain<Radian, Volt>
   ) {
-    armPIDController.setPID(kP, kI, kD)
+    armPIDController.setPID(kPDown, kI, kD)
   }
 }

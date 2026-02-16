@@ -182,7 +182,9 @@ object RobotContainer {
                 driver = Jessika(),
             ),
             InstantCommand()) {
-              superstructure.currentState == Superstructure.Companion.SuperstructureStates.SCORE || superstructure.currentState == Superstructure.Companion.SuperstructureStates.PREP_SCORE
+              superstructure.currentState == Superstructure.Companion.SuperstructureStates.SCORE ||
+                  superstructure.currentState ==
+                      Superstructure.Companion.SuperstructureStates.PREP_SCORE
             })
 
     //    ControlBoard.leftTrenchOTF.onTrue(

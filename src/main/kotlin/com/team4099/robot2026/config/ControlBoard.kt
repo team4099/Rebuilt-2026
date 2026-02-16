@@ -49,4 +49,6 @@ object ControlBoard {
   val prepClimb = Trigger { operator.aButton }
 
   val eject = Trigger { driver.dPadUp || operator.dPadUp }
+
+  val test = Trigger { driver.dPadLeft }
 }

@@ -42,7 +42,7 @@ object FeederIOTalonFX : FeederIO {
   var feederAccelerationStatusSignal: StatusSignal<WPILibAngularAcceleration>
   var feederPositionStatusSignal: StatusSignal<WPILibAngle>
 
-  val voltageControl: VoltageOut = VoltageOut(0.volts.inVolts)
+  val voltageControl: VoltageOut = VoltageOut(0.volts.inVolts).withEnableFOC(true)
 
   init {
     feederTalon.clearStickyFaults()

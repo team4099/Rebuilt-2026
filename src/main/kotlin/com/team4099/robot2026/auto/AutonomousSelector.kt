@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.WaitCommand
+import frc.robot.commands.DriveCharacterizationCommands
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inSeconds
@@ -26,8 +27,8 @@ object AutonomousSelector {
     autonomousModeChooser.addOption(
         "Example Auto DO NOT RUN AT COMPETITION", AutonomousMode.EXAMPLE_AUTO)
     autonomousModeChooser.addOption("SysID DO NOT RUN AT COMPETITION", AutonomousMode.SYSID)
-    //    autonomousModeChooser.addOption("WheelRadius DO NOT RUN AT COMPETITION",
-    // AutonomousMode.WHEEL_RADIUS)
+    autonomousModeChooser.addOption(
+        "WheelRadius DO NOT RUN AT COMPETITION", AutonomousMode.WHEEL_RADIUS)
 
     autoTab.add("Mode", autonomousModeChooser.sendableChooser).withSize(4, 2).withPosition(2, 0)
 
@@ -46,13 +47,13 @@ object AutonomousSelector {
   fun getCommand(drivetrain: Drive, vision: Vision): Command {
     val mode = autonomousModeChooser.get()
 
-    when (mode) {
+    return when (mode) {
       AutonomousMode.EXAMPLE_AUTO ->
-          return WaitCommand(waitTime.inSeconds).andThen(ExamplePathAuto(drivetrain))
-      AutonomousMode.SYSID -> return WaitCommand(waitTime.inSeconds).andThen(SysID(drivetrain))
-      //      AutonomousMode.WHEEL_RADIUS -> return
-      // WaitCommand(waitTime.inSeconds).andThen(WheelRadius(drivetrain))
-      else -> return InstantCommand()
+          WaitCommand(waitTime.inSeconds).andThen(ExamplePathAuto(drivetrain))
+      AutonomousMode.SYSID -> WaitCommand(waitTime.inSeconds).andThen(SysID(drivetrain))
+      AutonomousMode.WHEEL_RADIUS ->
+          DriveCharacterizationCommands.wheelRadiusCharacterization(drivetrain)
+      else -> InstantCommand()
     }
   }
 }
@@ -60,5 +61,5 @@ object AutonomousSelector {
 private enum class AutonomousMode {
   EXAMPLE_AUTO,
   SYSID,
-  //  WHEEL_RADIUS
+  WHEEL_RADIUS
 }

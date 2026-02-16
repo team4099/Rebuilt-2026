@@ -37,7 +37,7 @@ object IntakeRollersIOTalon : IntakeRollersIO {
   var motorAccel: StatusSignal<AngularAcceleration>
   var motorVelo: StatusSignal<AngularVelocity>
 
-  val voltageControl = VoltageOut(0.0.volts.inVolts)
+  val voltageControl = VoltageOut(0.0.volts.inVolts).withEnableFOC(true)
 
   private var rollerSensor =
       ctreAngularMechanismSensor(

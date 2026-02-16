@@ -40,7 +40,7 @@ object ClimbIOTalon : ClimbIO {
   private val configs: TalonFXConfiguration = TalonFXConfiguration()
   private val slot0Configs = configs.Slot0
 
-  private val voltageControl: VoltageOut = VoltageOut(-1337.volts.inVolts)
+  private val voltageControl: VoltageOut = VoltageOut(-1337.volts.inVolts).withEnableFOC(true)
   private val motionMagicControl: MotionMagicVoltage = MotionMagicVoltage(-1337.0)
 
   private val sensor =

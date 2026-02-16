@@ -49,7 +49,7 @@ object ShooterIOTalon : ShooterIO {
   private val followerTalon: TalonFX = TalonFX(Constants.Shooter.FOLLOWER_MOTOR_ID)
   private val motionMagicControl: MotionMagicVelocityTorqueCurrentFOC =
       MotionMagicVelocityTorqueCurrentFOC(-1337.0)
-  private val voltReq = VoltageOut(0.0)
+  private val voltReq = VoltageOut(0.0).withEnableFOC(true)
   private val configs: TalonFXConfiguration = TalonFXConfiguration()
   private val slot0Configs: Slot0Configs = configs.Slot0
   private val leaderSensor =
