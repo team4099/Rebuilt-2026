@@ -53,14 +53,13 @@ import org.team4099.lib.units.perSecond
  * Note: This command never ends.
  *
  * @param drivetrain
- * @param vxSup Supplier for drivetrain field-relative chassis speeds
+ * @param vSup Supplier for drivetrain field-relative chassis speeds
  * @see com.team4099.robot2026.subsystems.superstructure.shooter.Shooter.calculateLaunchData
  * @author Nathan Arega, Ryan Chung
  */
 class AimOTFCommand(
     private val drivetrain: Drive,
-    private val vxSup: Supplier<LinearVelocity>,
-    private val vySup: Supplier<LinearVelocity>,
+    private val vSup: Supplier<Pair<LinearVelocity, LinearVelocity>>
 ) : Command() {
 
   /**
@@ -83,10 +82,7 @@ class AimOTFCommand(
       driveY: () -> Double,
       slowMode: () -> Boolean,
       driver: DriverProfile
-  ) : this(
-      drivetrain,
-      Supplier { driver.driveSpeedClampedSupplier(driveX, driveY, slowMode).first },
-      Supplier { driver.driveSpeedClampedSupplier(driveX, driveY, slowMode).second })
+  ) : this(drivetrain, Supplier { driver.driveSpeedClampedSupplier(driveX, driveY, slowMode) })
 
   /**
    * Aim for the HUB or to pass, depending on current position on the field and which option is
@@ -103,7 +99,7 @@ class AimOTFCommand(
   constructor(
       drivetrain: Drive,
       timeout: Time
-  ) : this(drivetrain, Supplier { 0.meters.perSecond }, Supplier { 0.meters.perSecond }) {
+  ) : this(drivetrain, Supplier { Pair(0.meters.perSecond, 0.meters.perSecond) }) {
     this.timeout = timeout
   }
 
@@ -177,8 +173,7 @@ class AimOTFCommand(
     } else {
       // Take the drivers speed being inputted, and clamp the magnitude
       // of the drive vector to < MAX_VELOCITY_RADIUS meters per second
-      var speedX = vxSup.get()
-      var speedY = vySup.get()
+      var (speedX, speedY) = vSup.get()
       val speedMagnitude =
           sqrt(speedX.inMetersPerSecond.pow(2) + speedY.inMetersPerSecond.pow(2)).meters.perSecond
 
