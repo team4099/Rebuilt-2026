@@ -22,9 +22,11 @@ class ExamplePathAuto(val drivetrain: Drive) : SequentialCommandGroup() {
   companion object {
     val firstTrajectory =
         Choreo.loadTrajectory<SwerveSample>("Example/1ExamplePathTranslation.traj").get()
+    // prep shoot
+
     val secondTrajectory =
         Choreo.loadTrajectory<SwerveSample>("Example/2ExamplePathRotation.traj").get()
-
+    // shoot
     // don't flip pose: poses are robot relative since field frame estimator was reset
     val startingPose = Pose2d(firstTrajectory.getInitialPose(false).get())
   }
