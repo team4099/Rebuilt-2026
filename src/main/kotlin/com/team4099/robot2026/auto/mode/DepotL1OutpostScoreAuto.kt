@@ -25,7 +25,7 @@ class DepotL1OutpostScoreAuto(val drivetrain: Drive, val superstructure: Superst
         ParallelCommandGroup(
             FollowChoreoPath(drivetrain, secondTrajectory),
             superstructure.requestPrepScoreCommand()),
-        ParallelCommandGroup(WaitCommand(9.5), superstructure.requestScoreCommand()), // shoot
+        ParallelCommandGroup(WaitCommand(7.9), superstructure.requestScoreCommand()), // shoot
         ParallelCommandGroup(
             FollowChoreoPath(drivetrain, thirdTrajectory),
             superstructure.requestPrepClimbCommand()),
