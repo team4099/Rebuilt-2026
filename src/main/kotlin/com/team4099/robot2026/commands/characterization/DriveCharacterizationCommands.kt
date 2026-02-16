@@ -1,4 +1,4 @@
-package frc.robot.commands
+package com.team4099.robot2026.commands.characterization
 
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.util.CustomLogger

@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.WaitCommand
-import frc.robot.commands.DriveCharacterizationCommands
+import com.team4099.robot2026.commands.characterization.DriveCharacterizationCommands
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inSeconds
