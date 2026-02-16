@@ -107,7 +107,7 @@ object DrivetrainConstants {
         if (RobotBase.isReal()) {
           return 3.15.meters.perSecond / 1.0.meters // todo:4
         } else {
-          return 30.0.meters.perSecond / 1.0.meters
+          return 25.meters.perSecond / 1.0.meters
         }
       }
 

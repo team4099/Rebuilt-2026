@@ -13,10 +13,11 @@ import edu.wpi.first.units.LinearVelocityUnit
 import edu.wpi.first.units.Units.Degrees
 import edu.wpi.first.units.Units.Meters
 import edu.wpi.first.units.Units.Seconds
-import edu.wpi.first.units.measure.LinearVelocity
+import edu.wpi.first.units.measure.LinearVelocity as WPILinearVelocity
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.Command
+import java.util.function.Supplier
 import kotlin.math.PI
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -25,6 +26,7 @@ import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly
 import org.team4099.lib.controller.PIDController
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.kinematics.ChassisSpeeds
+import org.team4099.lib.units.LinearVelocity
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inSeconds
@@ -49,20 +51,34 @@ import org.team4099.lib.units.perSecond
  * Note: This command never ends.
  *
  * @param drivetrain
- * @param driveX
- * @param driveY
- * @param slowMode
- * @param driver
+ * @param vxSup Supplier for drivetrain field-relative chassis speeds
  * @see com.team4099.robot2026.subsystems.superstructure.shooter.Shooter.calculateLaunchData
  * @author Nathan Arega, Ryan Chung
  */
 class AimOTFCommand(
     private val drivetrain: Drive,
-    val driveX: () -> Double,
-    val driveY: () -> Double,
-    val slowMode: () -> Boolean,
-    val driver: DriverProfile
+    private val vxSup: Supplier<LinearVelocity>,
+    private val vySup: Supplier<LinearVelocity>,
 ) : Command() {
+
+  /**
+   * @param drivetrain
+   * @param driveX
+   * @param driveY
+   * @param slowMode
+   * @param driver
+   */
+  constructor(
+      drivetrain: Drive,
+      driveX: () -> Double,
+      driveY: () -> Double,
+      slowMode: () -> Boolean,
+      driver: DriverProfile
+  ) : this(
+      drivetrain,
+      Supplier { driver.driveSpeedClampedSupplier(driveX, driveY, slowMode).first },
+      Supplier { driver.driveSpeedClampedSupplier(driveX, driveY, slowMode).second })
+
   private val thetaPID: PIDController<Radian, Velocity<Radian>>
 
   private val MAX_VELOCITY_RADIUS = 1.5.meters.perSecond
@@ -70,8 +86,6 @@ class AimOTFCommand(
   var hasAligned: Boolean = false
 
   init {
-    addRequirements(drivetrain)
-
     if (RobotBase.isSimulation()) {
       thetaPID =
           PIDController(
@@ -125,20 +139,26 @@ class AimOTFCommand(
 
     // Take the drivers speed being inputted, and clamp the magnitude
     // of the drive vector to < MAX_VELOCITY_RADIUS meters per second
-    var (speedX, speedY) = driver.driveSpeedClampedSupplier(driveX, driveY, slowMode)
+    var speedX = vxSup.get()
+    var speedY = vySup.get()
     val speedMagnitude =
         sqrt(speedX.inMetersPerSecond.pow(2) + speedY.inMetersPerSecond.pow(2)).meters.perSecond
 
     if (speedMagnitude > 0.1.meters.perSecond || !hasAligned) {
-      if (speedMagnitude > MAX_VELOCITY_RADIUS) {
-        // Convert to unit vector and then * MAX_VELOCITY_RADIUS
-        speedX = speedX / speedMagnitude.inMetersPerSecond * MAX_VELOCITY_RADIUS.inMetersPerSecond
-        speedY = speedY / speedMagnitude.inMetersPerSecond * MAX_VELOCITY_RADIUS.inMetersPerSecond
-      }
+      if (DriverStation.isAutonomous()) {
+        // use planned path velocities, dont adjust
+        drivetrain.runRotationWhileKeepingTranslation(thetaVel)
+      } else {
+        if (speedMagnitude > MAX_VELOCITY_RADIUS) {
+          // Convert to unit vector and then * MAX_VELOCITY_RADIUS
+          speedX = speedX / speedMagnitude.inMetersPerSecond * MAX_VELOCITY_RADIUS.inMetersPerSecond
+          speedY = speedY / speedMagnitude.inMetersPerSecond * MAX_VELOCITY_RADIUS.inMetersPerSecond
+        }
 
-      drivetrain.runSpeeds(
-          ChassisSpeeds.fromFieldRelativeSpeeds(
-              speedX, speedY, thetaVel, drivetrain.pose.rotation.z))
+        drivetrain.runSpeeds(
+            ChassisSpeeds.fromFieldRelativeSpeeds(
+                speedX, speedY, thetaVel, drivetrain.pose.rotation.z))
+      }
     } else {
       drivetrain.stopWithX()
     }
@@ -147,7 +167,7 @@ class AimOTFCommand(
         hasAligned &&
         Clock.fpgaTime.inSeconds % .25 < 0.05 &&
         RobotContainer.superstructure.currentState ==
-            Superstructure.Companion.SuperstructureStates.SCORE) {
+            Superstructure.Companion.SuperstructureStates.SCORE || DriverStation.isAutonomous()) {
       SimulatedArena.getInstance()
           .addGamePieceProjectile(
               RebuiltFuelOnFly(
@@ -159,7 +179,7 @@ class AimOTFCommand(
                   (drivetrain.pose.rotation.z + ShooterConstants.SHOOTER_OFFSET.rotation)
                       .inRotation2ds,
                   Meters.of(ShooterConstants.SHOOTER_HEIGHT.inMeters),
-                  LinearVelocity.ofBaseUnits(
+                  WPILinearVelocity.ofBaseUnits(
                       launchSpeed.inMetersPerSecond, LinearVelocityUnit.combine(Meters, Seconds)),
                   Degrees.of(ShooterConstants.SHOOTER_ANGLE.inDegrees)))
     }
