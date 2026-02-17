@@ -99,7 +99,7 @@ dependencies {
 	implementation 'com.github.team4099:FalconUtils:1.2.5'
 	implementation 'org.apache.commons:commons-collections4:4.0'
 	implementation 'com.google.code.gson:gson:2.10.1'
-	implementation "io.javalin:javalin:5.3.2"
+	implementation "io.javalin:javalin:6.7.0"
 	implementation "gov.nist.math:jama:1.0.3"
 
 	implementation "org.tribuo:tribuo-core:4.3.2"
