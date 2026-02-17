@@ -17,15 +17,15 @@ class DepotL1OutpostScoreAuto(val drivetrain: Drive, val superstructure: Superst
     addCommands(
         ParallelCommandGroup(
             FollowChoreoPath(drivetrain, firstTrajectory),
-            WaitCommand(1.0).andThen(superstructure.requestForceIntakeDownCommand()),
-            WaitCommand(1.63).andThen(superstructure.requestIntakeCommand()),
-            WaitCommand(2.58).andThen(superstructure.requestForceIntakeUpCommand()),
+            WaitCommand(1.0).andThen(superstructure.requestIntakeCommand()),
+            WaitCommand(2.58).andThen(superstructure.requestIdleCommand()),
         ), // intake depot
         WaitCommand(2.0), // intake outpost
         ParallelCommandGroup(
             FollowChoreoPath(drivetrain, secondTrajectory),
             superstructure.requestPrepScoreCommand()),
         ParallelCommandGroup(WaitCommand(7.9), superstructure.requestScoreCommand()), // shoot
+        superstructure.requestIdleCommand(),
         ParallelCommandGroup(
             FollowChoreoPath(drivetrain, thirdTrajectory),
             superstructure.requestPrepClimbCommand()),
