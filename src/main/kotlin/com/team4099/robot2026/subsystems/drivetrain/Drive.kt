@@ -126,7 +126,6 @@ class Drive(
     HAL.report(
         FRCNetComm.tResourceType.kResourceType_RobotDrive,
         FRCNetComm.tInstances.kRobotDriveSwerve_AdvantageKit)
-
     // Start odometry thread
     PhoenixOdometryThread.instance.start()
 

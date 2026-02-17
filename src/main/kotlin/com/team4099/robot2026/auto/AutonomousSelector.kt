@@ -1,5 +1,6 @@
 package com.team4099.robot2026.auto
 
+import com.team4099.robot2026.auto.mode.CenterShootClimb
 import com.team4099.robot2026.auto.mode.ExamplePathAuto
 import com.team4099.robot2026.auto.mode.SysID
 import com.team4099.robot2026.subsystems.drivetrain.Drive
@@ -27,9 +28,9 @@ object AutonomousSelector {
     autonomousModeChooser.addOption(
         "Example Auto DO NOT RUN AT COMPETITION", AutonomousMode.EXAMPLE_AUTO)
     autonomousModeChooser.addOption("SysID DO NOT RUN AT COMPETITION", AutonomousMode.SYSID)
+    autonomousModeChooser.addOption("Center intake OFT shoot and climb", AutonomousMode.OTF_AUTO)
     //    autonomousModeChooser.addOption("WheelRadius DO NOT RUN AT COMPETITION",
     // AutonomousMode.WHEEL_RADIUS)
-
     autoTab.add("Mode", autonomousModeChooser.sendableChooser).withSize(4, 2).withPosition(2, 0)
 
     waitBeforeCommandSlider =
@@ -51,6 +52,8 @@ object AutonomousSelector {
       AutonomousMode.EXAMPLE_AUTO ->
           return WaitCommand(waitTime.inSeconds).andThen(ExamplePathAuto(drivetrain))
       AutonomousMode.SYSID -> return WaitCommand(waitTime.inSeconds).andThen(SysID(drivetrain))
+        AutonomousMode.OTF_AUTO ->
+            return WaitCommand(waitTime.inSeconds).andThen(CenterShootClimb(drivetrain,shooter))
       //      AutonomousMode.WHEEL_RADIUS -> return
       // WaitCommand(waitTime.inSeconds).andThen(WheelRadius(drivetrain))
       else -> return InstantCommand()
@@ -61,5 +64,6 @@ object AutonomousSelector {
 private enum class AutonomousMode {
   EXAMPLE_AUTO,
   SYSID,
+  OTF_AUTO,
   //  WHEEL_RADIUS
 }

@@ -70,7 +70,7 @@ class AimOTFCommand(
   var hasAligned: Boolean = false
 
   init {
-    addRequirements(drivetrain)
+//    addRequirements(drivetrain)
 
     if (RobotBase.isSimulation()) {
       thetaPID =

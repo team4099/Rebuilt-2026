@@ -107,7 +107,11 @@ object DrivetrainConstants {
         if (RobotBase.isReal()) {
           return 3.15.meters.perSecond / 1.0.meters // todo:4
         } else {
-          return 30.0.meters.perSecond / 1.0.meters
+          return when (Constants.Universal.whoami) {
+              Constants.WHOAMI.TESTBOT -> 30.0.meters.perSecond / 1.0.meters
+              Constants.WHOAMI.ALPHABOT -> 180.0.meters.perSecond / 1.0.meters
+              Constants.WHOAMI.COMPBOT -> 30.0.meters.perSecond / 1.0.meters
+          }
         }
       }
 
@@ -126,7 +130,7 @@ object DrivetrainConstants {
           return (0.6.meters.perSecond / (1.0.meters.perSecond))
               .metersPerSecondPerMetersPerSecond // todo: 0.25
         } else {
-          return (0.5.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
+          return (20.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
         }
       }
 
