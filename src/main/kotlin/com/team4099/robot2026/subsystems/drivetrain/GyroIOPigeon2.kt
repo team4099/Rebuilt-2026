@@ -46,6 +46,7 @@ object GyroIOPigeon2 : GyroIO {
   init {
     pigeon.configurator.apply(
         DrivetrainConstants.tunerConstants.CTREDrivetrainConstants.Pigeon2Configs)
+    pigeon.setYaw(0.0)
     roll.setUpdateFrequency(Drive.ODOMETRY_FREQUENCY)
     pitch.setUpdateFrequency(Drive.ODOMETRY_FREQUENCY)
     yaw.setUpdateFrequency(Drive.ODOMETRY_FREQUENCY)

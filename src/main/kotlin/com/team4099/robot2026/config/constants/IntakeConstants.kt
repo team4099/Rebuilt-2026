@@ -19,12 +19,12 @@ import org.team4099.lib.units.perSecond
 object IntakeConstants {
   const val GEAR_RATIO = (12.0 / 36.0) * (18.0 / 54.0) * (12.0 / 36.0)
 
-  val INTAKE_TOLERANCE = 1.0.degrees
+  val INTAKE_TOLERANCE = 2.0.degrees
 
   val PIVOT_INERTIA = 1.0.grams.meterSquared
   val PIVOT_LENGTH = 1.0.inches
-  val PIVOT_MAX_ANGLE = 112.5.degrees
-  val PIVOT_MIN_ANGLE = (-15.5).degrees
+  val PIVOT_MAX_ANGLE = 120.degrees
+  val PIVOT_MIN_ANGLE = (-42.5).degrees
 
   val STATOR_CURRENT_LIMIT = 50.amps
   val SUPPLY_CURRENT_LIMIT = 30.amps
@@ -49,7 +49,7 @@ object IntakeConstants {
 
   object PID {
     // PID Constants
-    val REAL_PIVOT_KP_DOWN: ProportionalGain<Radian, Volt> = 20.0.volts / 1.0.radians
+    val REAL_PIVOT_KP_DOWN: ProportionalGain<Radian, Volt> = 32.0.volts / 1.0.radians
     val REAL_PIVOT_KP_UP: ProportionalGain<Radian, Volt> = 5.0.volts / 1.0.radians
     val REAL_PIVOT_KI: IntegralGain<Radian, Volt> = 0.0.volts / (1.0.radians * 1.0.seconds)
     val REAL_PIVOT_KD: DerivativeGain<Radian, Volt> = 0.0.volts / 1.0.radians.perSecond

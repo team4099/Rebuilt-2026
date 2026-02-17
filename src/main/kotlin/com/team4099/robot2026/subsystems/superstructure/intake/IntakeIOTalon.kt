@@ -135,7 +135,7 @@ object IntakeIOTalon : IntakeIO {
     intakeConfiguration.Slot1.kI = kI.inVoltsPerRadianSeconds
     intakeConfiguration.Slot1.kD = kD.inVoltsPerRadianPerSecond
 
-    intakeTalon.configurator.apply(intakeConfiguration.Slot0)
+    intakeTalon.configurator.apply(intakeConfiguration)
   }
 
   override fun configFF(
@@ -149,7 +149,12 @@ object IntakeIOTalon : IntakeIO {
     intakeConfiguration.Slot0.kA = kA.inVoltsPerRadiansPerSecondPerSecond
     intakeConfiguration.Slot0.kV = kV.inVoltsPerRadiansPerSecond
 
-    intakeTalon.configurator.apply(intakeConfiguration.Slot0)
+    intakeConfiguration.Slot1.kG = kG.inVolts
+    intakeConfiguration.Slot1.kS = kS.inVolts
+    intakeConfiguration.Slot1.kA = kA.inVoltsPerRadiansPerSecondPerSecond
+    intakeConfiguration.Slot1.kV = kV.inVoltsPerRadiansPerSecond
+
+    intakeTalon.configurator.apply(intakeConfiguration)
   }
 
   override fun updateInputs(inputs: IntakeIO.IntakeIOInputs) {

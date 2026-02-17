@@ -1,5 +1,6 @@
 package com.team4099.robot2026.config.constants
 
+import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.robot2026.subsystems.drivetrain.generated.AlphaBotTunerConstants
 import com.team4099.robot2026.subsystems.drivetrain.generated.CompBotTunerConstants
 import com.team4099.robot2026.subsystems.drivetrain.generated.TestBotTunerConstants
@@ -25,6 +26,8 @@ import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.VelocityFeedforward
 import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.inVoltsPerMetersPerSecond
+import org.team4099.lib.units.derived.inVoltsPerMetersPerSecondPerSecond
 import org.team4099.lib.units.derived.metersPerSecondPerMetersPerSecond
 import org.team4099.lib.units.derived.perDegreePerSecond
 import org.team4099.lib.units.derived.perDegreeSeconds
@@ -49,6 +52,7 @@ object DrivetrainConstants {
   val WHEEL_RADIUS: Length
     get() =
         when (Constants.Universal.whoami) {
+          Constants.WHOAMI.COMPBOT -> 2.039.inches
           else -> 2.inches
         }
 
@@ -98,6 +102,7 @@ object DrivetrainConstants {
   val DRIVE_COMPENSATION_VOLTAGE = 12.volts
 
   const val NITRILE_WHEEL_COF = 1.2
+  const val MOLDED_TPU_WHEEL_COF = 1.4
 
   val INITIAL_SIM_POSE = Pose3d(3.meters, 3.meters, 0.meters, Rotation3d()).pose3d
 
@@ -150,10 +155,10 @@ object DrivetrainConstants {
     val AUTO_REEF_PID_KD =
         (0.4.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
 
-    val TELEOP_THETA_PID_KP = 5.5.degrees.perSecond / 1.degrees
+    val TELEOP_THETA_PID_KP = 7.degrees.perSecond / 1.degrees
     val TELEOP_THETA_PID_KI = 0.0.degrees.perSecond / (1.degrees * 1.seconds)
     val TELEOP_THETA_PID_KD =
-        (0.3.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
+        (0.2.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
 
     val TELEOP_X_PID_KP = 2.8.meters.perSecond / 1.meters
     val TELEOP_X_PID_KI = 0.0.meters.perSecond / (1.meters * 1.seconds)
@@ -196,7 +201,7 @@ object DrivetrainConstants {
     val DRIVE_KS
       get() =
           when (Constants.Universal.whoami) {
-            Constants.WHOAMI.COMPBOT,
+            Constants.WHOAMI.COMPBOT -> 0.287.volts
             Constants.WHOAMI.ALPHABOT -> 0.24069.volts
             else -> 0.236.volts
           }
@@ -204,7 +209,7 @@ object DrivetrainConstants {
     val DRIVE_KV: VelocityFeedforward<Meter, Volt>
       get() =
           when (Constants.Universal.whoami) {
-            Constants.WHOAMI.COMPBOT,
+            Constants.WHOAMI.COMPBOT -> 0.784.volts / 1.0.meters.perSecond
             Constants.WHOAMI.ALPHABOT -> 0.74646.volts / 1.0.meters.perSecond
             else -> 2.117.volts / 1.0.meters.perSecond
           }

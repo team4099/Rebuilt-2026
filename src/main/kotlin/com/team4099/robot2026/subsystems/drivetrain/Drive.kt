@@ -422,7 +422,7 @@ class Drive(
             ModuleConfig(
                 DrivetrainConstants.tunerConstants.FrontLeft.WheelRadius,
                 DrivetrainConstants.tunerConstants.kSpeedAt12Volts.inMetersPerSecond,
-                DrivetrainConstants.NITRILE_WHEEL_COF,
+                DrivetrainConstants.MOLDED_TPU_WHEEL_COF,
                 DCMotor.getKrakenX60Foc(1)
                     .withReduction(
                         DrivetrainConstants.tunerConstants.FrontLeft.DriveMotorGearRatio),
@@ -487,7 +487,7 @@ class Drive(
                           Volts.of(it.SteerFrictionVoltage),
                           Meters.of(it.WheelRadius),
                           KilogramSquareMeters.of(it.SteerInertia),
-                          DrivetrainConstants.NITRILE_WHEEL_COF)
+                          DrivetrainConstants.MOLDED_TPU_WHEEL_COF)
                     }
                     .toTypedArray()))
   }
