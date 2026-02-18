@@ -20,6 +20,8 @@ import com.ctre.phoenix6.configs.Slot0Configs
 import com.ctre.phoenix6.configs.TalonFXConfiguration
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage
 import com.ctre.phoenix6.controls.MotionMagicVoltage
+import com.ctre.phoenix6.controls.PositionVoltage
+import com.ctre.phoenix6.controls.VelocityVoltage
 import com.ctre.phoenix6.controls.VoltageOut
 import com.ctre.phoenix6.hardware.CANcoder
 import com.ctre.phoenix6.hardware.ParentDevice
@@ -63,8 +65,8 @@ abstract class ModuleIOTalonFX(
       CANcoder(constants.EncoderId, DrivetrainConstants.tunerConstants.kCANBus)
 
   protected val voltageRequest = VoltageOut(0.0).withEnableFOC(true)
-  protected val positionVoltageRequest = MotionMagicVoltage(0.0).withEnableFOC(true)
-  protected val velocityVoltageRequest = MotionMagicVelocityVoltage(0.0).withEnableFOC(true)
+  protected val positionVoltageRequest = PositionVoltage(0.0).withEnableFOC(true)
+  protected val velocityVoltageRequest = VelocityVoltage(0.0).withEnableFOC(true)
 
   // Inputs from drive motor
   private val drivePosition: StatusSignal<Angle>
@@ -86,10 +88,11 @@ abstract class ModuleIOTalonFX(
   private val turnConnectedDebounce: Debouncer = Debouncer(0.5)
   private val turnEncoderConnectedDebounce: Debouncer = Debouncer(0.5)
 
+  // Configure drive motor
+  val driveConfig: TalonFXConfiguration = constants.DriveMotorInitialConfigs!!
+
   init {
-    // Configure drive motor
-    val driveConfig = constants.DriveMotorInitialConfigs!!
-    driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake
+    driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast
     driveConfig.Slot0 = constants.DriveMotorGains
     driveConfig.Feedback.SensorToMechanismRatio = constants.DriveMotorGearRatio
     driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = constants.SlipCurrent
@@ -155,13 +158,12 @@ abstract class ModuleIOTalonFX(
     turnCurrent = turnTalon.statorCurrent
 
     // Configure periodic frames
-    BaseStatusSignal.setUpdateFrequencyForAll(Drive.ODOMETRY_FREQUENCY, drivePosition, turnPosition)
+    BaseStatusSignal.setUpdateFrequencyForAll(Drive.ODOMETRY_FREQUENCY, drivePosition, turnPosition, turnAbsolutePosition)
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
         driveVelocity,
         driveAppliedVolts,
         driveCurrent,
-        turnAbsolutePosition,
         turnVelocity,
         turnAppliedVolts,
         turnCurrent)
@@ -222,8 +224,8 @@ abstract class ModuleIOTalonFX(
       kD: DerivativeGain<Velocity<Meter>, Volt>
   ) {
     driveTalon.configurator.apply(
-        constants.DriveMotorInitialConfigs!!.withSlot0(
-            Slot0Configs()
+        driveConfig.withSlot0(
+            constants.DriveMotorGains
                 .withKP(kP.inVoltsPerMetersPerSecond)
                 .withKD(kD.inVoltsPerMetersPerSecondPerSecond)))
   }

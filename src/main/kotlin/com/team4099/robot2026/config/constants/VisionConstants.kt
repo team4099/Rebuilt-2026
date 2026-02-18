@@ -53,12 +53,12 @@ object VisionConstants {
                               Rotation3d(0.degrees, 0.degrees, 0.degrees))))
           WHOAMI.TESTBOT ->
               mapOf(
-                  "raven_1" to
-                      Pair(
-                          CameraIO.DetectionPipeline.APRIL_TAG,
-                          Transform3d(
-                              Translation3d(10.3.inches, 11.255.inches, 8.397.inches),
-                              Rotation3d(0.0.degrees, -20.degrees, -30.degrees))),
+//                  "raven_1" to
+//                      Pair(
+//                          CameraIO.DetectionPipeline.APRIL_TAG,
+//                          Transform3d(
+//                              Translation3d(10.3.inches, 11.255.inches, 8.397.inches),
+//                              Rotation3d(0.0.degrees, -20.degrees, -30.degrees))),
                   "raven_2" to
                       Pair(
                           CameraIO.DetectionPipeline.APRIL_TAG,

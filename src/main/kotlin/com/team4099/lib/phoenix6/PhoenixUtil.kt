@@ -106,7 +106,7 @@ object PhoenixUtil {
         .withEncoderInverted(false)
         .withDriveMotorGains(
             Slot0Configs()
-                .withKP(DrivetrainConstants.PID.DRIVE_KP.inVoltsPerMetersPerSecond)
+                .withKP(DrivetrainConstants.PID.SIM_DRIVE_KP.inVoltsPerMetersPerSecond)
                 .withKI(DrivetrainConstants.PID.SIM_DRIVE_KI.inVoltsPerMeters)
                 .withKD(
                     DrivetrainConstants.PID.SIM_DRIVE_KD.inVoltsPerMetersPerSecondPerSecond)

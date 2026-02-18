@@ -52,8 +52,8 @@ object DrivetrainConstants {
   val WHEEL_RADIUS: Length
     get() =
         when (Constants.Universal.whoami) {
-          Constants.WHOAMI.COMPBOT -> 2.039.inches
-          else -> 2.inches
+          Constants.WHOAMI.COMPBOT, Constants.WHOAMI.ALPHABOT -> 2.039.inches
+          Constants.WHOAMI.TESTBOT -> 1.96.inches
         }
 
   val DRIVETRAIN_LENGTH: Length
@@ -96,13 +96,18 @@ object DrivetrainConstants {
   val DRIVE_SUPPLY_CURRENT_LIMIT = 50.0.amps
 
   val STEERING_STATOR_CURRENT_LIMIT = 20.0.amps
-  val DRIVE_STATOR_CURRENT_LIMIT = 40.0.amps
+  val DRIVE_STATOR_CURRENT_LIMIT = 50.0.amps
 
   val STEERING_COMPENSATION_VOLTAGE = 10.volts
   val DRIVE_COMPENSATION_VOLTAGE = 12.volts
 
-  const val NITRILE_WHEEL_COF = 1.2
-  const val MOLDED_TPU_WHEEL_COF = 1.4
+  private const val NITRILE_WHEEL_COF = 1.2
+  private const val MOLDED_TPU_WHEEL_COF = 1.4
+
+  val CURRENT_COF = when (Constants.Universal.whoami) {
+    Constants.WHOAMI.COMPBOT, Constants.WHOAMI.ALPHABOT -> MOLDED_TPU_WHEEL_COF
+    Constants.WHOAMI.TESTBOT -> NITRILE_WHEEL_COF
+  }
 
   val INITIAL_SIM_POSE = Pose3d(3.meters, 3.meters, 0.meters, Rotation3d()).pose3d
 
@@ -155,10 +160,10 @@ object DrivetrainConstants {
     val AUTO_REEF_PID_KD =
         (0.4.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
 
-    val TELEOP_THETA_PID_KP = 7.degrees.perSecond / 1.degrees
+    val TELEOP_THETA_PID_KP = 8.degrees.perSecond / 1.degrees
     val TELEOP_THETA_PID_KI = 0.0.degrees.perSecond / (1.degrees * 1.seconds)
     val TELEOP_THETA_PID_KD =
-        (0.2.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
+        (0.1.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
 
     val TELEOP_X_PID_KP = 2.8.meters.perSecond / 1.meters
     val TELEOP_X_PID_KI = 0.0.meters.perSecond / (1.meters * 1.seconds)
@@ -194,16 +199,16 @@ object DrivetrainConstants {
             else -> 0.0.volts / 1.0.radians.perSecond
           }
 
-    val DRIVE_KP = 1.52.volts / 1.meters.perSecond
+    val DRIVE_KP = .15.volts / (1.meters.perSecond)
     val DRIVE_KI = 0.0.volts / (1.meters.perSecond * 1.seconds)
-    val DRIVE_KD = 0.1.volts / 1.meters.perSecond.perSecond
+    val DRIVE_KD = 0.075.volts / (1.meters.perSecond.perSecond)
 
     val DRIVE_KS
       get() =
           when (Constants.Universal.whoami) {
             Constants.WHOAMI.COMPBOT -> 0.287.volts
             Constants.WHOAMI.ALPHABOT -> 0.24069.volts
-            else -> 0.236.volts
+            Constants.WHOAMI.TESTBOT -> .141.volts
           }
 
     val DRIVE_KV: VelocityFeedforward<Meter, Volt>
@@ -211,7 +216,7 @@ object DrivetrainConstants {
           when (Constants.Universal.whoami) {
             Constants.WHOAMI.COMPBOT -> 0.784.volts / 1.0.meters.perSecond
             Constants.WHOAMI.ALPHABOT -> 0.74646.volts / 1.0.meters.perSecond
-            else -> 2.117.volts / 1.0.meters.perSecond
+            Constants.WHOAMI.TESTBOT -> 0.718.volts / 1.0.meters.perSecond
           }
 
     val DRIVE_KA: AccelerationFeedforward<Meter, Volt>

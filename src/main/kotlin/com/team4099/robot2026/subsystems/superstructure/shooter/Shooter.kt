@@ -14,6 +14,7 @@ import edu.wpi.first.math.Matrix
 import edu.wpi.first.math.Nat.N1
 import edu.wpi.first.math.Nat.N2
 import edu.wpi.first.math.Vector
+import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap
 import edu.wpi.first.units.Units.Volts
 import edu.wpi.first.units.measure.Voltage as WPILibVoltage
@@ -29,6 +30,7 @@ import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.sqrt
 import org.team4099.lib.geometry.Pose2d
+import org.team4099.lib.geometry.Translation2d
 import org.team4099.lib.geometry.Translation3d
 import org.team4099.lib.kinematics.ChassisSpeeds
 import org.team4099.lib.units.AngularVelocity
@@ -426,8 +428,8 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
       // ball would travel in the air.
       val wantedRot =
           atan2(
-                  distanceToTargetY.inMeters - ballDistanceOffset.get(1),
-                  distanceToTargetX.inMeters - ballDistanceOffset.get(0))
+                  distanceToTargetY.inMeters + ballDistanceOffset.get(1),
+                  distanceToTargetX.inMeters + ballDistanceOffset.get(0))
               .radians
 
       return CalculatedLaunchData(
