@@ -16,10 +16,7 @@ package com.team4099.robot2026.subsystems.drivetrain
 import com.ctre.phoenix6.BaseStatusSignal
 import com.ctre.phoenix6.StatusSignal
 import com.ctre.phoenix6.configs.CANcoderConfiguration
-import com.ctre.phoenix6.configs.Slot0Configs
 import com.ctre.phoenix6.configs.TalonFXConfiguration
-import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage
-import com.ctre.phoenix6.controls.MotionMagicVoltage
 import com.ctre.phoenix6.controls.PositionVoltage
 import com.ctre.phoenix6.controls.VelocityVoltage
 import com.ctre.phoenix6.controls.VoltageOut
@@ -158,7 +155,8 @@ abstract class ModuleIOTalonFX(
     turnCurrent = turnTalon.statorCurrent
 
     // Configure periodic frames
-    BaseStatusSignal.setUpdateFrequencyForAll(Drive.ODOMETRY_FREQUENCY, drivePosition, turnPosition, turnAbsolutePosition)
+    BaseStatusSignal.setUpdateFrequencyForAll(
+        Drive.ODOMETRY_FREQUENCY, drivePosition, turnPosition, turnAbsolutePosition)
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
         driveVelocity,
@@ -225,8 +223,7 @@ abstract class ModuleIOTalonFX(
   ) {
     driveTalon.configurator.apply(
         driveConfig.withSlot0(
-            constants.DriveMotorGains
-                .withKP(kP.inVoltsPerMetersPerSecond)
+            constants.DriveMotorGains.withKP(kP.inVoltsPerMetersPerSecond)
                 .withKD(kD.inVoltsPerMetersPerSecondPerSecond)))
   }
 }

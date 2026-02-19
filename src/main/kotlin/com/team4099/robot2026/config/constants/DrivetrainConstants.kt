@@ -1,6 +1,5 @@
 package com.team4099.robot2026.config.constants
 
-import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.robot2026.subsystems.drivetrain.generated.AlphaBotTunerConstants
 import com.team4099.robot2026.subsystems.drivetrain.generated.CompBotTunerConstants
 import com.team4099.robot2026.subsystems.drivetrain.generated.TestBotTunerConstants
@@ -26,8 +25,6 @@ import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.VelocityFeedforward
 import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.degrees
-import org.team4099.lib.units.derived.inVoltsPerMetersPerSecond
-import org.team4099.lib.units.derived.inVoltsPerMetersPerSecondPerSecond
 import org.team4099.lib.units.derived.metersPerSecondPerMetersPerSecond
 import org.team4099.lib.units.derived.perDegreePerSecond
 import org.team4099.lib.units.derived.perDegreeSeconds
@@ -52,7 +49,8 @@ object DrivetrainConstants {
   val WHEEL_RADIUS: Length
     get() =
         when (Constants.Universal.whoami) {
-          Constants.WHOAMI.COMPBOT, Constants.WHOAMI.ALPHABOT -> 2.039.inches
+          Constants.WHOAMI.COMPBOT,
+          Constants.WHOAMI.ALPHABOT -> 2.039.inches
           Constants.WHOAMI.TESTBOT -> 1.96.inches
         }
 
@@ -104,10 +102,12 @@ object DrivetrainConstants {
   private const val NITRILE_WHEEL_COF = 1.2
   private const val MOLDED_TPU_WHEEL_COF = 1.4
 
-  val CURRENT_COF = when (Constants.Universal.whoami) {
-    Constants.WHOAMI.COMPBOT, Constants.WHOAMI.ALPHABOT -> MOLDED_TPU_WHEEL_COF
-    Constants.WHOAMI.TESTBOT -> NITRILE_WHEEL_COF
-  }
+  val CURRENT_COF =
+      when (Constants.Universal.whoami) {
+        Constants.WHOAMI.COMPBOT,
+        Constants.WHOAMI.ALPHABOT -> MOLDED_TPU_WHEEL_COF
+        Constants.WHOAMI.TESTBOT -> NITRILE_WHEEL_COF
+      }
 
   val INITIAL_SIM_POSE = Pose3d(3.meters, 3.meters, 0.meters, Rotation3d()).pose3d
 
@@ -264,14 +264,12 @@ object DrivetrainConstants {
             Supplier { Pose2d(3.326.meters, 0.86.meters, 180.degrees) },
         )
     val CLIMB_BOTTOM =
-      listOf(
-        Supplier { Pose2d(1.195.meters, 2.5.meters, 90.degrees) },
-        Supplier { Pose2d(1.195.meters, 2.95.meters, 90.degrees) }
-      )
+        listOf(
+            Supplier { Pose2d(1.195.meters, 2.5.meters, 90.degrees) },
+            Supplier { Pose2d(1.195.meters, 2.95.meters, 90.degrees) })
     val CLIMB_TOP =
-      listOf(
-        Supplier { Pose2d(.95.meters, 5.meters, -90.degrees) },
-        Supplier { Pose2d(.95.meters, 4.58.meters, -90.degrees) }
-      )
+        listOf(
+            Supplier { Pose2d(.95.meters, 5.meters, -90.degrees) },
+            Supplier { Pose2d(.95.meters, 4.58.meters, -90.degrees) })
   }
 }

@@ -108,8 +108,7 @@ object PhoenixUtil {
             Slot0Configs()
                 .withKP(DrivetrainConstants.PID.SIM_DRIVE_KP.inVoltsPerMetersPerSecond)
                 .withKI(DrivetrainConstants.PID.SIM_DRIVE_KI.inVoltsPerMeters)
-                .withKD(
-                    DrivetrainConstants.PID.SIM_DRIVE_KD.inVoltsPerMetersPerSecondPerSecond)
+                .withKD(DrivetrainConstants.PID.SIM_DRIVE_KD.inVoltsPerMetersPerSecondPerSecond)
                 .withKS(DrivetrainConstants.PID.SIM_DRIVE_KS.inVolts)
                 .withKV(DrivetrainConstants.PID.SIM_DRIVE_KV.inVoltsPerMetersPerSecond)
                 .withKA(DrivetrainConstants.PID.SIM_DRIVE_KA.inVoltsPerMeterPerSecondPerSecond)

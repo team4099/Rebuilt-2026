@@ -3,7 +3,6 @@ package com.team4099.robot2026
 import com.ctre.phoenix6.signals.NeutralModeValue
 import com.team4099.robot2026.auto.AutonomousSelector
 import com.team4099.robot2026.commands.drivetrain.AimOTFCommand
-import com.team4099.robot2026.commands.drivetrain.DrivePathOTF
 import com.team4099.robot2026.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2026.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2026.config.ControlBoard
@@ -20,7 +19,6 @@ import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import com.team4099.robot2026.subsystems.superstructure.climb.Climb
 import com.team4099.robot2026.subsystems.superstructure.climb.ClimbIO
 import com.team4099.robot2026.subsystems.superstructure.climb.ClimbIOSim
-import com.team4099.robot2026.subsystems.superstructure.climb.ClimbIOTalon
 import com.team4099.robot2026.subsystems.superstructure.feeder.Feeder
 import com.team4099.robot2026.subsystems.superstructure.feeder.FeederIO
 import com.team4099.robot2026.subsystems.superstructure.feeder.FeederIOSim
@@ -97,7 +95,8 @@ object RobotContainer {
               poseSupplier = { drivetrain.pose })
 
       when (Constants.Universal.whoami) {
-        Constants.WHOAMI.COMPBOT, Constants.WHOAMI.ALPHABOT -> {
+        Constants.WHOAMI.COMPBOT,
+        Constants.WHOAMI.ALPHABOT -> {
           climb = Climb(object : ClimbIO {})
           feeder = Feeder(FeederIOTalonFX)
           hopper = Hopper(HopperIOTalon)
@@ -206,25 +205,25 @@ object RobotContainer {
                       Superstructure.Companion.SuperstructureStates.PREP_SCORE
             })
 
-//        ControlBoard.leftTrenchOTF.whileTrue(
-//            ConditionalCommand(
-//                DrivePathOTF.allianceZoneToNeutralInLeftTrench(drivetrain),
-//                DrivePathOTF.neutralZoneToAllianceInLeftTrench(drivetrain)) {
-//                  FieldConstants.inTrenchAllianceZone(drivetrain.pose)
-//                })
-//        ControlBoard.rightTrenchOTF.whileTrue(
-//            ConditionalCommand(
-//                DrivePathOTF.allianceZoneToNeutralInRightTrench(drivetrain),
-//                DrivePathOTF.neutralZoneToAllianceInRightTrench(drivetrain)) {
-//                  FieldConstants.inTrenchAllianceZone(drivetrain.pose)
-//                })
+    //        ControlBoard.leftTrenchOTF.whileTrue(
+    //            ConditionalCommand(
+    //                DrivePathOTF.allianceZoneToNeutralInLeftTrench(drivetrain),
+    //                DrivePathOTF.neutralZoneToAllianceInLeftTrench(drivetrain)) {
+    //                  FieldConstants.inTrenchAllianceZone(drivetrain.pose)
+    //                })
+    //        ControlBoard.rightTrenchOTF.whileTrue(
+    //            ConditionalCommand(
+    //                DrivePathOTF.allianceZoneToNeutralInRightTrench(drivetrain),
+    //                DrivePathOTF.neutralZoneToAllianceInRightTrench(drivetrain)) {
+    //                  FieldConstants.inTrenchAllianceZone(drivetrain.pose)
+    //                })
 
-//    ControlBoard.climbOTF.whileTrue(
-//      ConditionalCommand(
-//        DrivePathOTF.alignClimbBottom(drivetrain),
-//        DrivePathOTF.alignClimbTop(drivetrain)) {
-//        FieldConstants.inClimbLowerHalf(drivetrain.pose)
-//      })
+    //    ControlBoard.climbOTF.whileTrue(
+    //      ConditionalCommand(
+    //        DrivePathOTF.alignClimbBottom(drivetrain),
+    //        DrivePathOTF.alignClimbTop(drivetrain)) {
+    //        FieldConstants.inClimbLowerHalf(drivetrain.pose)
+    //      })
   }
 
   fun mapTestControls() {}

@@ -164,8 +164,7 @@ class ModuleIOSim(
     // TunerConstants doesn't support separate sim constants, so they are declared locally
     private val DRIVE_KP = DrivetrainConstants.PID.SIM_DRIVE_KP.inVoltsPerMetersPerSecond
     private val DRIVE_KI = DrivetrainConstants.PID.SIM_DRIVE_KI.inVoltsPerMeters
-    private val DRIVE_KD =
-        DrivetrainConstants.PID.SIM_DRIVE_KD.inVoltsPerMetersPerSecondPerSecond
+    private val DRIVE_KD = DrivetrainConstants.PID.SIM_DRIVE_KD.inVoltsPerMetersPerSecondPerSecond
     private val DRIVE_KS = DrivetrainConstants.PID.SIM_DRIVE_KS.inVolts
     private val DRIVE_KV = DrivetrainConstants.PID.SIM_DRIVE_KV.inVoltsPerMeterPerSecond
     private val TURN_KP = DrivetrainConstants.PID.SIM_STEERING_KP.inVoltsPerRadian

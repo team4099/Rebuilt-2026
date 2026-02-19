@@ -104,10 +104,7 @@ object IntakeIOTalon : IntakeIO {
   }
 
   override fun setPosition(position: Angle) {
-    intakeTalon.setControl(
-        motionMagicVoltage
-            .withPosition(position.inRotations)
-            .withSlot(0))
+    intakeTalon.setControl(motionMagicVoltage.withPosition(position.inRotations).withSlot(0))
   }
 
   private fun updateSignals() {
