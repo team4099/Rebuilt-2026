@@ -27,8 +27,13 @@ import edu.wpi.first.math.system.plant.LinearSystemId
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.simulation.DCMotorSim
 import kotlin.math.sign
+import org.team4099.lib.units.Velocity
+import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.inSeconds
+import org.team4099.lib.units.derived.DerivativeGain
+import org.team4099.lib.units.derived.ProportionalGain
+import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.inVoltsPerMeterPerSecond
 import org.team4099.lib.units.derived.inVoltsPerMeters
@@ -146,6 +151,14 @@ class ModuleIOSim(
   }
 
   override fun toggleBrakeMode(brake: NeutralModeValue) {}
+
+  override fun configureDrivePID(
+      kP: ProportionalGain<Velocity<Meter>, Volt>,
+      kD: DerivativeGain<Velocity<Meter>, Volt>
+  ) {
+    driveController.p = kP.value
+    driveController.d = kD.value
+  }
 
   companion object {
     // TunerConstants doesn't support separate sim constants, so they are declared locally

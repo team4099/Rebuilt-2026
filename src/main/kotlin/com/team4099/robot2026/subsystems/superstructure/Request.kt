@@ -32,6 +32,8 @@ sealed interface Request {
     class Idle : HopperRequest
 
     class OpenLoop(val voltage: ElectricalPotential) : HopperRequest
+
+    class TargetVelocity(val velocity: AngularVelocity) : HopperRequest
   }
 
   sealed interface FeederRequest : Request {

@@ -16,7 +16,6 @@ import com.ctre.phoenix6.BaseStatusSignal
 import com.ctre.phoenix6.CANBus
 import com.ctre.phoenix6.StatusCode
 import com.ctre.phoenix6.StatusSignal
-import com.ctre.phoenix6.configs.Pigeon2Configuration
 import com.ctre.phoenix6.hardware.Pigeon2
 import com.team4099.robot2026.config.constants.DrivetrainConstants
 import edu.wpi.first.units.measure.AngularVelocity
@@ -45,8 +44,9 @@ object GyroIOPigeon2 : GyroIO {
   private val yawVelocity: StatusSignal<AngularVelocity> = pigeon.angularVelocityZWorld
 
   init {
-    pigeon.configurator.apply(Pigeon2Configuration())
-    pigeon.configurator.setYaw(0.0)
+    pigeon.configurator.apply(
+        DrivetrainConstants.tunerConstants.CTREDrivetrainConstants.Pigeon2Configs)
+    pigeon.setYaw(0.0)
     roll.setUpdateFrequency(Drive.ODOMETRY_FREQUENCY)
     pitch.setUpdateFrequency(Drive.ODOMETRY_FREQUENCY)
     yaw.setUpdateFrequency(Drive.ODOMETRY_FREQUENCY)

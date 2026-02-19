@@ -2,14 +2,29 @@ package com.team4099.robot2026.subsystems.superstructure.hopper
 
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.HopperConstants
+import com.team4099.robot2026.config.constants.ShooterConstants
+import com.team4099.robot2026.subsystems.superstructure.shooter.ShooterIOSim
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.math.system.plant.LinearSystemId
 import edu.wpi.first.wpilibj.simulation.FlywheelSim
+import org.team4099.lib.controller.PIDController
+import org.team4099.lib.controller.SimpleMotorFeedforward
 import org.team4099.lib.math.clamp
+import org.team4099.lib.units.AngularVelocity
+import org.team4099.lib.units.Fraction
+import org.team4099.lib.units.base.Second
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.inSeconds
+import org.team4099.lib.units.derived.AccelerationFeedforward
+import org.team4099.lib.units.derived.DerivativeGain
 import org.team4099.lib.units.derived.ElectricalPotential
+import org.team4099.lib.units.derived.IntegralGain
+import org.team4099.lib.units.derived.ProportionalGain
+import org.team4099.lib.units.derived.Radian
+import org.team4099.lib.units.derived.StaticFeedforward
+import org.team4099.lib.units.derived.VelocityFeedforward
+import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.inKilogramsMeterSquared
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.radians
@@ -27,6 +42,14 @@ object HopperIOSim : HopperIO {
           ),
           DCMotor.getKrakenX44Foc(1),
       )
+
+  private val hopperPIDController =
+      PIDController(
+          HopperConstants.PID.SIM_KP, HopperConstants.PID.SIM_KI, HopperConstants.PID.SIM_KD)
+
+  private var hopperFFController =
+      SimpleMotorFeedforward(
+          ShooterConstants.PID.SIM_KS, ShooterConstants.PID.SIM_KV, ShooterConstants.PID.SIM_KA)
 
   override fun updateInputs(inputs: HopperIO.HopperIOInputs) {
     hopperSim.update(Constants.Universal.LOOP_PERIOD_TIME.inSeconds)
@@ -46,5 +69,32 @@ object HopperIOSim : HopperIO {
 
     hopperSim.setInputVoltage(clampedVoltage.inVolts)
     appliedVoltage = clampedVoltage
+  }
+
+  override fun setVelocity(velocity: AngularVelocity) {
+    var pidOutput =
+        hopperPIDController.calculate(
+            hopperSim.angularVelocityRadPerSec.radians.perSecond, velocity)
+    if (pidOutput.inVolts.isNaN()) pidOutput = 0.volts
+    val ffOutput =
+        hopperFFController.calculateWithVelocities(
+            hopperSim.angularVelocityRadPerSec.radians.perSecond, velocity)
+    ShooterIOSim.setVoltage(pidOutput + ffOutput)
+  }
+
+  override fun configurePID(
+      kP: ProportionalGain<Fraction<Radian, Second>, Volt>,
+      kI: IntegralGain<Fraction<Radian, Second>, Volt>,
+      kD: DerivativeGain<Fraction<Radian, Second>, Volt>
+  ) {
+    hopperPIDController.setPID(kP, kI, kD)
+  }
+
+  override fun configureFF(
+      kS: StaticFeedforward<Volt>,
+      kV: VelocityFeedforward<Radian, Volt>,
+      kA: AccelerationFeedforward<Radian, Volt>
+  ) {
+    hopperFFController = SimpleMotorFeedforward(kS, kV, kA)
   }
 }

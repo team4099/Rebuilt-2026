@@ -18,7 +18,7 @@ object Constants {
     const val REAL_FIELD = false
 
     const val CTRE_CONFIG_TIMEOUT = 0
-    const val EPSILON = 1E-9
+    const val EPSILON = 1E-6
 
     val SLOW_STATUS_FRAME_TIME = 255.milli.seconds
     const val CANIVORE_NAME = "FalconVore"
@@ -28,12 +28,17 @@ object Constants {
     val POWER_DISTRIBUTION_HUB_ID = 1
 
     const val SIMULATE_VISION = false
-    const val DISABLE_COLLISIONS = false
+    const val DISABLE_COLLISIONS = true
 
     val ROBOT_WEIGHT = 125.pounds
     val ROBOT_MOI = 6.3.kilo.grams.meterSquared
 
     val whoami = argToEnum<WHOAMI>(System.getProperty("robot"))
+  }
+
+  object MOTOR_CONSTANTS {
+    // https://ctre.download/files/datasheet/Motor%20Performance%20Analysis%20Report.pdf
+    const val KRAKENX60FOC_kT = 0.01981
   }
 
   enum class WHOAMI {
@@ -71,7 +76,7 @@ object Constants {
   }
 
   object Hopper {
-    const val HOPPER_MOTOR_ID = 46
+    const val HOPPER_MOTOR_ID = 50
   }
 
   object Shooter {

@@ -36,10 +36,14 @@ class LoggedTunableValue<U : UnitKey>(
   }
 
   fun hasChanged(): Boolean {
-    return tunableNumber.hasChanged()
+    return tunableNumber.hasChanged(hashCode())
   }
 
   fun initDefault(defaultValue: Value<U>) {
     tunableNumber.initDefault(conversionFunctions.first(defaultValue))
+  }
+
+  override fun hashCode(): Int {
+    return dashboardKey.hashCode()
   }
 }
