@@ -71,9 +71,11 @@ object ClimbIOTalon : ClimbIO {
 
     configs.MotorOutput.NeutralMode = NeutralModeValue.Brake
     configs.SoftwareLimitSwitch.ForwardSoftLimitEnable = true
-    configs.SoftwareLimitSwitch.ForwardSoftLimitThreshold = sensor.positionToRawUnits(ClimbConstants.UPWARDS_EXTENSION_LIMIT)
+    configs.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
+        sensor.positionToRawUnits(ClimbConstants.UPWARDS_EXTENSION_LIMIT)
     configs.SoftwareLimitSwitch.ReverseSoftLimitEnable = true
-    configs.SoftwareLimitSwitch.ReverseSoftLimitThreshold = sensor.positionToRawUnits(ClimbConstants.DOWNWARDS_EXTENSION_LIMIT)
+    configs.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
+        sensor.positionToRawUnits(ClimbConstants.DOWNWARDS_EXTENSION_LIMIT)
 
     configs.MotionMagic.MotionMagicCruiseVelocity = MAX_VELOCITY.inInchesPerSecond
     configs.MotionMagic.MotionMagicAcceleration = MAX_ACCELERATION.inInchesPerSecondPerSecond

@@ -24,6 +24,7 @@ import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.DrivetrainConstants
 import com.team4099.robot2026.util.AllianceFlipUtil
 import com.team4099.robot2026.util.CustomLogger
+import com.team4099.robot2026.util.Velocity2d
 import edu.wpi.first.hal.FRCNetComm
 import edu.wpi.first.hal.HAL
 import edu.wpi.first.math.Matrix
@@ -69,6 +70,7 @@ import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.geometry.Translation2d
 import org.team4099.lib.geometry.Twist2d
 import org.team4099.lib.kinematics.ChassisSpeeds
+import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.base.inKilograms
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inMilliseconds
@@ -115,6 +117,9 @@ class Drive(
           rawGyroRotation.rotation3d,
           lastModulePositions,
           DrivetrainConstants.INITIAL_SIM_POSE)
+
+  var targetSpeeds = ChassisSpeeds()
+    private set
 
   init {
     modules[0] = Module(moduleIOs[0], 0, DrivetrainConstants.tunerConstants.FrontLeft)
@@ -248,6 +253,8 @@ class Drive(
    * @param speeds Speeds in meters/sec
    */
   fun runSpeeds(speeds: ChassisSpeeds, flipIfRed: Boolean = true) {
+    targetSpeeds = speeds
+
     val flippedSpeeds =
         if (flipIfRed && AllianceFlipUtil.shouldFlip())
             ChassisSpeeds(-speeds.vx, -speeds.vy, speeds.omega)
@@ -272,6 +279,14 @@ class Drive(
 
     // Log optimized setpoints (runSetpoint mutates each state)
     Logger.recordOutput("SwerveStates/SetpointsOptimized", *setpointStates)
+  }
+
+  fun runTranslationWhileKeepingRotation(vels: Velocity2d, flipIfRed: Boolean = true) {
+    runSpeeds(ChassisSpeeds(vels.x, vels.y, targetSpeeds.omega), flipIfRed)
+  }
+
+  fun runRotationWhileKeepingTranslation(omega: AngularVelocity, flipIfRed: Boolean = true) {
+    runSpeeds(ChassisSpeeds(targetSpeeds.vx, targetSpeeds.vy, omega), flipIfRed)
   }
 
   /** Point the module's wheels at the direction specified */
