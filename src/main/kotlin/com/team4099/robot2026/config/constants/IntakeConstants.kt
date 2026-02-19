@@ -43,8 +43,11 @@ object IntakeConstants {
   object ANGLES {
     val INTAKE_ANGLE = PIVOT_MIN_ANGLE
     val STOW_ANGLE = PIVOT_MAX_ANGLE
-    val IDLE_ANGLE = 50.degrees
+    val IDLE_ANGLE = 40.degrees
     val EJECT_ANGLE = STOW_ANGLE
+
+    val FORCE_UP_ANGLE = STOW_ANGLE - 25.degrees
+    val FORCE_DOWN_ANGLE = INTAKE_ANGLE
   }
 
   object PID {

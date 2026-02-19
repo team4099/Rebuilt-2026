@@ -280,7 +280,7 @@ class Superstructure(
   fun requestForceIntakeDownCommand(): Command {
     val returnCommand = runOnce {
       intake.currentRequest =
-          Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.INTAKE_ANGLE)
+          Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.FORCE_DOWN_ANGLE)
     }
     returnCommand.name = "RequestForceIntakeDownCommand"
     return returnCommand
@@ -289,7 +289,7 @@ class Superstructure(
   fun requestForceIntakeUpCommand(): Command {
     val returnCommand = runOnce {
       intake.currentRequest =
-          Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.STOW_ANGLE)
+          Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.FORCE_UP_ANGLE)
     }
     returnCommand.name = "RequestForceIntakeUpCommand"
     return returnCommand
