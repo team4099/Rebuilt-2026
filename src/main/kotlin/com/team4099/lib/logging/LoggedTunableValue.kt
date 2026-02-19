@@ -42,4 +42,8 @@ class LoggedTunableValue<U : UnitKey>(
   fun initDefault(defaultValue: Value<U>) {
     tunableNumber.initDefault(conversionFunctions.first(defaultValue))
   }
+
+  override fun hashCode(): Int {
+    return dashboardKey.hashCode()
+  }
 }

@@ -43,12 +43,12 @@ object ControlBoard {
   val leftTrenchOTF = Trigger { driver.dPadLeft && driver.xButton }
   val rightTrenchOTF = Trigger { driver.dPadRight && driver.xButton }
 
+  val climbOTF = Trigger { driver.yButton }
+
   val prepScore = Trigger { operator.rightTriggerAxis > .5 }
   val forceIntakeUp = Trigger { operator.yButton }
   val forceIntakeDown = Trigger { operator.bButton }
   val prepClimb = Trigger { operator.aButton }
 
   val eject = Trigger { driver.dPadUp || operator.dPadUp }
-
-  val test = Trigger { driver.dPadLeft }
 }

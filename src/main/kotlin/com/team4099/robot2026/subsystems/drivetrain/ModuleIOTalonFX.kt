@@ -17,10 +17,7 @@ import com.ctre.phoenix6.BaseStatusSignal
 import com.ctre.phoenix6.StatusSignal
 import com.ctre.phoenix6.configs.CANcoderConfiguration
 import com.ctre.phoenix6.configs.TalonFXConfiguration
-import com.ctre.phoenix6.controls.MotionMagicVoltage
-import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC
-import com.ctre.phoenix6.controls.TorqueCurrentFOC
-import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC
+import com.ctre.phoenix6.controls.PositionVoltage
 import com.ctre.phoenix6.controls.VelocityVoltage
 import com.ctre.phoenix6.controls.VoltageOut
 import com.ctre.phoenix6.hardware.CANcoder
@@ -41,7 +38,14 @@ import edu.wpi.first.units.measure.AngularVelocity
 import edu.wpi.first.units.measure.Current
 import edu.wpi.first.units.measure.Voltage
 import java.util.Queue
+import org.team4099.lib.units.Velocity
+import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.amps
+import org.team4099.lib.units.derived.DerivativeGain
+import org.team4099.lib.units.derived.ProportionalGain
+import org.team4099.lib.units.derived.Volt
+import org.team4099.lib.units.derived.inVoltsPerMetersPerSecond
+import org.team4099.lib.units.derived.inVoltsPerMetersPerSecondPerSecond
 import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
@@ -58,15 +62,8 @@ abstract class ModuleIOTalonFX(
       CANcoder(constants.EncoderId, DrivetrainConstants.tunerConstants.kCANBus)
 
   protected val voltageRequest = VoltageOut(0.0).withEnableFOC(true)
-  protected val positionVoltageRequest = MotionMagicVoltage(0.0).withEnableFOC(true)
+  protected val positionVoltageRequest = PositionVoltage(0.0).withEnableFOC(true)
   protected val velocityVoltageRequest = VelocityVoltage(0.0).withEnableFOC(true)
-
-  // Torque-current control requests
-  protected val torqueCurrentRequest: TorqueCurrentFOC = TorqueCurrentFOC(0.0)
-  protected val positionTorqueCurrentRequest: PositionTorqueCurrentFOC =
-      PositionTorqueCurrentFOC(0.0)
-  protected val velocityTorqueCurrentRequest: VelocityTorqueCurrentFOC =
-      VelocityTorqueCurrentFOC(0.0)
 
   // Inputs from drive motor
   private val drivePosition: StatusSignal<Angle>
@@ -88,10 +85,11 @@ abstract class ModuleIOTalonFX(
   private val turnConnectedDebounce: Debouncer = Debouncer(0.5)
   private val turnEncoderConnectedDebounce: Debouncer = Debouncer(0.5)
 
+  // Configure drive motor
+  val driveConfig: TalonFXConfiguration = constants.DriveMotorInitialConfigs!!
+
   init {
-    // Configure drive motor
-    val driveConfig = constants.DriveMotorInitialConfigs!!
-    driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake
+    driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast
     driveConfig.Slot0 = constants.DriveMotorGains
     driveConfig.Feedback.SensorToMechanismRatio = constants.DriveMotorGearRatio
     driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = constants.SlipCurrent
@@ -157,13 +155,13 @@ abstract class ModuleIOTalonFX(
     turnCurrent = turnTalon.statorCurrent
 
     // Configure periodic frames
-    BaseStatusSignal.setUpdateFrequencyForAll(Drive.ODOMETRY_FREQUENCY, drivePosition, turnPosition)
+    BaseStatusSignal.setUpdateFrequencyForAll(
+        Drive.ODOMETRY_FREQUENCY, drivePosition, turnPosition, turnAbsolutePosition)
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
         driveVelocity,
         driveAppliedVolts,
         driveCurrent,
-        turnAbsolutePosition,
         turnVelocity,
         turnAppliedVolts,
         turnCurrent)
@@ -217,5 +215,15 @@ abstract class ModuleIOTalonFX(
         constants.DriveMotorInitialConfigs!!.MotorOutput.withNeutralMode(brake))
     turnTalon.configurator.apply(
         constants.SteerMotorInitialConfigs!!.MotorOutput.withNeutralMode(brake))
+  }
+
+  override fun configureDrivePID(
+      kP: ProportionalGain<Velocity<Meter>, Volt>,
+      kD: DerivativeGain<Velocity<Meter>, Volt>
+  ) {
+    driveTalon.configurator.apply(
+        driveConfig.withSlot0(
+            constants.DriveMotorGains.withKP(kP.inVoltsPerMetersPerSecond)
+                .withKD(kD.inVoltsPerMetersPerSecondPerSecond)))
   }
 }

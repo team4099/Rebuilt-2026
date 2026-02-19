@@ -1,4 +1,4 @@
-package frc.robot.commands
+package com.team4099.robot2026.commands.characterization
 
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.util.CustomLogger
@@ -24,8 +24,8 @@ import org.team4099.lib.units.perSecond
 object DriveCharacterizationCommands {
   private const val FF_START_DELAY = 2.0
   private const val FF_RAMP_RATE = 0.1
-  private const val WHEEL_RADIUS_MAX_VELOCITY = 0.25
-  private const val WHEEL_RADIUS_RAMP_RATE = 0.05
+  private const val WHEEL_RADIUS_MAX_VELOCITY = 2.0
+  private const val WHEEL_RADIUS_RAMP_RATE = 0.25
 
   fun feedforwardCharacterization(drive: Drive): Command {
     val velocitySamples = LinkedList<Double>()

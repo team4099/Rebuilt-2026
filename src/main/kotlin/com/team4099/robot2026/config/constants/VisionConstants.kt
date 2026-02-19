@@ -32,13 +32,12 @@ object VisionConstants {
           WHOAMI.COMPBOT,
           WHOAMI.ALPHABOT ->
               mapOf(
-                  //                  "raven_1" to
-                  //                      Pair(
-                  //                          CameraIO.DetectionPipeline.APRIL_TAG,
-                  //                          Transform3d(
-                  //                              Translation3d(9.773802.inches, 11.230054.inches,
-                  // 8.495934.inches),
-                  //                              Rotation3d(0.0.degrees, 20.degrees, 30.degrees))),
+                  "raven_1" to
+                      Pair(
+                          CameraIO.DetectionPipeline.APRIL_TAG,
+                          Transform3d(
+                              Translation3d(9.773802.inches, 11.230054.inches, 8.495934.inches),
+                              Rotation3d(0.0.degrees, 20.degrees, 30.degrees))),
                   "raven_2" to
                       Pair(
                           CameraIO.DetectionPipeline.APRIL_TAG,
@@ -53,12 +52,14 @@ object VisionConstants {
                               Rotation3d(0.degrees, 0.degrees, 0.degrees))))
           WHOAMI.TESTBOT ->
               mapOf(
-                  "raven_1" to
-                      Pair(
-                          CameraIO.DetectionPipeline.APRIL_TAG,
-                          Transform3d(
-                              Translation3d(10.3.inches, 11.255.inches, 8.397.inches),
-                              Rotation3d(0.0.degrees, -20.degrees, -30.degrees))),
+                  //                  "raven_1" to
+                  //                      Pair(
+                  //                          CameraIO.DetectionPipeline.APRIL_TAG,
+                  //                          Transform3d(
+                  //                              Translation3d(10.3.inches, 11.255.inches,
+                  // 8.397.inches),
+                  //                              Rotation3d(0.0.degrees, -20.degrees,
+                  // -30.degrees))),
                   "raven_2" to
                       Pair(
                           CameraIO.DetectionPipeline.APRIL_TAG,
@@ -71,8 +72,8 @@ object VisionConstants {
 
   // x, y, θ
   // TODO tune
-  val singleTagStdDevs: Matrix<N4?, N1?> = VecBuilder.fill(4.0, 4.0, 8.0, 50.0)
-  val multiTagStdDevs: Matrix<N4?, N1?> = VecBuilder.fill(0.5, 0.5, 4.0, 25.0)
+  val singleTagStdDevs: Matrix<N4?, N1?> = VecBuilder.fill(2.0, 2.0, 8.0, 250.0)
+  val multiTagStdDevs: Matrix<N4?, N1?> = VecBuilder.fill(0.25, 0.25, 4.0, 125.0)
 
   val oldStdDevs: Matrix<N3?, N1?> = VecBuilder.fill(XY_STDDEV, XY_STDDEV, THETA_STDDEV)
 
