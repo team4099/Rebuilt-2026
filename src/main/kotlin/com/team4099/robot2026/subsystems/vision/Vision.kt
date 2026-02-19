@@ -9,11 +9,8 @@ import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.FieldConstants
 import com.team4099.robot2026.config.constants.VisionConstants
 import com.team4099.robot2026.subsystems.vision.camera.CameraIO
-import com.team4099.robot2026.util.AllianceFlipUtil
 import com.team4099.robot2026.util.CustomLogger
 import com.team4099.robot2026.util.toPose3d
-import edu.wpi.first.math.geometry.Pose3d as WPIPose3d
-import edu.wpi.first.math.geometry.Rotation3d as WPIRotation3d
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.SubsystemBase
@@ -32,6 +29,7 @@ import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.sin
 
@@ -119,41 +117,25 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
           for (tag in tagTargets) {
             if (tag.poseAmbiguity < VisionConstants.AMBIGUITY_THESHOLD) {
               if (DriverStation.getAlliance().isPresent) {
-                if ((tag.fiducialId in VisionConstants.BLUE_TARGET_TAGS &&
-                    !AllianceFlipUtil.shouldFlip()) ||
-                    (tag.fiducialId in VisionConstants.RED_TARGET_TAGS &&
-                        AllianceFlipUtil.shouldFlip())) {
-                  val fieldTTag =
-                      Pose3d(
-                          FieldConstants.fieldLayout
-                              .getTagPose(tag.fiducialId)
-                              .orElse(WPIPose3d(-1337.0, -1337.0, -1337.0, WPIRotation3d.kZero)))
+                val robotTTag = io[instance].transform.plus(Transform3d(tag.bestCameraToTarget))
 
-                  val robotTTag = io[instance].transform.plus(Transform3d(tag.bestCameraToTarget))
+                val distanceToTarget = robotTTag.translation.norm
 
-                  val fieldTRobot = fieldTTag.transformBy(robotTTag.inverse())
-                  val distanceToTarget = robotTTag.translation.norm
+                Logger.recordOutput(
+                    "Vision/${io[instance].identifier}/${tag.fiducialId}/robotDistanceToTarget",
+                    distanceToTarget.inMeters)
 
-                  Logger.recordOutput(
-                      "Vision/${io[instance].identifier}/${tag.fiducialId}/robotDistanceToTarget",
-                      distanceToTarget.inMeters)
+                Logger.recordOutput(
+                    "Vision/${io[instance].identifier}/${tag.fiducialId}/robotTTag",
+                    robotTTag.transform3d)
 
-                  Logger.recordOutput(
-                      "Vision/${io[instance].identifier}/${tag.fiducialId}/robotTTag",
-                      robotTTag.transform3d)
+                for (corner in tag.detectedCorners) {
+                  cornerData.add(corner.x)
+                  cornerData.add(corner.y)
+                }
 
-                  Logger.recordOutput(
-                      "Vision/${io[instance].identifier}/${tag.fiducialId}/fieldTRobot",
-                      fieldTRobot.pose3d)
-
-                  for (corner in tag.detectedCorners) {
-                    cornerData.add(corner.x)
-                    cornerData.add(corner.y)
-                  }
-
-                  if (tag.fiducialId in tagIDFilter) {
-                    targetingTags.add(Pair(tag.fiducialId, robotTTag))
-                  }
+                if (tag.fiducialId in tagIDFilter) {
+                  targetingTags.add(Pair(tag.fiducialId, robotTTag))
                 }
               }
 
@@ -320,6 +302,9 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
     if (now > pulseEndTime) {
       autoAlignReadyRumble = false
     }
+
+    CustomLogger.recordOutput(
+        "Vision/thetaFromTagDegs", lastTrigVisionUpdate.robotTTargetTag.rotation.z.inDegrees)
 
     Logger.recordOutput(
         "LoggedRobot/Subsystems/VisionLoopTimeMS", (Clock.fpgaTime - startTime).inMilliseconds)
