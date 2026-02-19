@@ -1,5 +1,7 @@
 package com.team4099.robot2026.auto.mode
 
+import choreo.Choreo
+import choreo.trajectory.SwerveSample
 import com.team4099.robot2026.commands.drivetrain.FollowChoreoPath
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.subsystems.superstructure.Superstructure
@@ -13,12 +15,14 @@ class IntakeQuadrantL1(val drivetrain: Drive, val superstructure: Superstructure
     addRequirements(drivetrain, superstructure)
     addCommands(
         ParallelCommandGroup(
-            FollowChoreoPath(),
+            FollowChoreoPath(
+                drivetrain, Choreo.loadTrajectory<SwerveSample>("IntakeQuadrantClimb.traj").get()),
             WaitCommand(1.3).andThen(superstructure.requestIntakeCommand()),
-            WaitCommand(2.5).andThen(superstructure.requestIntakeCommand()),
+            WaitCommand(2.5).andThen(superstructure.requestIdleCommand()),
         ),
         superstructure.requestScoreCommand(),
-        WaitCommand(10.0), // should i use a constant here
+        WaitCommand(10.0),
+        // the path ends near the tower
         // superstructure.requestPrepClimbCommand(),
         // superstructure.requestClimbCommand()
     )
