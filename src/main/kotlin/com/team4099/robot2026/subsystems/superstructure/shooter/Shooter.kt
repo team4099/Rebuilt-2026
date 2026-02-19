@@ -428,8 +428,8 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
       // ball would travel in the air.
       val wantedRot =
           atan2(
-                  distanceToTargetY.inMeters + ballDistanceOffset.get(1),
-                  distanceToTargetX.inMeters + ballDistanceOffset.get(0))
+                  distanceToTargetY.inMeters - ballDistanceOffset.get(1),
+                  distanceToTargetX.inMeters - ballDistanceOffset.get(0))
               .radians
 
       return CalculatedLaunchData(

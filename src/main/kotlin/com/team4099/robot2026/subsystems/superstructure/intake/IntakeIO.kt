@@ -75,8 +75,7 @@ interface IntakeIO {
   fun setPosition(position: Angle) {}
 
   fun configPID(
-      kPDown: ProportionalGain<Radian, Volt>,
-      kPUp: ProportionalGain<Radian, Volt>,
+      kP: ProportionalGain<Radian, Volt>,
       kI: IntegralGain<Radian, Volt>,
       kD: DerivativeGain<Radian, Volt>,
   ) {}

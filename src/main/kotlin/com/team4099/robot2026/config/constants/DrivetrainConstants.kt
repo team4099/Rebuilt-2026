@@ -263,5 +263,15 @@ object DrivetrainConstants {
             Supplier { Pose2d(4.629.meters, 0.631.meters, 180.degrees) },
             Supplier { Pose2d(3.326.meters, 0.86.meters, 180.degrees) },
         )
+    val CLIMB_BOTTOM =
+      listOf(
+        Supplier { Pose2d(1.195.meters, 2.5.meters, 90.degrees) },
+        Supplier { Pose2d(1.195.meters, 2.95.meters, 90.degrees) }
+      )
+    val CLIMB_TOP =
+      listOf(
+        Supplier { Pose2d(.95.meters, 5.meters, -90.degrees) },
+        Supplier { Pose2d(.95.meters, 4.58.meters, -90.degrees) }
+      )
   }
 }

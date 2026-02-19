@@ -8,6 +8,7 @@ import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.robot2026.config.ControlBoard
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.DrivetrainConstants
+import com.team4099.robot2026.config.constants.FieldConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.util.AllianceFlipUtil
 import edu.wpi.first.math.geometry.Pose2d as WPIPose2d
@@ -254,6 +255,32 @@ class DrivePathOTF(
           } else {
             GoalEndState(0.0.meters.perSecond, 180.degrees)
           })
+    }
+
+    fun alignClimbBottom(drivetrain: Drive): DrivePathOTF {
+      return DrivePathOTF(
+        drivetrain,
+        { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+        { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+        { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+        { drivetrain.pose.toPose2d().pose2d },
+        DrivetrainConstants.OTF_PATHS.CLIMB_BOTTOM,
+        drivetrain.pose.rotation.z,
+        GoalEndState(0.0.meters.perSecond, 0.degrees)
+      )
+    }
+
+    fun alignClimbTop(drivetrain: Drive): DrivePathOTF {
+      return DrivePathOTF(
+        drivetrain,
+        { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+        { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+        { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+        { drivetrain.pose.toPose2d().pose2d },
+        DrivetrainConstants.OTF_PATHS.CLIMB_TOP,
+        drivetrain.pose.rotation.z,
+        GoalEndState(0.0.meters.perSecond, 180.degrees)
+      )
     }
   }
 }

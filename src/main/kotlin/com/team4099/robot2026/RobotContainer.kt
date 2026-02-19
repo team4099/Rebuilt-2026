@@ -20,6 +20,7 @@ import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import com.team4099.robot2026.subsystems.superstructure.climb.Climb
 import com.team4099.robot2026.subsystems.superstructure.climb.ClimbIO
 import com.team4099.robot2026.subsystems.superstructure.climb.ClimbIOSim
+import com.team4099.robot2026.subsystems.superstructure.climb.ClimbIOTalon
 import com.team4099.robot2026.subsystems.superstructure.feeder.Feeder
 import com.team4099.robot2026.subsystems.superstructure.feeder.FeederIO
 import com.team4099.robot2026.subsystems.superstructure.feeder.FeederIOSim
@@ -100,7 +101,7 @@ object RobotContainer {
           climb = Climb(object : ClimbIO {})
           feeder = Feeder(FeederIOTalonFX)
           hopper = Hopper(HopperIOTalon)
-          intake = Intake(object : IntakeIO {})
+          intake = Intake(IntakeIOTalon)
           intakeRollers = IntakeRollers(IntakeRollersIOTalon)
           shooter = Shooter(ShooterIOTalon)
         }
@@ -217,6 +218,13 @@ object RobotContainer {
 //                DrivePathOTF.neutralZoneToAllianceInRightTrench(drivetrain)) {
 //                  FieldConstants.inTrenchAllianceZone(drivetrain.pose)
 //                })
+
+//    ControlBoard.climbOTF.whileTrue(
+//      ConditionalCommand(
+//        DrivePathOTF.alignClimbBottom(drivetrain),
+//        DrivePathOTF.alignClimbTop(drivetrain)) {
+//        FieldConstants.inClimbLowerHalf(drivetrain.pose)
+//      })
   }
 
   fun mapTestControls() {}

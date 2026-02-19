@@ -107,7 +107,7 @@ object IntakeIOTalon : IntakeIO {
     intakeTalon.setControl(
         motionMagicVoltage
             .withPosition(position.inRotations)
-            .withSlot(if (position < positionSignal.valueAsDouble.rotations) 0 else 1))
+            .withSlot(0))
   }
 
   private fun updateSignals() {
@@ -122,18 +122,13 @@ object IntakeIOTalon : IntakeIO {
   }
 
   override fun configPID(
-      kPDown: ProportionalGain<Radian, Volt>,
-      kPUp: ProportionalGain<Radian, Volt>,
+      kP: ProportionalGain<Radian, Volt>,
       kI: IntegralGain<Radian, Volt>,
       kD: DerivativeGain<Radian, Volt>,
   ) {
-    intakeConfiguration.Slot0.kP = kPDown.inVoltsPerRadian
+    intakeConfiguration.Slot0.kP = kP.inVoltsPerRadian
     intakeConfiguration.Slot0.kI = kI.inVoltsPerRadianSeconds
     intakeConfiguration.Slot0.kD = kD.inVoltsPerRadianPerSecond
-
-    intakeConfiguration.Slot1.kP = kPUp.inVoltsPerRadian
-    intakeConfiguration.Slot1.kI = kI.inVoltsPerRadianSeconds
-    intakeConfiguration.Slot1.kD = kD.inVoltsPerRadianPerSecond
 
     intakeTalon.configurator.apply(intakeConfiguration)
   }
@@ -148,11 +143,6 @@ object IntakeIOTalon : IntakeIO {
     intakeConfiguration.Slot0.kS = kS.inVolts
     intakeConfiguration.Slot0.kA = kA.inVoltsPerRadiansPerSecondPerSecond
     intakeConfiguration.Slot0.kV = kV.inVoltsPerRadiansPerSecond
-
-    intakeConfiguration.Slot1.kG = kG.inVolts
-    intakeConfiguration.Slot1.kS = kS.inVolts
-    intakeConfiguration.Slot1.kA = kA.inVoltsPerRadiansPerSecondPerSecond
-    intakeConfiguration.Slot1.kV = kV.inVoltsPerRadiansPerSecond
 
     intakeTalon.configurator.apply(intakeConfiguration)
   }

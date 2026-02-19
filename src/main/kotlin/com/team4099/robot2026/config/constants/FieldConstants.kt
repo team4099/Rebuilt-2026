@@ -57,4 +57,13 @@ object FieldConstants {
   fun inTrenchAllianceZone(pose: Pose2d): Boolean {
     return AllianceFlipUtil.shouldFlip() xor (pose.x < TRENCH_LINE_X)
   }
+
+  fun inClimbLowerHalf(pose: Pose3d): Boolean {
+    return inClimbLowerHalf(pose.toPose2d())
+  }
+
+  fun inClimbLowerHalf(pose: Pose2d): Boolean {
+    return !AllianceFlipUtil.shouldFlip() && pose.y < 3.75.meters ||
+        AllianceFlipUtil.shouldFlip() && pose.y > 4.3.meters
+  }
 }

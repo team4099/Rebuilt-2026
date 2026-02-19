@@ -46,8 +46,7 @@ class Intake(private val io: IntakeIO) : ControlledByStateMachine() {
   init {
     if (RobotBase.isReal()) {
       io.configPID(
-          IntakeConstants.PID.REAL_PIVOT_KP_DOWN,
-          IntakeConstants.PID.REAL_PIVOT_KP_UP,
+          IntakeConstants.PID.REAL_PIVOT_KP,
           IntakeConstants.PID.REAL_PIVOT_KI,
           IntakeConstants.PID.REAL_PIVOT_KD)
       io.configFF(
@@ -57,7 +56,6 @@ class Intake(private val io: IntakeIO) : ControlledByStateMachine() {
           IntakeConstants.PID.PIVOT_KA)
     } else {
       io.configPID(
-          IntakeConstants.PID.SIM_PIVOT_KP,
           IntakeConstants.PID.SIM_PIVOT_KP,
           IntakeConstants.PID.SIM_PIVOT_KI,
           IntakeConstants.PID.SIM_PIVOT_KD)
