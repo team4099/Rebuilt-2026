@@ -11,9 +11,7 @@ class TuningAutoPos(val drivetrain: Drive) : SequentialCommandGroup() {
   init {
     addRequirements(drivetrain)
 
-    addCommands(
-      FollowChoreoPath(drivetrain, traj)
-    )
+    addCommands(FollowChoreoPath(drivetrain, traj))
   }
 
   companion object {
