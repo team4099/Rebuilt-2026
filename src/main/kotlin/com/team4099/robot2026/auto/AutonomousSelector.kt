@@ -1,9 +1,12 @@
 package com.team4099.robot2026.auto
 
+import com.team4099.robot2026.auto.mode.DepotL1OutpostScoreAuto
 import com.team4099.robot2026.auto.mode.ExamplePathAuto
 import com.team4099.robot2026.auto.mode.SysID
 import com.team4099.robot2026.subsystems.drivetrain.Drive
+import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import com.team4099.robot2026.subsystems.vision.Vision
+import com.team4099.robot2026.util.AllianceFlipUtil
 import edu.wpi.first.networktables.GenericEntry
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
@@ -11,9 +14,11 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.WaitCommand
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser
+import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.seconds
+import kotlin.apply
 
 object AutonomousSelector {
   private var autonomousModeChooser: LoggedDashboardChooser<AutonomousMode> =
@@ -28,6 +33,7 @@ object AutonomousSelector {
     autonomousModeChooser.addOption("SysID DO NOT RUN AT COMPETITION", AutonomousMode.SYSID)
     //    autonomousModeChooser.addOption("WheelRadius DO NOT RUN AT COMPETITION",
     // AutonomousMode.WHEEL_RADIUS)
+    autonomousModeChooser.addOption("Depot L1 Outpost Score", AutonomousMode.DEPOT_L1_OUTPOST_SCORE)
 
     autoTab.add("Mode", autonomousModeChooser.sendableChooser).withSize(4, 2).withPosition(2, 0)
 
@@ -43,13 +49,18 @@ object AutonomousSelector {
   val waitTime: Time
     get() = waitBeforeCommandSlider.getDouble(0.0).seconds
 
-  fun getCommand(drivetrain: Drive, vision: Vision): Command {
+  fun getCommand(drivetrain: Drive, vision: Vision, superstructure: Superstructure): Command {
     val mode = autonomousModeChooser.get()
 
     when (mode) {
       AutonomousMode.EXAMPLE_AUTO ->
           return WaitCommand(waitTime.inSeconds).andThen(ExamplePathAuto(drivetrain))
       AutonomousMode.SYSID -> return WaitCommand(waitTime.inSeconds).andThen(SysID(drivetrain))
+      AutonomousMode.DEPOT_L1_OUTPOST_SCORE ->
+          return WaitCommand(waitTime.inSeconds).andThen({
+            drivetrain.pose = Pose3d(AllianceFlipUtil.apply(DepotL1OutpostScoreAuto.startingPose))
+          }).andThen(DepotL1OutpostScoreAuto(drivetrain, superstructure))
+
       //      AutonomousMode.WHEEL_RADIUS -> return
       // WaitCommand(waitTime.inSeconds).andThen(WheelRadius(drivetrain))
       else -> return InstantCommand()
@@ -60,5 +71,6 @@ object AutonomousSelector {
 private enum class AutonomousMode {
   EXAMPLE_AUTO,
   SYSID,
+  DEPOT_L1_OUTPOST_SCORE,
   //  WHEEL_RADIUS
 }
