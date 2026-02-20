@@ -2,6 +2,7 @@ package com.team4099.robot2026.auto
 
 import com.team4099.robot2026.auto.mode.ExamplePathAuto
 import com.team4099.robot2026.auto.mode.TestOTFAuto
+import com.team4099.robot2026.auto.mode.TuningAutoPos
 import com.team4099.robot2026.commands.characterization.DriveCharacterizationCommands
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.subsystems.vision.Vision
@@ -33,6 +34,8 @@ object AutonomousSelector {
     autonomousModeChooser.addOption(
         "Drive FF Characterization DO NOT RUN AT COMPETITION", AutonomousMode.DRIVE_FF)
     autonomousModeChooser.addOption("TestOTF DO NOT RUN AT COMPETITION", AutonomousMode.TEST_OTF)
+    autonomousModeChooser.addOption(
+        "Auto Pose Tuner DO NOT RUN AT COMPETITION", AutonomousMode.AUTOPOS)
 
     autoTab.add("Mode", autonomousModeChooser.sendableChooser).withSize(4, 2).withPosition(2, 0)
 
@@ -68,6 +71,12 @@ object AutonomousSelector {
                 drivetrain.pose = Pose3d(AllianceFlipUtil.apply(TestOTFAuto.startingPose))
               })
               .andThen(TestOTFAuto(drivetrain))
+      AutonomousMode.AUTOPOS ->
+          WaitCommand(waitTime.inSeconds)
+              .andThen({
+                drivetrain.pose = Pose3d(AllianceFlipUtil.apply(TuningAutoPos.startingPose))
+              })
+              .andThen(TuningAutoPos(drivetrain))
       else -> InstantCommand()
     }
   }
@@ -77,5 +86,6 @@ private enum class AutonomousMode {
   EXAMPLE_AUTO,
   WHEEL_RADIUS,
   TEST_OTF,
-  DRIVE_FF
+  DRIVE_FF,
+  AUTOPOS
 }
