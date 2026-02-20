@@ -26,6 +26,7 @@ import org.team4099.lib.pplib.PathPlannerHolonomicDriveController.Companion.Path
 import org.team4099.lib.pplib.PathPlannerRotationPID
 import org.team4099.lib.pplib.PathPlannerTranslationPID
 import org.team4099.lib.smoothDeadband
+import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
@@ -174,7 +175,10 @@ class DrivePathOTF(
   }
 
   override fun isFinished(): Boolean {
-    return command.isFinished ||
+    val poseDelta = poses.last().get().minus(drivetrain.pose.toPose2d())
+    return command.isFinished &&
+        poseDelta.translation.x < 2.inches &&
+        poseDelta.translation.y < 2.inches ||
         driveX.asDouble >= DRIVE_ESCAPE_THRESHOLD ||
         driveY.asDouble >= DRIVE_ESCAPE_THRESHOLD ||
         turn.asDouble >= TURN_ESCAPE_THRESHOLD
@@ -265,7 +269,7 @@ class DrivePathOTF(
           { drivetrain.pose.toPose2d().pose2d },
           DrivetrainConstants.OTF_PATHS.CLIMB_BOTTOM,
           drivetrain.pose.rotation.z,
-          GoalEndState(0.0.meters.perSecond, 0.degrees))
+          GoalEndState(0.0.meters.perSecond, 90.degrees))
     }
 
     fun alignClimbTop(drivetrain: Drive): DrivePathOTF {
@@ -277,7 +281,7 @@ class DrivePathOTF(
           { drivetrain.pose.toPose2d().pose2d },
           DrivetrainConstants.OTF_PATHS.CLIMB_TOP,
           drivetrain.pose.rotation.z,
-          GoalEndState(0.0.meters.perSecond, 180.degrees))
+          GoalEndState(0.0.meters.perSecond, -90.degrees))
     }
   }
 }

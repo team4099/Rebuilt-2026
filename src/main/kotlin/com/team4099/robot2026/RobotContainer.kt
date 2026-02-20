@@ -3,6 +3,7 @@ package com.team4099.robot2026
 import com.ctre.phoenix6.signals.NeutralModeValue
 import com.team4099.robot2026.auto.AutonomousSelector
 import com.team4099.robot2026.commands.drivetrain.AimOTFCommand
+import com.team4099.robot2026.commands.drivetrain.DrivePathOTF
 import com.team4099.robot2026.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2026.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2026.config.ControlBoard
@@ -19,6 +20,7 @@ import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import com.team4099.robot2026.subsystems.superstructure.climb.Climb
 import com.team4099.robot2026.subsystems.superstructure.climb.ClimbIO
 import com.team4099.robot2026.subsystems.superstructure.climb.ClimbIOSim
+import com.team4099.robot2026.subsystems.superstructure.climb.ClimbIOTalon
 import com.team4099.robot2026.subsystems.superstructure.feeder.Feeder
 import com.team4099.robot2026.subsystems.superstructure.feeder.FeederIO
 import com.team4099.robot2026.subsystems.superstructure.feeder.FeederIOSim
@@ -96,7 +98,7 @@ object RobotContainer {
       when (Constants.Universal.whoami) {
         Constants.WHOAMI.COMPBOT,
         Constants.WHOAMI.ALPHABOT -> {
-          climb = Climb(object : ClimbIO {})
+          climb = Climb(ClimbIOTalon)
           feeder = Feeder(FeederIOTalonFX)
           hopper = Hopper(HopperIOTalon)
           intake = Intake(IntakeIOTalon)
@@ -218,12 +220,12 @@ object RobotContainer {
     //                  FieldConstants.inTrenchAllianceZone(drivetrain.pose)
     //                })
 
-    //    ControlBoard.climbOTF.whileTrue(
-    //      ConditionalCommand(
-    //        DrivePathOTF.alignClimbBottom(drivetrain),
-    //        DrivePathOTF.alignClimbTop(drivetrain)) {
-    //        FieldConstants.inClimbLowerHalf(drivetrain.pose)
-    //      })
+        ControlBoard.climbOTF.whileTrue(
+          ConditionalCommand(
+            DrivePathOTF.alignClimbBottom(drivetrain),
+            DrivePathOTF.alignClimbTop(drivetrain)) {
+            FieldConstants.inClimbLowerHalf(drivetrain.pose)
+          })
   }
 
   fun mapTestControls() {}
