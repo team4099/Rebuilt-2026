@@ -13,12 +13,12 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.WaitCommand
+import kotlin.apply
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.seconds
-import kotlin.apply
 
 object AutonomousSelector {
   private var autonomousModeChooser: LoggedDashboardChooser<AutonomousMode> =
@@ -57,9 +57,12 @@ object AutonomousSelector {
           return WaitCommand(waitTime.inSeconds).andThen(ExamplePathAuto(drivetrain))
       AutonomousMode.SYSID -> return WaitCommand(waitTime.inSeconds).andThen(SysID(drivetrain))
       AutonomousMode.DEPOT_L1_OUTPOST_SCORE ->
-          return WaitCommand(waitTime.inSeconds).andThen({
-            drivetrain.pose = Pose3d(AllianceFlipUtil.apply(DepotL1OutpostScoreAuto.startingPose))
-          }).andThen(DepotL1OutpostScoreAuto(drivetrain, superstructure))
+          return WaitCommand(waitTime.inSeconds)
+              .andThen({
+                drivetrain.pose =
+                    Pose3d(AllianceFlipUtil.apply(DepotL1OutpostScoreAuto.startingPose))
+              })
+              .andThen(DepotL1OutpostScoreAuto(drivetrain, superstructure))
 
       //      AutonomousMode.WHEEL_RADIUS -> return
       // WaitCommand(waitTime.inSeconds).andThen(WheelRadius(drivetrain))

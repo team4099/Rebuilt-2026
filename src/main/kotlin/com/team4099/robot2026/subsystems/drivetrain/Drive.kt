@@ -385,13 +385,9 @@ class Drive(
     poseEstimator.addVisionMeasurement(visionRobotPose, timestampSeconds, visionMeasurementStdDevs)
   }
 
-  val maxLinearSpeedMetersPerSec: Double
-    /** Returns the maximum linear speed in meters per sec. */
-    get() = DrivetrainConstants.tunerConstants.kSpeedAt12Volts.inMetersPerSecond
-
   val maxAngularSpeedRadPerSec: Double
     /** Returns the maximum angular speed in radians per sec. */
-    get() = maxLinearSpeedMetersPerSec / DRIVE_BASE_RADIUS
+    get() = DrivetrainConstants.tunerConstants.kSpeedAt12Volts.inMetersPerSecond / DRIVE_BASE_RADIUS
 
   companion object {
     // TunerConstants doesn't include these constants, so they are declared locally

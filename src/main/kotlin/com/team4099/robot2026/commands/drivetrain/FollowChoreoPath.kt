@@ -136,7 +136,7 @@ class FollowChoreoPath(val drivetrain: Drive, val trajectory: Trajectory<SwerveS
         ChassisSpeeds(
             nextDriveState.vxMetersPerSecond.meters.perSecond,
             nextDriveState.vyMetersPerSecond.meters.perSecond,
-            -nextDriveState.omegaRadiansPerSecond.radians.perSecond),
+            nextDriveState.omegaRadiansPerSecond.radians.perSecond),
         flipIfRed = false)
 
     CustomLogger.recordOutput("FollowChoreoPath/atSetpoint", atSetpoint())

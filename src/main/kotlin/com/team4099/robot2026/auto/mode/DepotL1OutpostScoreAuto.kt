@@ -14,29 +14,32 @@ class DepotL1OutpostScoreAuto(val drivetrain: Drive, val superstructure: Superst
     SequentialCommandGroup() {
   init {
     addRequirements(drivetrain)
+
     addCommands(
         ParallelCommandGroup(
             FollowChoreoPath(drivetrain, firstTrajectory),
-            WaitCommand(1.0).andThen(superstructure.requestIntakeCommand()),
-            WaitCommand(2.58).andThen(superstructure.requestIdleCommand()),
+            SequentialCommandGroup(
+                WaitCommand(1.0),
+                superstructure.requestIntakeCommand(),
+                WaitCommand(1.58),
+                superstructure.requestIdleCommand()),
         ), // intake depot
         WaitCommand(2.0), // intake outpost
-        ParallelCommandGroup(
-            FollowChoreoPath(drivetrain, secondTrajectory),
-            superstructure.requestPrepScoreCommand()),
-        ParallelCommandGroup(WaitCommand(7.9), superstructure.requestScoreCommand()), // shoot
+        superstructure.requestPrepScoreCommand(),
+        FollowChoreoPath(drivetrain, secondTrajectory),
+        superstructure.requestScoreCommand(),
+        WaitCommand(7.9), // shoot
         superstructure.requestIdleCommand(),
-        ParallelCommandGroup(
-            FollowChoreoPath(drivetrain, thirdTrajectory),
-            superstructure.requestPrepClimbCommand()),
+        superstructure.requestPrepClimbCommand(),
+        FollowChoreoPath(drivetrain, thirdTrajectory),
         superstructure.requestClimbCommand()) // climb
   }
 
   companion object {
     val firstTrajectory =
-        Choreo.loadTrajectory<SwerveSample>("DepotL1OutpostScore/DepotL1Outpost.traj").get()
+        Choreo.loadTrajectory<SwerveSample>("DepotL1OutpostScore/DepotL1OutpostScore.traj").get()
     val secondTrajectory =
-        Choreo.loadTrajectory<SwerveSample>("DepotL1OutpostScore/outpost/traj").get()
+        Choreo.loadTrajectory<SwerveSample>("DepotL1OutpostScore/outpost.traj").get()
     val thirdTrajectory =
         Choreo.loadTrajectory<SwerveSample>("DepotL1OutpostScore/shootClimb.traj").get()
 
