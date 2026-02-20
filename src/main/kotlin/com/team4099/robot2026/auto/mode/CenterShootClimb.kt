@@ -8,6 +8,7 @@ import com.team4099.robot2026.commands.drivetrain.FollowChoreoPath
 import com.team4099.robot2026.config.ControlBoard
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
+import com.team4099.robot2026.subsystems.superstructure.Request
 import com.team4099.robot2026.subsystems.superstructure.shooter.Shooter
 import com.team4099.robot2026.util.AllianceFlipUtil
 import com.team4099.robot2026.util.driver.Jessika
@@ -38,7 +39,7 @@ class CenterShootClimb(val drivetrain: Drive, val shooter: Shooter) : ParallelCo
                     superstructure.requestForceIntakeUpCommand(),
                 ),
             WaitCommand(0.5).andThen(superstructure.requestPrepScoreCommand()),
-            /*WaitCommand(0.5)
+            WaitCommand(0.5)
                 .andThen(
                     AimOTFCommand(
                         drivetrain,
@@ -49,11 +50,16 @@ class CenterShootClimb(val drivetrain: Drive, val shooter: Shooter) : ParallelCo
                           ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND)
                         },
                         { false },
-                        Jessika())),*/
+                        Jessika())),
             WaitUntilCommand { shooter.isAtTargetedVelocity }
                 .andThen(
                     superstructure.requestScoreCommand(),
                 )))
+      WaitCommand(2.0)
+      Request.SuperstructureRequest.ExtendClimb()
+      Request.SuperstructureRequest.Idle()
+      WaitCommand(1.0)
+      Request.SuperstructureRequest.RetractClimb()
   }
 
   companion object {
