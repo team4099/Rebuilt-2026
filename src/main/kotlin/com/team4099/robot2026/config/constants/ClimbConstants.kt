@@ -10,7 +10,6 @@ import org.team4099.lib.units.perSecond
 
 object ClimbConstants {
   val DOWNWARDS_EXTENSION_LIMIT = 0.0.inches
-  val CLIMB_HEIGHT = .85.inches
   val UPWARDS_EXTENSION_LIMIT = 8.5.inches // TODO: might need to tune height
   val CLIMB_MASS = 5.5444326.pounds
 
@@ -29,11 +28,11 @@ object ClimbConstants {
   val ZERO_OFFSET = DOWNWARDS_EXTENSION_LIMIT
 
   object PID {
-    val REAL_KP = 2.5.volts / 1.inches
+    val REAL_KP = 0.0.volts / 1.inches
     val REAL_KI = 0.0.volts / (1.inches * 1.seconds)
     val REAL_KD = 0.0.volts / (1.inches.perSecond)
 
-    val REAL_KS = 0.35.volts
+    val REAL_KS = 0.0.volts
     val REAL_KG = 0.0.volts
 
     val SIM_KP = 0.0.volts / 1.inches
