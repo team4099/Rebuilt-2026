@@ -2,8 +2,6 @@ package com.team4099.robot2026.subsystems.superstructure.hopper
 
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.HopperConstants
-import com.team4099.robot2026.config.constants.ShooterConstants
-import com.team4099.robot2026.subsystems.superstructure.shooter.ShooterIOSim
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.math.system.plant.LinearSystemId
 import edu.wpi.first.wpilibj.simulation.FlywheelSim
@@ -49,7 +47,7 @@ object HopperIOSim : HopperIO {
 
   private var hopperFFController =
       SimpleMotorFeedforward(
-          ShooterConstants.PID.SIM_KS, ShooterConstants.PID.SIM_KV, ShooterConstants.PID.SIM_KA)
+          HopperConstants.PID.SIM_KS, HopperConstants.PID.SIM_KV, HopperConstants.PID.SIM_KA)
 
   override fun updateInputs(inputs: HopperIO.HopperIOInputs) {
     hopperSim.update(Constants.Universal.LOOP_PERIOD_TIME.inSeconds)
@@ -79,7 +77,7 @@ object HopperIOSim : HopperIO {
     val ffOutput =
         hopperFFController.calculateWithVelocities(
             hopperSim.angularVelocityRadPerSec.radians.perSecond, velocity)
-    ShooterIOSim.setVoltage(pidOutput + ffOutput)
+    setVoltage(pidOutput + ffOutput)
   }
 
   override fun configurePID(
