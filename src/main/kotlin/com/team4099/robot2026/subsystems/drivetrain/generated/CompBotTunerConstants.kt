@@ -18,11 +18,11 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerMotorArrangement
 import com.ctre.phoenix6.swerve.SwerveModuleConstantsFactory
 import com.team4099.robot2026.config.constants.DrivetrainConstants
 import com.team4099.robot2026.config.constants.GyroConstants
-import org.team4099.lib.units.base.feet
 import org.team4099.lib.units.base.grams
 import org.team4099.lib.units.base.inAmperes
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inches
+import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inKilogramsMeterSquared
@@ -137,24 +137,24 @@ object CompBotTunerConstants : TunerConstants {
 
   // CAN bus that the devices are located on;
   // All swerve devices must share the same CAN bus
-  override val kCANBus: CANBus = CANBus("", "./logs/example.hoot")
+  override val kCANBus: CANBus = CANBus("FalconVore", "./logs/example.hoot")
 
   // Theoretical free speed (m/s) at 12 V applied output;
   // This needs to be tuned to your individual robot
-  override val kSpeedAt12Volts = 16.feet.perSecond
+  override val kSpeedAt12Volts = 5.23.meters.perSecond
 
   // Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;
   // This may need to be tuned to your individual robot
-  private const val kCoupleRatio = 3.5714285714285716
+  private const val kCoupleRatio = 3.125
 
-  private const val kDriveGearRatio = 6.746031746031747
-  private const val kSteerGearRatio = 21.428571428571427
+  private const val kDriveGearRatio = 5.902777777777778
+  private const val kSteerGearRatio = 18.75
   private val kWheelRadius = DrivetrainConstants.WHEEL_RADIUS
 
   private const val kInvertLeftSide = false
   private const val kInvertRightSide = true
 
-  private const val kPigeonId = 1
+  private const val kPigeonId = 0
 
   // These are only used for simulation
   private val kSteerInertia = 0.04.kilo.grams.meterSquared
@@ -200,45 +200,45 @@ object CompBotTunerConstants : TunerConstants {
   private const val kFrontLeftDriveMotorId = 11
   private const val kFrontLeftSteerMotorId = 21
   private const val kFrontLeftEncoderId = 31
-  private val kFrontLeftEncoderOffset = 0.419189453125.rotations
+  private val kFrontLeftEncoderOffset = -0.08984375.rotations
   private const val kFrontLeftSteerMotorInverted = true
   private const val kFrontLeftEncoderInverted = false
 
-  private val kFrontLeftXPos = 11.375.inches
-  private val kFrontLeftYPos = 11.375.inches
+  private val kFrontLeftXPos = 10.875.inches
+  private val kFrontLeftYPos = 10.875.inches
 
   // Front Right
   private const val kFrontRightDriveMotorId = 12
   private const val kFrontRightSteerMotorId = 22
   private const val kFrontRightEncoderId = 32
-  private val kFrontRightEncoderOffset = -0.349853515625.rotations
+  private val kFrontRightEncoderOffset = -0.135986328125.rotations
   private const val kFrontRightSteerMotorInverted = true
   private const val kFrontRightEncoderInverted = false
 
-  private val kFrontRightXPos = 11.375.inches
-  private val kFrontRightYPos = -11.375.inches
+  private val kFrontRightXPos = 10.875.inches
+  private val kFrontRightYPos = -10.875.inches
 
   // Back Left
   private const val kBackLeftDriveMotorId = 13
   private const val kBackLeftSteerMotorId = 23
   private const val kBackLeftEncoderId = 33
-  private val kBackLeftEncoderOffset = 0.0126953125.rotations
+  private val kBackLeftEncoderOffset = -0.091064453125.rotations
   private const val kBackLeftSteerMotorInverted = true
   private const val kBackLeftEncoderInverted = false
 
-  private val kBackLeftXPos = -11.375.inches
-  private val kBackLeftYPos = 11.375.inches
+  private val kBackLeftXPos = -10.875.inches
+  private val kBackLeftYPos = 10.875.inches
 
   // Back Right
   private const val kBackRightDriveMotorId = 14
   private const val kBackRightSteerMotorId = 24
   private const val kBackRightEncoderId = 34
-  private val kBackRightEncoderOffset = -0.3984375.rotations
+  private val kBackRightEncoderOffset = -0.45654296875.rotations
   private const val kBackRightSteerMotorInverted = true
   private const val kBackRightEncoderInverted = false
 
-  private val kBackRightXPos = -11.375.inches
-  private val kBackRightYPos = -11.375.inches
+  private val kBackRightXPos = -10.875.inches
+  private val kBackRightYPos = -10.875.inches
 
   override val FrontLeft:
       SwerveModuleConstants<TalonFXConfiguration?, TalonFXConfiguration?, CANcoderConfiguration?> =

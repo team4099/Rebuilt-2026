@@ -2,6 +2,7 @@ package com.team4099.robot2026
 
 import com.ctre.phoenix6.signals.NeutralModeValue
 import com.team4099.robot2026.auto.AutonomousSelector
+import com.team4099.robot2026.commands.drivetrain.AimOTFCommand
 import com.team4099.robot2026.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2026.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2026.config.ControlBoard
@@ -19,18 +20,23 @@ import com.team4099.robot2026.subsystems.superstructure.climb.Climb
 import com.team4099.robot2026.subsystems.superstructure.climb.ClimbIO
 import com.team4099.robot2026.subsystems.superstructure.climb.ClimbIOSim
 import com.team4099.robot2026.subsystems.superstructure.feeder.Feeder
+import com.team4099.robot2026.subsystems.superstructure.feeder.FeederIO
 import com.team4099.robot2026.subsystems.superstructure.feeder.FeederIOSim
 import com.team4099.robot2026.subsystems.superstructure.feeder.FeederIOTalonFX
 import com.team4099.robot2026.subsystems.superstructure.hopper.Hopper
+import com.team4099.robot2026.subsystems.superstructure.hopper.HopperIO
 import com.team4099.robot2026.subsystems.superstructure.hopper.HopperIOSim
 import com.team4099.robot2026.subsystems.superstructure.hopper.HopperIOTalon
 import com.team4099.robot2026.subsystems.superstructure.intake.Intake
+import com.team4099.robot2026.subsystems.superstructure.intake.IntakeIO
 import com.team4099.robot2026.subsystems.superstructure.intake.IntakeIOSim
 import com.team4099.robot2026.subsystems.superstructure.intake.IntakeIOTalon
 import com.team4099.robot2026.subsystems.superstructure.intake.rollers.IntakeRollers
+import com.team4099.robot2026.subsystems.superstructure.intake.rollers.IntakeRollersIO
 import com.team4099.robot2026.subsystems.superstructure.intake.rollers.IntakeRollersIOSim
 import com.team4099.robot2026.subsystems.superstructure.intake.rollers.IntakeRollersIOTalon
 import com.team4099.robot2026.subsystems.superstructure.shooter.Shooter
+import com.team4099.robot2026.subsystems.superstructure.shooter.ShooterIO
 import com.team4099.robot2026.subsystems.superstructure.shooter.ShooterIOSim
 import com.team4099.robot2026.subsystems.superstructure.shooter.ShooterIOTalon
 import com.team4099.robot2026.subsystems.vision.Vision
@@ -38,11 +44,12 @@ import com.team4099.robot2026.subsystems.vision.camera.CameraIOPVSim
 import com.team4099.robot2026.subsystems.vision.camera.CameraIOPhotonvision
 import com.team4099.robot2026.util.driver.Jessika
 import edu.wpi.first.wpilibj.RobotBase
+import edu.wpi.first.wpilibj2.command.ConditionalCommand
+import edu.wpi.first.wpilibj2.command.InstantCommand
 import org.ironmaple.simulation.SimulatedArena
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.Arena2026Rebuilt
 import org.littletonrobotics.junction.Logger
-import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.smoothDeadband
@@ -86,12 +93,25 @@ object RobotContainer {
                   .toTypedArray(),
               poseSupplier = { drivetrain.pose })
 
-      climb = Climb(object : ClimbIO {})
-      feeder = Feeder(FeederIOTalonFX)
-      hopper = Hopper(HopperIOTalon)
-      intake = Intake(IntakeIOTalon)
-      intakeRollers = IntakeRollers(IntakeRollersIOTalon)
-      shooter = Shooter(ShooterIOTalon)
+      when (Constants.Universal.whoami) {
+        Constants.WHOAMI.COMPBOT,
+        Constants.WHOAMI.ALPHABOT -> {
+          climb = Climb(object : ClimbIO {})
+          feeder = Feeder(FeederIOTalonFX)
+          hopper = Hopper(HopperIOTalon)
+          intake = Intake(IntakeIOTalon)
+          intakeRollers = IntakeRollers(IntakeRollersIOTalon)
+          shooter = Shooter(ShooterIOTalon)
+        }
+        Constants.WHOAMI.TESTBOT -> {
+          climb = Climb(object : ClimbIO {})
+          feeder = Feeder(object : FeederIO {})
+          hopper = Hopper(object : HopperIO {})
+          intake = Intake(object : IntakeIO {})
+          intakeRollers = IntakeRollers(object : IntakeRollersIO {})
+          shooter = Shooter(object : ShooterIO {})
+        }
+      }
     } else {
       driveSimulation =
           SwerveDriveSimulation(
@@ -140,8 +160,7 @@ object RobotContainer {
             { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
             { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
             { ControlBoard.slowMode },
-            drivetrain,
-        )
+            drivetrain)
   }
 
   fun zeroSensors(isInAutonomous: Boolean = false) {
@@ -169,18 +188,42 @@ object RobotContainer {
 
     ControlBoard.eject.onTrue(superstructure.requestEjectCommand())
 
-    //    ControlBoard.leftTrenchOTF.onTrue(
-    //        ConditionalCommand(
-    //            DrivePathOTF.allianceZoneToNeutralInLeftTrench(drivetrain),
-    //            DrivePathOTF.neutralZoneToAllianceInLeftTrench(drivetrain)) {
-    //              FieldConstants.inTrenchAllianceZone(drivetrain.pose)
-    //            })
-    //    ControlBoard.rightTrenchOTF.onTrue(
-    //        ConditionalCommand(
-    //            DrivePathOTF.allianceZoneToNeutralInRightTrench(drivetrain),
-    //            DrivePathOTF.neutralZoneToAllianceInRightTrench(drivetrain)) {
-    //              FieldConstants.inTrenchAllianceZone(drivetrain.pose)
-    //            })
+    ControlBoard.score.whileTrue(
+        ConditionalCommand(
+            AimOTFCommand(
+                drivetrain,
+                { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+                { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+                { ControlBoard.slowMode },
+                driver = Jessika(),
+            ),
+            InstantCommand()) {
+              true
+              //              superstructure.currentState ==
+              // Superstructure.Companion.SuperstructureStates.SCORE ||
+              //                  superstructure.currentState ==
+              //                      Superstructure.Companion.SuperstructureStates.PREP_SCORE
+            })
+
+    //        ControlBoard.leftTrenchOTF.whileTrue(
+    //            ConditionalCommand(
+    //                DrivePathOTF.allianceZoneToNeutralInLeftTrench(drivetrain),
+    //                DrivePathOTF.neutralZoneToAllianceInLeftTrench(drivetrain)) {
+    //                  FieldConstants.inTrenchAllianceZone(drivetrain.pose)
+    //                })
+    //        ControlBoard.rightTrenchOTF.whileTrue(
+    //            ConditionalCommand(
+    //                DrivePathOTF.allianceZoneToNeutralInRightTrench(drivetrain),
+    //                DrivePathOTF.neutralZoneToAllianceInRightTrench(drivetrain)) {
+    //                  FieldConstants.inTrenchAllianceZone(drivetrain.pose)
+    //                })
+
+    //    ControlBoard.climbOTF.whileTrue(
+    //      ConditionalCommand(
+    //        DrivePathOTF.alignClimbBottom(drivetrain),
+    //        DrivePathOTF.alignClimbTop(drivetrain)) {
+    //        FieldConstants.inClimbLowerHalf(drivetrain.pose)
+    //      })
   }
 
   fun mapTestControls() {}

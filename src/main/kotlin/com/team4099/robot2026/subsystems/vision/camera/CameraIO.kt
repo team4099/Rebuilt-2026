@@ -174,11 +174,7 @@ interface CameraIO {
 
               updateEstimationStdDevs(visionEst, result.getTargets())
 
-              poseMeasurementConsumer(
-                  Pose3dWPILIB(
-                      poseEst.x, poseEst.y, poseEst.z, drivetrainRotationSupplier.get().rotation3d),
-                  visionEst.get().timestampSeconds,
-                  curStdDevs)
+              poseMeasurementConsumer(poseEst, visionEst.get().timestampSeconds, curStdDevs)
             }
           }
         }

@@ -17,11 +17,16 @@ import edu.wpi.first.math.geometry.Rotation2d
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
 import org.team4099.lib.units.AngularVelocity
+import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Current
+import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.inAmperes
 import org.team4099.lib.units.derived.Angle
+import org.team4099.lib.units.derived.DerivativeGain
 import org.team4099.lib.units.derived.ElectricalPotential
+import org.team4099.lib.units.derived.ProportionalGain
+import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inVolts
@@ -136,6 +141,12 @@ interface ModuleIO {
 
   /** Enable/disable brake mode on the drive and steer motors */
   fun toggleBrakeMode(brake: NeutralModeValue) {}
+
+  /** Configure PID of the drive motors */
+  fun configureDrivePID(
+      kP: ProportionalGain<Velocity<Meter>, Volt>,
+      kD: DerivativeGain<Velocity<Meter>, Volt>
+  ) {}
 
   companion object {
     fun generateObjectizedModules(): Array<ModuleIO> {

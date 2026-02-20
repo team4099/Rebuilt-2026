@@ -1,11 +1,11 @@
 package com.team4099.robot2026.subsystems.superstructure.shooter
 
 import com.ctre.phoenix6.SignalLogger
+import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.FieldConstants
 import com.team4099.robot2026.config.constants.ShooterConstants
 import com.team4099.robot2026.subsystems.superstructure.Request
-import com.team4099.robot2026.util.AllianceFlipUtil
 import com.team4099.robot2026.util.ControlledByStateMachine
 import com.team4099.robot2026.util.CustomLogger
 import com.team4099.robot2026.util.Velocity2d
@@ -53,7 +53,7 @@ import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.inMetersPerSecondPerSecond
 import org.team4099.lib.units.inRadiansPerSecond
 import org.team4099.lib.units.inRotationsPerMinute
-import org.team4099.lib.units.perMinute
+import org.team4099.lib.units.inRotationsPerSecond
 import org.team4099.lib.units.perSecond
 
 class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
@@ -85,6 +85,12 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
       field = value
     }
 
+  val shooterTestVel =
+      LoggedTunableValue(
+          "Shooter/testLaunchSpeedRotPerSec",
+          0.rotations.perSecond,
+          Pair({ it.inRotationsPerSecond }, { it.rotations.perSecond }))
+
   private val m_sysIdRoutine =
       SysIdRoutine(
           SysIdRoutine.Config(
@@ -107,14 +113,14 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
 
   init {
     if (RobotBase.isReal()) {
-      io.configurePID(
+      io.configurePIDCurrent(
           ShooterConstants.PID.REAL_KP, ShooterConstants.PID.REAL_KI, ShooterConstants.PID.REAL_KD)
-      io.configureFF(
+      io.configureFFCurrent(
           ShooterConstants.PID.REAL_KS, ShooterConstants.PID.REAL_KV, ShooterConstants.PID.REAL_KA)
     } else {
-      io.configurePID(
+      io.configurePIDVoltage(
           ShooterConstants.PID.SIM_KP, ShooterConstants.PID.SIM_KI, ShooterConstants.PID.SIM_KD)
-      io.configureFF(
+      io.configureFFVoltage(
           ShooterConstants.PID.SIM_KS, ShooterConstants.PID.SIM_KV, ShooterConstants.PID.SIM_KA)
     }
   }
@@ -216,8 +222,7 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
       return calculateLaunchData(
           drivetrainPose,
           chassisSpeeds,
-          if (AllianceFlipUtil.shouldFlip() && drivetrainPose.x > FieldConstants.ALLIANCE_LINE_X ||
-              !AllianceFlipUtil.shouldFlip() && drivetrainPose.x < FieldConstants.ALLIANCE_LINE_X) {
+          if (FieldConstants.inAllianceZone(drivetrainPose)) {
             FieldConstants.HUB_POSE
           } else {
             FieldConstants.ALLIANCE_ZONE_CENTER
@@ -271,8 +276,12 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
           ShooterConstants.SHOOTER_OFFSET.translation.rotateBy(drivetrainPose.rotation)
       val shooterSpeeds =
           Velocity2d(
-                  (shooterCurrentTransform.x * fieldSpeeds.omega.inRadiansPerSecond).perSecond,
-                  (shooterCurrentTransform.y * fieldSpeeds.omega.inRadiansPerSecond).perSecond)
+                  (shooterCurrentTransform.x * fieldSpeeds.omega.inRadiansPerSecond +
+                          Constants.Universal.EPSILON.meters)
+                      .perSecond,
+                  (shooterCurrentTransform.y * fieldSpeeds.omega.inRadiansPerSecond +
+                          Constants.Universal.EPSILON.meters)
+                      .perSecond)
               .rotateBy(90.degrees * fieldSpeeds.omega.sign)
 
       val driveVector =
@@ -441,10 +450,14 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
 
     init {
       // TODO: add values to this treemap
-      launchVelToShooterRPMMap.put(0.meters.perSecond, 0.rotations.perMinute)
-      launchVelToShooterRPMMap.put(
-          2.88.meters.perSecond, ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY)
-      Unit
+      launchVelToShooterRPMMap.put(6.5.meters.perSecond, 36.rotations.perSecond)
+      launchVelToShooterRPMMap.put(7.meters.perSecond, 39.rotations.perSecond)
+      launchVelToShooterRPMMap.put(7.32.meters.perSecond, 41.rotations.perSecond)
+      launchVelToShooterRPMMap.put(7.75.meters.perSecond, 45.rotations.perSecond)
+      launchVelToShooterRPMMap.put(8.meters.perSecond, 48.rotations.perSecond)
+      launchVelToShooterRPMMap.put(8.5.meters.perSecond, 51.25.rotations.perSecond)
+      launchVelToShooterRPMMap.put(9.meters.perSecond, 56.5.rotations.perSecond)
+      launchVelToShooterRPMMap.put(9.5.meters.perSecond, 67.rotations.perSecond)
     }
   }
 }

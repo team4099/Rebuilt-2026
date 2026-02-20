@@ -2,11 +2,22 @@ package com.team4099.robot2026.subsystems.superstructure.hopper
 
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
+import org.team4099.lib.units.AngularVelocity
+import org.team4099.lib.units.Fraction
+import org.team4099.lib.units.base.Second
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.inAmperes
 import org.team4099.lib.units.base.inCelsius
+import org.team4099.lib.units.derived.AccelerationFeedforward
+import org.team4099.lib.units.derived.DerivativeGain
 import org.team4099.lib.units.derived.ElectricalPotential
+import org.team4099.lib.units.derived.IntegralGain
+import org.team4099.lib.units.derived.ProportionalGain
+import org.team4099.lib.units.derived.Radian
+import org.team4099.lib.units.derived.StaticFeedforward
+import org.team4099.lib.units.derived.VelocityFeedforward
+import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
@@ -56,6 +67,20 @@ interface HopperIO {
   fun updateInputs(inputs: HopperIOInputs) {}
 
   fun setVoltage(voltage: ElectricalPotential) {}
+
+  fun setVelocity(velocity: AngularVelocity) {}
+
+  fun configurePID(
+      kP: ProportionalGain<Fraction<Radian, Second>, Volt>,
+      kI: IntegralGain<Fraction<Radian, Second>, Volt>,
+      kD: DerivativeGain<Fraction<Radian, Second>, Volt>
+  ) {}
+
+  fun configureFF(
+      kS: StaticFeedforward<Volt>,
+      kV: VelocityFeedforward<Radian, Volt>,
+      kA: AccelerationFeedforward<Radian, Volt>,
+  ) {}
 
   fun setBrakeMode(brake: Boolean) {}
 }
