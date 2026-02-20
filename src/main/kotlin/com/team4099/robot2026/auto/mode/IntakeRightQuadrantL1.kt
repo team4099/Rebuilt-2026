@@ -8,23 +8,32 @@ import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.WaitCommand
+import org.team4099.lib.geometry.Pose2d
 
-class IntakeQuadrantL1(val drivetrain: Drive, val superstructure: Superstructure) :
+class IntakeRightQuadrantL1(val drivetrain: Drive, val superstructure: Superstructure) :
     SequentialCommandGroup() {
   init {
     addRequirements(drivetrain, superstructure)
     addCommands(
         ParallelCommandGroup(
-            FollowChoreoPath(
-                drivetrain, Choreo.loadTrajectory<SwerveSample>("IntakeQuadrantClimb.traj").get()),
-            WaitCommand(1.3).andThen(superstructure.requestIntakeCommand()),
-            WaitCommand(2.5).andThen(superstructure.requestIdleCommand()),
-        ),
+            FollowChoreoPath(drivetrain, traj),
+            SequentialCommandGroup(
+                WaitCommand(1.3),
+                superstructure.requestIntakeCommand(),
+                WaitCommand(1.2),
+                superstructure.requestIdleCommand())),
         superstructure.requestScoreCommand(),
         WaitCommand(10.0),
         // the path ends near the tower
         // superstructure.requestPrepClimbCommand(),
         // superstructure.requestClimbCommand()
     )
+  }
+
+  companion object {
+    val traj =
+        Choreo.loadTrajectory<SwerveSample>("IntakeQuadrantL1/IntakeQuadrantClimb.traj").get()
+
+    val startingPose = Pose2d(traj.getInitialPose(false).get())
   }
 }

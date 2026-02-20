@@ -1,9 +1,11 @@
 package com.team4099.robot2026.auto
 
 import com.team4099.robot2026.auto.mode.ExamplePathAuto
+import com.team4099.robot2026.auto.mode.IntakeRightQuadrantL1
 import com.team4099.robot2026.auto.mode.TestOTFAuto
 import com.team4099.robot2026.commands.characterization.DriveCharacterizationCommands
 import com.team4099.robot2026.subsystems.drivetrain.Drive
+import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import com.team4099.robot2026.subsystems.vision.Vision
 import com.team4099.robot2026.util.AllianceFlipUtil
 import edu.wpi.first.networktables.GenericEntry
@@ -33,6 +35,7 @@ object AutonomousSelector {
     autonomousModeChooser.addOption(
         "Drive FF Characterization DO NOT RUN AT COMPETITION", AutonomousMode.DRIVE_FF)
     autonomousModeChooser.addOption("TestOTF DO NOT RUN AT COMPETITION", AutonomousMode.TEST_OTF)
+    autonomousModeChooser.addOption("Intake Right Quadrant L1", AutonomousMode.INTAKE_RIGHT_QUAD_L1)
 
     autoTab.add("Mode", autonomousModeChooser.sendableChooser).withSize(4, 2).withPosition(2, 0)
 
@@ -48,7 +51,7 @@ object AutonomousSelector {
   val waitTime: Time
     get() = waitBeforeCommandSlider.getDouble(0.0).seconds
 
-  fun getCommand(drivetrain: Drive, vision: Vision): Command {
+  fun getCommand(drivetrain: Drive, vision: Vision, superstructure: Superstructure): Command {
     val mode = autonomousModeChooser.get()
 
     return when (mode) {
@@ -68,6 +71,12 @@ object AutonomousSelector {
                 drivetrain.pose = Pose3d(AllianceFlipUtil.apply(TestOTFAuto.startingPose))
               })
               .andThen(TestOTFAuto(drivetrain))
+      AutonomousMode.INTAKE_RIGHT_QUAD_L1 ->
+          WaitCommand(waitTime.inSeconds)
+              .andThen({
+                drivetrain.pose = Pose3d(AllianceFlipUtil.apply(IntakeRightQuadrantL1.startingPose))
+              })
+              .andThen(IntakeRightQuadrantL1(drivetrain, superstructure))
       else -> InstantCommand()
     }
   }
@@ -77,5 +86,6 @@ private enum class AutonomousMode {
   EXAMPLE_AUTO,
   WHEEL_RADIUS,
   TEST_OTF,
-  DRIVE_FF
+  DRIVE_FF,
+  INTAKE_RIGHT_QUAD_L1
 }
