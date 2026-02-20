@@ -255,5 +255,29 @@ class DrivePathOTF(
             GoalEndState(0.0.meters.perSecond, 180.degrees)
           })
     }
+
+    fun alignClimbBottom(drivetrain: Drive): DrivePathOTF {
+      return DrivePathOTF(
+          drivetrain,
+          { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+          { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+          { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+          { drivetrain.pose.toPose2d().pose2d },
+          DrivetrainConstants.OTF_PATHS.CLIMB_BOTTOM,
+          drivetrain.pose.rotation.z,
+          GoalEndState(0.0.meters.perSecond, 0.degrees))
+    }
+
+    fun alignClimbTop(drivetrain: Drive): DrivePathOTF {
+      return DrivePathOTF(
+          drivetrain,
+          { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+          { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+          { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+          { drivetrain.pose.toPose2d().pose2d },
+          DrivetrainConstants.OTF_PATHS.CLIMB_TOP,
+          drivetrain.pose.rotation.z,
+          GoalEndState(0.0.meters.perSecond, 180.degrees))
+    }
   }
 }

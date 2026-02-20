@@ -9,8 +9,11 @@ import com.team4099.robot2026.config.constants.DrivetrainConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.util.AllianceFlipUtil
 import com.team4099.robot2026.util.CustomLogger
+import com.team4099.robot2026.util.Velocity2d
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.Command
+import java.util.function.Supplier
 import kotlin.math.PI
 import org.team4099.lib.controller.PIDController
 import org.team4099.lib.geometry.Pose2d
@@ -39,8 +42,11 @@ import org.team4099.lib.units.derived.perRadianSeconds
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.perSecond
 
-class FollowChoreoPath(val drivetrain: Drive, val trajectory: Trajectory<SwerveSample>) :
-    Command() {
+class FollowChoreoPath(
+    val drivetrain: Drive,
+    val trajectory: Trajectory<SwerveSample>,
+    val overrideRotationTrigger: Supplier<Boolean> = Supplier { false }
+) : Command() {
 
   private val xPID: PIDController<Meter, Velocity<Meter>>
   private val yPID: PIDController<Meter, Velocity<Meter>>
@@ -132,12 +138,20 @@ class FollowChoreoPath(val drivetrain: Drive, val trajectory: Trajectory<SwerveS
 
     val nextDriveState =
         swerveDriveController.calculate(drivetrain.pose.toPose2d().pose2d, desiredState)
-    drivetrain.runSpeeds(
-        ChassisSpeeds(
-            nextDriveState.vxMetersPerSecond.meters.perSecond,
-            nextDriveState.vyMetersPerSecond.meters.perSecond,
-            -nextDriveState.omegaRadiansPerSecond.radians.perSecond),
-        flipIfRed = false)
+
+    if (overrideRotationTrigger.get())
+        drivetrain.runTranslationWhileKeepingRotation(
+            Velocity2d(
+                nextDriveState.vxMetersPerSecond.meters.perSecond,
+                nextDriveState.vyMetersPerSecond.meters.perSecond),
+            flipIfRed = false)
+    else
+        drivetrain.runSpeeds(
+            ChassisSpeeds(
+                nextDriveState.vxMetersPerSecond.meters.perSecond,
+                nextDriveState.vyMetersPerSecond.meters.perSecond,
+                nextDriveState.omegaRadiansPerSecond.radians.perSecond),
+            flipIfRed = false)
 
     CustomLogger.recordOutput("FollowChoreoPath/atSetpoint", atSetpoint())
   }
@@ -147,13 +161,14 @@ class FollowChoreoPath(val drivetrain: Drive, val trajectory: Trajectory<SwerveS
 
     CustomLogger.recordOutput("FollowChoreoPath/poseDiff", posediff.asTransform2d().transform2d)
 
-    return posediff.x.absoluteValue < 3.inches &&
-        posediff.y.absoluteValue < 3.inches &&
-        posediff.rotation.absoluteValue < 5.degrees
+    return posediff.x.absoluteValue < 2.inches &&
+        posediff.y.absoluteValue < 2.inches &&
+        posediff.rotation.absoluteValue < 4.degrees
   }
 
   override fun isFinished(): Boolean {
-    return Clock.fpgaTime - trajStartTime > trajectory.totalTime.seconds && atSetpoint()
+    return Clock.fpgaTime - trajStartTime > trajectory.totalTime.seconds && atSetpoint() ||
+        !DriverStation.isAutonomous()
   }
 
   override fun end(interrupted: Boolean) {

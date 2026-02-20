@@ -13,10 +13,11 @@ import edu.wpi.first.units.LinearVelocityUnit
 import edu.wpi.first.units.Units.Degrees
 import edu.wpi.first.units.Units.Meters
 import edu.wpi.first.units.Units.Seconds
-import edu.wpi.first.units.measure.LinearVelocity
+import edu.wpi.first.units.measure.LinearVelocity as WPILinearVelocity
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.Command
+import java.util.function.Supplier
 import kotlin.math.PI
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -25,11 +26,14 @@ import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly
 import org.team4099.lib.controller.PIDController
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.kinematics.ChassisSpeeds
+import org.team4099.lib.units.LinearVelocity
 import org.team4099.lib.units.Velocity
+import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
+import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inRadians
@@ -49,29 +53,67 @@ import org.team4099.lib.units.perSecond
  * Note: This command never ends.
  *
  * @param drivetrain
- * @param driveX
- * @param driveY
- * @param slowMode
- * @param driver
+ * @param vSup Supplier for drivetrain field-relative chassis speeds
  * @see com.team4099.robot2026.subsystems.superstructure.shooter.Shooter.calculateLaunchData
  * @author Nathan Arega, Ryan Chung
  */
 class AimOTFCommand(
     private val drivetrain: Drive,
-    val driveX: () -> Double,
-    val driveY: () -> Double,
-    val slowMode: () -> Boolean,
-    val driver: DriverProfile
+    private val vSup: Supplier<Pair<LinearVelocity, LinearVelocity>>
 ) : Command() {
+
+  /**
+   * Aim for the HUB or to pass, depending on current position on the field and which option is
+   * legal. Velocity caluclations intend for this to be used while shooting and moving "on-the-fly".
+   * This command does NOT activate the shooter; that is the responsibility of the superstructure's
+   * state machine.
+   *
+   * This constructor is meant to be used during driver-controlled field-oriented driving.
+   *
+   * @param drivetrain
+   * @param driveX
+   * @param driveY
+   * @param slowMode
+   * @param driver
+   */
+  constructor(
+      drivetrain: Drive,
+      driveX: () -> Double,
+      driveY: () -> Double,
+      slowMode: () -> Boolean,
+      driver: DriverProfile
+  ) : this(drivetrain, Supplier { driver.driveSpeedClampedSupplier(driveX, driveY, slowMode) })
+
+  /**
+   * Aim for the HUB or to pass, depending on current position on the field and which option is
+   * legal. Velocity caluclations intend for this to be used while shooting and moving "on-the-fly".
+   * This command does NOT activate the shooter; that is the responsibility of the superstructure's
+   * state machine.
+   *
+   * This constructor is meant to be used during autonomous, when another command is controlling the
+   * translation of the robot. You must pass in a timeout.
+   *
+   * @param drivetrain
+   * @param timeout Time for the command to run
+   */
+  constructor(
+      drivetrain: Drive,
+      timeout: Time
+  ) : this(drivetrain, Supplier { Pair(0.meters.perSecond, 0.meters.perSecond) }) {
+    this.timeout = timeout
+  }
+
   private val thetaPID: PIDController<Radian, Velocity<Radian>>
 
   private val MAX_VELOCITY_RADIUS = 1.5.meters.perSecond
+  private var timeout = -1.seconds
+  private var startTime = -1.seconds
+
+  private var startedInAuto = false
 
   var hasAligned: Boolean = false
 
   init {
-//    addRequirements(drivetrain)
-
     if (RobotBase.isSimulation()) {
       thetaPID =
           PIDController(
@@ -101,6 +143,8 @@ class AimOTFCommand(
     thetaPID.reset()
 
     hasAligned = false
+    startTime = Clock.fpgaTime
+    startedInAuto = DriverStation.isAutonomous()
   }
 
   override fun execute() {
@@ -119,35 +163,40 @@ class AimOTFCommand(
 
     // Instead of using just angle to check if the robot is aligned, base
     // error on if the arc length surpasses the inradius of the HUB opening
-    hasAligned = distanceToHub * thetaPID.error.absoluteValue.inRadians < 41.73.inches / 2
+    hasAligned = distanceToHub * thetaPID.error.absoluteValue.inRadians < 20.inches
 
     CustomLogger.recordOutput("FaceHubCommand/hasAligned", hasAligned)
 
-    // Take the drivers speed being inputted, and clamp the magnitude
-    // of the drive vector to < MAX_VELOCITY_RADIUS meters per second
-    var (speedX, speedY) = driver.driveSpeedClampedSupplier(driveX, driveY, slowMode)
-    val speedMagnitude =
-        sqrt(speedX.inMetersPerSecond.pow(2) + speedY.inMetersPerSecond.pow(2)).meters.perSecond
-
-    if (speedMagnitude > 0.1.meters.perSecond || !hasAligned) {
-      if (speedMagnitude > MAX_VELOCITY_RADIUS) {
-        // Convert to unit vector and then * MAX_VELOCITY_RADIUS
-        speedX = speedX / speedMagnitude.inMetersPerSecond * MAX_VELOCITY_RADIUS.inMetersPerSecond
-        speedY = speedY / speedMagnitude.inMetersPerSecond * MAX_VELOCITY_RADIUS.inMetersPerSecond
-      }
-
-      drivetrain.runSpeeds(
-          ChassisSpeeds.fromFieldRelativeSpeeds(
-              speedX, speedY, thetaVel, drivetrain.pose.rotation.z))
+    if (DriverStation.isAutonomous()) {
+      // Use planned path velocities, dont adjust
+      drivetrain.runRotationWhileKeepingTranslation(thetaVel)
     } else {
-      drivetrain.stopWithX()
+      // Take the drivers speed being inputted, and clamp the magnitude
+      // of the drive vector to < MAX_VELOCITY_RADIUS meters per second
+      var (speedX, speedY) = vSup.get()
+      val speedMagnitude =
+          sqrt(speedX.inMetersPerSecond.pow(2) + speedY.inMetersPerSecond.pow(2)).meters.perSecond
+
+      if (speedMagnitude > 0.1.meters.perSecond || !hasAligned) {
+        if (speedMagnitude > MAX_VELOCITY_RADIUS) {
+          // Convert to unit vector and then * MAX_VELOCITY_RADIUS
+          speedX = speedX / speedMagnitude.inMetersPerSecond * MAX_VELOCITY_RADIUS.inMetersPerSecond
+          speedY = speedY / speedMagnitude.inMetersPerSecond * MAX_VELOCITY_RADIUS.inMetersPerSecond
+        }
+
+        drivetrain.runSpeeds(
+            ChassisSpeeds.fromFieldRelativeSpeeds(
+                speedX, speedY, thetaVel, drivetrain.pose.rotation.z))
+      } else {
+        drivetrain.stopWithX()
+      }
     }
 
     if (RobotBase.isSimulation() &&
         hasAligned &&
         Clock.fpgaTime.inSeconds % .25 < 0.05 &&
         RobotContainer.superstructure.currentState ==
-            Superstructure.Companion.SuperstructureStates.SCORE) {
+            Superstructure.Companion.SuperstructureStates.SCORE || DriverStation.isAutonomous()) {
       SimulatedArena.getInstance()
           .addGamePieceProjectile(
               RebuiltFuelOnFly(
@@ -159,14 +208,15 @@ class AimOTFCommand(
                   (drivetrain.pose.rotation.z + ShooterConstants.SHOOTER_OFFSET.rotation)
                       .inRotation2ds,
                   Meters.of(ShooterConstants.SHOOTER_HEIGHT.inMeters),
-                  LinearVelocity.ofBaseUnits(
+                  WPILinearVelocity.ofBaseUnits(
                       launchSpeed.inMetersPerSecond, LinearVelocityUnit.combine(Meters, Seconds)),
                   Degrees.of(ShooterConstants.SHOOTER_ANGLE.inDegrees)))
     }
   }
 
   override fun isFinished(): Boolean {
-    return false
+    return timeout > 0.seconds && Clock.fpgaTime - startTime > timeout ||
+        startedInAuto xor DriverStation.isAutonomous()
   }
 
   override fun end(interrupted: Boolean) {
