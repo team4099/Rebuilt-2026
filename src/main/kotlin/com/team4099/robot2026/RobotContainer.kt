@@ -16,6 +16,9 @@ import com.team4099.robot2026.subsystems.drivetrain.GyroIOPigeon2
 import com.team4099.robot2026.subsystems.drivetrain.GyroIOSim
 import com.team4099.robot2026.subsystems.drivetrain.ModuleIOTalonFXReal
 import com.team4099.robot2026.subsystems.drivetrain.ModuleIOTalonFXSim
+import com.team4099.robot2026.subsystems.leds.LedIO
+import com.team4099.robot2026.subsystems.leds.LedIOCandle
+import com.team4099.robot2026.subsystems.leds.Leds
 import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import com.team4099.robot2026.subsystems.superstructure.climb.Climb
 import com.team4099.robot2026.subsystems.superstructure.climb.ClimbIO
@@ -66,8 +69,10 @@ object RobotContainer {
   private val intakeRollers: IntakeRollers
   private val shooter: Shooter
   val superstructure: Superstructure
+  val leds: Leds
 
   var driveSimulation: SwerveDriveSimulation? = null
+  var isAligning = false
 
   init {
     SimulatedArena.overrideInstance(Arena2026Rebuilt(false))
@@ -104,6 +109,11 @@ object RobotContainer {
           intake = Intake(IntakeIOTalon)
           intakeRollers = IntakeRollers(IntakeRollersIOTalon)
           shooter = Shooter(ShooterIOTalon)
+          leds =
+              Leds(
+                  { isAligning },
+                  { Superstructure.Companion.SuperstructureStates.UNINITALIZED },
+                  LedIOCandle(Constants.LEDS.CANDLE_ID))
         }
         Constants.WHOAMI.TESTBOT -> {
           climb = Climb(object : ClimbIO {})
@@ -112,6 +122,12 @@ object RobotContainer {
           intake = Intake(object : IntakeIO {})
           intakeRollers = IntakeRollers(object : IntakeRollersIO {})
           shooter = Shooter(object : ShooterIO {})
+
+          leds =
+              Leds(
+                  { isAligning },
+                  { Superstructure.Companion.SuperstructureStates.UNINITALIZED },
+                  object : LedIO {})
         }
       }
     } else {
@@ -148,10 +164,18 @@ object RobotContainer {
       intake = Intake(IntakeIOSim)
       intakeRollers = IntakeRollers(IntakeRollersIOSim)
       shooter = Shooter(ShooterIOSim)
+
+      leds =
+          Leds(
+              { isAligning },
+              { Superstructure.Companion.SuperstructureStates.UNINITALIZED },
+              object : LedIO {})
     }
 
     superstructure =
         Superstructure(drivetrain, vision, climb, feeder, hopper, intake, intakeRollers, shooter)
+
+    leds.stateSupplier = { superstructure.currentState }
   }
 
   fun mapDefaultCommands() {

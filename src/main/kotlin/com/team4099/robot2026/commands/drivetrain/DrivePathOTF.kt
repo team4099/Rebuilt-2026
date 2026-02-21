@@ -5,6 +5,7 @@ import com.pathplanner.lib.path.PathPlannerPath
 import com.pathplanner.lib.path.Waypoint
 import com.pathplanner.lib.util.DriveFeedforwards
 import com.team4099.lib.logging.LoggedTunableValue
+import com.team4099.robot2026.RobotContainer
 import com.team4099.robot2026.config.ControlBoard
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.DrivetrainConstants
@@ -169,6 +170,8 @@ class DrivePathOTF(
         )
 
     command.initialize()
+
+    RobotContainer.isAligning = true
   }
 
   override fun execute() {
@@ -190,6 +193,8 @@ class DrivePathOTF(
     // goalendstate has velocity < 0.1 mps and with that, determines whether or not the drivetrain
     // should stop moving. tl;dr: we don't have to set drivetrain.closedloop again
     command.end(interrupted)
+
+    RobotContainer.isAligning = false
   }
 
   companion object {
