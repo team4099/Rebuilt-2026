@@ -3,6 +3,7 @@ package com.team4099.robot2026.subsystems.superstructure.feeder
 import com.ctre.phoenix6.BaseStatusSignal
 import com.ctre.phoenix6.StatusSignal
 import com.ctre.phoenix6.configs.TalonFXConfiguration
+import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage
 import com.ctre.phoenix6.controls.VoltageOut
 import com.ctre.phoenix6.hardware.TalonFX
 import com.ctre.phoenix6.signals.InvertedValue
@@ -15,6 +16,7 @@ import edu.wpi.first.units.measure.AngularVelocity as WPILibAngularVelocity
 import edu.wpi.first.units.measure.Current as WPILibCurrent
 import edu.wpi.first.units.measure.Temperature as WPILibTemperature
 import edu.wpi.first.units.measure.Voltage as WPILibVoltage
+import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.inAmperes
@@ -23,7 +25,9 @@ import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
+import org.team4099.lib.units.inRotationsPerSecond
 import org.team4099.lib.units.perMinute
+import org.team4099.lib.units.perSecond
 
 object FeederIOTalonFX : FeederIO {
 
@@ -43,6 +47,8 @@ object FeederIOTalonFX : FeederIO {
   var feederPositionStatusSignal: StatusSignal<WPILibAngle>
 
   val voltageControl: VoltageOut = VoltageOut(0.volts.inVolts).withEnableFOC(true)
+  val velocityControl: MotionMagicVelocityVoltage =
+      MotionMagicVelocityVoltage(0.rotations.perSecond.inRotationsPerSecond)
 
   init {
     feederTalon.clearStickyFaults()
@@ -97,6 +103,10 @@ object FeederIOTalonFX : FeederIO {
 
   override fun setVoltage(voltage: ElectricalPotential) {
     feederTalon.setControl(voltageControl.withOutput(voltage.inVolts))
+  }
+
+  override fun setVelocity(velocity: AngularVelocity) {
+    feederTalon.setControl(velocityControl.withVelocity(velocity.inRotationsPerSecond))
   }
 
   override fun setBrakeMode(brake: Boolean) {

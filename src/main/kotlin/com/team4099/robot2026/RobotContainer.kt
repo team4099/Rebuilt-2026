@@ -48,6 +48,7 @@ import com.team4099.robot2026.util.driver.Jessika
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.ConditionalCommand
 import edu.wpi.first.wpilibj2.command.InstantCommand
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine
 import org.ironmaple.simulation.SimulatedArena
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.Arena2026Rebuilt
@@ -182,7 +183,12 @@ object RobotContainer {
     ControlBoard.score.onTrue(superstructure.requestScoreCommand())
 
     ControlBoard.prepClimb.onTrue(superstructure.requestPrepClimbCommand())
-    ControlBoard.climb.onTrue(superstructure.requestClimbCommand())
+    //    ControlBoard.climb.onTrue(superstructure.requestClimbCommand())
+
+    ControlBoard.abutton.whileTrue(feeder.sysIdQuasistatic(SysIdRoutine.Direction.kForward))
+    ControlBoard.bbutton.whileTrue(feeder.sysIdQuasistatic(SysIdRoutine.Direction.kReverse))
+    ControlBoard.ybutton.whileTrue(feeder.sysIdDynamic(SysIdRoutine.Direction.kForward))
+    ControlBoard.xbutton.whileTrue(feeder.sysIdDynamic(SysIdRoutine.Direction.kReverse))
 
     ControlBoard.intake.onTrue(superstructure.requestIntakeCommand())
     ControlBoard.forceIntakeUp.onTrue(superstructure.requestForceIntakeUpCommand())
