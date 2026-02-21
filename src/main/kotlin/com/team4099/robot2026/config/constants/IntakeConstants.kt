@@ -1,5 +1,7 @@
 package com.team4099.robot2026.config.constants
 
+import com.team4099.lib.hal.Clock
+import com.team4099.robot2026.Robot
 import edu.wpi.first.wpilibj.DriverStation
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.grams
@@ -46,13 +48,11 @@ object IntakeConstants {
     val INTAKE_ANGLE = PIVOT_MIN_ANGLE
     val STOW_ANGLE = PIVOT_MAX_ANGLE
     val IDLE_ANGLE: Angle
-      get() = if (
-        DriverStation.isAutonomous() && (
-            !DriverStation.isFMSAttached() && DriverStation.getMatchTime() < .5 ||
-                DriverStation.isFMSAttached() && DriverStation.getMatchTime() < (20.0 - .5)
-            )
-        )
-        STOW_ANGLE else 10.degrees
+      get() =
+          if (DriverStation.isAutonomous() && Clock.fpgaTime - Robot.autoStartTime < 0.5.seconds)
+              STOW_ANGLE
+          else 10.degrees
+
     val EJECT_ANGLE = INTAKE_ANGLE
 
     val FORCE_UP_ANGLE = STOW_ANGLE - 25.degrees

@@ -146,15 +146,16 @@ class FollowChoreoPath(
     if (overrideRotationTrigger.get())
         drivetrain.runTranslationWhileKeepingRotation(
             Velocity2d(
-                nextDriveState.vxMetersPerSecond.meters.perSecond  * if (flipVertically) -1 else 1,
-                nextDriveState.vyMetersPerSecond.meters.perSecond   * if (flipVertically) -1 else 1),
+                nextDriveState.vxMetersPerSecond.meters.perSecond * if (flipVertically) -1 else 1,
+                nextDriveState.vyMetersPerSecond.meters.perSecond * if (flipVertically) -1 else 1),
             flipIfRed = false)
     else
         drivetrain.runSpeeds(
             ChassisSpeeds(
                 nextDriveState.vxMetersPerSecond.meters.perSecond,
-              nextDriveState.vyMetersPerSecond.meters.perSecond * if (flipVertically) -1 else 1,
-                nextDriveState.omegaRadiansPerSecond.radians.perSecond  * if (flipVertically) -1 else 1),
+                nextDriveState.vyMetersPerSecond.meters.perSecond * if (flipVertically) -1 else 1,
+                nextDriveState.omegaRadiansPerSecond.radians.perSecond *
+                    if (flipVertically) -1 else 1),
             flipIfRed = false)
 
     CustomLogger.recordOutput("FollowChoreoPath/atSetpoint", atSetpoint())

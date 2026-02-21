@@ -10,13 +10,16 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.WaitCommand
 import org.team4099.lib.geometry.Pose2d
 
-class IntakeQuadrantL1(val drivetrain: Drive, val superstructure: Superstructure, flipVeritcally: Boolean) :
-    SequentialCommandGroup() {
+class IntakeQuadrantL1(
+    val drivetrain: Drive,
+    val superstructure: Superstructure,
+    flipVeritcally: Boolean
+) : SequentialCommandGroup() {
   init {
     addRequirements(drivetrain, superstructure)
     addCommands(
         ParallelCommandGroup(
-            FollowChoreoPath(drivetrain, traj, flipVertically=flipVeritcally),
+            FollowChoreoPath(drivetrain, traj, flipVertically = flipVeritcally),
             SequentialCommandGroup(
                 WaitCommand(.5),
                 superstructure.requestIntakeCommand(),

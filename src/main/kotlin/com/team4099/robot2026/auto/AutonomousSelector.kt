@@ -38,9 +38,10 @@ object AutonomousSelector {
         "Drive FF Characterization DO NOT RUN AT COMPETITION", AutonomousMode.DRIVE_FF)
     autonomousModeChooser.addOption("TestOTF DO NOT RUN AT COMPETITION", AutonomousMode.TEST_OTF)
     autonomousModeChooser.addOption(
-      "Auto Pose Tuner DO NOT RUN AT COMPETITION", AutonomousMode.AUTOPOS)
+        "Auto Pose Tuner DO NOT RUN AT COMPETITION", AutonomousMode.AUTOPOS)
     autonomousModeChooser.addOption("Intake Right Quadrant L1", AutonomousMode.INTAKE_RIGHT_QUAD_L1)
     autonomousModeChooser.addOption("Intake Left Quadrant L1", AutonomousMode.INTAKE_LEFT_QUAD_L1)
+    autonomousModeChooser.addOption("Do nothing", AutonomousMode.DO_NOTHING)
 
     autoTab.add("Mode", autonomousModeChooser.sendableChooser).withSize(4, 2).withPosition(2, 0)
 
@@ -77,11 +78,11 @@ object AutonomousSelector {
               })
               .andThen(TestOTFAuto(drivetrain))
       AutonomousMode.AUTOPOS ->
-        WaitCommand(waitTime.inSeconds)
-          .andThen({
-            drivetrain.pose = Pose3d(AllianceFlipUtil.apply(TuningAutoPos.startingPose))
-          })
-          .andThen(TuningAutoPos(drivetrain))
+          WaitCommand(waitTime.inSeconds)
+              .andThen({
+                drivetrain.pose = Pose3d(AllianceFlipUtil.apply(TuningAutoPos.startingPose))
+              })
+              .andThen(TuningAutoPos(drivetrain))
       AutonomousMode.INTAKE_RIGHT_QUAD_L1 ->
           WaitCommand(waitTime.inSeconds)
               .andThen({
@@ -89,11 +90,15 @@ object AutonomousSelector {
               })
               .andThen(IntakeQuadrantL1(drivetrain, superstructure, flipVeritcally = false))
       AutonomousMode.INTAKE_LEFT_QUAD_L1 ->
-        WaitCommand(waitTime.inSeconds)
-          .andThen({
-            drivetrain.pose = Pose3d(FollowChoreoPath.flipVertically(AllianceFlipUtil.apply(IntakeQuadrantL1.startingPose)))
-          })
-          .andThen(IntakeQuadrantL1(drivetrain, superstructure, flipVeritcally = true))
+          WaitCommand(waitTime.inSeconds)
+              .andThen({
+                drivetrain.pose =
+                    Pose3d(
+                        FollowChoreoPath.flipVertically(
+                            AllianceFlipUtil.apply(IntakeQuadrantL1.startingPose)))
+              })
+              .andThen(IntakeQuadrantL1(drivetrain, superstructure, flipVeritcally = true))
+      AutonomousMode.DO_NOTHING -> InstantCommand()
       else -> InstantCommand()
     }
   }
@@ -106,5 +111,6 @@ private enum class AutonomousMode {
   DRIVE_FF,
   AUTOPOS,
   INTAKE_RIGHT_QUAD_L1,
-  INTAKE_LEFT_QUAD_L1
+  INTAKE_LEFT_QUAD_L1,
+  DO_NOTHING
 }
