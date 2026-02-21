@@ -161,9 +161,9 @@ class FollowChoreoPath(
 
     CustomLogger.recordOutput("FollowChoreoPath/poseDiff", posediff.asTransform2d().transform2d)
 
-    return posediff.x.absoluteValue < 3.inches &&
-        posediff.y.absoluteValue < 3.inches &&
-        posediff.rotation.absoluteValue < 5.degrees
+    return posediff.x.absoluteValue < 2.inches &&
+        posediff.y.absoluteValue < 2.inches &&
+        posediff.rotation.absoluteValue < 4.degrees
   }
 
   override fun isFinished(): Boolean {

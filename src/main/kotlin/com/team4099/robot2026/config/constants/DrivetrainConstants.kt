@@ -115,7 +115,7 @@ object DrivetrainConstants {
     val AUTO_POS_KP: ProportionalGain<Meter, Velocity<Meter>>
       get() {
         if (RobotBase.isReal()) {
-          return 3.15.meters.perSecond / 1.0.meters // todo:4
+          return 2.8.meters.perSecond / 1.0.meters // todo:3.15
         } else {
           return 25.meters.perSecond / 1.0.meters
         }
@@ -133,7 +133,7 @@ object DrivetrainConstants {
     val AUTO_POS_KD: DerivativeGain<Meter, Velocity<Meter>>
       get() {
         if (RobotBase.isReal()) {
-          return (0.6.meters.perSecond / (1.0.meters.perSecond))
+          return (0.6.meters.perSecond / (1.0.meters.perSecond)) // 0.6
               .metersPerSecondPerMetersPerSecond // todo: 0.25
         } else {
           return (0.5.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
@@ -145,10 +145,10 @@ object DrivetrainConstants {
     val LIMELIGHT_THETA_KD =
         (0.1.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
 
-    val AUTO_THETA_PID_KP = (30.degrees.perSecond / 1.degrees)
+    val AUTO_THETA_PID_KP = (2.5.degrees.perSecond / 1.degrees)
     val AUTO_THETA_PID_KI = (0.0.radians.perSecond / (1.radians * 1.seconds))
     val AUTO_THETA_PID_KD =
-        (2.7.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
+        (0.3.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
 
     val SIM_HUB_PID_KP = (6.7.radians.perSecond / 1.radians)
     val SIM_HUB_PID_KI = (0.0.radians.perSecond / (1.radians * 1.seconds))
@@ -264,12 +264,12 @@ object DrivetrainConstants {
             Supplier { Pose2d(3.326.meters, 0.86.meters, 180.degrees) },
         )
     val CLIMB_BOTTOM =
-        listOf(
+        Pair(
             Supplier { Pose2d(1.195.meters, 2.5.meters, 90.degrees) },
             Supplier { Pose2d(1.195.meters, 2.95.meters, 90.degrees) })
     val CLIMB_TOP =
-        listOf(
-            Supplier { Pose2d(.95.meters, 5.meters, -90.degrees) },
-            Supplier { Pose2d(.95.meters, 4.58.meters, -90.degrees) })
+        Pair(
+            Supplier { Pose2d(.98.meters, 5.meters, -90.degrees) },
+            Supplier { Pose2d(.98.meters, 4.58.meters, -90.degrees) })
   }
 }
