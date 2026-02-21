@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import java.util.function.Supplier
 import org.team4099.lib.units.base.inMilliseconds
 
-class Led(
+class Leds(
     var isAligningSupplier: Supplier<Boolean>,
     var stateSupplier: Supplier<Superstructure.Companion.SuperstructureStates>,
     vararg candles: LedIO,
