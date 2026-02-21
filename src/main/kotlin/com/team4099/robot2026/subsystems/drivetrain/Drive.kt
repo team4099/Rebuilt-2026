@@ -89,7 +89,7 @@ import org.team4099.lib.units.inMetersPerSecond
 
 class Drive(
     private val gyroIO: GyroIO,
-    moduleIOs: Array<ModuleIO>,
+    val moduleIOs: Array<ModuleIO>,
     val getSimulationPoseCallback: Supplier<edu.wpi.first.math.geometry.Pose2d>,
     val resetSimulationPoseCallback: Consumer<edu.wpi.first.math.geometry.Pose2d>
 ) : SubsystemBase() {

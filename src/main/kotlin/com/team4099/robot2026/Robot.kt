@@ -1,6 +1,7 @@
 package com.team4099.robot2026
 
 import com.ctre.phoenix6.SignalLogger
+import com.ctre.phoenix6.signals.NeutralModeValue
 import com.pathplanner.lib.commands.FollowPathCommand
 import com.team4099.lib.hal.Clock
 import com.team4099.robot2026.auto.AutonomousSelector
@@ -195,7 +196,6 @@ object Robot : LoggedRobot() {
   override fun teleopInit() {
     RobotContainer.mapTeleopControls()
     RobotContainer.getAutonomousCommand().cancel()
-    RobotContainer.setDriveBrakeMode()
     if (Constants.Tuning.TUNING_MODE) {
       RobotContainer.mapTunableCommands()
     }

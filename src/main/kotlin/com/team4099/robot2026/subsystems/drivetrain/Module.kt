@@ -14,6 +14,7 @@ package com.team4099.robot2026.subsystems.drivetrain
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration
 import com.ctre.phoenix6.configs.TalonFXConfiguration
+import com.ctre.phoenix6.signals.NeutralModeValue
 import com.ctre.phoenix6.swerve.SwerveModuleConstants
 import com.team4099.robot2026.config.constants.DrivetrainConstants
 import edu.wpi.first.math.geometry.Rotation2d
@@ -35,7 +36,7 @@ import org.team4099.lib.units.inRotationsPerSecond
 import org.team4099.lib.units.perSecond
 
 class Module(
-    private val io: ModuleIO,
+    val io: ModuleIO,
     private val index: Int,
     private val constants:
         SwerveModuleConstants<TalonFXConfiguration?, TalonFXConfiguration?, CANcoderConfiguration?>

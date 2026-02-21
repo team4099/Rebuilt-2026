@@ -53,7 +53,7 @@ object IntakeConstants {
             )
         )
         STOW_ANGLE else 10.degrees
-    val EJECT_ANGLE = STOW_ANGLE
+    val EJECT_ANGLE = INTAKE_ANGLE
 
     val FORCE_UP_ANGLE = STOW_ANGLE - 25.degrees
     val FORCE_DOWN_ANGLE = INTAKE_ANGLE

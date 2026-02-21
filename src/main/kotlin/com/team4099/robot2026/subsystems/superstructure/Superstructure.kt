@@ -47,6 +47,9 @@ class Superstructure(
   var lastTransitionTime: Time = Clock.fpgaTime
     private set
 
+  val launchData: Shooter.Companion.CalculatedLaunchData
+    get() = Shooter.calculateLaunchData(drivetrain.pose.toPose2d(), drivetrain.chassisSpeeds)
+
   inline val shooterTargetRPM: AngularVelocity
     get() {
       return max(
@@ -55,8 +58,6 @@ class Superstructure(
     }
 
   val field = Field2d()
-
-  var launchData = Shooter.calculateLaunchData(drivetrain.pose.toPose2d(), drivetrain.chassisSpeeds)
 
   init {
     SmartDashboard.putData("Field", field)
@@ -108,12 +109,8 @@ class Superstructure(
 
     var nextState = currentState
 
-    launchData = Shooter.calculateLaunchData(drivetrain.pose.toPose2d(), drivetrain.chassisSpeeds)
-
     CustomLogger.recordOutput("Superstructure/currentState", currentState)
     CustomLogger.recordOutput("Superstructure/currentRequest", currentRequest.javaClass.simpleName)
-    CustomLogger.recordOutput(
-        "Superstructure/expectedLaunchSpeedMPS", launchData.launchVelocity.inMetersPerSecond)
 
     when (currentState) {
       SuperstructureStates.UNINITALIZED -> {

@@ -20,7 +20,7 @@ class IntakeQuadrantL1(val drivetrain: Drive, val superstructure: Superstructure
             SequentialCommandGroup(
                 WaitCommand(.5),
                 superstructure.requestIntakeCommand(),
-                WaitCommand(2.5),
+                WaitCommand(3.5),
                 superstructure.requestIdleCommand())),
         superstructure.requestScoreCommand(),
         WaitCommand(10.0),

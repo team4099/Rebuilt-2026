@@ -195,7 +195,9 @@ object RobotContainer {
   }
 
   fun setDriveBrakeMode(neutralModeValue: NeutralModeValue = NeutralModeValue.Brake) {
-    //    drivetrain.configNeutralMode(neutralModeValue)
+    drivetrain.moduleIOs.forEach {
+      it.toggleBrakeMode(neutralModeValue)
+    }
   }
 
   fun mapTeleopControls() {
