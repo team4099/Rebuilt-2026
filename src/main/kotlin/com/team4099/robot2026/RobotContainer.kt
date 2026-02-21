@@ -220,12 +220,11 @@ object RobotContainer {
     //                  FieldConstants.inTrenchAllianceZone(drivetrain.pose)
     //                })
 
-        ControlBoard.climbOTF.whileTrue(
-          ConditionalCommand(
-            DrivePathOTF.alignClimbBottom(drivetrain),
-            DrivePathOTF.alignClimbTop(drivetrain)) {
-            FieldConstants.inClimbLowerHalf(drivetrain.pose)
-          })
+    ControlBoard.climbOTF.whileTrue(
+        ConditionalCommand(
+            DrivePathOTF.alignClimbBottom(drivetrain), DrivePathOTF.alignClimbTop(drivetrain)) {
+              FieldConstants.inClimbLowerHalf(drivetrain.pose)
+            })
   }
 
   fun mapTestControls() {}

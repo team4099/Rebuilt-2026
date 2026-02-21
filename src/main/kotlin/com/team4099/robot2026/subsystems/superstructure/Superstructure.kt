@@ -213,10 +213,10 @@ class Superstructure(
         }
       }
       SuperstructureStates.CLIMB -> {
-        climb.currentRequest =
-            Request.ClimbRequest.TargetingPosition(ClimbConstants.CLIMB_HEIGHT)
+        climb.currentRequest = Request.ClimbRequest.TargetingPosition(ClimbConstants.CLIMB_HEIGHT)
         when (currentRequest) {
-          is SuperstructureRequest.Idle, is SuperstructureRequest.ExtendClimb -> nextState = SuperstructureStates.PREP_CLIMB
+          is SuperstructureRequest.Idle,
+          is SuperstructureRequest.ExtendClimb -> nextState = SuperstructureStates.PREP_CLIMB
           else -> {}
         }
       }

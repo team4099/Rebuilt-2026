@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.kinematics.ChassisSpeeds as WPIChassisSpeeds
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import java.util.function.DoubleSupplier
 import java.util.function.Supplier
 import org.littletonrobotics.junction.Logger
@@ -260,28 +261,48 @@ class DrivePathOTF(
           })
     }
 
-    fun alignClimbBottom(drivetrain: Drive): DrivePathOTF {
+    fun alignClimbBottom(drivetrain: Drive): SequentialCommandGroup {
       return DrivePathOTF(
-          drivetrain,
-          { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-          { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-          { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
-          { drivetrain.pose.toPose2d().pose2d },
-          DrivetrainConstants.OTF_PATHS.CLIMB_BOTTOM,
-          drivetrain.pose.rotation.z,
-          GoalEndState(0.0.meters.perSecond, 90.degrees))
+              drivetrain,
+              { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+              { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+              { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+              { drivetrain.pose.toPose2d().pose2d },
+              listOf(DrivetrainConstants.OTF_PATHS.CLIMB_BOTTOM.first),
+              drivetrain.pose.rotation.z,
+              GoalEndState(0.0.meters.perSecond, 90.degrees))
+          .andThen(
+              DrivePathOTF(
+                  drivetrain,
+                  { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+                  { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+                  { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+                  { drivetrain.pose.toPose2d().pose2d },
+                  listOf(DrivetrainConstants.OTF_PATHS.CLIMB_BOTTOM.second),
+                  drivetrain.pose.rotation.z,
+                  GoalEndState(0.0.meters.perSecond, 90.degrees)))
     }
 
-    fun alignClimbTop(drivetrain: Drive): DrivePathOTF {
+    fun alignClimbTop(drivetrain: Drive): SequentialCommandGroup {
       return DrivePathOTF(
-          drivetrain,
-          { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-          { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-          { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
-          { drivetrain.pose.toPose2d().pose2d },
-          DrivetrainConstants.OTF_PATHS.CLIMB_TOP,
-          drivetrain.pose.rotation.z,
-          GoalEndState(0.0.meters.perSecond, -90.degrees))
+              drivetrain,
+              { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+              { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+              { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+              { drivetrain.pose.toPose2d().pose2d },
+              listOf(DrivetrainConstants.OTF_PATHS.CLIMB_TOP.first),
+              drivetrain.pose.rotation.z,
+              GoalEndState(0.0.meters.perSecond, -90.degrees))
+          .andThen(
+              DrivePathOTF(
+                  drivetrain,
+                  { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+                  { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+                  { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+                  { drivetrain.pose.toPose2d().pose2d },
+                  listOf(DrivetrainConstants.OTF_PATHS.CLIMB_TOP.second),
+                  drivetrain.pose.rotation.z,
+                  GoalEndState(0.0.meters.perSecond, -90.degrees)))
     }
   }
 }
