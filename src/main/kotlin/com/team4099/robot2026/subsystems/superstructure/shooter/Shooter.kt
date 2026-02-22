@@ -255,7 +255,8 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
         chassisSpeeds: ChassisSpeeds,
         targetTranslation: Translation3d
     ): CalculatedLaunchData {
-      val rotatedShooter = ShooterConstants.SHOOTER_OFFSET.translation.rotateBy(drivetrainPose.rotation)
+      val rotatedShooter =
+          ShooterConstants.SHOOTER_OFFSET.translation.rotateBy(drivetrainPose.rotation)
       val shooterPosition = drivetrainPose.translation + rotatedShooter
 
       val targetHeight = targetTranslation.z
@@ -296,10 +297,7 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
 
       val robotTHubVector =
           Vector(
-              Matrix(
-                  N2(),
-                  N1(),
-                  doubleArrayOf(shooterTTargetX.inMeters, shooterTTargetY.inMeters)))
+              Matrix(N2(), N1(), doubleArrayOf(shooterTTargetX.inMeters, shooterTTargetY.inMeters)))
 
       // Get the distance (signed) between the robot and the HUB
       val hubUnitVector = robotTHubVector.times(1.0 / shooterTTargetMag.inMeters)
@@ -428,24 +426,22 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
       // ball would travel in the air.
 
       val robotTVirt =
-        Vector(
-          Matrix(
-            N2(),
-            N1(),
-            doubleArrayOf(targetTranslation.x.inMeters - ballDistanceOffset.get(0) - drivetrainPose.x.inMeters,
-              targetTranslation.y.inMeters - ballDistanceOffset.get(1) - drivetrainPose.y.inMeters
-            )
-          )
-        )
+          Vector(
+              Matrix(
+                  N2(),
+                  N1(),
+                  doubleArrayOf(
+                      targetTranslation.x.inMeters -
+                          ballDistanceOffset.get(0) -
+                          drivetrainPose.x.inMeters,
+                      targetTranslation.y.inMeters -
+                          ballDistanceOffset.get(1) -
+                          drivetrainPose.y.inMeters)))
 
       val robotTShooter =
-        Vector(
-          Matrix(
-            N2(),
-            N1(),
-            doubleArrayOf(rotatedShooter.x.inMeters, rotatedShooter.y.inMeters)
-          )
-        )
+          Vector(
+              Matrix(
+                  N2(), N1(), doubleArrayOf(rotatedShooter.x.inMeters, rotatedShooter.y.inMeters)))
 
       val virtTShooter = robotTVirt.minus(robotTShooter)
 
@@ -453,38 +449,41 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
       val shooterysin = ShooterConstants.SHOOTER_OFFSET.translation.y * drivetrainPose.rotation.sin
       val shooterxcos = ShooterConstants.SHOOTER_OFFSET.translation.x * drivetrainPose.rotation.cos
 
+      //      val robotTVirtMag = robotTVirt.norm()
+      //      val calculatedAngle = atan2(ShooterConstants.SHOOTER_OFFSET.translation.y.inMeters,
+      // robotTVirtMag - shooterPosition.x.inMeters)
+      //      val angleBetweenVectors =
+      //        if (calculatedAngle.isInfinite()) 90.degrees
+      //        else if (calculatedAngle.isNaN()) 0.degrees
+      //        else calculatedAngle.radians
+      //
+      //      val wantedRot = angleBetweenVectors +
+      //          atan2(
+      //            shooterTTargetY.inMeters - ballDistanceOffset.get(1),
+      //            shooterTTargetX.inMeters - ballDistanceOffset.get(0)
+      //          ).radians
 
-//      val robotTVirtMag = robotTVirt.norm()
-//      val calculatedAngle = atan2(ShooterConstants.SHOOTER_OFFSET.translation.y.inMeters, robotTVirtMag - shooterPosition.x.inMeters)
-//      val angleBetweenVectors =
-//        if (calculatedAngle.isInfinite()) 90.degrees
-//        else if (calculatedAngle.isNaN()) 0.degrees
-//        else calculatedAngle.radians
-//
-//      val wantedRot = angleBetweenVectors +
-//          atan2(
-//            shooterTTargetY.inMeters - ballDistanceOffset.get(1),
-//            shooterTTargetX.inMeters - ballDistanceOffset.get(0)
-//          ).radians
-
-      val targetVirt = targetTranslation.toTranslation2d() - Translation2d(
-        ballDistanceOffset.get(0).meters,
-        ballDistanceOffset.get(1).meters
-      )
+      val targetVirt =
+          targetTranslation.toTranslation2d() -
+              Translation2d(ballDistanceOffset.get(0).meters, ballDistanceOffset.get(1).meters)
 
       var theta = drivetrainPose.rotation
       for (i in 1..10) {
-        val iterativeShooterPosition = drivetrainPose.translation + ShooterConstants.SHOOTER_OFFSET.translation.rotateBy(theta)
-        var thetaNew = atan2((targetVirt.y - iterativeShooterPosition.y).inMeters, (targetVirt.x - iterativeShooterPosition.x).inMeters).radians
+        val iterativeShooterPosition =
+            drivetrainPose.translation + ShooterConstants.SHOOTER_OFFSET.translation.rotateBy(theta)
+        var thetaNew =
+            atan2(
+                    (targetVirt.y - iterativeShooterPosition.y).inMeters,
+                    (targetVirt.x - iterativeShooterPosition.x).inMeters)
+                .radians
 
         // wrap
-//        thetaNew = atan2(thetaNew.sin, thetaNew.cos).radians
+        //        thetaNew = atan2(thetaNew.sin, thetaNew.cos).radians
 
         if ((thetaNew - theta).absoluteValue < 1E-3.degrees) {
           theta = thetaNew
           break
-        }
-        else {
+        } else {
           theta = thetaNew
         }
       }
@@ -492,7 +491,7 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
       CustomLogger.recordOutput("Shooter/wantedRotDegs", theta.inDegrees)
 
       return CalculatedLaunchData(
-        (targetVirt - ShooterConstants.SHOOTER_OFFSET.translation).magnitude.meters,
+          (targetVirt - ShooterConstants.SHOOTER_OFFSET.translation).magnitude.meters,
           sqrt(launchSpeedField.inMetersPerSecond.pow(2) + launchSpeedZ.inMetersPerSecond.pow(2))
               .meters
               .perSecond,
