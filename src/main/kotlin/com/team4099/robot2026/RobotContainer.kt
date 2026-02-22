@@ -106,7 +106,7 @@ object RobotContainer {
           climb = Climb(ClimbIOTalon)
           feeder = Feeder(FeederIOTalonFX)
           hopper = Hopper(HopperIOTalon)
-          intake = Intake(IntakeIOTalon)
+          intake = Intake(object:IntakeIO {})
           intakeRollers = IntakeRollers(IntakeRollersIOTalon)
           shooter = Shooter(ShooterIOTalon)
           leds =
@@ -244,12 +244,12 @@ object RobotContainer {
                       FieldConstants.inTrenchAllianceZone(drivetrain.pose)
                     })
 
-    //    ControlBoard.climbOTF.whileTrue(
-    //        ConditionalCommand(
-    //            DrivePathOTF.alignClimbBottom(drivetrain), DrivePathOTF.alignClimbTop(drivetrain))
-    // {
-    //              FieldConstants.inClimbLowerHalf(drivetrain.pose)
-    //            })
+        ControlBoard.climbOTF.whileTrue(
+            ConditionalCommand(
+                DrivePathOTF.alignClimbBottom(drivetrain), DrivePathOTF.alignClimbTop(drivetrain))
+     {
+                  FieldConstants.inClimbLowerHalf(drivetrain.pose)
+                })
   }
 
   fun mapTestControls() {}
