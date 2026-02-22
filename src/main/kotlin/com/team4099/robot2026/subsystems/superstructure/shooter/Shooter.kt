@@ -2,7 +2,6 @@ package com.team4099.robot2026.subsystems.superstructure.shooter
 
 import com.ctre.phoenix6.SignalLogger
 import com.team4099.lib.logging.LoggedTunableValue
-import com.team4099.lib.math.asPose2d
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.FieldConstants
 import com.team4099.robot2026.config.constants.ShooterConstants
@@ -25,14 +24,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Mechanism
 import java.util.function.Consumer
-import kotlin.math.acos
 import kotlin.math.atan2
 import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.sqrt
 import org.team4099.lib.geometry.Pose2d
-import org.team4099.lib.geometry.Transform2d
-import org.team4099.lib.geometry.Translation2d
 import org.team4099.lib.geometry.Translation3d
 import org.team4099.lib.kinematics.ChassisSpeeds
 import org.team4099.lib.units.AngularVelocity
@@ -435,8 +431,8 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
           Matrix(
             N2(),
             N1(),
-            doubleArrayOf(targetTranslation.x.inMeters + ballDistanceOffset.get(0) - drivetrainPose.x.inMeters,
-              targetTranslation.y.inMeters + ballDistanceOffset.get(1) - drivetrainPose.y.inMeters
+            doubleArrayOf(targetTranslation.x.inMeters - ballDistanceOffset.get(0) - drivetrainPose.x.inMeters,
+              targetTranslation.y.inMeters - ballDistanceOffset.get(1) - drivetrainPose.y.inMeters
             )
           )
         )
@@ -450,14 +446,23 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
           )
         )
 
-      val shooterTVirt = robotTVirt.minus(robotTShooter)
+      val virtTShooter = robotTVirt.minus(robotTShooter)
 
-      val angleBetweenVectors = acos(robotTVirt.dot(shooterTVirt).div(robotTVirt.norm() * shooterTVirt.norm())).radians
+      val shooterycos = ShooterConstants.SHOOTER_OFFSET.translation.y * drivetrainPose.rotation.cos
+      val shooterysin = ShooterConstants.SHOOTER_OFFSET.translation.y * drivetrainPose.rotation.sin
+      val shooterxcos = ShooterConstants.SHOOTER_OFFSET.translation.x * drivetrainPose.rotation.cos
+
+      val robotTVirtMag = robotTVirt.norm()
+      val calculatedAngle = atan2(ShooterConstants.SHOOTER_OFFSET.translation.y.inMeters, robotTVirtMag - shooterPosition.x.inMeters)
+      val angleBetweenVectors =
+        if (calculatedAngle.isInfinite()) 90.degrees
+        else if (calculatedAngle.isNaN()) 0.degrees
+        else calculatedAngle.radians
 
       val wantedRot = angleBetweenVectors +
           atan2(
-            shooterTTargetY.inMeters + ballDistanceOffset.get(1),
-            shooterTTargetX.inMeters + ballDistanceOffset.get(0)
+            shooterTTargetY.inMeters - ballDistanceOffset.get(1),
+            shooterTTargetX.inMeters - ballDistanceOffset.get(0)
           ).radians
 
       CustomLogger.recordOutput("Shooter/wantedRotDegs", wantedRot.inDegrees)
