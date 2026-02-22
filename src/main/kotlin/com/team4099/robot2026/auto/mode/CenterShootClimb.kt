@@ -46,9 +46,10 @@ class CenterShootClimb(val drivetrain: Drive, val shooter: Shooter) : ParallelCo
                 .andThen(
                     AimOTFCommand(
                         drivetrain,
-                        7.seconds,
+                        6.0.seconds,
                     )),
-            WaitUntilCommand { shooter.isAtTargetedVelocity }
+            //WaitUntilCommand { shooter.isAtTargetedVelocity }
+                WaitCommand(1.0)
                 .andThen(
                     superstructure.requestScoreCommand(),
                 )),

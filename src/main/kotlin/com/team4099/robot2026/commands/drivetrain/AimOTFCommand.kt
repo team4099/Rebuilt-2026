@@ -35,10 +35,12 @@ import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.Radian
+import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.inRotation2ds
 import org.team4099.lib.units.derived.radians
+import org.team4099.lib.units.derived.radiansPerSecondPerRadiansPerSecond
 import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.perSecond
 
@@ -119,7 +121,9 @@ class AimOTFCommand(
           PIDController(
               DrivetrainConstants.PID.AUTO_THETA_PID_KP,
               DrivetrainConstants.PID.AUTO_THETA_PID_KI,
-              DrivetrainConstants.PID.AUTO_THETA_PID_KD)
+              //DrivetrainConstants.PID.AUTO_THETA_PID_KD
+              (2.5.degrees.perSecond / (1.degrees / 1.seconds))
+                  .radiansPerSecondPerRadiansPerSecond)
     } else {
       if (DriverStation.isAutonomous()) {
         thetaPID =

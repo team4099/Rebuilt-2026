@@ -161,7 +161,7 @@ object DrivetrainConstants {
         if(RobotBase.isReal()) {
             (0.3.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
         }else{
-            (0.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
+            (0.1.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
         }
 
     val SIM_HUB_PID_KP = (6.7.radians.perSecond / 1.radians)
