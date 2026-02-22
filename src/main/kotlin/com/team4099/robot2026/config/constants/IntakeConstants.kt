@@ -55,8 +55,8 @@ object IntakeConstants {
 
     val EJECT_ANGLE = INTAKE_ANGLE
 
-    val FORCE_UP_ANGLE = STOW_ANGLE - 25.degrees
-    val FORCE_DOWN_ANGLE = INTAKE_ANGLE
+    val FORCE_UP_ANGLE = STOW_ANGLE - 45.degrees
+    val FORCE_DOWN_ANGLE = 10.degrees
   }
 
   object PID {

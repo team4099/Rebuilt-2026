@@ -30,8 +30,7 @@ object FeederConstants {
   val VOLTAGE_COMPENSATION = 12.0.volts
 
   val IDLE_VOLTAGE = if (Constants.Tuning.TUNING_MODE) 0.volts else -.5.volts
-  val SCORE_VOLTAGE = 5.0.volts
-  val SCORE_VELOCITY = 10.rotations.perSecond
+  val SCORE_VELOCITY = 28.rotations.perSecond
 
   object PID {
     val REAL_KP: ProportionalGain<Velocity<Radian>, Volt> = 0.volts / 1.0.radians.perSecond
@@ -40,10 +39,10 @@ object FeederConstants {
     val REAL_KD: DerivativeGain<Velocity<Radian>, Volt> =
         0.0.volts / (1.0.radians.perSecond / 1.0.seconds)
 
-    val REAL_KS: StaticFeedforward<Volt> = 0.2252.volts
-    val REAL_KV: VelocityFeedforward<Radian, Volt> = 0.12649.volts / 1.radians.perSecond
+    val REAL_KS: StaticFeedforward<Volt> = 0.37152.volts
+    val REAL_KV: VelocityFeedforward<Radian, Volt> = 0.099877.volts / 1.radians.perSecond
     val REAL_KA: AccelerationFeedforward<Radian, Volt> =
-        0.0051489.volts / 1.radians.perSecond.perSecond
+        0.0020456.volts / 1.radians.perSecond.perSecond
 
     val SIM_KP: ProportionalGain<Velocity<Radian>, Volt> = 0.0.volts / 1.0.degrees.perSecond
     val SIM_KI: IntegralGain<Velocity<Radian>, Volt> =

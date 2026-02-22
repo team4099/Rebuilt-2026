@@ -1,7 +1,6 @@
 package com.team4099.robot2026.subsystems.vision
 
 import com.team4099.lib.hal.Clock
-import com.team4099.lib.logging.TunableNumber
 import com.team4099.lib.vision.TimestampedObjectVisionUpdate
 import com.team4099.lib.vision.TimestampedTrigVisionUpdate
 import com.team4099.lib.vision.TimestampedVisionUpdate
@@ -16,7 +15,6 @@ import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import java.util.function.Supplier
 import org.ironmaple.simulation.SimulatedArena
-import org.littletonrobotics.junction.Logger
 import org.photonvision.simulation.VisionSystemSim
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Rotation3d
@@ -29,7 +27,6 @@ import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.degrees
-import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.sin
 
@@ -87,7 +84,8 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
     for (instance in io.indices) {
       io[instance].updateInputs(inputs[instance])
       CustomLogger.processInputs("Vision/${io[instance].identifier}", inputs[instance])
-      // CustomLogger.recordOutput("Vision/cameraTransform$instance", io[instance].transform.transform3d)
+      // CustomLogger.recordOutput("Vision/cameraTransform$instance",
+      // io[instance].transform.transform3d)
     }
 
     val visionUpdates = mutableListOf<TimestampedVisionUpdate>()

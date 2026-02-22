@@ -3,7 +3,6 @@ package com.team4099.robot2026
 import com.ctre.phoenix6.signals.NeutralModeValue
 import com.team4099.robot2026.auto.AutonomousSelector
 import com.team4099.robot2026.commands.drivetrain.AimOTFCommand
-import com.team4099.robot2026.commands.drivetrain.DrivePathOTF
 import com.team4099.robot2026.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2026.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2026.config.ControlBoard
@@ -51,7 +50,6 @@ import com.team4099.robot2026.util.driver.Jessika
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.ConditionalCommand
 import edu.wpi.first.wpilibj2.command.InstantCommand
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine
 import org.ironmaple.simulation.SimulatedArena
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.Arena2026Rebuilt
@@ -209,14 +207,9 @@ object RobotContainer {
     ControlBoard.prepClimb.onTrue(superstructure.requestPrepClimbCommand())
     //    ControlBoard.climb.onTrue(superstructure.requestClimbCommand())
 
-    ControlBoard.abutton.whileTrue(feeder.sysIdQuasistatic(SysIdRoutine.Direction.kForward))
-    ControlBoard.bbutton.whileTrue(feeder.sysIdQuasistatic(SysIdRoutine.Direction.kReverse))
-    ControlBoard.ybutton.whileTrue(feeder.sysIdDynamic(SysIdRoutine.Direction.kForward))
-    ControlBoard.xbutton.whileTrue(feeder.sysIdDynamic(SysIdRoutine.Direction.kReverse))
-
     ControlBoard.intake.onTrue(superstructure.requestIntakeCommand())
-    ControlBoard.forceIntakeUp.onTrue(superstructure.requestForceIntakeUpCommand())
-    ControlBoard.forceIntakeDown.onTrue(superstructure.requestForceIntakeDownCommand())
+    ControlBoard.forceIntakeUp.whileTrue(superstructure.requestForceIntakeUpCommand())
+    ControlBoard.forceIntakeDown.whileTrue(superstructure.requestForceIntakeDownCommand())
 
     ControlBoard.eject.onTrue(superstructure.requestEjectCommand())
 
@@ -250,11 +243,12 @@ object RobotContainer {
     //                  FieldConstants.inTrenchAllianceZone(drivetrain.pose)
     //                })
 
-    ControlBoard.climbOTF.whileTrue(
-        ConditionalCommand(
-            DrivePathOTF.alignClimbBottom(drivetrain), DrivePathOTF.alignClimbTop(drivetrain)) {
-              FieldConstants.inClimbLowerHalf(drivetrain.pose)
-            })
+    //    ControlBoard.climbOTF.whileTrue(
+    //        ConditionalCommand(
+    //            DrivePathOTF.alignClimbBottom(drivetrain), DrivePathOTF.alignClimbTop(drivetrain))
+    // {
+    //              FieldConstants.inClimbLowerHalf(drivetrain.pose)
+    //            })
   }
 
   fun mapTestControls() {}

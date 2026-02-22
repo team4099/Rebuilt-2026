@@ -119,11 +119,10 @@ class Superstructure(
       }
       SuperstructureStates.TUNING -> {
         if (currentRequest is SuperstructureRequest.Score) {
-          shooter.currentRequest =
-              Request.ShooterRequest.TargetVelocity(shooter.shooterTestVel.get())
+          shooter.currentRequest = Request.ShooterRequest.TargetVelocity(shooterTargetRPM)
 
           if (shooter.isAtTargetedVelocity) {
-            feeder.currentRequest = Request.FeederRequest.OpenLoop(FeederConstants.SCORE_VOLTAGE)
+            feeder.currentRequest = Request.FeederRequest.TargetVelocity(feeder.feederTestVel.get())
             hopper.currentRequest = Request.HopperRequest.TargetVelocity(hopper.hopperTestVel.get())
             intakeRollers.currentRequest =
                 Request.RollersRequest.OpenLoop(RollersConstants.SCORE_ASSISTING_VOLTAGE)

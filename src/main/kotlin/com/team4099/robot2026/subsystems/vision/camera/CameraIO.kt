@@ -1,9 +1,7 @@
 package com.team4099.robot2026.subsystems.vision.camera
 
 import com.team4099.robot2026.config.constants.VisionConstants
-import edu.wpi.first.math.MatBuilder
 import edu.wpi.first.math.Matrix
-import edu.wpi.first.math.Nat
 import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.math.geometry.Transform3d
 import edu.wpi.first.math.numbers.N1
@@ -18,7 +16,6 @@ import org.photonvision.PhotonCamera
 import org.photonvision.PhotonPoseEstimator
 import org.photonvision.simulation.PhotonCameraSim
 import org.photonvision.targeting.PhotonTrackedTarget
-import org.photonvision.targeting.TargetCorner
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Pose3dWPILIB
 import org.team4099.lib.geometry.Rotation3d

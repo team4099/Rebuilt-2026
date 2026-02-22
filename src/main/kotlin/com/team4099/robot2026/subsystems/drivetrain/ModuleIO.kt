@@ -14,7 +14,6 @@ package com.team4099.robot2026.subsystems.drivetrain
 
 import com.ctre.phoenix6.signals.NeutralModeValue
 import edu.wpi.first.math.geometry.Rotation2d
-import kotlin.collections.forEachIndexed
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
 import org.team4099.lib.units.AngularVelocity

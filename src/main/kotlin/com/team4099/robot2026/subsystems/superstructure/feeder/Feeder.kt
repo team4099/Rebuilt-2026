@@ -1,6 +1,7 @@
 package com.team4099.robot2026.subsystems.superstructure.feeder
 
 import com.ctre.phoenix6.SignalLogger
+import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.robot2026.config.constants.FeederConstants
 import com.team4099.robot2026.subsystems.superstructure.Request
 import com.team4099.robot2026.subsystems.superstructure.Request.FeederRequest
@@ -16,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Mechanism
 import java.util.function.Consumer
 import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
+import org.team4099.lib.units.inRotationsPerSecond
 import org.team4099.lib.units.perSecond
 
 class Feeder(private val io: FeederIO) : ControlledByStateMachine() {
@@ -57,6 +59,12 @@ class Feeder(private val io: FeederIO) : ControlledByStateMachine() {
               },
               null,
               object : SubsystemBase("Feeder") {}))
+
+  val feederTestVel =
+      LoggedTunableValue(
+          "Feeder/testSpeedRotPerSec",
+          0.rotations.perSecond,
+          Pair({ it.inRotationsPerSecond }, { it.rotations.perSecond }))
 
   fun sysIdQuasistatic(direction: SysIdRoutine.Direction): Command {
     return m_sysIdRoutine.quasistatic(direction)

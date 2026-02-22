@@ -23,6 +23,9 @@ import org.team4099.lib.units.base.inAmperes
 import org.team4099.lib.units.ctreAngularMechanismSensor
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.inVolts
+import org.team4099.lib.units.derived.inVoltsPerRadians
+import org.team4099.lib.units.derived.inVoltsPerRadiansPerSecond
+import org.team4099.lib.units.derived.inVoltsPerRadiansPerSecondPerSecond
 import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inRotationsPerSecond
@@ -62,6 +65,16 @@ object FeederIOTalonFX : FeederIO {
     feederConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true
     feederConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Coast
     feederConfiguration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive
+
+    feederConfiguration.Slot0.kP = FeederConstants.PID.REAL_KP.inVoltsPerRadiansPerSecond
+    feederConfiguration.Slot0.kI = FeederConstants.PID.REAL_KI.inVoltsPerRadians
+    feederConfiguration.Slot0.kD = FeederConstants.PID.REAL_KD.inVoltsPerRadiansPerSecondPerSecond
+    feederConfiguration.Slot0.kS = FeederConstants.PID.REAL_KS.inVolts
+    feederConfiguration.Slot0.kV = FeederConstants.PID.REAL_KV.inVoltsPerRadiansPerSecond
+    feederConfiguration.Slot0.kA = FeederConstants.PID.REAL_KA.inVoltsPerRadiansPerSecondPerSecond
+
+    feederConfiguration.MotionMagic.MotionMagicCruiseVelocity = 1000.0
+    feederConfiguration.MotionMagic.MotionMagicAcceleration = 1000.0
 
     feederTalon.configurator.apply(feederConfiguration)
 
@@ -106,7 +119,10 @@ object FeederIOTalonFX : FeederIO {
   }
 
   override fun setVelocity(velocity: AngularVelocity) {
-    feederTalon.setControl(velocityControl.withVelocity(velocity.inRotationsPerSecond))
+    feederTalon.setControl(
+        velocityControl
+            .withVelocity(feederSensor.velocityToRawUnits(velocity))
+            .withAcceleration(1000.0))
   }
 
   override fun setBrakeMode(brake: Boolean) {
