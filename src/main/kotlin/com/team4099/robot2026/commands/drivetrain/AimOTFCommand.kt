@@ -121,9 +121,8 @@ class AimOTFCommand(
           PIDController(
               DrivetrainConstants.PID.AUTO_THETA_PID_KP,
               DrivetrainConstants.PID.AUTO_THETA_PID_KI,
-              //DrivetrainConstants.PID.AUTO_THETA_PID_KD
-              (2.5.degrees.perSecond / (1.degrees / 1.seconds))
-                  .radiansPerSecondPerRadiansPerSecond)
+              // DrivetrainConstants.PID.AUTO_THETA_PID_KD
+              (2.5.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond)
     } else {
       if (DriverStation.isAutonomous()) {
         thetaPID =
