@@ -6,10 +6,9 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration
 import com.ctre.phoenix6.controls.MotionMagicVoltage
 import com.ctre.phoenix6.controls.VoltageOut
 import com.ctre.phoenix6.hardware.TalonFX
+import com.ctre.phoenix6.signals.InvertedValue
 import com.ctre.phoenix6.signals.NeutralModeValue
 import com.team4099.robot2026.config.constants.ClimbConstants
-import com.team4099.robot2026.config.constants.ClimbConstants.MAX_ACCELERATION
-import com.team4099.robot2026.config.constants.ClimbConstants.MAX_VELOCITY
 import com.team4099.robot2026.config.constants.Constants
 import edu.wpi.first.units.measure.Angle
 import edu.wpi.first.units.measure.AngularVelocity
@@ -32,8 +31,6 @@ import org.team4099.lib.units.derived.inVoltsPerInch
 import org.team4099.lib.units.derived.inVoltsPerInchPerSecond
 import org.team4099.lib.units.derived.inVoltsPerInchSeconds
 import org.team4099.lib.units.derived.volts
-import org.team4099.lib.units.inInchesPerSecond
-import org.team4099.lib.units.inInchesPerSecondPerSecond
 
 object ClimbIOTalon : ClimbIO {
   private val talon: TalonFX = TalonFX(Constants.Climb.CLIMB_MOTOR_ID)
@@ -42,7 +39,8 @@ object ClimbIOTalon : ClimbIO {
   private val slot0Configs = configs.Slot0
 
   private val voltageControl: VoltageOut = VoltageOut(-1337.volts.inVolts).withEnableFOC(true)
-  private val motionMagicControl: MotionMagicVoltage = MotionMagicVoltage(-1337.0)
+  private val motionMagicControl: MotionMagicVoltage =
+      MotionMagicVoltage(-1337.0).withEnableFOC(true)
 
   private val sensor =
       ctreLinearMechanismSensor(
@@ -70,6 +68,7 @@ object ClimbIOTalon : ClimbIO {
     configs.CurrentLimits.SupplyCurrentLimitEnable = true
 
     configs.MotorOutput.NeutralMode = NeutralModeValue.Brake
+    configs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive
     configs.SoftwareLimitSwitch.ForwardSoftLimitEnable = true
     configs.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
         sensor.positionToRawUnits(ClimbConstants.UPWARDS_EXTENSION_LIMIT)
@@ -77,8 +76,8 @@ object ClimbIOTalon : ClimbIO {
     configs.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
         sensor.positionToRawUnits(ClimbConstants.DOWNWARDS_EXTENSION_LIMIT)
 
-    configs.MotionMagic.MotionMagicCruiseVelocity = MAX_VELOCITY.inInchesPerSecond
-    configs.MotionMagic.MotionMagicAcceleration = MAX_ACCELERATION.inInchesPerSecondPerSecond
+    configs.MotionMagic.MotionMagicCruiseVelocity = 800.0
+    configs.MotionMagic.MotionMagicAcceleration = 800.0
 
     positionSignal = talon.position
     velocitySignal = talon.velocity

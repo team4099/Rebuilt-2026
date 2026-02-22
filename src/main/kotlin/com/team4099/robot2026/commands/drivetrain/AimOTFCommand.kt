@@ -148,6 +148,8 @@ class AimOTFCommand(
     hasAligned = false
     startTime = Clock.fpgaTime
     startedInAuto = DriverStation.isAutonomous()
+
+    RobotContainer.isAligning = true
   }
 
   override fun execute() {
@@ -226,6 +228,8 @@ class AimOTFCommand(
     CustomLogger.recordOutput("FaceHubCommand/interrupted", interrupted)
 
     drivetrain.runSpeeds(ChassisSpeeds())
+    RobotContainer.isAligning = false
+
     CustomLogger.recordOutput("ActiveCommands/FaceHubCommand", false)
   }
 }
