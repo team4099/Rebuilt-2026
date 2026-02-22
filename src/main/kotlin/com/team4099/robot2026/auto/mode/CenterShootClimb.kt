@@ -50,7 +50,6 @@ class CenterShootClimb(val drivetrain: Drive, val shooter: Shooter) : ParallelCo
             superstructure.requestPrepClimbCommand(),
             WaitCommand(1.0),
             superstructure.requestClimbCommand()))
-
   }
 
   companion object {
