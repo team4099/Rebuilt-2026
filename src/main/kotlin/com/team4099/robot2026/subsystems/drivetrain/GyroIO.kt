@@ -46,21 +46,6 @@ interface GyroIO {
       table.put("pitchVelocityDegPerSec", pitchVelocity.inDegreesPerSecond)
       table.put("yawPositionDegrees", yawPosition.inDegrees)
       table.put("yawVelocityDegPerSec", yawVelocity.inDegreesPerSecond)
-
-      table.put("odometryRollTimestamps", odometryRollTimestamps)
-      table.put(
-          "odometryRollPositiRollDegrees",
-          odometryRollPositions.map { angle: Angle -> angle.inDegrees }.toDoubleArray())
-
-      table.put("odometryPitchTimestamps", odometryPitchTimestamps)
-      table.put(
-          "odometryPitchPositionsDegrees",
-          odometryPitchPositions.map { angle: Angle -> angle.inDegrees }.toDoubleArray())
-
-      table.put("odometryYawTimestamps", odometryYawTimestamps)
-      table.put(
-          "odometryYawPositionsDegrees",
-          odometryYawPositions.map { angle: Angle -> angle.inDegrees }.toDoubleArray())
     }
 
     override fun fromLog(table: LogTable) {
@@ -77,40 +62,6 @@ interface GyroIO {
       table.get("yawVelocityDegPerSec", yawVelocity.inDegreesPerSecond).let {
         yawVelocity = it.degrees.perSecond
       }
-
-      table.get("odometryRollTimestamps", odometryRollTimestamps).let {
-        odometryRollTimestamps = it
-      }
-      table
-          .get(
-              "odometryRollPositionDegrees",
-              odometryRollPositions.map { angle: Angle -> angle.inDegrees }.toDoubleArray())
-          .let {
-            odometryRollPositions =
-                it.map { angleDegrees: Double -> angleDegrees.degrees }.toTypedArray()
-          }
-
-      table.get("odometryPitchTimestamps", odometryPitchTimestamps).let {
-        odometryPitchTimestamps = it
-      }
-      table
-          .get(
-              "odometryPitchPositionDegrees",
-              odometryPitchPositions.map { angle: Angle -> angle.inDegrees }.toDoubleArray())
-          .let {
-            odometryPitchPositions =
-                it.map { angleDegrees: Double -> angleDegrees.degrees }.toTypedArray()
-          }
-
-      table.get("odometryYawTimestamps", odometryYawTimestamps).let { odometryYawTimestamps = it }
-      table
-          .get(
-              "odometryYawPositionDegrees",
-              odometryYawPositions.map { angle: Angle -> angle.inDegrees }.toDoubleArray())
-          .let {
-            odometryYawPositions =
-                it.map { angleDegrees: Double -> angleDegrees.degrees }.toTypedArray()
-          }
     }
   }
 

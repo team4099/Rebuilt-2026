@@ -27,7 +27,6 @@ import org.team4099.lib.geometry.Transform3d
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMilliseconds
-import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.max
 
 class Superstructure(
@@ -47,6 +46,9 @@ class Superstructure(
   var lastTransitionTime: Time = Clock.fpgaTime
     private set
 
+  val launchData: Shooter.Companion.CalculatedLaunchData
+    get() = Shooter.calculateLaunchData(drivetrain.pose.toPose2d(), drivetrain.chassisSpeeds)
+
   inline val shooterTargetRPM: AngularVelocity
     get() {
       return max(
@@ -55,8 +57,6 @@ class Superstructure(
     }
 
   val field = Field2d()
-
-  var launchData = Shooter.calculateLaunchData(drivetrain.pose.toPose2d(), drivetrain.chassisSpeeds)
 
   init {
     SmartDashboard.putData("Field", field)
@@ -108,12 +108,8 @@ class Superstructure(
 
     var nextState = currentState
 
-    launchData = Shooter.calculateLaunchData(drivetrain.pose.toPose2d(), drivetrain.chassisSpeeds)
-
     CustomLogger.recordOutput("Superstructure/currentState", currentState)
     CustomLogger.recordOutput("Superstructure/currentRequest", currentRequest.javaClass.simpleName)
-    CustomLogger.recordOutput(
-        "Superstructure/expectedLaunchSpeedMPS", launchData.launchVelocity.inMetersPerSecond)
 
     when (currentState) {
       SuperstructureStates.UNINITALIZED -> {
@@ -123,11 +119,10 @@ class Superstructure(
       }
       SuperstructureStates.TUNING -> {
         if (currentRequest is SuperstructureRequest.Score) {
-          shooter.currentRequest =
-              Request.ShooterRequest.TargetVelocity(shooter.shooterTestVel.get())
+          shooter.currentRequest = Request.ShooterRequest.TargetVelocity(shooterTargetRPM)
 
           if (shooter.isAtTargetedVelocity) {
-            feeder.currentRequest = Request.FeederRequest.OpenLoop(FeederConstants.SCORE_VOLTAGE)
+            feeder.currentRequest = Request.FeederRequest.TargetVelocity(feeder.feederTestVel.get())
             hopper.currentRequest = Request.HopperRequest.TargetVelocity(hopper.hopperTestVel.get())
             intakeRollers.currentRequest =
                 Request.RollersRequest.OpenLoop(RollersConstants.SCORE_ASSISTING_VOLTAGE)
@@ -179,7 +174,8 @@ class Superstructure(
         shooter.currentRequest = Request.ShooterRequest.TargetVelocity(shooterTargetRPM)
 
         if (shooter.isAtTargetedVelocity) {
-          feeder.currentRequest = Request.FeederRequest.OpenLoop(FeederConstants.SCORE_VOLTAGE)
+          feeder.currentRequest =
+              Request.FeederRequest.TargetVelocity(FeederConstants.SCORE_VELOCITY)
           hopper.currentRequest =
               Request.HopperRequest.TargetVelocity(HopperConstants.VELOCITIES.SCORE_VELOCITY)
           intakeRollers.currentRequest =
@@ -282,7 +278,7 @@ class Superstructure(
   fun requestForceIntakeDownCommand(): Command {
     val returnCommand = runOnce {
       intake.currentRequest =
-          Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.INTAKE_ANGLE)
+          Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.FORCE_DOWN_ANGLE)
     }
     returnCommand.name = "RequestForceIntakeDownCommand"
     return returnCommand
@@ -291,7 +287,7 @@ class Superstructure(
   fun requestForceIntakeUpCommand(): Command {
     val returnCommand = runOnce {
       intake.currentRequest =
-          Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.STOW_ANGLE)
+          Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.FORCE_UP_ANGLE)
     }
     returnCommand.name = "RequestForceIntakeUpCommand"
     return returnCommand

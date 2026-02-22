@@ -76,17 +76,12 @@ object GyroIOPigeon2 : GyroIO {
     inputs.yawPosition = yaw.valueAsDouble.degrees
     inputs.yawVelocity = yawVelocity.valueAsDouble.degrees.perSecond
 
-    inputs.odometryRollTimestamps =
-        rollTimestampQueue.map { value: Double -> value }.toDoubleArray()
-    inputs.odometryRollPositions =
-        rollPositionQueue.map { value: Double -> value.degrees }.toTypedArray()
-    inputs.odometryPitchTimestamps =
-        pitchTimestampQueue.map { value: Double -> value }.toDoubleArray()
-    inputs.odometryPitchPositions =
-        pitchPositionQueue.map { value: Double -> value.degrees }.toTypedArray()
-    inputs.odometryYawTimestamps = yawTimestampQueue.map { value: Double -> value }.toDoubleArray()
-    inputs.odometryYawPositions =
-        yawPositionQueue.map { value: Double -> value.degrees }.toTypedArray()
+    inputs.odometryRollTimestamps = rollTimestampQueue.toDoubleArray()
+    inputs.odometryRollPositions = rollPositionQueue.map(Double::degrees).toTypedArray()
+    inputs.odometryPitchTimestamps = pitchTimestampQueue.toDoubleArray()
+    inputs.odometryPitchPositions = pitchPositionQueue.map(Double::degrees).toTypedArray()
+    inputs.odometryYawTimestamps = yawTimestampQueue.toDoubleArray()
+    inputs.odometryYawPositions = yawPositionQueue.map(Double::degrees).toTypedArray()
 
     rollTimestampQueue.clear()
     rollPositionQueue.clear()
