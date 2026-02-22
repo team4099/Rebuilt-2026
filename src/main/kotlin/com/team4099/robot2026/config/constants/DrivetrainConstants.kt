@@ -241,21 +241,24 @@ object DrivetrainConstants {
   object OTF_PATHS {
     val LEFT_TO_NEUTRAL_1 =
         listOf(
-            Supplier { Pose2d(3.326.meters, 7.1.meters, 0.degrees) },
-            Supplier { Pose2d(4.629.meters, 7.1.meters, 90.degrees) },
-            //Supplier { Pose2d(6.meters, 7.317.meters, 0.degrees) },
+            Supplier { Pose2d(3.3.meters, 7.4.meters, 180.degrees) },
+            Supplier { Pose2d(4.6.meters, 7.4.meters, 180.degrees) },
         )
     val LEFT_TO_NEUTRAL_2= listOf(
-      Supplier { Pose2d(4.629.meters, 7.1.meters, 90.degrees) },
-      Supplier { Pose2d(6.meters, 7.1.meters, 90.degrees) },
+      Supplier { Pose2d(4.6.meters, 7.4.meters, 90.degrees) },
+      Supplier { Pose2d(6.meters, 7.4.meters, 90.degrees) },
     )
 
-    val LEFT_TO_ALLIANCE =
+    val LEFT_TO_ALLIANCE_1 =
         listOf(
-            Supplier { Pose2d(6.046.meters, 7.317.meters, 180.degrees) },
-            Supplier { Pose2d(4.639.meters, 7.424.meters, 180.degrees) },
-            Supplier { Pose2d(3.326.meters, 7.341.meters, 180.degrees) },
+            Supplier { Pose2d(6.0.meters, 7.4.meters, 180.degrees) },
+            Supplier { Pose2d(4.6.meters, 7.4.meters, 180.degrees) },
         )
+    val LEFT_TO_ALLIANCE_2 =
+      listOf(
+        Supplier { Pose2d(4.6.meters, 7.4.meters, 180.degrees) },
+        Supplier { Pose2d(3.3.meters, 7.4.meters, 180.degrees) },
+      )
     val RIGHT_TO_NEUTRAL =
         listOf(
             Supplier { Pose2d(3.326.meters, 0.86.meters, 0.degrees) },
