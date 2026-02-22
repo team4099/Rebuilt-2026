@@ -475,10 +475,10 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
       var theta = drivetrainPose.rotation
       for (i in 1..10) {
         val iterativeShooterPosition = drivetrainPose.translation + ShooterConstants.SHOOTER_OFFSET.translation.rotateBy(theta)
-        var thetaNew = atan2((targetVirt.y - iterativeShooterPosition.y).inMeters, (targetVirt.x - iterativeShooterPosition.x).inMeters).radians - theta
+        var thetaNew = atan2((targetVirt.y - iterativeShooterPosition.y).inMeters, (targetVirt.x - iterativeShooterPosition.x).inMeters).radians
 
         // wrap
-        thetaNew = atan2(thetaNew.sin, thetaNew.cos).radians
+//        thetaNew = atan2(thetaNew.sin, thetaNew.cos).radians
 
         if ((thetaNew - theta).absoluteValue < 1E-3.degrees) {
           theta = thetaNew
