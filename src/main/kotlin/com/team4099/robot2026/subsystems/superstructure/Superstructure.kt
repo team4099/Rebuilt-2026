@@ -27,6 +27,7 @@ import org.team4099.lib.geometry.Transform3d
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMilliseconds
+import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.max
 
 class Superstructure(
@@ -119,7 +120,10 @@ class Superstructure(
       }
       SuperstructureStates.TUNING -> {
         if (currentRequest is SuperstructureRequest.Score) {
-          shooter.currentRequest = Request.ShooterRequest.TargetVelocity(shooterTargetRPM)
+          shooter.currentRequest =
+              Request.ShooterRequest.TargetVelocity(shooter.shooterTestVel.get())
+          CustomLogger.recordOutput(
+              "Superstructure/targetLaunchVelMPS", launchData.launchVelocity.inMetersPerSecond)
 
           if (shooter.isAtTargetedVelocity) {
             feeder.currentRequest = Request.FeederRequest.TargetVelocity(feeder.feederTestVel.get())

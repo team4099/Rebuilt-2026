@@ -510,14 +510,19 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
 
     init {
       // TODO: add values to this treemap
-      launchVelToShooterRPMMap.put(6.5.meters.perSecond, 36.rotations.perSecond)
-      launchVelToShooterRPMMap.put(7.meters.perSecond, 39.rotations.perSecond)
-      launchVelToShooterRPMMap.put(7.32.meters.perSecond, 41.rotations.perSecond)
-      launchVelToShooterRPMMap.put(7.75.meters.perSecond, 45.rotations.perSecond)
-      launchVelToShooterRPMMap.put(8.meters.perSecond, 48.rotations.perSecond)
-      launchVelToShooterRPMMap.put(8.5.meters.perSecond, 51.25.rotations.perSecond)
-      launchVelToShooterRPMMap.put(9.meters.perSecond, 56.5.rotations.perSecond)
-      launchVelToShooterRPMMap.put(9.5.meters.perSecond, 67.rotations.perSecond)
+      // todo this is sus...
+      launchVelToShooterRPMMap.put(7.65.meters.perSecond, 34.rotations.perSecond)
+      launchVelToShooterRPMMap.put(7.82.meters.perSecond, 36.rotations.perSecond)
+      launchVelToShooterRPMMap.put(8.5.meters.perSecond, 39.rotations.perSecond)
+      launchVelToShooterRPMMap.put(8.7.meters.perSecond, 41.5.rotations.perSecond)
+      //      launchVelToShooterRPMMap.put(6.5.meters.perSecond, 36.rotations.perSecond)
+      //      launchVelToShooterRPMMap.put(7.meters.perSecond, 39.rotations.perSecond)
+      //      launchVelToShooterRPMMap.put(7.32.meters.perSecond, 41.rotations.perSecond)
+      //      launchVelToShooterRPMMap.put(7.75.meters.perSecond, 45.rotations.perSecond)
+      //      launchVelToShooterRPMMap.put(8.meters.perSecond, 48.rotations.perSecond)
+      //      launchVelToShooterRPMMap.put(8.5.meters.perSecond, 51.25.rotations.perSecond)
+      //      launchVelToShooterRPMMap.put(9.meters.perSecond, 56.5.rotations.perSecond)
+      //      launchVelToShooterRPMMap.put(9.5.meters.perSecond, 67.rotations.perSecond)
     }
   }
 }
