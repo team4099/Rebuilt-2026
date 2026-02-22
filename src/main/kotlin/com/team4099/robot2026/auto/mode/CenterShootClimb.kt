@@ -24,13 +24,14 @@ class CenterShootClimb(val drivetrain: Drive, val shooter: Shooter) : ParallelCo
         Commands.runOnce({ drivetrain.pose = Pose3d(AllianceFlipUtil.apply(startPose)) }),
         FollowChoreoPath(drivetrain, traj),
         SequentialCommandGroup(
+            superstructure.requestIdleCommand(),
             WaitCommand(1.0)
                 .andThen(
                     superstructure.requestIntakeCommand(),
                 ),
             WaitCommand(1.5)
                 .andThen(
-                    superstructure.requestForceIntakeUpCommand(),
+                    superstructure.requestIdleCommand(),
                 ),
             WaitCommand(0.5).andThen(superstructure.requestPrepScoreCommand()),
             ParallelCommandGroup(
@@ -49,6 +50,7 @@ class CenterShootClimb(val drivetrain: Drive, val shooter: Shooter) : ParallelCo
             superstructure.requestPrepClimbCommand(),
             WaitCommand(1.0),
             superstructure.requestClimbCommand()))
+
   }
 
   companion object {

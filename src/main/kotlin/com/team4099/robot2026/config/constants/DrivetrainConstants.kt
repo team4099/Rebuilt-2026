@@ -119,7 +119,7 @@ object DrivetrainConstants {
         } else {
           return when (Constants.Universal.whoami) {
             Constants.WHOAMI.TESTBOT -> 5.0.meters.perSecond / 1.0.meters
-            Constants.WHOAMI.ALPHABOT -> 5.0.meters.perSecond / 1.0.meters
+            Constants.WHOAMI.ALPHABOT -> 30.0.meters.perSecond / 1.0.meters
             Constants.WHOAMI.COMPBOT -> 30.0.meters.perSecond / 1.0.meters
           }
         }
