@@ -203,14 +203,17 @@ class Superstructure(
         climb.currentRequest =
             Request.ClimbRequest.TargetingPosition(ClimbConstants.UPWARDS_EXTENSION_LIMIT)
 
-        if (climb.isAtTargetedPosition) {
-          nextState =
-              when (currentRequest) {
-                is SuperstructureRequest.Idle -> SuperstructureStates.IDLE
-                is SuperstructureRequest.RetractClimb -> SuperstructureStates.CLIMB
-                else -> currentState
+          when (currentRequest) {
+              is SuperstructureRequest.Idle -> {
+                  nextState = SuperstructureStates.IDLE
               }
-        }
+              is SuperstructureRequest.RetractClimb -> {
+                  if (climb.isAtTargetedPosition) {
+                      nextState = SuperstructureStates.CLIMB
+                  }
+              }
+              else -> {}
+          }
       }
       SuperstructureStates.CLIMB -> {
         climb.currentRequest = Request.ClimbRequest.TargetingPosition(ClimbConstants.CLIMB_HEIGHT)
