@@ -29,6 +29,7 @@ import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.sqrt
 import org.team4099.lib.geometry.Pose2d
+import org.team4099.lib.geometry.Translation2d
 import org.team4099.lib.geometry.Translation3d
 import org.team4099.lib.kinematics.ChassisSpeeds
 import org.team4099.lib.units.AngularVelocity
@@ -452,28 +453,51 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
       val shooterysin = ShooterConstants.SHOOTER_OFFSET.translation.y * drivetrainPose.rotation.sin
       val shooterxcos = ShooterConstants.SHOOTER_OFFSET.translation.x * drivetrainPose.rotation.cos
 
-      val robotTVirtMag = robotTVirt.norm()
-      val calculatedAngle = atan2(ShooterConstants.SHOOTER_OFFSET.translation.y.inMeters, robotTVirtMag - shooterPosition.x.inMeters)
-      val angleBetweenVectors =
-        if (calculatedAngle.isInfinite()) 90.degrees
-        else if (calculatedAngle.isNaN()) 0.degrees
-        else calculatedAngle.radians
 
-      val wantedRot = angleBetweenVectors +
-          atan2(
-            shooterTTargetY.inMeters - ballDistanceOffset.get(1),
-            shooterTTargetX.inMeters - ballDistanceOffset.get(0)
-          ).radians
+//      val robotTVirtMag = robotTVirt.norm()
+//      val calculatedAngle = atan2(ShooterConstants.SHOOTER_OFFSET.translation.y.inMeters, robotTVirtMag - shooterPosition.x.inMeters)
+//      val angleBetweenVectors =
+//        if (calculatedAngle.isInfinite()) 90.degrees
+//        else if (calculatedAngle.isNaN()) 0.degrees
+//        else calculatedAngle.radians
+//
+//      val wantedRot = angleBetweenVectors +
+//          atan2(
+//            shooterTTargetY.inMeters - ballDistanceOffset.get(1),
+//            shooterTTargetX.inMeters - ballDistanceOffset.get(0)
+//          ).radians
 
-      CustomLogger.recordOutput("Shooter/wantedRotDegs", wantedRot.inDegrees)
+      val targetVirt = targetTranslation.toTranslation2d() - Translation2d(
+        ballDistanceOffset.get(0).meters,
+        ballDistanceOffset.get(1).meters
+      )
+
+      var theta = drivetrainPose.rotation
+      for (i in 1..10) {
+        val iterativeShooterPosition = drivetrainPose.translation + ShooterConstants.SHOOTER_OFFSET.translation.rotateBy(theta)
+        var thetaNew = atan2((targetVirt.y - iterativeShooterPosition.y).inMeters, (targetVirt.x - iterativeShooterPosition.x).inMeters).radians - theta
+
+        // wrap
+        thetaNew = atan2(thetaNew.sin, thetaNew.cos).radians
+
+        if ((thetaNew - theta).absoluteValue < 1E-3.degrees) {
+          theta = thetaNew
+          break
+        }
+        else {
+          theta = thetaNew
+        }
+      }
+
+      CustomLogger.recordOutput("Shooter/wantedRotDegs", theta.inDegrees)
 
       return CalculatedLaunchData(
-          shooterTTargetMag,
+        (targetVirt - ShooterConstants.SHOOTER_OFFSET.translation).magnitude.meters,
           sqrt(launchSpeedField.inMetersPerSecond.pow(2) + launchSpeedZ.inMetersPerSecond.pow(2))
               .meters
               .perSecond,
           timeOfFlight,
-          wantedRot)
+          theta)
     }
 
     val launchVelToShooterRPMMap: InterpolatingTreeMap<LinearVelocity, AngularVelocity> =
