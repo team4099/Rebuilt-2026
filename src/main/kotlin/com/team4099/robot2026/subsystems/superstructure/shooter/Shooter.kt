@@ -2,6 +2,7 @@ package com.team4099.robot2026.subsystems.superstructure.shooter
 
 import com.ctre.phoenix6.SignalLogger
 import com.team4099.lib.logging.LoggedTunableValue
+import com.team4099.lib.math.asPose2d
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.FieldConstants
 import com.team4099.robot2026.config.constants.ShooterConstants
@@ -24,11 +25,14 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Mechanism
 import java.util.function.Consumer
+import kotlin.math.acos
 import kotlin.math.atan2
 import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.sqrt
 import org.team4099.lib.geometry.Pose2d
+import org.team4099.lib.geometry.Transform2d
+import org.team4099.lib.geometry.Translation2d
 import org.team4099.lib.geometry.Translation3d
 import org.team4099.lib.kinematics.ChassisSpeeds
 import org.team4099.lib.units.AngularVelocity
@@ -43,6 +47,7 @@ import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.cos
 import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inRotation2ds
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.radians
@@ -253,17 +258,16 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
         chassisSpeeds: ChassisSpeeds,
         targetTranslation: Translation3d
     ): CalculatedLaunchData {
-      val shooterPosition =
-          drivetrainPose.translation +
-              ShooterConstants.SHOOTER_OFFSET.translation.rotateBy(drivetrainPose.rotation)
+      val rotatedShooter = ShooterConstants.SHOOTER_OFFSET.translation.rotateBy(drivetrainPose.rotation)
+      val shooterPosition = drivetrainPose.translation + rotatedShooter
 
       val targetHeight = targetTranslation.z
 
-      // Calculate the distance to the HUB
-      val distanceToTargetX = targetTranslation.x - shooterPosition.x
-      val distanceToTargetY = targetTranslation.y - shooterPosition.y
-      val distanceToTargetMag =
-          sqrt(distanceToTargetX.inMeters.pow(2) + distanceToTargetY.inMeters.pow(2)).meters
+      // Calculate the shooter's distance to the HUB
+      val shooterTTargetX = targetTranslation.x - shooterPosition.x
+      val shooterTTargetY = targetTranslation.y - shooterPosition.y
+      val shooterTTargetMag =
+          sqrt(shooterTTargetX.inMeters.pow(2) + shooterTTargetY.inMeters.pow(2)).meters
 
       // Get field-relative drivetrain velocity, and convert it into a vector.
       val fieldSpeeds =
@@ -298,10 +302,10 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
               Matrix(
                   N2(),
                   N1(),
-                  doubleArrayOf(distanceToTargetX.inMeters, distanceToTargetY.inMeters)))
+                  doubleArrayOf(shooterTTargetX.inMeters, shooterTTargetY.inMeters)))
 
       // Get the distance (signed) between the robot and the HUB
-      val hubUnitVector = robotTHubVector.times(1.0 / distanceToTargetMag.inMeters)
+      val hubUnitVector = robotTHubVector.times(1.0 / shooterTTargetMag.inMeters)
       val parallelScalar = driveVector.dot(hubUnitVector).meters
 
       /**
@@ -385,24 +389,24 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
               ShooterConstants.SHOOTER_ANGLE.cos.pow(2) -
               ShooterConstants.SHOOTER_ANGLE.sin *
                   ShooterConstants.SHOOTER_ANGLE.cos *
-                  distanceToTargetMag.inMeters
+                  shooterTTargetMag.inMeters
       val b =
           2 *
               (targetHeight.inMeters - ShooterConstants.SHOOTER_HEIGHT.inMeters) *
               ShooterConstants.SHOOTER_ANGLE.cos *
               parallelScalar.inMeters -
               ShooterConstants.SHOOTER_ANGLE.sin *
-                  distanceToTargetMag.inMeters *
+                  shooterTTargetMag.inMeters *
                   parallelScalar.inMeters
       val c =
           (targetHeight.inMeters - ShooterConstants.SHOOTER_HEIGHT.inMeters) *
               parallelScalar.inMeters.pow(2) +
               Constants.Universal.gravity.inMetersPerSecondPerSecond *
-                  distanceToTargetMag.inMeters.pow(2) / 2.0
+                  shooterTTargetMag.inMeters.pow(2) / 2.0
 
       // To account for things like resistive forces, we add a small
       // feedforward boost proportional to the distance
-      val launchSpeedFF = (distanceToTargetMag.inMeters * 0.1).meters.perSecond
+      val launchSpeedFF = (shooterTTargetMag.inMeters * 0.1).meters.perSecond
       val launchSpeed =
           max(
                   (-b + sqrt(b.pow(2) - 4.0 * a * c)) / (2 * a),
@@ -413,7 +417,7 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
       val launchSpeedZ = launchSpeed * ShooterConstants.SHOOTER_ANGLE.sin
 
       val timeOfFlight =
-          (distanceToTargetMag.inMeters /
+          (shooterTTargetMag.inMeters /
                   (launchSpeed.inMetersPerSecond * ShooterConstants.SHOOTER_ANGLE.cos +
                       parallelScalar.inMeters))
               .seconds
@@ -421,17 +425,45 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
       // The distance the ball travels while in the air due to momentum
       val ballDistanceOffset = driveVector.times(timeOfFlight.inSeconds)
 
+      // todo change comment
       // The wanted rotation is recieved by offsetting the usual angle
       // (the slope connecting the robot and the HUB) by the offset the
       // ball would travel in the air.
-      val wantedRot =
+
+      val robotTVirt =
+        Vector(
+          Matrix(
+            N2(),
+            N1(),
+            doubleArrayOf(targetTranslation.x.inMeters + ballDistanceOffset.get(0) - drivetrainPose.x.inMeters,
+              targetTranslation.y.inMeters + ballDistanceOffset.get(1) - drivetrainPose.y.inMeters
+            )
+          )
+        )
+
+      val robotTShooter =
+        Vector(
+          Matrix(
+            N2(),
+            N1(),
+            doubleArrayOf(rotatedShooter.x.inMeters, rotatedShooter.y.inMeters)
+          )
+        )
+
+      val shooterTVirt = robotTVirt.minus(robotTShooter)
+
+      val angleBetweenVectors = acos(robotTVirt.dot(shooterTVirt).div(robotTVirt.norm() * shooterTVirt.norm())).radians
+
+      val wantedRot = angleBetweenVectors +
           atan2(
-                  distanceToTargetY.inMeters - ballDistanceOffset.get(1),
-                  distanceToTargetX.inMeters - ballDistanceOffset.get(0))
-              .radians
+            shooterTTargetY.inMeters + ballDistanceOffset.get(1),
+            shooterTTargetX.inMeters + ballDistanceOffset.get(0)
+          ).radians
+
+      CustomLogger.recordOutput("Shooter/wantedRotDegs", wantedRot.inDegrees)
 
       return CalculatedLaunchData(
-          distanceToTargetMag,
+          shooterTTargetMag,
           sqrt(launchSpeedField.inMetersPerSecond.pow(2) + launchSpeedZ.inMetersPerSecond.pow(2))
               .meters
               .perSecond,
