@@ -216,7 +216,7 @@ class Superstructure(
         }
       }
       SuperstructureStates.CLIMB -> {
-        climb.currentRequest = Request.ClimbRequest.TargetingPosition(ClimbConstants.CLIMB_HEIGHT)
+        climb.currentRequest = Request.ClimbRequest.TargetingPosition(ClimbConstants.DOWNWARDS_EXTENSION_LIMIT)
         when (currentRequest) {
           is SuperstructureRequest.ExtendClimb -> nextState = SuperstructureStates.PREP_CLIMB
           else -> {}
