@@ -35,6 +35,7 @@ import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.perSecond
 
+
 object DrivetrainConstants {
   val tunerConstants
     get() =
@@ -118,8 +119,8 @@ object DrivetrainConstants {
           return 2.8.meters.perSecond / 1.0.meters // todo:3.15
         } else {
           return when (Constants.Universal.whoami) {
-              Constants.WHOAMI.TESTBOT -> 30.0.meters.perSecond / 1.0.meters
-              Constants.WHOAMI.ALPHABOT -> 180.0.meters.perSecond / 1.0.meters
+              Constants.WHOAMI.TESTBOT -> 5.0.meters.perSecond / 1.0.meters
+              Constants.WHOAMI.ALPHABOT -> 5.0.meters.perSecond / 1.0.meters
               Constants.WHOAMI.COMPBOT -> 30.0.meters.perSecond / 1.0.meters
           }
         }
@@ -140,7 +141,7 @@ object DrivetrainConstants {
           return (0.6.meters.perSecond / (1.0.meters.perSecond)) // 0.6
               .metersPerSecondPerMetersPerSecond // todo: 0.25
         } else {
-          return (20.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
+          return (5.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
         }
       }
 
@@ -149,10 +150,19 @@ object DrivetrainConstants {
     val LIMELIGHT_THETA_KD =
         (0.1.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
 
-    val AUTO_THETA_PID_KP = (2.5.degrees.perSecond / 1.degrees)
+    val AUTO_THETA_PID_KP =
+        if(RobotBase.isReal()){
+            (2.5.degrees.perSecond / 1.degrees)
+        }else{
+            (8.0.degrees.perSecond / 1.degrees)
+        }
     val AUTO_THETA_PID_KI = (0.0.radians.perSecond / (1.radians * 1.seconds))
     val AUTO_THETA_PID_KD =
-        (0.3.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
+        if(RobotBase.isReal()) {
+            (0.3.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
+        }else{
+            (0.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
+        }
 
     val SIM_HUB_PID_KP = (6.7.radians.perSecond / 1.radians)
     val SIM_HUB_PID_KI = (0.0.radians.perSecond / (1.radians * 1.seconds))

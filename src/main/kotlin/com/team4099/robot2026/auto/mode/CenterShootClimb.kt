@@ -18,6 +18,8 @@ import edu.wpi.first.wpilibj2.command.ParallelRaceGroup
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.WaitCommand
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand
+import org.team4099.lib.units.base.seconds
+import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.smoothDeadband
@@ -39,27 +41,22 @@ class CenterShootClimb(val drivetrain: Drive, val shooter: Shooter) : ParallelCo
                     superstructure.requestForceIntakeUpCommand(),
                 ),
             WaitCommand(0.5).andThen(superstructure.requestPrepScoreCommand()),
-            WaitCommand(0.5)
+            ParallelCommandGroup(
+            WaitCommand(1.0)
                 .andThen(
                     AimOTFCommand(
                         drivetrain,
-                        {
-                          ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND)
-                        },
-                        {
-                          ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND)
-                        },
-                        { false },
-                        Jessika())),
+                        7.seconds,
+                    )),
             WaitUntilCommand { shooter.isAtTargetedVelocity }
                 .andThen(
                     superstructure.requestScoreCommand(),
-                )))
-      WaitCommand(2.0)
-      Request.SuperstructureRequest.ExtendClimb()
-      Request.SuperstructureRequest.Idle()
-      WaitCommand(1.0)
-      Request.SuperstructureRequest.RetractClimb()
+                )),
+            superstructure.requestIdleCommand(),
+            superstructure.requestPrepClimbCommand(),
+            WaitCommand(1.0),
+            superstructure.requestClimbCommand()
+        ))
   }
 
   companion object {

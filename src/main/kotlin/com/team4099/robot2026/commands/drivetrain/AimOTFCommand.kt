@@ -117,9 +117,9 @@ class AimOTFCommand(
     if (RobotBase.isSimulation()) {
       thetaPID =
           PIDController(
-              DrivetrainConstants.PID.SIM_HUB_PID_KP,
-              DrivetrainConstants.PID.SIM_HUB_PID_KI,
-              DrivetrainConstants.PID.SIM_HUB_PID_KD)
+              DrivetrainConstants.PID.AUTO_THETA_PID_KP,
+              DrivetrainConstants.PID.AUTO_THETA_PID_KI,
+              DrivetrainConstants.PID.AUTO_THETA_PID_KD)
     } else {
       if (DriverStation.isAutonomous()) {
         thetaPID =
