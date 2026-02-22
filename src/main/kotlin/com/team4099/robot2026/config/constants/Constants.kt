@@ -92,6 +92,10 @@ object Constants {
     const val CLIMB_MOTOR_ID = 61
   }
 
+  object LEDS {
+    const val CANDLE_ID = 1
+  }
+
   object ClusterScore {
     val COMPACTNESS_WEIGHT = 1.0
     val DISTANCE_WEIGHT = 1.0
