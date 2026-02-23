@@ -69,14 +69,6 @@ interface ModuleIO {
       table.put("turnVelocityDegPerSec", turnVelocity.inDegreesPerSecond)
       table.put("turnAppliedVoltage", turnAppliedVoltage.inVolts)
       table.put("turnCurrent", turnCurrent.inAmperes)
-
-      table.put("odometryTimestamps", odometryTimestamps)
-      table.put(
-          "odometryDrivePositionsDegrees",
-          odometryDrivePositions.map { angle: Angle -> angle.inDegrees }.toDoubleArray())
-      table.put(
-          "odometryTurnPositionsDegrees",
-          odometryTurnPositions.map { angle: Angle -> angle.inDegrees }.toDoubleArray())
     }
 
     override fun fromLog(table: LogTable) {
@@ -103,24 +95,6 @@ interface ModuleIO {
         turnAppliedVoltage = it.volts
       }
       table.get("turnCurrent", turnCurrent.inAmperes).let { turnCurrent = it.amps }
-
-      table.get("odometryTimestamps", odometryTimestamps).let { odometryTimestamps = it }
-      table
-          .get(
-              "odometryDrivePositionsDegrees",
-              odometryDrivePositions.map { angle: Angle -> angle.inDegrees }.toDoubleArray())
-          .let {
-            odometryDrivePositions =
-                it.map { angleDegrees: Double -> angleDegrees.degrees }.toTypedArray()
-          }
-      table
-          .get(
-              "odometryTurnPositionDegrees",
-              odometryTurnPositions.map { angle: Angle -> angle.inDegrees }.toDoubleArray())
-          .let {
-            odometryTurnPositions =
-                it.map { angleDegrees: Double -> angleDegrees.degrees }.toTypedArray()
-          }
     }
   }
 

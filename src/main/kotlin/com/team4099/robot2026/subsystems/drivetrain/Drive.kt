@@ -89,7 +89,7 @@ import org.team4099.lib.units.inMetersPerSecond
 
 class Drive(
     private val gyroIO: GyroIO,
-    moduleIOs: Array<ModuleIO>,
+    val moduleIOs: Array<ModuleIO>,
     val getSimulationPoseCallback: Supplier<edu.wpi.first.math.geometry.Pose2d>,
     val resetSimulationPoseCallback: Consumer<edu.wpi.first.math.geometry.Pose2d>
 ) : SubsystemBase() {
@@ -159,10 +159,10 @@ class Drive(
         this)
     Pathfinding.setPathfinder(LocalADStarAK())
     PathPlannerLogging.setLogActivePathCallback { activePath: List<WPIPose2d> ->
-      Logger.recordOutput("Odometry/Trajectory", *activePath.toTypedArray<WPIPose2d>())
+      CustomLogger.recordOutput("Odometry/Trajectory", *activePath.toTypedArray<WPIPose2d>())
     }
     PathPlannerLogging.setLogTargetPoseCallback { targetPose: WPIPose2d ->
-      Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose)
+      CustomLogger.recordOutput("Odometry/TrajectorySetpoint", targetPose)
     }
 
     // Configure SysId
@@ -170,7 +170,7 @@ class Drive(
         SysIdRoutine(
             SysIdRoutine.Config(Volts.of(1.0) / Seconds.of(1.0), Volts.of(7.0), Seconds.of(10.0)) {
                 state: SysIdRoutineLog.State ->
-              Logger.recordOutput("Drive/SysIdState", state.toString())
+              CustomLogger.recordOutput("Drive/SysIdState", state.toString())
             },
             SysIdRoutine.Mechanism(
                 { voltage: Voltage -> runCharacterization(voltage.`in`(Units.Volts)) }, null, this))
@@ -181,7 +181,7 @@ class Drive(
 
     odometryLock.lock() // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs)
-    Logger.processInputs("Drive/Gyro", gyroInputs)
+    CustomLogger.processInputs("Drive/Gyro", gyroInputs)
     for (module in modules) {
       module!!.periodic()
     }
@@ -196,8 +196,8 @@ class Drive(
 
     // Log empty setpoint states when disabled
     if (DriverStation.isDisabled()) {
-      Logger.recordOutput("SwerveStates/Setpoints", *arrayOf<SwerveModuleState>())
-      Logger.recordOutput("SwerveStates/SetpointsOptimized", *arrayOf<SwerveModuleState>())
+      CustomLogger.recordOutput("SwerveStates/Setpoints", *arrayOf<SwerveModuleState>())
+      CustomLogger.recordOutput("SwerveStates/SetpointsOptimized", *arrayOf<SwerveModuleState>())
     }
 
     // Update odometry
@@ -238,8 +238,8 @@ class Drive(
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && RobotBase.isReal())
 
-    Logger.recordOutput("Odometry/pose", pose.pose3d)
-    Logger.recordOutput("SwerveChassisSpeeds/Measured", chassisSpeeds.chassisSpeedsWPILIB)
+    CustomLogger.recordOutput("Odometry/pose", pose.pose3d)
+    CustomLogger.recordOutput("SwerveChassisSpeeds/Measured", chassisSpeeds.chassisSpeedsWPILIB)
 
     Logger.recordOutput("SwerveStates/Measured", *moduleStates)
 

@@ -1,9 +1,13 @@
 package com.team4099.robot2026.config.constants
 
+import com.team4099.lib.hal.Clock
+import com.team4099.robot2026.Robot
+import edu.wpi.first.wpilibj.DriverStation
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.grams
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.seconds
+import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.DerivativeGain
 import org.team4099.lib.units.derived.IntegralGain
 import org.team4099.lib.units.derived.ProportionalGain
@@ -23,17 +27,17 @@ object IntakeConstants {
 
   val PIVOT_INERTIA = 1.0.grams.meterSquared
   val PIVOT_LENGTH = 1.0.inches
-  val PIVOT_MAX_ANGLE = 45.degrees
-  val PIVOT_MIN_ANGLE = (15).degrees
+  val PIVOT_MAX_ANGLE = 120.degrees
+  val PIVOT_MIN_ANGLE = (-50).degrees
 
-  val STATOR_CURRENT_LIMIT = 65.amps
+  val STATOR_CURRENT_LIMIT = 85.amps
   val SUPPLY_CURRENT_LIMIT = 40.amps
 
   val VOLTAGE_COMPENSATION = 12.0.volts
 
-  val MAX_VELOCITY = 1000.rotations.perSecond
-  val MAX_ACCELERATION = 1000.rotations.perSecond.perSecond
-  val MAX_JERK = 3000.rotations.perSecond.perSecond.perSecond
+  val MAX_VELOCITY = 2000.rotations.perSecond
+  val MAX_ACCELERATION = 2000.rotations.perSecond.perSecond
+  val MAX_JERK = 6000.rotations.perSecond.perSecond.perSecond
 
   val SIM_VELOCITY = 400.degrees.perSecond
   val SIM_ACCELERATION = 400.degrees.perSecond.perSecond
@@ -43,13 +47,21 @@ object IntakeConstants {
   object ANGLES {
     val INTAKE_ANGLE = PIVOT_MIN_ANGLE
     val STOW_ANGLE = PIVOT_MAX_ANGLE
-    val IDLE_ANGLE = 10.degrees
-    val EJECT_ANGLE = STOW_ANGLE
+    val IDLE_ANGLE: Angle
+      get() =
+          if (DriverStation.isAutonomous() && Clock.fpgaTime - Robot.autoStartTime < 0.5.seconds)
+              STOW_ANGLE
+          else 10.degrees
+
+    val EJECT_ANGLE = INTAKE_ANGLE
+
+    val FORCE_UP_ANGLE = STOW_ANGLE - 45.degrees
+    val FORCE_DOWN_ANGLE = 10.degrees
   }
 
   object PID {
     // PID Constants
-    val REAL_PIVOT_KP: ProportionalGain<Radian, Volt> = 40.0.volts / 1.0.radians
+    val REAL_PIVOT_KP: ProportionalGain<Radian, Volt> = 35.volts / 1.0.radians
     val REAL_PIVOT_KI: IntegralGain<Radian, Volt> = 0.0.volts / (1.0.radians * 1.0.seconds)
     val REAL_PIVOT_KD: DerivativeGain<Radian, Volt> = 0.0.volts / 1.0.radians.perSecond
 
