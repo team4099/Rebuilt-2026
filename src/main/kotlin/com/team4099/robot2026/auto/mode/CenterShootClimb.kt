@@ -18,40 +18,41 @@ import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.units.base.seconds
 
-class CenterShootClimb(val drivetrain: Drive, val shooter: Shooter) : ParallelCommandGroup() {
+class CenterShootClimb(val drivetrain: Drive, val shooter: Shooter) : SequentialCommandGroup() {
   init {
     //    addRequirements(drivetrain)
 
     addCommands(
         Commands.runOnce({ drivetrain.pose = Pose3d(AllianceFlipUtil.apply(startPose)) }),
-        FollowChoreoPath(drivetrain, traj),
-        SequentialCommandGroup(
-            superstructure.requestIdleCommand(),
-            WaitCommand(1.0)
-                .andThen(
-                    superstructure.requestIntakeCommand(),
-                ),
-            WaitCommand(2.0)
-                .andThen(
-                    superstructure.requestIdleCommand(),
-                ),
-            WaitCommand(0.5).andThen(superstructure.requestPrepScoreCommand()),
-            ParallelCommandGroup(
+        ParallelCommandGroup(
+            FollowChoreoPath(drivetrain, traj),
+            SequentialCommandGroup(
+                superstructure.requestIdleCommand(),
                 WaitCommand(1.0)
                     .andThen(
-                        AimOTFCommand(
-                            drivetrain,
-                            7.0.seconds,
-                        )),
-                WaitUntilCommand { shooter.isAtTargetedVelocity }
+                        superstructure.requestIntakeCommand(),
+                    ),
+                WaitCommand(2.0)
                     .andThen(
-                        superstructure.requestScoreCommand(),
-                    )),
-            superstructure.requestIdleCommand(),
-            superstructure.requestPrepClimbCommand(),
-            WaitCommand(2.0),
-            alignClimbTop(drivetrain),
-            superstructure.requestClimbCommand()))
+                        superstructure.requestIdleCommand(),
+                    ),
+                WaitCommand(0.5).andThen(superstructure.requestPrepScoreCommand()),
+                ParallelCommandGroup(
+                    WaitCommand(1.0)
+                        .andThen(
+                            AimOTFCommand(
+                                drivetrain,
+                                7.0.seconds,
+                            )),
+                    WaitUntilCommand { shooter.isAtTargetedVelocity }
+                        .andThen(
+                            superstructure.requestScoreCommand(),
+                        )),
+                superstructure.requestIdleCommand(),
+                superstructure.requestPrepClimbCommand(),
+            )),
+        alignClimbTop(drivetrain),
+        superstructure.requestClimbCommand())
   }
 
   companion object {

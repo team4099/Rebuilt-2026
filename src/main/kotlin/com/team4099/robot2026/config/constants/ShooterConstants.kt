@@ -64,14 +64,14 @@ object ShooterConstants {
                 (Constants.MOTOR_CONSTANTS.KRAKENX60FOC_kT / GEAR_RATIO))
             .amps / 1.radians.perSecond.perSecond
 
-    val SIM_KP: ProportionalGain<Velocity<Radian>, Volt> = 1.2.volts / 1.0.degrees.perSecond
+    val SIM_KP: ProportionalGain<Velocity<Radian>, Volt> = 0.15.volts / 1.0.degrees.perSecond
     val SIM_KI: IntegralGain<Velocity<Radian>, Volt> =
         0.0.volts / (1.0.rotations.perMinute * 0.0.seconds)
     val SIM_KD: DerivativeGain<Velocity<Radian>, Volt> =
         0.0.volts / (1.0.rotations.perMinute.perSecond)
 
-    val SIM_KS: StaticFeedforward<Volt> = 1.0.volts
+    val SIM_KS: StaticFeedforward<Volt> = 0.5.volts
     val SIM_KV: VelocityFeedforward<Radian, Volt> = (1.0 / 3000.0).volts / 1.degrees.perSecond
-    val SIM_KA: AccelerationFeedforward<Radian, Volt> = 2.0.volts / 1.degrees.perSecond.perSecond
+    val SIM_KA: AccelerationFeedforward<Radian, Volt> = 0.5.volts / 1.degrees.perSecond.perSecond
   }
 }

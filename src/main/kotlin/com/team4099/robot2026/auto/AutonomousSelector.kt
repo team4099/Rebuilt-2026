@@ -8,8 +8,8 @@ import com.team4099.robot2026.auto.mode.TuningAutoPos
 import com.team4099.robot2026.commands.characterization.DriveCharacterizationCommands
 import com.team4099.robot2026.commands.drivetrain.FollowChoreoPath
 import com.team4099.robot2026.subsystems.drivetrain.Drive
-import com.team4099.robot2026.subsystems.superstructure.shooter.Shooter
 import com.team4099.robot2026.subsystems.superstructure.Superstructure
+import com.team4099.robot2026.subsystems.superstructure.shooter.Shooter
 import com.team4099.robot2026.subsystems.vision.Vision
 import com.team4099.robot2026.util.AllianceFlipUtil
 import edu.wpi.first.networktables.GenericEntry
@@ -62,7 +62,12 @@ object AutonomousSelector {
   val waitTime: Time
     get() = waitBeforeCommandSlider.getDouble(0.0).seconds
 
-  fun getCommand(drivetrain: Drive, vision: Vision,shooter: Shooter, superstructure: Superstructure): Command {
+  fun getCommand(
+      drivetrain: Drive,
+      vision: Vision,
+      shooter: Shooter,
+      superstructure: Superstructure
+  ): Command {
     val mode = autonomousModeChooser.get()
 
     return when (mode) {
