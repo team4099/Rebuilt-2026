@@ -4,6 +4,7 @@ import choreo.Choreo
 import choreo.trajectory.SwerveSample
 import com.team4099.robot2026.RobotContainer.superstructure
 import com.team4099.robot2026.commands.drivetrain.AimOTFCommand
+import com.team4099.robot2026.commands.drivetrain.DrivePathOTF.Companion.alignClimbTop
 import com.team4099.robot2026.commands.drivetrain.FollowChoreoPath
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.subsystems.superstructure.shooter.Shooter
@@ -12,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.WaitCommand
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.units.base.seconds
@@ -29,7 +31,7 @@ class CenterShootClimb(val drivetrain: Drive, val shooter: Shooter) : ParallelCo
                 .andThen(
                     superstructure.requestIntakeCommand(),
                 ),
-            WaitCommand(1.5)
+            WaitCommand(2.0)
                 .andThen(
                     superstructure.requestIdleCommand(),
                 ),
@@ -39,16 +41,16 @@ class CenterShootClimb(val drivetrain: Drive, val shooter: Shooter) : ParallelCo
                     .andThen(
                         AimOTFCommand(
                             drivetrain,
-                            6.0.seconds,
+                            7.0.seconds,
                         )),
-                // WaitUntilCommand { shooter.isAtTargetedVelocity }
-                WaitCommand(1.0)
+                WaitUntilCommand { shooter.isAtTargetedVelocity }
                     .andThen(
                         superstructure.requestScoreCommand(),
                     )),
             superstructure.requestIdleCommand(),
             superstructure.requestPrepClimbCommand(),
-            WaitCommand(1.0),
+            WaitCommand(2.0),
+            alignClimbTop(drivetrain),
             superstructure.requestClimbCommand()))
   }
 
