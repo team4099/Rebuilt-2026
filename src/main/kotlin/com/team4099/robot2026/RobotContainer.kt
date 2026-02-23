@@ -35,7 +35,6 @@ import com.team4099.robot2026.subsystems.superstructure.hopper.HopperIOTalon
 import com.team4099.robot2026.subsystems.superstructure.intake.Intake
 import com.team4099.robot2026.subsystems.superstructure.intake.IntakeIO
 import com.team4099.robot2026.subsystems.superstructure.intake.IntakeIOSim
-import com.team4099.robot2026.subsystems.superstructure.intake.IntakeIOTalon
 import com.team4099.robot2026.subsystems.superstructure.intake.rollers.IntakeRollers
 import com.team4099.robot2026.subsystems.superstructure.intake.rollers.IntakeRollersIO
 import com.team4099.robot2026.subsystems.superstructure.intake.rollers.IntakeRollersIOSim
@@ -106,7 +105,7 @@ object RobotContainer {
           climb = Climb(ClimbIOTalon)
           feeder = Feeder(FeederIOTalonFX)
           hopper = Hopper(HopperIOTalon)
-          intake = Intake(IntakeIOTalon)
+          intake = Intake(object : IntakeIO {})
           intakeRollers = IntakeRollers(IntakeRollersIOTalon)
           shooter = Shooter(ShooterIOTalon)
           leds =
@@ -194,7 +193,7 @@ object RobotContainer {
   }
 
   fun setDriveBrakeMode(neutralModeValue: NeutralModeValue = NeutralModeValue.Brake) {
-    //    drivetrain.configNeutralMode(neutralModeValue)
+    drivetrain.moduleIOs.forEach { it.toggleBrakeMode(neutralModeValue) }
   }
 
   fun mapTeleopControls() {
@@ -206,11 +205,11 @@ object RobotContainer {
     ControlBoard.score.onTrue(superstructure.requestScoreCommand())
 
     ControlBoard.prepClimb.onTrue(superstructure.requestPrepClimbCommand())
-    ControlBoard.climb.onTrue(superstructure.requestClimbCommand())
+    //    ControlBoard.climb.onTrue(superstructure.requestClimbCommand())
 
     ControlBoard.intake.onTrue(superstructure.requestIntakeCommand())
-    ControlBoard.forceIntakeUp.onTrue(superstructure.requestForceIntakeUpCommand())
-    ControlBoard.forceIntakeDown.onTrue(superstructure.requestForceIntakeDownCommand())
+    ControlBoard.forceIntakeUp.whileTrue(superstructure.requestForceIntakeUpCommand())
+    ControlBoard.forceIntakeDown.whileTrue(superstructure.requestForceIntakeDownCommand())
 
     ControlBoard.eject.onTrue(superstructure.requestEjectCommand())
 
@@ -231,18 +230,18 @@ object RobotContainer {
               //                      Superstructure.Companion.SuperstructureStates.PREP_SCORE
             })
 
-    //        ControlBoard.leftTrenchOTF.whileTrue(
-    //            ConditionalCommand(
-    //                DrivePathOTF.allianceZoneToNeutralInLeftTrench(drivetrain),
-    //                DrivePathOTF.neutralZoneToAllianceInLeftTrench(drivetrain)) {
-    //                  FieldConstants.inTrenchAllianceZone(drivetrain.pose)
-    //                })
-    //        ControlBoard.rightTrenchOTF.whileTrue(
-    //            ConditionalCommand(
-    //                DrivePathOTF.allianceZoneToNeutralInRightTrench(drivetrain),
-    //                DrivePathOTF.neutralZoneToAllianceInRightTrench(drivetrain)) {
-    //                  FieldConstants.inTrenchAllianceZone(drivetrain.pose)
-    //                })
+    ControlBoard.leftTrenchOTF.whileTrue(
+        ConditionalCommand(
+            DrivePathOTF.allianceZoneToNeutralInLeftTrench(drivetrain),
+            DrivePathOTF.neutralZoneToAllianceInLeftTrench(drivetrain)) {
+              FieldConstants.inTrenchAllianceZone(drivetrain.pose)
+            })
+    ControlBoard.rightTrenchOTF.whileTrue(
+        ConditionalCommand(
+            DrivePathOTF.allianceZoneToNeutralInRightTrench(drivetrain),
+            DrivePathOTF.neutralZoneToAllianceInRightTrench(drivetrain)) {
+              FieldConstants.inTrenchAllianceZone(drivetrain.pose)
+            })
 
     ControlBoard.climbOTF.whileTrue(
         ConditionalCommand(
@@ -255,7 +254,7 @@ object RobotContainer {
 
   fun mapTunableCommands() {}
 
-  fun getAutonomousCommand() = AutonomousSelector.getCommand(drivetrain, vision, shooter)
+  fun getAutonomousCommand() = AutonomousSelector.getCommand(drivetrain, vision,shooter, superstructure)
 
   fun resetSimulationField() {
     if (!RobotBase.isSimulation()) return

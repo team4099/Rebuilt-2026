@@ -89,7 +89,7 @@ abstract class ModuleIOTalonFX(
   val driveConfig: TalonFXConfiguration = constants.DriveMotorInitialConfigs!!
 
   init {
-    driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast
+    driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake
     driveConfig.Slot0 = constants.DriveMotorGains
     driveConfig.Feedback.SensorToMechanismRatio = constants.DriveMotorGearRatio
     driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = constants.SlipCurrent

@@ -74,8 +74,8 @@ object VisionConstants {
 
   // x, y, θ
   // TODO tune
-  val singleTagStdDevs: Matrix<N4?, N1?> = VecBuilder.fill(2.0, 2.0, 20.0, 99_999.0)
-  val multiTagStdDevs: Matrix<N4?, N1?> = VecBuilder.fill(0.25, 0.25, 10.0, 999.0)
+  val singleTagStdDevs: Matrix<N4?, N1?> = VecBuilder.fill(5.0, 5.0, 20.0, 99_999.0)
+  val multiTagStdDevs: Matrix<N4?, N1?> = VecBuilder.fill(2.0, 2.0, 10.0, 999.0)
 
   val oldStdDevs: Matrix<N3?, N1?> = VecBuilder.fill(XY_STDDEV, XY_STDDEV, THETA_STDDEV)
 

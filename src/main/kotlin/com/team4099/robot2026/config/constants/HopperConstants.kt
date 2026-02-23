@@ -30,17 +30,12 @@ object HopperConstants {
 
   val VOLTAGE_COMPENSATION = 12.volts
 
-  object Voltages {
-    val SCORE_VOLTAGE = 3.volts
-    val IDLE_VOLTAGE = 0.1.volts
-  }
-
   val MOMENT_OF_INERTIA = 0.016973.kilo.grams.meterSquared
   val MAX_ACCELERATION: AngularAcceleration = 1000.rotations.perSecond.perSecond
 
   object VELOCITIES {
-    val IDLE_VELOCITY = 0.degrees.perSecond
-    val SCORE_VELOCITY = 10.rotations.perSecond
+    val IDLE_VELOCITY = -.5.rotations.perSecond
+    val SCORE_VELOCITY = 9.rotations.perSecond
   }
 
   object PID {

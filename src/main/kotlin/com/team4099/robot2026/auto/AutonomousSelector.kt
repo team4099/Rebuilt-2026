@@ -2,11 +2,14 @@ package com.team4099.robot2026.auto
 
 import com.team4099.robot2026.auto.mode.CenterShootClimb
 import com.team4099.robot2026.auto.mode.ExamplePathAuto
+import com.team4099.robot2026.auto.mode.IntakeQuadrantL1
 import com.team4099.robot2026.auto.mode.TestOTFAuto
 import com.team4099.robot2026.auto.mode.TuningAutoPos
 import com.team4099.robot2026.commands.characterization.DriveCharacterizationCommands
+import com.team4099.robot2026.commands.drivetrain.FollowChoreoPath
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.subsystems.superstructure.shooter.Shooter
+import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import com.team4099.robot2026.subsystems.vision.Vision
 import com.team4099.robot2026.util.AllianceFlipUtil
 import edu.wpi.first.networktables.GenericEntry
@@ -41,6 +44,10 @@ object AutonomousSelector {
     autonomousModeChooser.addOption("TestOTF DO NOT RUN AT COMPETITION", AutonomousMode.TEST_OTF)
     autonomousModeChooser.addOption(
         "Auto Pose Tuner DO NOT RUN AT COMPETITION", AutonomousMode.AUTOPOS)
+    autonomousModeChooser.addOption("Intake Right Quadrant L1", AutonomousMode.INTAKE_RIGHT_QUAD_L1)
+    autonomousModeChooser.addOption("Intake Left Quadrant L1", AutonomousMode.INTAKE_LEFT_QUAD_L1)
+    autonomousModeChooser.addOption("Do nothing", AutonomousMode.DO_NOTHING)
+
     autoTab.add("Mode", autonomousModeChooser.sendableChooser).withSize(4, 2).withPosition(2, 0)
 
     waitBeforeCommandSlider =
@@ -55,7 +62,7 @@ object AutonomousSelector {
   val waitTime: Time
     get() = waitBeforeCommandSlider.getDouble(0.0).seconds
 
-  fun getCommand(drivetrain: Drive, vision: Vision, shooter: Shooter): Command {
+  fun getCommand(drivetrain: Drive, vision: Vision,shooter: Shooter, superstructure: Superstructure): Command {
     val mode = autonomousModeChooser.get()
 
     return when (mode) {
@@ -83,6 +90,22 @@ object AutonomousSelector {
               .andThen(TuningAutoPos(drivetrain))
       AutonomousMode.OTF_AUTO ->
           return WaitCommand(waitTime.inSeconds).andThen(CenterShootClimb(drivetrain, shooter))
+      AutonomousMode.INTAKE_RIGHT_QUAD_L1 ->
+          WaitCommand(waitTime.inSeconds)
+              .andThen({
+                drivetrain.pose = Pose3d(AllianceFlipUtil.apply(IntakeQuadrantL1.startingPose))
+              })
+              .andThen(IntakeQuadrantL1(drivetrain, superstructure, flipVeritcally = false))
+      AutonomousMode.INTAKE_LEFT_QUAD_L1 ->
+          WaitCommand(waitTime.inSeconds)
+              .andThen({
+                drivetrain.pose =
+                    Pose3d(
+                        FollowChoreoPath.flipVertically(
+                            AllianceFlipUtil.apply(IntakeQuadrantL1.startingPose)))
+              })
+              .andThen(IntakeQuadrantL1(drivetrain, superstructure, flipVeritcally = true))
+      AutonomousMode.DO_NOTHING -> InstantCommand()
       else -> InstantCommand()
     }
   }
@@ -94,5 +117,8 @@ private enum class AutonomousMode {
   WHEEL_RADIUS,
   TEST_OTF,
   DRIVE_FF,
-  AUTOPOS
+  AUTOPOS,
+  INTAKE_RIGHT_QUAD_L1,
+  INTAKE_LEFT_QUAD_L1,
+  DO_NOTHING
 }
