@@ -260,18 +260,26 @@ object DrivetrainConstants {
             Supplier { Pose2d(4.6.meters, 7.4.meters, 180.degrees) },
             Supplier { Pose2d(3.3.meters, 7.4.meters, 180.degrees) },
         )
-    val RIGHT_TO_NEUTRAL =
+    val RIGHT_TO_NEUTRAL_1 =
         listOf(
             Supplier { Pose2d(3.326.meters, 0.86.meters, 0.degrees) },
             Supplier { Pose2d(4.629.meters, 0.631.meters, 0.degrees) },
-            Supplier { Pose2d(6.meters, 0.86.meters, 0.degrees) },
         )
-    val RIGHT_TO_ALLIANCE =
+    val RIGHT_TO_NEUTRAL_2 =
+      listOf(
+        Supplier { Pose2d(4.629.meters, 0.631.meters, 0.degrees) },
+        Supplier { Pose2d(6.meters, 0.86.meters, 0.degrees) },
+      )
+    val RIGHT_TO_ALLIANCE_1 =
         listOf(
             Supplier { Pose2d(6.meters, 0.86.meters, 180.degrees) },
             Supplier { Pose2d(4.629.meters, 0.631.meters, 180.degrees) },
-            Supplier { Pose2d(3.326.meters, 0.86.meters, 180.degrees) },
         )
+    val RIGHT_TO_ALLIANCE_2 =
+      listOf(
+        Supplier { Pose2d(4.629.meters, 0.631.meters, 180.degrees) },
+        Supplier { Pose2d(3.326.meters, 0.86.meters, 180.degrees) },
+      )
     val CLIMB_BOTTOM =
         Pair(
             Supplier { Pose2d(1.195.meters, 2.5.meters, 90.degrees) },

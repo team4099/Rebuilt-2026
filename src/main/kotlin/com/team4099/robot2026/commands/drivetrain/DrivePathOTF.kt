@@ -213,9 +213,9 @@ class DrivePathOTF(
               DrivetrainConstants.OTF_PATHS.LEFT_TO_NEUTRAL_1,
               0.0.degrees,
               if (!AllianceFlipUtil.shouldFlip()) {
-                GoalEndState(-5.0.meters.perSecond, 0.degrees)
+                GoalEndState(-10.0.meters.perSecond, 0.degrees)
               } else {
-                GoalEndState(-5.0.meters.perSecond, 0.degrees)
+                GoalEndState(-10.0.meters.perSecond, 0.degrees)
               }),
           DrivePathOTF(
               drivetrain,
@@ -232,20 +232,35 @@ class DrivePathOTF(
               }))
     }
 
-    fun allianceZoneToNeutralInRightTrench(drivetrain: Drive): DrivePathOTF {
-      return DrivePathOTF(
+    fun allianceZoneToNeutralInRightTrench(drivetrain: Drive): SequentialCommandGroup {
+      return SequentialCommandGroup(DrivePathOTF(
           drivetrain,
           { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
           { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
           { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
           { drivetrain.pose.toPose2d().pose2d },
-          DrivetrainConstants.OTF_PATHS.RIGHT_TO_NEUTRAL,
+          DrivetrainConstants.OTF_PATHS.RIGHT_TO_NEUTRAL_1,
           0.0.degrees,
           if (!AllianceFlipUtil.shouldFlip()) {
             GoalEndState(0.0.meters.perSecond, 180.degrees)
           } else {
             GoalEndState(0.0.meters.perSecond, 0.degrees)
-          })
+          }),
+        DrivePathOTF(
+          drivetrain,
+          { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+          { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+          { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+          { drivetrain.pose.toPose2d().pose2d },
+          DrivetrainConstants.OTF_PATHS.RIGHT_TO_NEUTRAL_2,
+          0.0.degrees,
+          if (!AllianceFlipUtil.shouldFlip()) {
+            GoalEndState(0.0.meters.perSecond, 180.degrees)
+          } else {
+            GoalEndState(0.0.meters.perSecond, 0.degrees)
+          }),
+
+      )
     }
 
     fun neutralZoneToAllianceInLeftTrench(drivetrain: Drive): SequentialCommandGroup {
@@ -259,9 +274,9 @@ class DrivePathOTF(
               DrivetrainConstants.OTF_PATHS.LEFT_TO_ALLIANCE_1,
               0.0.degrees,
               if (!AllianceFlipUtil.shouldFlip()) {
-                GoalEndState(-5.0.meters.perSecond, 0.degrees)
+                GoalEndState(-10.0.meters.perSecond, 0.degrees)
               } else {
-                GoalEndState(-5.0.meters.perSecond, 0.degrees)
+                GoalEndState(-10.0.meters.perSecond, 0.degrees)
               }),
           DrivePathOTF(
               drivetrain,
@@ -278,20 +293,35 @@ class DrivePathOTF(
               }))
     }
 
-    fun neutralZoneToAllianceInRightTrench(drivetrain: Drive): DrivePathOTF {
-      return DrivePathOTF(
+    fun neutralZoneToAllianceInRightTrench(drivetrain: Drive): SequentialCommandGroup {
+      return SequentialCommandGroup (DrivePathOTF(
           drivetrain,
           { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
           { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
           { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
           { drivetrain.pose.toPose2d().pose2d },
-          DrivetrainConstants.OTF_PATHS.RIGHT_TO_ALLIANCE,
+          DrivetrainConstants.OTF_PATHS.RIGHT_TO_ALLIANCE_1,
           0.0.degrees,
           if (!AllianceFlipUtil.shouldFlip()) {
             GoalEndState(0.0.meters.perSecond, 0.degrees)
           } else {
             GoalEndState(0.0.meters.perSecond, 180.degrees)
-          })
+          }),
+        DrivePathOTF(
+          drivetrain,
+          { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+          { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+          { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+          { drivetrain.pose.toPose2d().pose2d },
+          DrivetrainConstants.OTF_PATHS.RIGHT_TO_ALLIANCE_2,
+          0.0.degrees,
+          if (!AllianceFlipUtil.shouldFlip()) {
+            GoalEndState(0.0.meters.perSecond, 0.degrees)
+          } else {
+            GoalEndState(0.0.meters.perSecond, 180.degrees)
+          }),
+
+        )
     }
 
     fun alignClimbBottom(drivetrain: Drive): SequentialCommandGroup {
