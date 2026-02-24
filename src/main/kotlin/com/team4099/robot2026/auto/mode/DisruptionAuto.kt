@@ -17,10 +17,11 @@ class DisruptionAuto(val drivetrain: Drive) : SequentialCommandGroup() {
     addCommands(
         ParallelCommandGroup(
             FollowChoreoPath(drivetrain, firstTrajectory),
-            WaitCommand(.75)
+            WaitCommand(.7)
                 .andThen(
                     superstructure.requestForceIntakeDownCommand(),
-                    WaitCommand(.9).andThen(superstructure.requestIntakeCommand()))))
+                    WaitCommand(.97).andThen(superstructure.requestIntakeCommand())),
+            WaitCommand(6.82).andThen(superstructure.requestIdleCommand())))
   }
 
   companion object {
