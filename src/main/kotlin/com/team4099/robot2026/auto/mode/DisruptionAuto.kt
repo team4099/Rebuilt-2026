@@ -5,14 +5,15 @@ import choreo.trajectory.SwerveSample
 import com.team4099.robot2026.RobotContainer.superstructure
 import com.team4099.robot2026.commands.drivetrain.FollowChoreoPath
 import com.team4099.robot2026.subsystems.drivetrain.Drive
+import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.WaitCommand
 import org.team4099.lib.geometry.Pose2d
 
-class DisruptionAuto(val drivetrain: Drive) : SequentialCommandGroup() {
+class DisruptionAuto(val drivetrain: Drive, superstructure: Superstructure) : SequentialCommandGroup() {
   init {
-    addRequirements(drivetrain)
+    addRequirements(drivetrain, superstructure)
 
     addCommands(
         ParallelCommandGroup(
