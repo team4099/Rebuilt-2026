@@ -35,30 +35,4 @@ class PreloadL1Auto(val drivetrain: Drive, val superstructure: Superstructure) :
     // don't flip pose: poses are robot relative since field frame estimator was reset
     val startingPose = Pose2d(firstTrajectory.getInitialPose(false).get())
   }
-
-  class PreloadL1Auto(val drivetrain: Drive, val superstructure: Superstructure) :
-      SequentialCommandGroup() {
-    init {
-      addRequirements(drivetrain)
-
-      addCommands(
-          FollowChoreoPath(drivetrain, firstTrajectory),
-          ParallelCommandGroup(WaitCommand(2.0), superstructure.requestScoreCommand()),
-          ParallelCommandGroup(
-              FollowChoreoPath(drivetrain, secondTrajectory),
-              superstructure.requestPrepClimbCommand()),
-          superstructure.requestClimbCommand())
-    }
-
-    companion object {
-      val firstTrajectory = Choreo.loadTrajectory<SwerveSample>("preload/preloadShoot.traj").get()
-      // prep shoot
-
-      val secondTrajectory = Choreo.loadTrajectory<SwerveSample>("preload/climb.traj").get()
-
-      // shoot
-      // don't flip pose: poses are robot relative since field frame estimator was reset
-      val startingPose = Pose2d(firstTrajectory.getInitialPose(false).get())
-    }
-  }
 }
