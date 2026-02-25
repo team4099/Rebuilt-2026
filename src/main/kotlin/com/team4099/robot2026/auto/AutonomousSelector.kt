@@ -1,6 +1,7 @@
 package com.team4099.robot2026.auto
 
 import com.team4099.robot2026.auto.mode.CenterShootClimb
+import com.team4099.robot2026.auto.mode.CenterShootClimb.Companion.startPose
 import com.team4099.robot2026.auto.mode.ExamplePathAuto
 import com.team4099.robot2026.auto.mode.IntakeQuadrantL1
 import com.team4099.robot2026.auto.mode.TestOTFAuto
@@ -94,7 +95,9 @@ object AutonomousSelector {
               })
               .andThen(TuningAutoPos(drivetrain))
       AutonomousMode.OTF_AUTO ->
-          return WaitCommand(waitTime.inSeconds).andThen(CenterShootClimb(drivetrain, shooter))
+          WaitCommand(waitTime.inSeconds)
+              .andThen({ drivetrain.pose = Pose3d(AllianceFlipUtil.apply(startPose)) })
+              .andThen(CenterShootClimb(drivetrain, shooter, superstructure))
       AutonomousMode.INTAKE_RIGHT_QUAD_L1 ->
           WaitCommand(waitTime.inSeconds)
               .andThen({
