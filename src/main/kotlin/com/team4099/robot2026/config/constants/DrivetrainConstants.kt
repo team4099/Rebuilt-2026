@@ -117,7 +117,7 @@ object DrivetrainConstants {
         if (RobotBase.isReal()) {
           return 2.8.meters.perSecond / 1.0.meters // todo:3.15
         } else {
-          return 25.meters.perSecond / 1.0.meters
+          return 20.meters.perSecond / 1.0.meters
         }
       }
 
@@ -241,13 +241,13 @@ object DrivetrainConstants {
   object OTF_PATHS {
     val LEFT_TO_NEUTRAL_1 =
         listOf(
-            Supplier { Pose2d(3.3.meters, 7.4.meters, 180.degrees) },
-            Supplier { Pose2d(4.6.meters, 7.4.meters, 180.degrees) },
+            Supplier { Pose2d(3.0.meters, 7.4.meters, 0.degrees) },
+            Supplier { Pose2d(3.6.meters, 7.4.meters, 0.degrees) },
         )
     val LEFT_TO_NEUTRAL_2 =
         listOf(
-            Supplier { Pose2d(4.6.meters, 7.4.meters, 90.degrees) },
-            Supplier { Pose2d(6.meters, 7.4.meters, 90.degrees) },
+            Supplier { Pose2d(3.6.meters, 7.4.meters, 0.degrees) },
+            Supplier { Pose2d(6.meters, 7.4.meters, 0.degrees) },
         )
 
     val LEFT_TO_ALLIANCE_1 =
@@ -258,27 +258,27 @@ object DrivetrainConstants {
     val LEFT_TO_ALLIANCE_2 =
         listOf(
             Supplier { Pose2d(4.6.meters, 7.4.meters, 180.degrees) },
-            Supplier { Pose2d(3.3.meters, 7.4.meters, 180.degrees) },
+            Supplier { Pose2d(3.0.meters, 7.4.meters, 180.degrees) },
         )
     val RIGHT_TO_NEUTRAL_1 =
         listOf(
-            Supplier { Pose2d(3.326.meters, 0.86.meters, 0.degrees) },
-            Supplier { Pose2d(4.629.meters, 0.631.meters, 0.degrees) },
+            Supplier { Pose2d(3.0.meters, 0.63.meters, 0.degrees) },
+            Supplier { Pose2d(3.6.meters, 0.63.meters, 0.degrees) },
         )
     val RIGHT_TO_NEUTRAL_2 =
       listOf(
-        Supplier { Pose2d(4.629.meters, 0.631.meters, 0.degrees) },
-        Supplier { Pose2d(6.meters, 0.86.meters, 0.degrees) },
+        Supplier { Pose2d(3.6.meters, 0.63.meters, 0.degrees) },
+        Supplier { Pose2d(6.meters, .63.meters, 0.degrees) },
       )
     val RIGHT_TO_ALLIANCE_1 =
         listOf(
-            Supplier { Pose2d(6.meters, 0.86.meters, 180.degrees) },
-            Supplier { Pose2d(4.629.meters, 0.631.meters, 180.degrees) },
+            Supplier { Pose2d(6.meters, .63.meters, 180.degrees) },
+            Supplier { Pose2d(4.6.meters, 0.631.meters, 180.degrees) },
         )
     val RIGHT_TO_ALLIANCE_2 =
       listOf(
-        Supplier { Pose2d(4.629.meters, 0.631.meters, 180.degrees) },
-        Supplier { Pose2d(3.326.meters, 0.86.meters, 180.degrees) },
+        Supplier { Pose2d(4.6.meters, 0.631.meters, 180.degrees) },
+        Supplier { Pose2d(3.0.meters, .63.meters, 180.degrees) },
       )
     val CLIMB_BOTTOM =
         Pair(

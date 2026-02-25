@@ -213,7 +213,7 @@ class DrivePathOTF(
               DrivetrainConstants.OTF_PATHS.LEFT_TO_NEUTRAL_1,
               0.0.degrees,
               if (!AllianceFlipUtil.shouldFlip()) {
-                GoalEndState(-10.0.meters.perSecond, 0.degrees)
+                GoalEndState(10.0.meters.perSecond, 0.degrees)
               } else {
                 GoalEndState(-10.0.meters.perSecond, 0.degrees)
               }),
@@ -242,9 +242,9 @@ class DrivePathOTF(
           DrivetrainConstants.OTF_PATHS.RIGHT_TO_NEUTRAL_1,
           0.0.degrees,
           if (!AllianceFlipUtil.shouldFlip()) {
-            GoalEndState(0.0.meters.perSecond, 180.degrees)
+            GoalEndState(10.0.meters.perSecond, 0.degrees)
           } else {
-            GoalEndState(0.0.meters.perSecond, 0.degrees)
+            GoalEndState(-10.0.meters.perSecond, 0.degrees)
           }),
         DrivePathOTF(
           drivetrain,
@@ -255,7 +255,7 @@ class DrivePathOTF(
           DrivetrainConstants.OTF_PATHS.RIGHT_TO_NEUTRAL_2,
           0.0.degrees,
           if (!AllianceFlipUtil.shouldFlip()) {
-            GoalEndState(0.0.meters.perSecond, 180.degrees)
+            GoalEndState(0.0.meters.perSecond, 0.degrees)
           } else {
             GoalEndState(0.0.meters.perSecond, 0.degrees)
           }),
@@ -276,7 +276,7 @@ class DrivePathOTF(
               if (!AllianceFlipUtil.shouldFlip()) {
                 GoalEndState(-10.0.meters.perSecond, 0.degrees)
               } else {
-                GoalEndState(-10.0.meters.perSecond, 0.degrees)
+                GoalEndState(10.0.meters.perSecond, 0.degrees)
               }),
           DrivePathOTF(
               drivetrain,
@@ -303,9 +303,9 @@ class DrivePathOTF(
           DrivetrainConstants.OTF_PATHS.RIGHT_TO_ALLIANCE_1,
           0.0.degrees,
           if (!AllianceFlipUtil.shouldFlip()) {
-            GoalEndState(0.0.meters.perSecond, 0.degrees)
+            GoalEndState(-10.0.meters.perSecond, 180.degrees)
           } else {
-            GoalEndState(0.0.meters.perSecond, 180.degrees)
+            GoalEndState(10.0.meters.perSecond, 180.degrees)
           }),
         DrivePathOTF(
           drivetrain,

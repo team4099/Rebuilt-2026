@@ -117,9 +117,9 @@ class AimOTFCommand(
     if (RobotBase.isSimulation()) {
       thetaPID =
           PIDController(
-              DrivetrainConstants.PID.SIM_HUB_PID_KP,
-              DrivetrainConstants.PID.SIM_HUB_PID_KI,
-              DrivetrainConstants.PID.SIM_HUB_PID_KD)
+              DrivetrainConstants.PID.AUTO_THETA_PID_KP,
+              DrivetrainConstants.PID.AUTO_THETA_PID_KI,
+              DrivetrainConstants.PID.AUTO_THETA_PID_KD)
     } else {
       if (DriverStation.isAutonomous()) {
         thetaPID =
@@ -165,7 +165,7 @@ class AimOTFCommand(
 
     // Instead of using just angle to check if the robot is aligned, base
     // error on if the arc length surpasses the inradius of the HUB opening
-    hasAligned = distanceToHub * thetaPID.error.absoluteValue.inRadians < 20.inches
+    hasAligned = distanceToHub * thetaPID.error.absoluteValue.inRadians < 15.inches
 
     CustomLogger.recordOutput("FaceHubCommand/hasAligned", hasAligned)
 
