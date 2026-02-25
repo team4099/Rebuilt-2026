@@ -255,7 +255,7 @@ object RobotContainer {
   fun mapTunableCommands() {}
 
   fun getAutonomousCommand() =
-      AutonomousSelector.getCommand(drivetrain, vision, shooter, superstructure)
+      AutonomousSelector.getCommand(drivetrain, vision, superstructure)
 
   fun resetSimulationField() {
     if (!RobotBase.isSimulation()) return
