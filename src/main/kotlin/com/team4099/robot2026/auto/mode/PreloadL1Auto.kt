@@ -4,20 +4,12 @@ import choreo.Choreo
 import choreo.trajectory.SwerveSample
 import com.team4099.robot2026.commands.drivetrain.FollowChoreoPath
 import com.team4099.robot2026.subsystems.drivetrain.Drive
-<<<<<<< HEAD
 import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
-=======
-import com.team4099.robot2026.subsystems.superstructure.Request
-import com.team4099.robot2026.subsystems.superstructure.Superstructure
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup
->>>>>>> 7316b54fc0ac9358be75d5635d670ef2ddfe48ac
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.WaitCommand
 import org.team4099.lib.geometry.Pose2d
 
-<<<<<<< HEAD
 class PreloadL1Auto(val drivetrain: Drive, val superstructure: Superstructure) :
     SequentialCommandGroup() {
   init {
@@ -25,7 +17,7 @@ class PreloadL1Auto(val drivetrain: Drive, val superstructure: Superstructure) :
 
     addCommands(
         FollowChoreoPath(drivetrain, firstTrajectory),
-        ParallelCommandGroup(WaitCommand(2.0), superstructure.requestScoreCommand()),
+        ParallelCommandGroup(WaitCommand(.4), superstructure.requestScoreCommand()),
         ParallelCommandGroup(
             FollowChoreoPath(drivetrain, secondTrajectory),
             superstructure.requestPrepClimbCommand()),
@@ -33,7 +25,7 @@ class PreloadL1Auto(val drivetrain: Drive, val superstructure: Superstructure) :
   }
 
   companion object {
-    val firstTrajectory = Choreo.loadTrajectory<SwerveSample>("preload/preloadauto.traj").get()
+    val firstTrajectory = Choreo.loadTrajectory<SwerveSample>("preload/preloadShoot.traj").get()
     // prep shoot
 
     val secondTrajectory = Choreo.loadTrajectory<SwerveSample>("preload/climb.traj").get()
@@ -42,36 +34,30 @@ class PreloadL1Auto(val drivetrain: Drive, val superstructure: Superstructure) :
     // don't flip pose: poses are robot relative since field frame estimator was reset
     val startingPose = Pose2d(firstTrajectory.getInitialPose(false).get())
   }
-=======
-class PreloadL1Auto(val drivetrain: Drive, val superstructure: Superstructure) : SequentialCommandGroup() {
-    init {
-        addRequirements(drivetrain)
 
-        addCommands(
-            FollowChoreoPath(drivetrain, firstTrajectory),
-            ParallelCommandGroup(
-                WaitCommand(2.0),
-                superstructure.requestScoreCommand()
-            ),
-            ParallelCommandGroup(
-                FollowChoreoPath(drivetrain, secondTrajectory),
-                superstructure.requestPrepClimbCommand()
-            ),
-            superstructure.requestClimbCommand()
-        )
+  class PreloadL1Auto(val drivetrain: Drive, val superstructure: Superstructure) :
+      SequentialCommandGroup() {
+    init {
+      addRequirements(drivetrain)
+
+      addCommands(
+          FollowChoreoPath(drivetrain, firstTrajectory),
+          ParallelCommandGroup(WaitCommand(2.0), superstructure.requestScoreCommand()),
+          ParallelCommandGroup(
+              FollowChoreoPath(drivetrain, secondTrajectory),
+              superstructure.requestPrepClimbCommand()),
+          superstructure.requestClimbCommand())
     }
 
     companion object {
-        val firstTrajectory =
-            Choreo.loadTrajectory<SwerveSample>("preload/preloadauto.traj").get()
-        // prep shoot
+      val firstTrajectory = Choreo.loadTrajectory<SwerveSample>("preload/preloadShoot.traj").get()
+      // prep shoot
 
-        val secondTrajectory =
-            Choreo.loadTrajectory<SwerveSample>("preload/NewPath.traj").get()
+      val secondTrajectory = Choreo.loadTrajectory<SwerveSample>("preload/climb.traj").get()
 
-        // shoot
-        // don't flip pose: poses are robot relative since field frame estimator was reset
-        val startingPose = Pose2d(firstTrajectory.getInitialPose(false).get())
+      // shoot
+      // don't flip pose: poses are robot relative since field frame estimator was reset
+      val startingPose = Pose2d(firstTrajectory.getInitialPose(false).get())
     }
->>>>>>> 7316b54fc0ac9358be75d5635d670ef2ddfe48ac
+  }
 }

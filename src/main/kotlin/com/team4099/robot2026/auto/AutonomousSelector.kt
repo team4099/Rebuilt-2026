@@ -1,8 +1,10 @@
 package com.team4099.robot2026.auto
 
 import com.team4099.robot2026.auto.mode.ExamplePathAuto
+import com.team4099.robot2026.auto.mode.PreloadL1Auto
 import com.team4099.robot2026.auto.mode.SysID
 import com.team4099.robot2026.subsystems.drivetrain.Drive
+import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import com.team4099.robot2026.subsystems.vision.Vision
 import edu.wpi.first.networktables.GenericEntry
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets
@@ -26,6 +28,7 @@ object AutonomousSelector {
     autonomousModeChooser.addOption(
         "Example Auto DO NOT RUN AT COMPETITION", AutonomousMode.EXAMPLE_AUTO)
     autonomousModeChooser.addOption("SysID DO NOT RUN AT COMPETITION", AutonomousMode.SYSID)
+    autonomousModeChooser.addOption("Preload L1 Auto", AutonomousMode.PRELOAD_L1_AUTO)
     //    autonomousModeChooser.addOption("WheelRadius DO NOT RUN AT COMPETITION",
     // AutonomousMode.WHEEL_RADIUS)
 
@@ -43,13 +46,15 @@ object AutonomousSelector {
   val waitTime: Time
     get() = waitBeforeCommandSlider.getDouble(0.0).seconds
 
-  fun getCommand(drivetrain: Drive, vision: Vision): Command {
+  fun getCommand(drivetrain: Drive, vision: Vision, superstructure: Superstructure): Command {
     val mode = autonomousModeChooser.get()
 
     when (mode) {
       AutonomousMode.EXAMPLE_AUTO ->
           return WaitCommand(waitTime.inSeconds).andThen(ExamplePathAuto(drivetrain))
       AutonomousMode.SYSID -> return WaitCommand(waitTime.inSeconds).andThen(SysID(drivetrain))
+      AutonomousMode.PRELOAD_L1_AUTO ->
+          return WaitCommand(waitTime.inSeconds).andThen(PreloadL1Auto(drivetrain, superstructure))
       //      AutonomousMode.WHEEL_RADIUS -> return
       // WaitCommand(waitTime.inSeconds).andThen(WheelRadius(drivetrain))
       else -> return InstantCommand()
@@ -60,5 +65,7 @@ object AutonomousSelector {
 private enum class AutonomousMode {
   EXAMPLE_AUTO,
   SYSID,
+  PRELOAD_L1_AUTO,
+
   //  WHEEL_RADIUS
 }
