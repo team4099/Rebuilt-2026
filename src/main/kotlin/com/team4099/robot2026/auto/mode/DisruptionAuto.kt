@@ -11,18 +11,15 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.WaitCommand
 import org.team4099.lib.geometry.Pose2d
 
-class DisruptionAuto(val drivetrain: Drive, superstructure: Superstructure) : SequentialCommandGroup() {
+class DisruptionAuto(val drivetrain: Drive, superstructure: Superstructure) : ParallelCommandGroup() {
   init {
     addRequirements(drivetrain, superstructure)
 
     addCommands(
-        ParallelCommandGroup(
-            FollowChoreoPath(drivetrain, firstTrajectory),
-            WaitCommand(.7)
-                .andThen(
-                    superstructure.requestForceIntakeDownCommand(),
-                    WaitCommand(.97).andThen(superstructure.requestIntakeCommand())),
-            WaitCommand(6.82).andThen(superstructure.requestIdleCommand())))
+      FollowChoreoPath(drivetrain, firstTrajectory),
+      WaitCommand(.97).andThen(superstructure.requestIntakeCommand()));
+      WaitCommand(6.82).andThen(superstructure.requestIdleCommand());
+      WaitCommand(8.4).andThen(superstructure.requestScoreCommand())
   }
 
   companion object {
