@@ -72,7 +72,7 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
   }
 
   override fun periodic() {
-    val startTime = Clock.timestamp
+    val startTime = Clock.epochTime
     visionSim?.update(poseSupplier.get().pose3d)
 
     tagIDFilter =
@@ -286,6 +286,6 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
     }
 
     CustomLogger.recordOutput(
-        "LoggedRobot/Subsystems/VisionLoopTimeMS", (Clock.timestamp - startTime).inMilliseconds)
+        "LoggedRobot/Subsystems/VisionLoopTimeMS", (Clock.epochTime - startTime).inMilliseconds)
   }
 }
