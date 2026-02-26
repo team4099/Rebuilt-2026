@@ -279,13 +279,12 @@ class Superstructure(
     returnCommand.name = "RequestClimbCommand"
     return returnCommand
   }
-  
-  fun requestForceIntakeCommand(wantedAngle: Angle): Command{
+
+  fun requestForceIntakeCommand(wantedAngle: Angle): Command {
     val returnCommand = runOnce {
-      intake.currentRequest =
-        Request.IntakeRequest.TargetingPosition(wantedAngle)
+      intake.currentRequest = Request.IntakeRequest.TargetingPosition(wantedAngle)
     }
-    
+
     returnCommand.name = "RequestForceIntakeCommand"
     return returnCommand
   }

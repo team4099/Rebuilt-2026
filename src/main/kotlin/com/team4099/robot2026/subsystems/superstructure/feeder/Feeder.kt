@@ -63,7 +63,7 @@ class Feeder(private val io: FeederIO) : ControlledByStateMachine() {
   val feederTestVel =
       LoggedTunableValue(
           "Feeder/testSpeedRotPerSec",
-        FeederConstants.SCORE_VELOCITY,
+          FeederConstants.SCORE_VELOCITY,
           Pair({ it.inRotationsPerSecond }, { it.rotations.perSecond }))
 
   fun sysIdQuasistatic(direction: SysIdRoutine.Direction): Command {

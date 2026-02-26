@@ -9,12 +9,10 @@ import com.team4099.robot2026.subsystems.superstructure.Request
 import com.team4099.robot2026.util.ControlledByStateMachine
 import com.team4099.robot2026.util.CustomLogger
 import com.team4099.robot2026.util.Velocity2d
-import edu.wpi.first.math.MathUtil
 import edu.wpi.first.math.Matrix
 import edu.wpi.first.math.Nat.N1
 import edu.wpi.first.math.Nat.N2
 import edu.wpi.first.math.Vector
-import edu.wpi.first.math.interpolation.InterpolatingTreeMap
 import edu.wpi.first.units.Units.Volts
 import edu.wpi.first.units.measure.Voltage as WPILibVoltage
 import edu.wpi.first.wpilibj.RobotBase

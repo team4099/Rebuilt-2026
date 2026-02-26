@@ -64,7 +64,7 @@ class Hopper(private val io: HopperIO) : ControlledByStateMachine() {
   val hopperTestVel =
       LoggedTunableValue(
           "Hopper/testSpeedRotPerSec",
-        HopperConstants.VELOCITIES.SCORE_VELOCITY,
+          HopperConstants.VELOCITIES.SCORE_VELOCITY,
           Pair({ it.inRotationsPerSecond }, { it.rotations.perSecond }))
 
   init {

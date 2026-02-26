@@ -58,7 +58,6 @@ import org.ironmaple.simulation.seasonspecific.rebuilt2026.Arena2026Rebuilt
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Rotation3d
-import org.team4099.lib.interpolate
 import org.team4099.lib.smoothDeadband
 
 object RobotContainer {
@@ -211,10 +210,14 @@ object RobotContainer {
     //    ControlBoard.climb.onTrue(superstructure.requestClimbCommand())
 
     ControlBoard.intake.onTrue(superstructure.requestIntakeCommand())
-    ControlBoard.forceIntakeFullUp.whileTrue(superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_UP_ANGLE))
-    ControlBoard.forceIntakeHalfUp.whileTrue(superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE))
-    ControlBoard.forceIntakeHalfDown.whileTrue(superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFDOWN_ANGLE))
-    ControlBoard.forceIntakeFullDown.whileTrue(superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_DOWN_ANGLE))
+    ControlBoard.forceIntakeFullUp.whileTrue(
+        superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_UP_ANGLE))
+    ControlBoard.forceIntakeHalfUp.whileTrue(
+        superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE))
+    ControlBoard.forceIntakeHalfDown.whileTrue(
+        superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFDOWN_ANGLE))
+    ControlBoard.forceIntakeFullDown.whileTrue(
+        superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_DOWN_ANGLE))
 
     ControlBoard.eject.onTrue(superstructure.requestEjectCommand())
 

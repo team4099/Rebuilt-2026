@@ -120,7 +120,6 @@ class AimOTFCommand(
             DrivetrainConstants.PID.AUTO_THETA_PID_KI,
             DrivetrainConstants.PID.AUTO_THETA_PID_KD)
 
-
     thetaPID.enableContinuousInput(-PI.radians, PI.radians)
   }
 
