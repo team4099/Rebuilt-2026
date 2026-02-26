@@ -90,7 +90,7 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
   val shooterTestVel =
       LoggedTunableValue(
           "Shooter/testLaunchSpeedRotPerSec",
-          0.rotations.perSecond,
+          ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY,
           Pair({ it.inRotationsPerSecond }, { it.rotations.perSecond }))
 
   private val m_sysIdRoutine =
@@ -500,7 +500,7 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
     }
 
     fun launchVelToShooterRPM(desiredLaunchVel: LinearVelocity): AngularVelocity {
-      return (6.33884 * desiredLaunchVel.inMetersPerSecond - 14.14746).rotations.perSecond
+      return (6.33884 * desiredLaunchVel.inMetersPerSecond - 13.8).rotations.perSecond
     }
   }
 }
