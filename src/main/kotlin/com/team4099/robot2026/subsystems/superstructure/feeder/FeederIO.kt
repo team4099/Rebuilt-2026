@@ -2,6 +2,7 @@ package com.team4099.robot2026.subsystems.superstructure.feeder
 
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
+import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.inAmperes
@@ -56,6 +57,8 @@ interface FeederIO {
   fun updateInputs(inputs: FeederIOInputs) {}
 
   fun setVoltage(voltage: ElectricalPotential) {}
+
+  fun setVelocity(velocity: AngularVelocity) {}
 
   fun setBrakeMode(brake: Boolean) {}
 }

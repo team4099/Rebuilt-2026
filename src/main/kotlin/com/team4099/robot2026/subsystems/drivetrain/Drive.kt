@@ -24,6 +24,7 @@ import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.DrivetrainConstants
 import com.team4099.robot2026.util.AllianceFlipUtil
 import com.team4099.robot2026.util.CustomLogger
+import com.team4099.robot2026.util.Velocity2d
 import edu.wpi.first.hal.FRCNetComm
 import edu.wpi.first.hal.HAL
 import edu.wpi.first.math.Matrix
@@ -69,6 +70,7 @@ import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.geometry.Translation2d
 import org.team4099.lib.geometry.Twist2d
 import org.team4099.lib.kinematics.ChassisSpeeds
+import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.base.inKilograms
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inMilliseconds
@@ -87,7 +89,7 @@ import org.team4099.lib.units.inMetersPerSecond
 
 class Drive(
     private val gyroIO: GyroIO,
-    moduleIOs: Array<ModuleIO>,
+    val moduleIOs: Array<ModuleIO>,
     val getSimulationPoseCallback: Supplier<edu.wpi.first.math.geometry.Pose2d>,
     val resetSimulationPoseCallback: Consumer<edu.wpi.first.math.geometry.Pose2d>
 ) : SubsystemBase() {
@@ -115,6 +117,9 @@ class Drive(
           rawGyroRotation.rotation3d,
           lastModulePositions,
           DrivetrainConstants.INITIAL_SIM_POSE)
+
+  var targetSpeeds = ChassisSpeeds()
+    private set
 
   init {
     modules[0] = Module(moduleIOs[0], 0, DrivetrainConstants.tunerConstants.FrontLeft)
@@ -154,10 +159,10 @@ class Drive(
         this)
     Pathfinding.setPathfinder(LocalADStarAK())
     PathPlannerLogging.setLogActivePathCallback { activePath: List<WPIPose2d> ->
-      Logger.recordOutput("Odometry/Trajectory", *activePath.toTypedArray<WPIPose2d>())
+      CustomLogger.recordOutput("Odometry/Trajectory", *activePath.toTypedArray<WPIPose2d>())
     }
     PathPlannerLogging.setLogTargetPoseCallback { targetPose: WPIPose2d ->
-      Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose)
+      CustomLogger.recordOutput("Odometry/TrajectorySetpoint", targetPose)
     }
 
     // Configure SysId
@@ -165,7 +170,7 @@ class Drive(
         SysIdRoutine(
             SysIdRoutine.Config(Volts.of(1.0) / Seconds.of(1.0), Volts.of(7.0), Seconds.of(10.0)) {
                 state: SysIdRoutineLog.State ->
-              Logger.recordOutput("Drive/SysIdState", state.toString())
+              CustomLogger.recordOutput("Drive/SysIdState", state.toString())
             },
             SysIdRoutine.Mechanism(
                 { voltage: Voltage -> runCharacterization(voltage.`in`(Units.Volts)) }, null, this))
@@ -176,7 +181,7 @@ class Drive(
 
     odometryLock.lock() // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs)
-    Logger.processInputs("Drive/Gyro", gyroInputs)
+    CustomLogger.processInputs("Drive/Gyro", gyroInputs)
     for (module in modules) {
       module!!.periodic()
     }
@@ -191,8 +196,8 @@ class Drive(
 
     // Log empty setpoint states when disabled
     if (DriverStation.isDisabled()) {
-      Logger.recordOutput("SwerveStates/Setpoints", *arrayOf<SwerveModuleState>())
-      Logger.recordOutput("SwerveStates/SetpointsOptimized", *arrayOf<SwerveModuleState>())
+      CustomLogger.recordOutput("SwerveStates/Setpoints", *arrayOf<SwerveModuleState>())
+      CustomLogger.recordOutput("SwerveStates/SetpointsOptimized", *arrayOf<SwerveModuleState>())
     }
 
     // Update odometry
@@ -233,8 +238,8 @@ class Drive(
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && RobotBase.isReal())
 
-    Logger.recordOutput("Odometry/pose", pose.pose3d)
-    Logger.recordOutput("SwerveChassisSpeeds/Measured", chassisSpeeds.chassisSpeedsWPILIB)
+    CustomLogger.recordOutput("Odometry/pose", pose.pose3d)
+    CustomLogger.recordOutput("SwerveChassisSpeeds/Measured", chassisSpeeds.chassisSpeedsWPILIB)
 
     Logger.recordOutput("SwerveStates/Measured", *moduleStates)
 
@@ -248,6 +253,8 @@ class Drive(
    * @param speeds Speeds in meters/sec
    */
   fun runSpeeds(speeds: ChassisSpeeds, flipIfRed: Boolean = true) {
+    targetSpeeds = speeds
+
     val flippedSpeeds =
         if (flipIfRed && AllianceFlipUtil.shouldFlip())
             ChassisSpeeds(-speeds.vx, -speeds.vy, speeds.omega)
@@ -272,6 +279,14 @@ class Drive(
 
     // Log optimized setpoints (runSetpoint mutates each state)
     Logger.recordOutput("SwerveStates/SetpointsOptimized", *setpointStates)
+  }
+
+  fun runTranslationWhileKeepingRotation(vels: Velocity2d, flipIfRed: Boolean = true) {
+    runSpeeds(ChassisSpeeds(vels.x, vels.y, targetSpeeds.omega), flipIfRed)
+  }
+
+  fun runRotationWhileKeepingTranslation(omega: AngularVelocity, flipIfRed: Boolean = true) {
+    runSpeeds(ChassisSpeeds(targetSpeeds.vx, targetSpeeds.vy, omega), flipIfRed)
   }
 
   /** Point the module's wheels at the direction specified */
@@ -422,7 +437,7 @@ class Drive(
             ModuleConfig(
                 DrivetrainConstants.tunerConstants.FrontLeft.WheelRadius,
                 DrivetrainConstants.tunerConstants.kSpeedAt12Volts.inMetersPerSecond,
-                DrivetrainConstants.NITRILE_WHEEL_COF,
+                DrivetrainConstants.CURRENT_COF,
                 DCMotor.getKrakenX60Foc(1)
                     .withReduction(
                         DrivetrainConstants.tunerConstants.FrontLeft.DriveMotorGearRatio),
@@ -487,7 +502,7 @@ class Drive(
                           Volts.of(it.SteerFrictionVoltage),
                           Meters.of(it.WheelRadius),
                           KilogramSquareMeters.of(it.SteerInertia),
-                          DrivetrainConstants.NITRILE_WHEEL_COF)
+                          DrivetrainConstants.CURRENT_COF)
                     }
                     .toTypedArray()))
   }

@@ -3,6 +3,7 @@ package com.team4099.robot2026.subsystems.superstructure.feeder
 import com.ctre.phoenix6.BaseStatusSignal
 import com.ctre.phoenix6.StatusSignal
 import com.ctre.phoenix6.configs.TalonFXConfiguration
+import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage
 import com.ctre.phoenix6.controls.VoltageOut
 import com.ctre.phoenix6.hardware.TalonFX
 import com.ctre.phoenix6.signals.InvertedValue
@@ -15,15 +16,21 @@ import edu.wpi.first.units.measure.AngularVelocity as WPILibAngularVelocity
 import edu.wpi.first.units.measure.Current as WPILibCurrent
 import edu.wpi.first.units.measure.Temperature as WPILibTemperature
 import edu.wpi.first.units.measure.Voltage as WPILibVoltage
+import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.inAmperes
 import org.team4099.lib.units.ctreAngularMechanismSensor
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.inVolts
+import org.team4099.lib.units.derived.inVoltsPerRadians
+import org.team4099.lib.units.derived.inVoltsPerRadiansPerSecond
+import org.team4099.lib.units.derived.inVoltsPerRadiansPerSecondPerSecond
 import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
+import org.team4099.lib.units.inRotationsPerSecond
 import org.team4099.lib.units.perMinute
+import org.team4099.lib.units.perSecond
 
 object FeederIOTalonFX : FeederIO {
 
@@ -42,7 +49,9 @@ object FeederIOTalonFX : FeederIO {
   var feederAccelerationStatusSignal: StatusSignal<WPILibAngularAcceleration>
   var feederPositionStatusSignal: StatusSignal<WPILibAngle>
 
-  val voltageControl: VoltageOut = VoltageOut(0.volts.inVolts)
+  val voltageControl: VoltageOut = VoltageOut(0.volts.inVolts).withEnableFOC(true)
+  val velocityControl: MotionMagicVelocityVoltage =
+      MotionMagicVelocityVoltage(0.rotations.perSecond.inRotationsPerSecond)
 
   init {
     feederTalon.clearStickyFaults()
@@ -56,6 +65,16 @@ object FeederIOTalonFX : FeederIO {
     feederConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true
     feederConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Coast
     feederConfiguration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive
+
+    feederConfiguration.Slot0.kP = FeederConstants.PID.REAL_KP.inVoltsPerRadiansPerSecond
+    feederConfiguration.Slot0.kI = FeederConstants.PID.REAL_KI.inVoltsPerRadians
+    feederConfiguration.Slot0.kD = FeederConstants.PID.REAL_KD.inVoltsPerRadiansPerSecondPerSecond
+    feederConfiguration.Slot0.kS = FeederConstants.PID.REAL_KS.inVolts
+    feederConfiguration.Slot0.kV = FeederConstants.PID.REAL_KV.inVoltsPerRadiansPerSecond
+    feederConfiguration.Slot0.kA = FeederConstants.PID.REAL_KA.inVoltsPerRadiansPerSecondPerSecond
+
+    feederConfiguration.MotionMagic.MotionMagicCruiseVelocity = 1000.0
+    feederConfiguration.MotionMagic.MotionMagicAcceleration = 1000.0
 
     feederTalon.configurator.apply(feederConfiguration)
 
@@ -97,6 +116,13 @@ object FeederIOTalonFX : FeederIO {
 
   override fun setVoltage(voltage: ElectricalPotential) {
     feederTalon.setControl(voltageControl.withOutput(voltage.inVolts))
+  }
+
+  override fun setVelocity(velocity: AngularVelocity) {
+    feederTalon.setControl(
+        velocityControl
+            .withVelocity(feederSensor.velocityToRawUnits(velocity))
+            .withAcceleration(1000.0))
   }
 
   override fun setBrakeMode(brake: Boolean) {

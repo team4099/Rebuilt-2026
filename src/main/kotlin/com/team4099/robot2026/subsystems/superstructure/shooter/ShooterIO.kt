@@ -4,6 +4,7 @@ import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.Fraction
+import org.team4099.lib.units.base.Ampere
 import org.team4099.lib.units.base.Second
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
@@ -115,16 +116,28 @@ interface ShooterIO {
 
   fun setVoltage(voltage: ElectricalPotential) {}
 
-  fun configurePID(
+  fun configurePIDVoltage(
       kP: ProportionalGain<Fraction<Radian, Second>, Volt>,
       kI: IntegralGain<Fraction<Radian, Second>, Volt>,
       kD: DerivativeGain<Fraction<Radian, Second>, Volt>
   ) {}
 
-  fun configureFF(
+  fun configureFFVoltage(
       kS: StaticFeedforward<Volt>,
       kV: VelocityFeedforward<Radian, Volt>,
       kA: AccelerationFeedforward<Radian, Volt>,
+  ) {}
+
+  fun configurePIDCurrent(
+      kP: ProportionalGain<Fraction<Radian, Second>, Ampere>,
+      kI: IntegralGain<Fraction<Radian, Second>, Ampere>,
+      kD: DerivativeGain<Fraction<Radian, Second>, Ampere>
+  ) {}
+
+  fun configureFFCurrent(
+      kS: StaticFeedforward<Ampere>,
+      kV: VelocityFeedforward<Radian, Ampere>,
+      kA: AccelerationFeedforward<Radian, Ampere>,
   ) {}
 
   fun setVelocity(velocity: AngularVelocity) {}

@@ -38,7 +38,9 @@ import org.littletonrobotics.junction.LoggedRobot
 import org.littletonrobotics.junction.Logger
 import org.littletonrobotics.junction.wpilog.WPILOGReader
 import org.littletonrobotics.junction.wpilog.WPILOGWriter
+import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMilliseconds
+import org.team4099.lib.units.base.seconds
 
 object Robot : LoggedRobot() {
   val logFolderAlert =
@@ -53,6 +55,7 @@ object Robot : LoggedRobot() {
       Alert("Tuning Mode Enabled. Expect loop times to be greater", AlertType.WARNING)
   lateinit var allianceSelected: GenericEntry
   lateinit var autonomousCommand: Command
+  var autoStartTime: Time = (-1337).seconds
 
   override fun robotInit() {
     // elastic layout upload dont remove
@@ -164,6 +167,12 @@ object Robot : LoggedRobot() {
     RobotContainer.intake.setBrakeMode(true)
   }
 
+  override fun autonomousPeriodic() {
+    if (autoStartTime == (-1337).seconds && DriverStation.isAutonomousEnabled())
+        autoStartTime = Clock.fpgaTime
+    else if (DriverStation.isDisabled()) autoStartTime = (-1337).seconds
+  }
+
   override fun disabledPeriodic() {
     autonomousCommand = RobotContainer.getAutonomousCommand()
   }
@@ -195,7 +204,6 @@ object Robot : LoggedRobot() {
   override fun teleopInit() {
     RobotContainer.mapTeleopControls()
     RobotContainer.getAutonomousCommand().cancel()
-    RobotContainer.setDriveBrakeMode()
     if (Constants.Tuning.TUNING_MODE) {
       RobotContainer.mapTunableCommands()
     }
