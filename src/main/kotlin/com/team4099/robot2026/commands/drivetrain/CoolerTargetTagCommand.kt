@@ -109,7 +109,7 @@ class CoolerTargetTagCommand(
   }
 
   override fun initialize() {
-    startTime = Clock.fpgaTime
+    startTime = Clock.timestamp
 
     xPID.reset()
     yPID.reset()
@@ -122,7 +122,7 @@ class CoolerTargetTagCommand(
     hasThetaAligned = false
     hasPointedAt = false
 
-    CustomLogger.recordOutput("CoolerTargetTagCommand/lastInitialized", Clock.fpgaTime.inSeconds)
+    CustomLogger.recordOutput("CoolerTargetTagCommand/lastInitialized", Clock.timestamp.inSeconds)
   }
 
   override fun execute() {
@@ -133,7 +133,7 @@ class CoolerTargetTagCommand(
 
     val exists = odomTTag.translation.norm != 0.meters
     CustomLogger.recordOutput("CoolerTargetTagCommand/odomTTagExists", exists)
-    if (!exists || Clock.fpgaTime - lastUpdate.timestamp > .5.seconds)
+    if (!exists || Clock.timestamp - lastUpdate.timestamp > .5.seconds)
         end(interrupted = true) // todo kalman?
 
     val setpointTranslation = odomTTag.translation

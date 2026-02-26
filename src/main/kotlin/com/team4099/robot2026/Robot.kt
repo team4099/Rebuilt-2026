@@ -169,7 +169,7 @@ object Robot : LoggedRobot() {
 
   override fun autonomousPeriodic() {
     if (autoStartTime == (-1337).seconds && DriverStation.isAutonomousEnabled())
-        autoStartTime = Clock.fpgaTime
+        autoStartTime = Clock.timestamp
     else if (DriverStation.isDisabled()) autoStartTime = (-1337).seconds
   }
 
@@ -183,7 +183,7 @@ object Robot : LoggedRobot() {
   }
 
   override fun robotPeriodic() {
-    val startTime = Clock.fpgaTime
+    val startTime = Clock.timestamp
 
     // begin scheduling all commands
     CommandScheduler.getInstance().run()
@@ -198,7 +198,7 @@ object Robot : LoggedRobot() {
     ControlBoard.operatorRumbleConsumer.accept(false)
 
     CustomLogger.recordDebugOutput(
-        "LoggedRobot/totalMS", (Clock.fpgaTime - startTime).inMilliseconds)
+        "LoggedRobot/totalMS", (Clock.timestamp - startTime).inMilliseconds)
   }
 
   override fun teleopInit() {

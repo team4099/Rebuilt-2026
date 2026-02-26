@@ -21,7 +21,7 @@ class Leds(
   private var lastState: CandleState? = null
 
   override fun periodic() {
-    val startTime = Clock.fpgaTime
+    val startTime = Clock.epochTime
 
     state =
         if (DriverStation.isDisabled()) {
@@ -47,6 +47,6 @@ class Leds(
     }
 
     CustomLogger.recordOutput(
-        "LoggedRobot/Subsystems/LEDLoopTimeMS", (Clock.fpgaTime - startTime).inMilliseconds)
+        "LoggedRobot/Subsystems/LEDLoopTimeMS", (Clock.epochTime - startTime).inMilliseconds)
   }
 }
