@@ -2,6 +2,7 @@ package com.team4099.robot2026.auto
 
 import com.team4099.robot2026.auto.mode.ExamplePathAuto
 import com.team4099.robot2026.auto.mode.IntakeQuadrantL1
+import com.team4099.robot2026.auto.mode.PreloadL1Auto
 import com.team4099.robot2026.auto.mode.TestOTFAuto
 import com.team4099.robot2026.auto.mode.TuningAutoPos
 import com.team4099.robot2026.commands.characterization.DriveCharacterizationCommands
@@ -41,6 +42,7 @@ object AutonomousSelector {
         "Auto Pose Tuner DO NOT RUN AT COMPETITION", AutonomousMode.AUTOPOS)
     autonomousModeChooser.addOption("Intake Right Quadrant L1", AutonomousMode.INTAKE_RIGHT_QUAD_L1)
     autonomousModeChooser.addOption("Intake Left Quadrant L1", AutonomousMode.INTAKE_LEFT_QUAD_L1)
+    autonomousModeChooser.addOption("Preload L1 Auto", AutonomousMode.PRELOAD_L1_AUTO)
     autonomousModeChooser.addOption("Do nothing", AutonomousMode.DO_NOTHING)
 
     autoTab.add("Mode", autonomousModeChooser.sendableChooser).withSize(4, 2).withPosition(2, 0)
@@ -98,6 +100,12 @@ object AutonomousSelector {
                             AllianceFlipUtil.apply(IntakeQuadrantL1.startingPose)))
               })
               .andThen(IntakeQuadrantL1(drivetrain, superstructure, flipVeritcally = true))
+      AutonomousMode.PRELOAD_L1_AUTO ->
+          WaitCommand(waitTime.inSeconds)
+              .andThen({
+                drivetrain.pose = Pose3d(AllianceFlipUtil.apply(PreloadL1Auto.startingPose))
+              })
+              .andThen(PreloadL1Auto(drivetrain, superstructure))
       AutonomousMode.DO_NOTHING -> InstantCommand()
       else -> InstantCommand()
     }
@@ -112,5 +120,6 @@ private enum class AutonomousMode {
   AUTOPOS,
   INTAKE_RIGHT_QUAD_L1,
   INTAKE_LEFT_QUAD_L1,
-  DO_NOTHING
+  PRELOAD_L1_AUTO,
+  DO_NOTHING,
 }
