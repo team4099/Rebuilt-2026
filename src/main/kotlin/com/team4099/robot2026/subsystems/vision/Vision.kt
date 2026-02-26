@@ -43,14 +43,14 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
 
   private var closestTargetTagAcrossCams: Map.Entry<Int, Pair<Int, Transform3d>?>? = null
 
-  var lastTrigVisionUpdate = TimestampedTrigVisionUpdate(Clock.fpgaTime, -1, Transform3d())
+  var lastTrigVisionUpdate = TimestampedTrigVisionUpdate(Clock.timestamp, -1, Transform3d())
 
   var objectsDetected: MutableList<MutableList<Translation3d>> =
       MutableList(VisionConstants.OBJECT_CLASS.entries.size) { mutableListOf() }
 
   var lastObjectVisionUpdate: MutableList<TimestampedObjectVisionUpdate> =
       VisionConstants.OBJECT_CLASS.entries
-          .map { TimestampedObjectVisionUpdate(Clock.fpgaTime, it, Translation3d()) }
+          .map { TimestampedObjectVisionUpdate(Clock.timestamp, it, Translation3d()) }
           .toMutableList()
 
   private var lastSeenTagId: Int? = null
@@ -72,7 +72,7 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
   }
 
   override fun periodic() {
-    val startTime = Clock.fpgaTime
+    val startTime = Clock.timestamp
     visionSim?.update(poseSupplier.get().pose3d)
 
     tagIDFilter =
@@ -258,7 +258,7 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
       }
     }
 
-    val now = Clock.fpgaTime
+    val now = Clock.timestamp
 
     val tagId0 = closestTargetingTags[0]?.first
     val tagId1 = closestTargetingTags[1]?.first
@@ -286,6 +286,6 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
     }
 
     CustomLogger.recordOutput(
-        "LoggedRobot/Subsystems/VisionLoopTimeMS", (Clock.fpgaTime - startTime).inMilliseconds)
+        "LoggedRobot/Subsystems/VisionLoopTimeMS", (Clock.timestamp - startTime).inMilliseconds)
   }
 }

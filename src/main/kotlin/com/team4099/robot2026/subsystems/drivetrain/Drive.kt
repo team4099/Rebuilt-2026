@@ -177,7 +177,7 @@ class Drive(
   }
 
   override fun periodic() {
-    val startTime = Clock.fpgaTime
+    val startTime = Clock.timestamp
 
     odometryLock.lock() // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs)
@@ -244,7 +244,7 @@ class Drive(
     Logger.recordOutput("SwerveStates/Measured", *moduleStates)
 
     CustomLogger.recordOutput(
-        "LoggedRobot/Subsystems/DriveLoopTimeMS", (Clock.fpgaTime - startTime).inMilliseconds)
+        "LoggedRobot/Subsystems/DriveLoopTimeMS", (Clock.timestamp - startTime).inMilliseconds)
   }
 
   /**

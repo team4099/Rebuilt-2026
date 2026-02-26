@@ -129,9 +129,9 @@ class FollowChoreoPath(
   }
 
   override fun execute() {
-    if (trajStartTime == 0.seconds) trajStartTime = Clock.fpgaTime
+    if (trajStartTime == 0.seconds) trajStartTime = Clock.timestamp
 
-    trajCurTime = Clock.fpgaTime - trajStartTime
+    trajCurTime = Clock.timestamp - trajStartTime
 
     val desiredState =
         trajectory.sampleAt(trajCurTime.inSeconds, AllianceFlipUtil.shouldFlip()).get()
@@ -177,7 +177,7 @@ class FollowChoreoPath(
   }
 
   override fun isFinished(): Boolean {
-    return Clock.fpgaTime - trajStartTime > trajectory.totalTime.seconds && atSetpoint() ||
+    return Clock.timestamp - trajStartTime > trajectory.totalTime.seconds && atSetpoint() ||
         !DriverStation.isAutonomous()
   }
 

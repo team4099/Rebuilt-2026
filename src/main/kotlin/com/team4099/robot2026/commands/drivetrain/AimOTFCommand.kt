@@ -127,7 +127,7 @@ class AimOTFCommand(
     thetaPID.reset()
 
     hasAligned = false
-    startTime = Clock.fpgaTime
+    startTime = Clock.timestamp
     startedInAuto = DriverStation.isAutonomous()
 
     RobotContainer.isAligning = true
@@ -180,7 +180,7 @@ class AimOTFCommand(
 
     if (RobotBase.isSimulation() &&
         hasAligned &&
-        Clock.fpgaTime.inSeconds % 1 < 0.04 &&
+        Clock.timestamp.inSeconds % 1 < 0.04 &&
         RobotContainer.superstructure.currentState ==
             Superstructure.Companion.SuperstructureStates.SCORE || DriverStation.isAutonomous()) {
       SimulatedArena.getInstance()
@@ -201,7 +201,7 @@ class AimOTFCommand(
   }
 
   override fun isFinished(): Boolean {
-    return timeout > 0.seconds && Clock.fpgaTime - startTime > timeout ||
+    return timeout > 0.seconds && Clock.timestamp - startTime > timeout ||
         startedInAuto xor DriverStation.isAutonomous()
   }
 

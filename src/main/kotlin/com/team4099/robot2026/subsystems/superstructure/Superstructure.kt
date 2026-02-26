@@ -45,7 +45,7 @@ class Superstructure(
     private set
 
   var currentRequest: SuperstructureRequest = SuperstructureRequest.Idle()
-  var lastTransitionTime: Time = Clock.fpgaTime
+  var lastTransitionTime: Time = Clock.timestamp
     private set
 
   val launchData: Shooter.Companion.CalculatedLaunchData
@@ -65,42 +65,42 @@ class Superstructure(
   }
 
   override fun periodic() {
-    val startTime = Clock.fpgaTime
+    val startTime = Clock.timestamp
 
-    val climbStartTime = Clock.fpgaTime
+    val climbStartTime = Clock.timestamp
     climb.onLoop()
     CustomLogger.recordOutput(
-        "LoggedRobot/Subsystems/ClimbLoopTimeMS", (Clock.fpgaTime - climbStartTime).inMilliseconds)
+        "LoggedRobot/Subsystems/ClimbLoopTimeMS", (Clock.timestamp - climbStartTime).inMilliseconds)
 
-    val feederStartTime = Clock.fpgaTime
+    val feederStartTime = Clock.timestamp
     feeder.onLoop()
     CustomLogger.recordOutput(
         "LoggedRobot/Subsystems/FeederLoopTimeMS",
-        (Clock.fpgaTime - feederStartTime).inMilliseconds)
+        (Clock.timestamp - feederStartTime).inMilliseconds)
 
-    val hopperStartTime = Clock.fpgaTime
+    val hopperStartTime = Clock.timestamp
     hopper.onLoop()
     CustomLogger.recordOutput(
         "LoggedRobot/Subsystems/HopperLoopTimeMS",
-        (Clock.fpgaTime - hopperStartTime).inMilliseconds)
+        (Clock.timestamp - hopperStartTime).inMilliseconds)
 
-    val intakeStartTime = Clock.fpgaTime
+    val intakeStartTime = Clock.timestamp
     intake.onLoop()
     CustomLogger.recordOutput(
         "LoggedRobot/Subsystems/IntakeLoopTimeMS",
-        (Clock.fpgaTime - intakeStartTime).inMilliseconds)
+        (Clock.timestamp - intakeStartTime).inMilliseconds)
 
-    val intakeRollersStartTime = Clock.fpgaTime
+    val intakeRollersStartTime = Clock.timestamp
     intakeRollers.onLoop()
     CustomLogger.recordOutput(
         "LoggedRobot/Subsystems/IntakeRollersLoopTimeMS",
-        (Clock.fpgaTime - intakeRollersStartTime).inMilliseconds)
+        (Clock.timestamp - intakeRollersStartTime).inMilliseconds)
 
-    val shooterStartTime = Clock.fpgaTime
+    val shooterStartTime = Clock.timestamp
     shooter.onLoop()
     CustomLogger.recordOutput(
         "LoggedRobot/Subsystems/ShooterLoopTimeMS",
-        (Clock.fpgaTime - shooterStartTime).inMilliseconds)
+        (Clock.timestamp - shooterStartTime).inMilliseconds)
 
     field.robotPose = drivetrain.pose.toPose2d().pose2d
     field.getObject("FUEL").poses =
@@ -236,12 +236,12 @@ class Superstructure(
       }
     }
 
-    if (currentState != nextState) lastTransitionTime = Clock.fpgaTime
+    if (currentState != nextState) lastTransitionTime = Clock.timestamp
 
     currentState = nextState
     CustomLogger.recordOutput(
         "LoggedRobot/Subsystems/SuperstructureLoopTimeMS",
-        (Clock.fpgaTime - startTime).inMilliseconds)
+        (Clock.timestamp - startTime).inMilliseconds)
   }
 
   fun requestIdleCommand(): Command {
