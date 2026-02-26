@@ -10,6 +10,7 @@ import com.team4099.robot2026.config.ControlBoard
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.DrivetrainConstants
 import com.team4099.robot2026.config.constants.FieldConstants
+import com.team4099.robot2026.config.constants.IntakeConstants
 import com.team4099.robot2026.config.constants.VisionConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.subsystems.drivetrain.GyroIOPigeon2
@@ -35,6 +36,7 @@ import com.team4099.robot2026.subsystems.superstructure.hopper.HopperIOTalon
 import com.team4099.robot2026.subsystems.superstructure.intake.Intake
 import com.team4099.robot2026.subsystems.superstructure.intake.IntakeIO
 import com.team4099.robot2026.subsystems.superstructure.intake.IntakeIOSim
+import com.team4099.robot2026.subsystems.superstructure.intake.IntakeIOTalon
 import com.team4099.robot2026.subsystems.superstructure.intake.rollers.IntakeRollers
 import com.team4099.robot2026.subsystems.superstructure.intake.rollers.IntakeRollersIO
 import com.team4099.robot2026.subsystems.superstructure.intake.rollers.IntakeRollersIOSim
@@ -105,7 +107,7 @@ object RobotContainer {
           climb = Climb(ClimbIOTalon)
           feeder = Feeder(FeederIOTalonFX)
           hopper = Hopper(HopperIOTalon)
-          intake = Intake(object : IntakeIO {})
+          intake = Intake(IntakeIOTalon)
           intakeRollers = IntakeRollers(IntakeRollersIOTalon)
           shooter = Shooter(ShooterIOTalon)
           leds =
@@ -208,8 +210,14 @@ object RobotContainer {
     //    ControlBoard.climb.onTrue(superstructure.requestClimbCommand())
 
     ControlBoard.intake.onTrue(superstructure.requestIntakeCommand())
-    ControlBoard.forceIntakeUp.whileTrue(superstructure.requestForceIntakeUpCommand())
-    ControlBoard.forceIntakeDown.whileTrue(superstructure.requestForceIntakeDownCommand())
+    ControlBoard.forceIntakeFullUp.whileTrue(
+        superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_UP_ANGLE))
+    ControlBoard.forceIntakeHalfUp.whileTrue(
+        superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE))
+    ControlBoard.forceIntakeHalfDown.whileTrue(
+        superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFDOWN_ANGLE))
+    ControlBoard.forceIntakeFullDown.whileTrue(
+        superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_DOWN_ANGLE))
 
     ControlBoard.eject.onTrue(superstructure.requestEjectCommand())
 

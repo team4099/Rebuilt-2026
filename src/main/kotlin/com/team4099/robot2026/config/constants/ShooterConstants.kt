@@ -45,7 +45,7 @@ object ShooterConstants {
       if (Constants.Tuning.TUNING_MODE) 150.rotations.perMinute else 75.0.rotations.perMinute
 
   object VELOCITIES {
-    val MINIMUM_LAUNCH_VELOCITY = 25.rotations.perSecond
+    val MINIMUM_LAUNCH_VELOCITY = 35.rotations.perSecond
     val IDLE_VELOCITY =
         if (Constants.Tuning.TUNING_MODE) 0.rotations.perSecond else .5.rotations.perSecond
   }
