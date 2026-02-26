@@ -1,8 +1,8 @@
 package com.team4099.robot2026.auto
 
 import com.team4099.robot2026.auto.mode.ExamplePathAuto
-import com.team4099.robot2026.auto.mode.PreloadL1Auto
 import com.team4099.robot2026.auto.mode.IntakeQuadrantL1
+import com.team4099.robot2026.auto.mode.PreloadL1Auto
 import com.team4099.robot2026.auto.mode.TestOTFAuto
 import com.team4099.robot2026.auto.mode.TuningAutoPos
 import com.team4099.robot2026.commands.characterization.DriveCharacterizationCommands
@@ -101,12 +101,11 @@ object AutonomousSelector {
               })
               .andThen(IntakeQuadrantL1(drivetrain, superstructure, flipVeritcally = true))
       AutonomousMode.PRELOAD_L1_AUTO ->
-        WaitCommand(waitTime.inSeconds)
-          .andThen({
-            drivetrain.pose =
-              Pose3d(
-                  AllianceFlipUtil.apply(PreloadL1Auto.startingPose))
-          }).andThen(PreloadL1Auto(drivetrain, superstructure))
+          WaitCommand(waitTime.inSeconds)
+              .andThen({
+                drivetrain.pose = Pose3d(AllianceFlipUtil.apply(PreloadL1Auto.startingPose))
+              })
+              .andThen(PreloadL1Auto(drivetrain, superstructure))
       AutonomousMode.DO_NOTHING -> InstantCommand()
       else -> InstantCommand()
     }

@@ -17,17 +17,16 @@ class PreloadL1Auto(val drivetrain: Drive, val superstructure: Superstructure) :
     addRequirements(drivetrain)
 
     addCommands(
-      ParallelCommandGroup(
-        FollowChoreoPath(drivetrain, firstTrajectory),
-        superstructure.requestPrepScoreCommand()
-        ),
+        ParallelCommandGroup(
+            FollowChoreoPath(drivetrain, firstTrajectory),
+            superstructure.requestPrepScoreCommand()),
         ParallelCommandGroup(WaitCommand(0.5), superstructure.requestScoreCommand()),
-      WaitCommand(5.0),
-      superstructure.requestIdleCommand(),
-//      superstructure.requestPrepClimbCommand(),
-      WaitCommand(2.0),
-      DrivePathOTF.alignClimbTop(drivetrain),
-//      superstructure.requestClimbCommand()
+        WaitCommand(5.0),
+        superstructure.requestIdleCommand(),
+        //      superstructure.requestPrepClimbCommand(),
+        WaitCommand(2.0),
+        DrivePathOTF.alignClimbTop(drivetrain),
+        //      superstructure.requestClimbCommand()
     )
   }
 
