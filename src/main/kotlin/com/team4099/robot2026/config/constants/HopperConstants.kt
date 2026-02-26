@@ -34,7 +34,7 @@ object HopperConstants {
   val MAX_ACCELERATION: AngularAcceleration = 1000.rotations.perSecond.perSecond
 
   object VELOCITIES {
-    val IDLE_VELOCITY = -.5.rotations.perSecond
+    val IDLE_VELOCITY = 0.rotations.perSecond
     val SCORE_VELOCITY = 9.rotations.perSecond
   }
 

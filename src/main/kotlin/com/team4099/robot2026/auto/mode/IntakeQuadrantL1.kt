@@ -3,6 +3,7 @@ package com.team4099.robot2026.auto.mode
 import choreo.Choreo
 import choreo.trajectory.SwerveSample
 import com.team4099.robot2026.commands.drivetrain.FollowChoreoPath
+import com.team4099.robot2026.config.constants.IntakeConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
@@ -27,19 +28,19 @@ class IntakeQuadrantL1(
                 superstructure.requestIdleCommand())),
         superstructure.requestScoreCommand(),
         WaitCommand(2.0),
-        superstructure.requestForceIntakeUpCommand(),
+        superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_UP_ANGLE),
         WaitCommand(1.0),
-        superstructure.requestForceIntakeDownCommand(),
+        superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_DOWN_ANGLE),
         WaitCommand(1.0),
-        superstructure.requestForceIntakeUpCommand(),
+        superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_UP_ANGLE),
         WaitCommand(1.0),
-        superstructure.requestForceIntakeDownCommand(),
+        superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_DOWN_ANGLE),
         WaitCommand(1.0),
-        superstructure.requestForceIntakeUpCommand(),
+        superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_UP_ANGLE),
         WaitCommand(1.0),
-        superstructure.requestForceIntakeDownCommand(),
+        superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_DOWN_ANGLE),
         WaitCommand(1.0),
-        superstructure.requestForceIntakeUpCommand(),
+        superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_UP_ANGLE),
         WaitCommand(1.0),
         superstructure.requestIdleCommand(),
         WaitCommand(1.0),

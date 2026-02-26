@@ -27,6 +27,8 @@ import org.team4099.lib.geometry.Transform3d
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMilliseconds
+import org.team4099.lib.units.derived.Angle
+import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.max
 
 class Superstructure(
@@ -52,7 +54,7 @@ class Superstructure(
   inline val shooterTargetRPM: AngularVelocity
     get() {
       return max(
-          Shooter.launchVelToShooterRPMMap.get(launchData.launchVelocity),
+          Shooter.launchVelToShooterRPM(launchData.launchVelocity),
           ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY)
     }
 
@@ -119,7 +121,10 @@ class Superstructure(
       }
       SuperstructureStates.TUNING -> {
         if (currentRequest is SuperstructureRequest.Score) {
-          shooter.currentRequest = Request.ShooterRequest.TargetVelocity(shooterTargetRPM)
+          shooter.currentRequest =
+              Request.ShooterRequest.TargetVelocity(shooter.shooterTestVel.get())
+          CustomLogger.recordOutput(
+              "Superstructure/targetLaunchVelMPS", launchData.launchVelocity.inMetersPerSecond)
 
           if (shooter.isAtTargetedVelocity) {
             feeder.currentRequest = Request.FeederRequest.TargetVelocity(feeder.feederTestVel.get())
@@ -275,21 +280,12 @@ class Superstructure(
     return returnCommand
   }
 
-  fun requestForceIntakeDownCommand(): Command {
+  fun requestForceIntakeCommand(wantedAngle: Angle): Command {
     val returnCommand = runOnce {
-      intake.currentRequest =
-          Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.FORCE_DOWN_ANGLE)
+      intake.currentRequest = Request.IntakeRequest.TargetingPosition(wantedAngle)
     }
-    returnCommand.name = "RequestForceIntakeDownCommand"
-    return returnCommand
-  }
 
-  fun requestForceIntakeUpCommand(): Command {
-    val returnCommand = runOnce {
-      intake.currentRequest =
-          Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.FORCE_UP_ANGLE)
-    }
-    returnCommand.name = "RequestForceIntakeUpCommand"
+    returnCommand.name = "RequestForceIntakeCommand"
     return returnCommand
   }
 
