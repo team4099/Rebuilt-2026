@@ -27,6 +27,8 @@ import org.team4099.lib.geometry.Transform3d
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMilliseconds
+import org.team4099.lib.units.derived.Angle
+import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.max
 
 class Superstructure(
@@ -43,7 +45,7 @@ class Superstructure(
     private set
 
   var currentRequest: SuperstructureRequest = SuperstructureRequest.Idle()
-  var lastTransitionTime: Time = Clock.fpgaTime
+  var lastTransitionTime: Time = Clock.timestamp
     private set
 
   val launchData: Shooter.Companion.CalculatedLaunchData
@@ -52,7 +54,7 @@ class Superstructure(
   inline val shooterTargetRPM: AngularVelocity
     get() {
       return max(
-          Shooter.launchVelToShooterRPMMap.get(launchData.launchVelocity),
+          Shooter.launchVelToShooterRPM(launchData.launchVelocity),
           ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY)
     }
 
@@ -63,42 +65,42 @@ class Superstructure(
   }
 
   override fun periodic() {
-    val startTime = Clock.fpgaTime
+    val startTime = Clock.epochTime
 
-    val climbStartTime = Clock.fpgaTime
+    val climbStartTime = Clock.epochTime
     climb.onLoop()
     CustomLogger.recordOutput(
-        "LoggedRobot/Subsystems/ClimbLoopTimeMS", (Clock.fpgaTime - climbStartTime).inMilliseconds)
+        "LoggedRobot/Subsystems/ClimbLoopTimeMS", (Clock.epochTime - climbStartTime).inMilliseconds)
 
-    val feederStartTime = Clock.fpgaTime
+    val feederStartTime = Clock.epochTime
     feeder.onLoop()
     CustomLogger.recordOutput(
         "LoggedRobot/Subsystems/FeederLoopTimeMS",
-        (Clock.fpgaTime - feederStartTime).inMilliseconds)
+        (Clock.epochTime - feederStartTime).inMilliseconds)
 
-    val hopperStartTime = Clock.fpgaTime
+    val hopperStartTime = Clock.epochTime
     hopper.onLoop()
     CustomLogger.recordOutput(
         "LoggedRobot/Subsystems/HopperLoopTimeMS",
-        (Clock.fpgaTime - hopperStartTime).inMilliseconds)
+        (Clock.epochTime - hopperStartTime).inMilliseconds)
 
-    val intakeStartTime = Clock.fpgaTime
+    val intakeStartTime = Clock.epochTime
     intake.onLoop()
     CustomLogger.recordOutput(
         "LoggedRobot/Subsystems/IntakeLoopTimeMS",
-        (Clock.fpgaTime - intakeStartTime).inMilliseconds)
+        (Clock.epochTime - intakeStartTime).inMilliseconds)
 
-    val intakeRollersStartTime = Clock.fpgaTime
+    val intakeRollersStartTime = Clock.epochTime
     intakeRollers.onLoop()
     CustomLogger.recordOutput(
         "LoggedRobot/Subsystems/IntakeRollersLoopTimeMS",
-        (Clock.fpgaTime - intakeRollersStartTime).inMilliseconds)
+        (Clock.epochTime - intakeRollersStartTime).inMilliseconds)
 
-    val shooterStartTime = Clock.fpgaTime
+    val shooterStartTime = Clock.epochTime
     shooter.onLoop()
     CustomLogger.recordOutput(
         "LoggedRobot/Subsystems/ShooterLoopTimeMS",
-        (Clock.fpgaTime - shooterStartTime).inMilliseconds)
+        (Clock.epochTime - shooterStartTime).inMilliseconds)
 
     field.robotPose = drivetrain.pose.toPose2d().pose2d
     field.getObject("FUEL").poses =
@@ -119,7 +121,10 @@ class Superstructure(
       }
       SuperstructureStates.TUNING -> {
         if (currentRequest is SuperstructureRequest.Score) {
-          shooter.currentRequest = Request.ShooterRequest.TargetVelocity(shooterTargetRPM)
+          shooter.currentRequest =
+              Request.ShooterRequest.TargetVelocity(shooter.shooterTestVel.get())
+          CustomLogger.recordOutput(
+              "Superstructure/targetLaunchVelMPS", launchData.launchVelocity.inMetersPerSecond)
 
           if (shooter.isAtTargetedVelocity) {
             feeder.currentRequest = Request.FeederRequest.TargetVelocity(feeder.feederTestVel.get())
@@ -231,12 +236,12 @@ class Superstructure(
       }
     }
 
-    if (currentState != nextState) lastTransitionTime = Clock.fpgaTime
+    if (currentState != nextState) lastTransitionTime = Clock.timestamp
 
     currentState = nextState
     CustomLogger.recordOutput(
         "LoggedRobot/Subsystems/SuperstructureLoopTimeMS",
-        (Clock.fpgaTime - startTime).inMilliseconds)
+        (Clock.epochTime - startTime).inMilliseconds)
   }
 
   fun requestIdleCommand(): Command {
@@ -275,21 +280,12 @@ class Superstructure(
     return returnCommand
   }
 
-  fun requestForceIntakeDownCommand(): Command {
+  fun requestForceIntakeCommand(wantedAngle: Angle): Command {
     val returnCommand = runOnce {
-      intake.currentRequest =
-          Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.FORCE_DOWN_ANGLE)
+      intake.currentRequest = Request.IntakeRequest.TargetingPosition(wantedAngle)
     }
-    returnCommand.name = "RequestForceIntakeDownCommand"
-    return returnCommand
-  }
 
-  fun requestForceIntakeUpCommand(): Command {
-    val returnCommand = runOnce {
-      intake.currentRequest =
-          Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.FORCE_UP_ANGLE)
-    }
-    returnCommand.name = "RequestForceIntakeUpCommand"
+    returnCommand.name = "RequestForceIntakeCommand"
     return returnCommand
   }
 
