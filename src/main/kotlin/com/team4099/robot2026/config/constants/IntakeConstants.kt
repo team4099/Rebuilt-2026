@@ -51,7 +51,7 @@ object IntakeConstants {
       get() =
           if (DriverStation.isAutonomous() && Clock.timestamp - Robot.autoStartTime < 0.5.seconds)
               STOW_ANGLE
-          else 5.degrees
+          else 0.degrees
 
     val EJECT_ANGLE = INTAKE_ANGLE
 
