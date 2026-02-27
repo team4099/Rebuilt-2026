@@ -9,12 +9,10 @@ import com.team4099.robot2026.subsystems.superstructure.Request
 import com.team4099.robot2026.util.ControlledByStateMachine
 import com.team4099.robot2026.util.CustomLogger
 import com.team4099.robot2026.util.Velocity2d
-import edu.wpi.first.math.MathUtil
 import edu.wpi.first.math.Matrix
 import edu.wpi.first.math.Nat.N1
 import edu.wpi.first.math.Nat.N2
 import edu.wpi.first.math.Vector
-import edu.wpi.first.math.interpolation.InterpolatingTreeMap
 import edu.wpi.first.units.Units.Volts
 import edu.wpi.first.units.measure.Voltage as WPILibVoltage
 import edu.wpi.first.wpilibj.RobotBase
@@ -90,7 +88,7 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
   val shooterTestVel =
       LoggedTunableValue(
           "Shooter/testLaunchSpeedRotPerSec",
-          0.rotations.perSecond,
+          ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY,
           Pair({ it.inRotationsPerSecond }, { it.rotations.perSecond }))
 
   private val m_sysIdRoutine =
@@ -499,25 +497,8 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
           theta)
     }
 
-    val launchVelToShooterRPMMap: InterpolatingTreeMap<LinearVelocity, AngularVelocity> =
-        InterpolatingTreeMap(
-            { startValue, endValue, q ->
-              MathUtil.inverseInterpolate(startValue.value, endValue.value, q.value)
-            },
-            { startValue, endValue, t ->
-              AngularVelocity(MathUtil.interpolate(startValue.value, endValue.value, t))
-            })
-
-    init {
-      // TODO: add values to this treemap
-      launchVelToShooterRPMMap.put(6.5.meters.perSecond, 36.rotations.perSecond)
-      launchVelToShooterRPMMap.put(7.meters.perSecond, 39.rotations.perSecond)
-      launchVelToShooterRPMMap.put(7.32.meters.perSecond, 41.rotations.perSecond)
-      launchVelToShooterRPMMap.put(7.75.meters.perSecond, 45.rotations.perSecond)
-      launchVelToShooterRPMMap.put(8.meters.perSecond, 48.rotations.perSecond)
-      launchVelToShooterRPMMap.put(8.5.meters.perSecond, 51.25.rotations.perSecond)
-      launchVelToShooterRPMMap.put(9.meters.perSecond, 56.5.rotations.perSecond)
-      launchVelToShooterRPMMap.put(9.5.meters.perSecond, 67.rotations.perSecond)
+    fun launchVelToShooterRPM(desiredLaunchVel: LinearVelocity): AngularVelocity {
+      return (6.33884 * desiredLaunchVel.inMetersPerSecond - 13.5).rotations.perSecond
     }
   }
 }
