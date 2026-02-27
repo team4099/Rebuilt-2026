@@ -38,7 +38,7 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
   var tagIDFilter = arrayOf<Int>()
 
 
-  private fun calculateTagTrustRating(
+  private fun calculateTagTrust(
       tag: PhotonTrackedTarget,
       distanceToTarget: Double
   ): Double {
@@ -131,7 +131,7 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
                 val robotTTag = io[instance].transform.plus(Transform3d(tag.bestCameraToTarget))
 
                 val distanceToTarget = robotTTag.translation.norm
-                val trustRating = calculateTagTrustRating(tag, distanceToTarget.inMeters)
+                val trustRating = calculateTagTrust(tag, distanceToTarget.inMeters)
                 CustomLogger.recordDebugOutput(
                     "Vision/${io[instance].identifier}/${tag.fiducialId}/trustRating",
                     trustRating)
