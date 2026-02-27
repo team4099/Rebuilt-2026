@@ -286,7 +286,7 @@ object DrivetrainConstants {
             Supplier { Pose2d(1.195.meters, 2.95.meters, 90.degrees) })
     val CLIMB_TOP =
         Pair(
-            Supplier { Pose2d(.96.meters, 5.meters, -90.degrees) },
-            Supplier { Pose2d(.96.meters, 4.515.meters, -90.degrees) })
+            Supplier { Pose2d(.98.meters, 5.meters, -90.degrees) },
+            Supplier { Pose2d(.98.meters, 4.515.meters, -90.degrees) })
   }
 }

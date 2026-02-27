@@ -47,9 +47,9 @@ object ControlBoard {
 
   val prepScore = Trigger { operator.yButton }
   val forceIntakeFullUp = Trigger { operator.rightTriggerAxis > .5 }
-  val forceIntakeHalfUp = Trigger { operator.rightShoulderButton }
+  val forceIntakeHalfDown = Trigger { operator.rightShoulderButton }
   val forceIntakeFullDown = Trigger { operator.leftTriggerAxis > .5 }
-  val forceIntakeHalfDown = Trigger { operator.leftShoulderButton }
+  val forceIntakeHalfUp = Trigger { operator.leftShoulderButton }
 
   val prepClimb = Trigger { operator.aButton }
 

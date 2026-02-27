@@ -31,12 +31,11 @@ import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inSeconds
-import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.Radian
+import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
-import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.inRotation2ds
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.inMetersPerSecond
@@ -147,9 +146,7 @@ class AimOTFCommand(
         "FaceHubCommand/wantedPose",
         Pose2d(drivetrain.pose.x, drivetrain.pose.y, wantedRotation).pose2d)
 
-    // Instead of using just angle to check if the robot is aligned, base
-    // error on if the arc length surpasses the inradius of the HUB opening
-    hasAligned = distanceToHub * thetaPID.error.absoluteValue.inRadians < 12.inches
+    hasAligned = thetaPID.error.absoluteValue < 4.degrees
 
     CustomLogger.recordOutput("FaceHubCommand/hasAligned", hasAligned)
 

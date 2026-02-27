@@ -28,6 +28,7 @@ import org.team4099.lib.pplib.PathPlannerHolonomicDriveController.Companion.Path
 import org.team4099.lib.pplib.PathPlannerRotationPID
 import org.team4099.lib.pplib.PathPlannerTranslationPID
 import org.team4099.lib.smoothDeadband
+import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.Angle
@@ -69,7 +70,8 @@ class DrivePathOTF(
     private val poseReferenceSupplier: Supplier<WPIPose2d>,
     private val poses: List<Supplier<Pose2d>>,
     private val initialHeading: Angle,
-    private val goalEndState: GoalEndState
+    private val goalEndState: GoalEndState,
+    private val tolerances: Tolerances = Tolerances(2.inches, 2.inches, 4.degrees)
 ) : Command() {
   private val DRIVE_ESCAPE_THRESHOLD = 0.4
   private val TURN_ESCAPE_THRESHOLD = 0.4
@@ -181,8 +183,9 @@ class DrivePathOTF(
   override fun isFinished(): Boolean {
     val poseDelta = poses.last().get().minus(drivetrain.pose.toPose2d())
     return command.isFinished &&
-        poseDelta.translation.x < 2.inches &&
-        poseDelta.translation.y < 2.inches ||
+        poseDelta.translation.x.absoluteValue < tolerances.xTolerance &&
+        poseDelta.translation.y.absoluteValue < tolerances.yTolerance &&
+        poseDelta.rotation.absoluteValue < tolerances.thetaTolerance ||
         driveX.asDouble >= DRIVE_ESCAPE_THRESHOLD ||
         driveY.asDouble >= DRIVE_ESCAPE_THRESHOLD ||
         turn.asDouble >= TURN_ESCAPE_THRESHOLD
@@ -325,7 +328,8 @@ class DrivePathOTF(
     }
 
     fun alignClimbBottom(drivetrain: Drive): SequentialCommandGroup {
-      return DrivePathOTF(
+      return SequentialCommandGroup(
+          DrivePathOTF(
               drivetrain,
               { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
               { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
@@ -333,21 +337,22 @@ class DrivePathOTF(
               { drivetrain.pose.toPose2d().pose2d },
               listOf(DrivetrainConstants.OTF_PATHS.CLIMB_BOTTOM.first),
               drivetrain.pose.rotation.z,
-              GoalEndState(0.0.meters.perSecond, 90.degrees))
-          .andThen(
-              DrivePathOTF(
-                  drivetrain,
-                  { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-                  { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-                  { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
-                  { drivetrain.pose.toPose2d().pose2d },
-                  listOf(DrivetrainConstants.OTF_PATHS.CLIMB_BOTTOM.second),
-                  drivetrain.pose.rotation.z,
-                  GoalEndState(0.0.meters.perSecond, 90.degrees)))
+              GoalEndState(0.0.meters.perSecond, 90.degrees)),
+          DrivePathOTF(
+              drivetrain,
+              { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+              { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+              { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+              { drivetrain.pose.toPose2d().pose2d },
+              listOf(DrivetrainConstants.OTF_PATHS.CLIMB_BOTTOM.second),
+              drivetrain.pose.rotation.z,
+              GoalEndState(0.0.meters.perSecond, 90.degrees),
+              Tolerances(1.inches, 1.inches, 1.5.degrees)))
     }
 
     fun alignClimbTop(drivetrain: Drive): SequentialCommandGroup {
-      return DrivePathOTF(
+      return SequentialCommandGroup(
+          DrivePathOTF(
               drivetrain,
               { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
               { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
@@ -355,17 +360,19 @@ class DrivePathOTF(
               { drivetrain.pose.toPose2d().pose2d },
               listOf(DrivetrainConstants.OTF_PATHS.CLIMB_TOP.first),
               drivetrain.pose.rotation.z,
-              GoalEndState(0.0.meters.perSecond, -90.degrees))
-          .andThen(
-              DrivePathOTF(
-                  drivetrain,
-                  { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-                  { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-                  { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
-                  { drivetrain.pose.toPose2d().pose2d },
-                  listOf(DrivetrainConstants.OTF_PATHS.CLIMB_TOP.second),
-                  drivetrain.pose.rotation.z,
-                  GoalEndState(0.0.meters.perSecond, -90.degrees)))
+              GoalEndState(0.0.meters.perSecond, -90.degrees)),
+          DrivePathOTF(
+              drivetrain,
+              { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+              { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+              { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+              { drivetrain.pose.toPose2d().pose2d },
+              listOf(DrivetrainConstants.OTF_PATHS.CLIMB_TOP.second),
+              drivetrain.pose.rotation.z,
+              GoalEndState(0.0.meters.perSecond, -90.degrees),
+              Tolerances(1.inches, 1.inches, 1.5.degrees)))
     }
   }
+
+  data class Tolerances(val xTolerance: Length, val yTolerance: Length, val thetaTolerance: Angle)
 }

@@ -207,7 +207,7 @@ object RobotContainer {
     ControlBoard.score.onTrue(superstructure.requestScoreCommand())
 
     ControlBoard.prepClimb.onTrue(superstructure.requestPrepClimbCommand())
-    //    ControlBoard.climb.onTrue(superstructure.requestClimbCommand())
+    ControlBoard.climb.onTrue(superstructure.requestClimbCommand())
 
     ControlBoard.intake.onTrue(superstructure.requestIntakeCommand())
     ControlBoard.forceIntakeFullUp.whileTrue(

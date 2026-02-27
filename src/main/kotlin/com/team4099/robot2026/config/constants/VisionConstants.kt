@@ -5,7 +5,6 @@ import com.team4099.robot2026.subsystems.vision.camera.CameraIO
 import edu.wpi.first.math.Matrix
 import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.math.numbers.N1
-import edu.wpi.first.math.numbers.N3
 import edu.wpi.first.math.numbers.N4
 import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.geometry.Transform3d
@@ -21,9 +20,6 @@ object VisionConstants {
   val RED_TARGET_TAGS = arrayOf<Int>()
 
   val AMBIGUITY_THESHOLD = 1.0
-  val XY_STDDEV = 0.05
-  val THETA_STDDEV = 10.0
-
   val CONFIDENCE_THRESHOLD = 0.75
 
   val CAMERAS: Map<String, Pair<CameraIO.DetectionPipeline, Transform3d>>
@@ -44,12 +40,14 @@ object VisionConstants {
                           Transform3d(
                               Translation3d(9.773802.inches, -11.230054.inches, 8.495934.inches),
                               Rotation3d(0.0.degrees, -28.125.degrees, -30.degrees))),
-                  "raven_3" to
-                      Pair(
-                          CameraIO.DetectionPipeline.APRIL_TAG,
-                          Transform3d(
-                              Translation3d(13.438976.inches, -3.840252.inches, 10.189162.inches),
-                              Rotation3d(0.degrees, 0.degrees, 0.degrees))))
+                  //                  "raven_3" to
+                  //                      Pair(
+                  //                          CameraIO.DetectionPipeline.APRIL_TAG,
+                  //                          Transform3d(
+                  //                              Translation3d(13.438976.inches, -3.840252.inches,
+                  // 10.189162.inches),
+                  //                              Rotation3d(0.degrees, 0.degrees, 0.degrees)))
+              )
           WHOAMI.TESTBOT ->
               mapOf(
                   //                  "raven_1" to
@@ -72,10 +70,8 @@ object VisionConstants {
 
   // x, y, θ
   // TODO tune
-  val singleTagStdDevs: Matrix<N4?, N1?> = VecBuilder.fill(8.0, 8.0, 50.0, 99_999.0)
-  val multiTagStdDevs: Matrix<N4?, N1?> = VecBuilder.fill(3.0, 3.0, 10.0, 999.0)
-
-  val oldStdDevs: Matrix<N3?, N1?> = VecBuilder.fill(XY_STDDEV, XY_STDDEV, THETA_STDDEV)
+  val singleTagStdDevs: Matrix<N4?, N1?> = VecBuilder.fill(8.0, 8.0, 50.0, 9_999.0)
+  val multiTagStdDevs: Matrix<N4?, N1?> = VecBuilder.fill(2.0, 2.0, 10.0, 500.0)
 
   enum class OBJECT_CLASS(val id: Int, val mapleSimType: String?) {
     FUEL(0, "Fuel")
