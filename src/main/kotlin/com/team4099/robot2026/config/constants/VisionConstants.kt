@@ -25,6 +25,8 @@ object VisionConstants {
   val THETA_STDDEV = 10.0
 
   val CONFIDENCE_THRESHOLD = 0.75
+  val TAG_TRUST_THRESHOLD = 0.85
+  // lwk 85% trust rating to work but lwk idk if we want ts higher or lower
 
   val CAMERAS: Map<String, Pair<CameraIO.DetectionPipeline, Transform3d>>
     get() =

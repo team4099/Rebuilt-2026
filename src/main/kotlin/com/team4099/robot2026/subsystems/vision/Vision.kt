@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import java.util.function.Supplier
 import org.ironmaple.simulation.SimulatedArena
 import org.photonvision.simulation.VisionSystemSim
+import org.photonvision.targeting.PhotonTrackedTarget
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.geometry.Transform3d
@@ -35,6 +36,24 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
   val inputs = List(io.size) { CameraIO.CameraInputs() }
 
   var tagIDFilter = arrayOf<Int>()
+
+
+  private fun calculateTagTrustRating(
+      tag: PhotonTrackedTarget,
+      distanceToTarget: Double
+  ): Double {
+    val ambiguityTrust = (1.0 - tag.poseAmbiguity)
+    //ambigity from 0-1
+    //1 is good and 0 is ass
+    val distanceTrust = when {
+      distanceToTarget <= 2.0 -> 1.0
+      distanceToTarget <= 4.0 -> 1.0 - ((distanceToTarget - 2.0) / 2.0) * 0.3
+      distanceToTarget <= 6.0 -> 0.7 - ((distanceToTarget - 4.0) / 2.0) * 0.35
+      else -> 0.35
+    } // dist trust in meters, full trust at 2m 0.7 at 4m 0.35 at 6, and 0 if bigger
+    return (ambiguityTrust * 0.6)  + (distanceTrust * 0.4)
+    // cam ambiguity 60% and dist 40% bc i think that ambiguity > dist
+  }
 
   var isAutoAligning = false
   var isAligned = false
@@ -112,6 +131,10 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
                 val robotTTag = io[instance].transform.plus(Transform3d(tag.bestCameraToTarget))
 
                 val distanceToTarget = robotTTag.translation.norm
+                val trustRating = calculateTagTrustRating(tag, distanceToTarget.inMeters)
+                CustomLogger.recordDebugOutput(
+                    "Vision/${io[instance].identifier}/${tag.fiducialId}/trustRating",
+                    trustRating)
 
                 CustomLogger.recordDebugOutput(
                     "Vision/${io[instance].identifier}/${tag.fiducialId}/robotDistanceToTarget",
@@ -125,8 +148,7 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
                   cornerData.add(corner.x)
                   cornerData.add(corner.y)
                 }
-
-                if (tag.fiducialId in tagIDFilter) {
+                if (tag.fiducialId in tagIDFilter && trustRating >= VisionConstants.TAG_TRUST_THRESHOLD) {
                   targetingTags.add(Pair(tag.fiducialId, robotTTag))
                 }
               }
