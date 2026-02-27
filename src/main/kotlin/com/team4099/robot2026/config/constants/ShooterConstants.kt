@@ -51,14 +51,14 @@ object ShooterConstants {
   }
 
   object PID {
-    val REAL_KP: ProportionalGain<Velocity<Radian>, Ampere> = 2.5.amps / 1.0.radians.perSecond
+    val REAL_KP: ProportionalGain<Velocity<Radian>, Ampere> = 4git.amps / 1.0.radians.perSecond
     val REAL_KI: IntegralGain<Velocity<Radian>, Ampere> =
         0.0.amps / (1.0.radians.perSecond * 1.0.seconds)
     val REAL_KD: DerivativeGain<Velocity<Radian>, Ampere> =
-        0.003.amps / (1.0.radians.perSecond / 1.0.seconds)
+        0.01.amps / (1.0.radians.perSecond / 1.0.seconds)
 
     val REAL_KS: StaticFeedforward<Ampere> = 10.75.amps
-    val REAL_KV: VelocityFeedforward<Radian, Ampere> = 0.075.amps / 1.radians.perSecond
+    val REAL_KV: VelocityFeedforward<Radian, Ampere> = 0.08.amps / 1.radians.perSecond
     val REAL_KA: AccelerationFeedforward<Radian, Ampere> =
         (MOMENT_OF_INERTIA.inKilogramsMeterSquared /
                 (Constants.MOTOR_CONSTANTS.KRAKENX60FOC_kT / GEAR_RATIO))
