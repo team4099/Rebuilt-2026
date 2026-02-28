@@ -90,10 +90,6 @@ class Superstructure(
         (Clock.fpgaTime - shooterStartTime).inMilliseconds)
 
     field.robotPose = drivetrain.pose.toPose2d().pose2d
-    field.getObject("FUEL").poses =
-        vision.objectsDetected[0].map {
-          drivetrain.pose.transformBy(Transform3d(it, Rotation3d())).toPose2d().pose2d
-        }
 
     var nextState = currentState
 

@@ -54,7 +54,7 @@ object Robot : LoggedRobot() {
       Alert("Tuning Mode Enabled. Expect loop times to be greater", AlertType.WARNING)
   lateinit var allianceSelected: GenericEntry
   lateinit var autonomousCommand: Command
-  var scoringFirst: Boolean
+  var scoringFirst: Boolean = false
 
   override fun robotInit() {
     // elastic layout upload dont remove
