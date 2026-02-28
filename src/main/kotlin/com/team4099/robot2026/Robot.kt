@@ -7,6 +7,8 @@ import com.team4099.robot2026.auto.AutonomousSelector
 import com.team4099.robot2026.commands.drivetrain.DrivePathOTF
 import com.team4099.robot2026.config.ControlBoard
 import com.team4099.robot2026.config.constants.Constants
+import com.team4099.robot2026.subsystems.superstructure.Request
+import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import com.team4099.robot2026.util.Alert
 import com.team4099.robot2026.util.Alert.AlertType
 import com.team4099.robot2026.util.CustomLogger
@@ -55,6 +57,7 @@ object Robot : LoggedRobot() {
       Alert("Tuning Mode Enabled. Expect loop times to be greater", AlertType.WARNING)
   lateinit var allianceSelected: GenericEntry
   lateinit var autonomousCommand: Command
+  var scoringFirst: Boolean = false
   var autoStartTime: Time = (-1337).seconds
 
   override fun robotInit() {
@@ -207,10 +210,44 @@ object Robot : LoggedRobot() {
     if (Constants.Tuning.TUNING_MODE) {
       RobotContainer.mapTunableCommands()
     }
+    scoringFirst =
+        (DriverStation.getGameSpecificMessage() == "R" &&
+            (DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) ==
+                DriverStation.Alliance.Blue)) ||
+            (DriverStation.getGameSpecificMessage() == "B" &&
+                (DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) ==
+                    DriverStation.Alliance.Red))
+    if (RobotContainer.superstructure.currentState ==
+        Superstructure.Companion.SuperstructureStates.CLIMB) {
+      RobotContainer.superstructure.currentRequest = Request.SuperstructureRequest.ExtendClimb()
+    } else {
+      RobotContainer.superstructure.currentRequest = Request.SuperstructureRequest.Idle()
+    }
     RobotContainer.intake.setBrakeMode(true)
   }
 
-  override fun teleopPeriodic() {}
+  override fun teleopPeriodic() {
+    val time = DriverStation.getMatchTime()
+    val shiftIndex =
+        when {
+          time > 125 -> 0
+          time > 100 -> 1
+          time > 75 -> 2
+          time > 50 -> 3
+          time > 25 -> 4
+          else -> 5
+        }
+    if (scoringFirst) {
+      CustomLogger.recordOutput("MatchData/ScoringNow", shiftIndex % 2 == 0 || shiftIndex == 5)
+    } else {
+      CustomLogger.recordOutput("MatchData/ScoringNow", shiftIndex % 2 != 0)
+    }
+    if (time > 25) {
+      CustomLogger.recordOutput("MatchData/ShiftTimeLeft", time % 25)
+    } else {
+      CustomLogger.recordOutput("MatchData/ShiftTimeLeft", time % 30)
+    }
+  }
 
   override fun testInit() {
     RobotContainer.mapTestControls()
