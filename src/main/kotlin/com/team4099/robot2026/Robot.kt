@@ -20,7 +20,6 @@ import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Filesystem
 import edu.wpi.first.wpilibj.PowerDistribution
 import edu.wpi.first.wpilibj.RobotBase
-import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
@@ -28,6 +27,8 @@ import edu.wpi.first.wpilibj.simulation.DriverStationSim
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import edu.wpi.first.wpilibj2.command.Commands.runOnce
+import java.nio.file.Files
+import java.nio.file.Paths
 import org.ejml.EjmlVersion.BUILD_DATE
 import org.ejml.EjmlVersion.DIRTY
 import org.ejml.EjmlVersion.GIT_BRANCH
@@ -41,8 +42,6 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader
 import org.littletonrobotics.junction.wpilog.WPILOGWriter
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMilliseconds
-import java.nio.file.Files
-import java.nio.file.Paths
 import org.team4099.lib.units.base.seconds
 
 object Robot : LoggedRobot() {
@@ -211,8 +210,13 @@ object Robot : LoggedRobot() {
     if (Constants.Tuning.TUNING_MODE) {
       RobotContainer.mapTunableCommands()
     }
-    scoringFirst = (DriverStation.getGameSpecificMessage() == "R" && (DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Blue)) ||
-        (DriverStation.getGameSpecificMessage() == "B" && (DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Red))
+    scoringFirst =
+        (DriverStation.getGameSpecificMessage() == "R" &&
+            (DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) ==
+                DriverStation.Alliance.Blue)) ||
+            (DriverStation.getGameSpecificMessage() == "B" &&
+                (DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) ==
+                    DriverStation.Alliance.Red))
     if (RobotContainer.superstructure.currentState ==
         Superstructure.Companion.SuperstructureStates.CLIMB) {
       RobotContainer.superstructure.currentRequest = Request.SuperstructureRequest.ExtendClimb()
@@ -224,24 +228,25 @@ object Robot : LoggedRobot() {
 
   override fun teleopPeriodic() {
     val time = DriverStation.getMatchTime()
-    val shiftIndex = when {
-      time > 125 -> 0
-      time > 100 -> 1
-      time > 75  -> 2
-      time > 50  -> 3
-      time > 25  -> 4
-      else       -> 5
-    }
+    val shiftIndex =
+        when {
+          time > 125 -> 0
+          time > 100 -> 1
+          time > 75 -> 2
+          time > 50 -> 3
+          time > 25 -> 4
+          else -> 5
+        }
     if (scoringFirst) {
-      CustomLogger.recordOutput("MatchData/ScoringNow", shiftIndex % 2 == 0 ||shiftIndex == 5)
+      CustomLogger.recordOutput("MatchData/ScoringNow", shiftIndex % 2 == 0 || shiftIndex == 5)
     } else {
-      CustomLogger.recordOutput("MatchData/ScoringNow",  shiftIndex % 2 != 0)
+      CustomLogger.recordOutput("MatchData/ScoringNow", shiftIndex % 2 != 0)
     }
-    if(time > 25){
-    CustomLogger.recordOutput("MatchData/ShiftTimeLeft", time % 25)} else{
+    if (time > 25) {
+      CustomLogger.recordOutput("MatchData/ShiftTimeLeft", time % 25)
+    } else {
       CustomLogger.recordOutput("MatchData/ShiftTimeLeft", time % 30)
     }
-
   }
 
   override fun testInit() {
