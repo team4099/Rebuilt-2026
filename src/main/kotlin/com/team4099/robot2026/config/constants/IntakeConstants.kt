@@ -30,7 +30,7 @@ object IntakeConstants {
   val PIVOT_MAX_ANGLE = 120.degrees
   val PIVOT_MIN_ANGLE = (-50).degrees
 
-  val STATOR_CURRENT_LIMIT = 85.amps
+  val STATOR_CURRENT_LIMIT = 80.amps
   val SUPPLY_CURRENT_LIMIT = 40.amps
 
   val VOLTAGE_COMPENSATION = 12.0.volts
@@ -43,6 +43,10 @@ object IntakeConstants {
   val SIM_ACCELERATION = 400.degrees.perSecond.perSecond
 
   val LENGTH_EXTENDED = 0.0.inches
+
+  val FORCE_HOME_INTAKE_STATOR = 65.amps
+  val FORCE_HOME_INTAKE_TIME = .5.seconds
+  val FORCE_HOME_INTAKE_VOLTAGE = -4.volts
 
   object ANGLES {
     val INTAKE_ANGLE = PIVOT_MIN_ANGLE

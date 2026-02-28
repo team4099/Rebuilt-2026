@@ -69,9 +69,8 @@ object VisionConstants {
         }
 
   // x, y, θ
-  // TODO tune
   val singleTagStdDevs: Matrix<N4?, N1?> = VecBuilder.fill(8.0, 8.0, 50.0, 9_999.0)
-  val multiTagStdDevs: Matrix<N4?, N1?> = VecBuilder.fill(2.0, 2.0, 10.0, 500.0)
+  val multiTagStdDevs: Matrix<N4?, N1?> = VecBuilder.fill(2.0, 2.0, 10.0, 200.0)
 
   enum class OBJECT_CLASS(val id: Int, val mapleSimType: String?) {
     FUEL(0, "Fuel")

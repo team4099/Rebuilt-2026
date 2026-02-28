@@ -146,7 +146,7 @@ class AimOTFCommand(
         "FaceHubCommand/wantedPose",
         Pose2d(drivetrain.pose.x, drivetrain.pose.y, wantedRotation).pose2d)
 
-    hasAligned = thetaPID.error.absoluteValue < 4.degrees
+    hasAligned = thetaPID.error.absoluteValue < 2.degrees
 
     CustomLogger.recordOutput("FaceHubCommand/hasAligned", hasAligned)
 

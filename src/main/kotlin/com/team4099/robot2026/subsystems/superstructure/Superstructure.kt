@@ -28,6 +28,7 @@ import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.derived.Angle
+import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.max
 
@@ -154,6 +155,7 @@ class Superstructure(
 
         nextState =
             when (currentRequest) {
+              is SuperstructureRequest.ForceHome -> SuperstructureStates.FORCE_HOME
               is SuperstructureRequest.ExtendClimb -> SuperstructureStates.PREP_CLIMB
               is SuperstructureRequest.PrepScore -> SuperstructureStates.PREP_SCORE
               is SuperstructureRequest.Score -> SuperstructureStates.SCORE
@@ -161,6 +163,17 @@ class Superstructure(
               is SuperstructureRequest.Eject -> SuperstructureStates.EJECT
               else -> currentState
             }
+      }
+      SuperstructureStates.FORCE_HOME -> {
+        intake.currentRequest = Request.IntakeRequest.OpenLoop(IntakeConstants.FORCE_HOME_INTAKE_VOLTAGE)
+
+        if (currentRequest is SuperstructureRequest.Idle ||
+          intake.inputs.intakeStatorCurrent > IntakeConstants.FORCE_HOME_INTAKE_STATOR &&
+          Clock.timestamp - lastTransitionTime > IntakeConstants.FORCE_HOME_INTAKE_TIME
+        ) {
+          intake.currentRequest = Request.IntakeRequest.ZeroPivot(IntakeConstants.ANGLES.INTAKE_ANGLE)
+          nextState = SuperstructureStates.IDLE
+        }
       }
       SuperstructureStates.PREP_SCORE -> {
         shooter.currentRequest = Request.ShooterRequest.TargetVelocity(shooterTargetRPM)
@@ -250,6 +263,12 @@ class Superstructure(
     return returnCommand
   }
 
+  fun requestForceHomeCommand(): Command {
+    val returnCommand = runOnce { currentRequest = SuperstructureRequest.ForceHome() }
+    returnCommand.name = "RequestForceHomeCommand"
+    return returnCommand
+  }
+
   fun requestIntakeCommand(): Command {
     val returnCommand = runOnce { currentRequest = SuperstructureRequest.Intake() }
     returnCommand.name = "RequestIntakeCommand"
@@ -300,6 +319,7 @@ class Superstructure(
       UNINITALIZED,
       TUNING,
       IDLE,
+      FORCE_HOME,
       PREP_SCORE,
       SCORE,
       INTAKE,

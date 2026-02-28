@@ -154,7 +154,7 @@ object IntakeIOTalon : IntakeIO {
     inputs.position = positionSignal.valueAsDouble.rotations
   }
 
-  override fun zeroPivot() {
-    intakeTalon.setPosition(IntakeConstants.ANGLES.STOW_ANGLE.inRotations)
+  override fun zeroPivot(zeroPosition: Angle) {
+    intakeTalon.setPosition(zeroPosition.inRotations)
   }
 }
