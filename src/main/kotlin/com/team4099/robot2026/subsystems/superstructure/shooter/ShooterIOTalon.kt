@@ -2,12 +2,13 @@ package com.team4099.robot2026.subsystems.superstructure.shooter
 
 import com.ctre.phoenix6.BaseStatusSignal
 import com.ctre.phoenix6.StatusSignal
-import com.ctre.phoenix6.configs.SlotConfigs
+import com.ctre.phoenix6.configs.Slot0Configs
 import com.ctre.phoenix6.configs.TalonFXConfiguration
 import com.ctre.phoenix6.controls.Follower
-import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage
+import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC
 import com.ctre.phoenix6.controls.VoltageOut
 import com.ctre.phoenix6.hardware.TalonFX
+import com.ctre.phoenix6.signals.InvertedValue
 import com.ctre.phoenix6.signals.MotorAlignmentValue
 import com.ctre.phoenix6.signals.NeutralModeValue
 import com.team4099.lib.math.clamp
@@ -20,6 +21,7 @@ import edu.wpi.first.units.measure.Temperature as WPILibTemperature
 import edu.wpi.first.units.measure.Voltage as WPILibVoltage
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.Fraction
+import org.team4099.lib.units.base.Ampere
 import org.team4099.lib.units.base.Second
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
@@ -33,12 +35,11 @@ import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.StaticFeedforward
 import org.team4099.lib.units.derived.VelocityFeedforward
-import org.team4099.lib.units.derived.Volt
+import org.team4099.lib.units.derived.inAmpsPerRadianPerSecond
+import org.team4099.lib.units.derived.inAmpsPerRadians
+import org.team4099.lib.units.derived.inAmpsPerRadiansPerSecond
+import org.team4099.lib.units.derived.inAmpsPerRadiansPerSecondPerSecond
 import org.team4099.lib.units.derived.inVolts
-import org.team4099.lib.units.derived.inVoltsPerDegreesPerSecondPerSecond
-import org.team4099.lib.units.derived.inVoltsPerRadians
-import org.team4099.lib.units.derived.inVoltsPerRadiansPerSecond
-import org.team4099.lib.units.derived.inVoltsPerRadiansPerSecondPerSecond
 import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
@@ -46,9 +47,11 @@ import org.team4099.lib.units.perSecond
 object ShooterIOTalon : ShooterIO {
   private val leaderTalon: TalonFX = TalonFX(Constants.Shooter.LEADER_MOTOR_ID)
   private val followerTalon: TalonFX = TalonFX(Constants.Shooter.FOLLOWER_MOTOR_ID)
-  private val motionMagicControl: MotionMagicVelocityVoltage = MotionMagicVelocityVoltage(-1337.0)
-  private val voltReq = VoltageOut(0.0)
+  private val motionMagicControl: MotionMagicVelocityTorqueCurrentFOC =
+      MotionMagicVelocityTorqueCurrentFOC(-1337.0)
+  private val voltReq = VoltageOut(0.0).withEnableFOC(true)
   private val configs: TalonFXConfiguration = TalonFXConfiguration()
+  private val slot0Configs: Slot0Configs = configs.Slot0
   private val leaderSensor =
       ctreAngularMechanismSensor(
           leaderTalon, ShooterConstants.GEAR_RATIO, ShooterConstants.VOLTAGE_COMPENSATION)
@@ -79,9 +82,9 @@ object ShooterIOTalon : ShooterIO {
     configs.CurrentLimits.SupplyCurrentLimitEnable = true
     configs.CurrentLimits.StatorCurrentLimitEnable = true
     configs.MotorOutput.NeutralMode = NeutralModeValue.Coast
-
-    configs.MotionMagic.MotionMagicAcceleration =
-        leaderSensor.accelerationToRawUnits(ShooterConstants.MAX_ACCELERATION)
+    configs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive
+    configs.TorqueCurrent.PeakReverseTorqueCurrent =
+        ShooterConstants.MAX_REVERSE_TORQUE_CURRENT.inAmperes
 
     leaderTalon.configurator.apply(configs)
     followerTalon.configurator.apply(configs)
@@ -148,28 +151,26 @@ object ShooterIOTalon : ShooterIO {
     inputs.shooterFollowerVoltage = followerVoltageSignal.valueAsDouble.volts
   }
 
-  override fun configurePID(
-      kP: ProportionalGain<Fraction<Radian, Second>, Volt>,
-      kI: IntegralGain<Fraction<Radian, Second>, Volt>,
-      kD: DerivativeGain<Fraction<Radian, Second>, Volt>
+  override fun configurePIDCurrent(
+      kP: ProportionalGain<Fraction<Radian, Second>, Ampere>,
+      kI: IntegralGain<Fraction<Radian, Second>, Ampere>,
+      kD: DerivativeGain<Fraction<Radian, Second>, Ampere>
   ) {
-    val slot0Configs = SlotConfigs()
-    slot0Configs.kP = kP.inVoltsPerRadiansPerSecond
-    slot0Configs.kI = kI.inVoltsPerRadians
-    slot0Configs.kD = kD.inVoltsPerDegreesPerSecondPerSecond
+    slot0Configs.kP = kP.inAmpsPerRadianPerSecond
+    slot0Configs.kI = kI.inAmpsPerRadians
+    slot0Configs.kD = kD.inAmpsPerRadiansPerSecondPerSecond
     leaderTalon.configurator.apply(slot0Configs)
     followerTalon.configurator.apply(slot0Configs)
   }
 
-  override fun configureFF(
-      kS: StaticFeedforward<Volt>,
-      kV: VelocityFeedforward<Radian, Volt>,
-      kA: AccelerationFeedforward<Radian, Volt>
+  override fun configureFFCurrent(
+      kS: StaticFeedforward<Ampere>,
+      kV: VelocityFeedforward<Radian, Ampere>,
+      kA: AccelerationFeedforward<Radian, Ampere>
   ) {
-    val slot0Configs = SlotConfigs()
-    slot0Configs.kS = kS.inVolts
-    slot0Configs.kV = kV.inVoltsPerRadiansPerSecond
-    slot0Configs.kA = kA.inVoltsPerRadiansPerSecondPerSecond
+    slot0Configs.kS = kS.inAmperes
+    slot0Configs.kV = kV.inAmpsPerRadiansPerSecond
+    slot0Configs.kA = kA.inAmpsPerRadiansPerSecondPerSecond
     leaderTalon.configurator.apply(slot0Configs)
     followerTalon.configurator.apply(slot0Configs)
   }
@@ -185,7 +186,10 @@ object ShooterIOTalon : ShooterIO {
 
   override fun setVelocity(velocity: AngularVelocity) {
     leaderTalon.setControl(
-        motionMagicControl.withVelocity(leaderSensor.velocityToRawUnits(velocity)),
+        motionMagicControl
+            .withVelocity(leaderSensor.velocityToRawUnits(velocity))
+            .withAcceleration(
+                leaderSensor.accelerationToRawUnits(ShooterConstants.MAX_ACCELERATION)),
     )
   }
 }

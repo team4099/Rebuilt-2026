@@ -7,6 +7,8 @@ import com.team4099.robot2026.auto.AutonomousSelector
 import com.team4099.robot2026.commands.drivetrain.DrivePathOTF
 import com.team4099.robot2026.config.ControlBoard
 import com.team4099.robot2026.config.constants.Constants
+import com.team4099.robot2026.subsystems.superstructure.Request
+import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import com.team4099.robot2026.util.Alert
 import com.team4099.robot2026.util.Alert.AlertType
 import com.team4099.robot2026.util.CustomLogger
@@ -37,9 +39,11 @@ import org.littletonrobotics.junction.LoggedRobot
 import org.littletonrobotics.junction.Logger
 import org.littletonrobotics.junction.wpilog.WPILOGReader
 import org.littletonrobotics.junction.wpilog.WPILOGWriter
+import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMilliseconds
 import java.nio.file.Files
 import java.nio.file.Paths
+import org.team4099.lib.units.base.seconds
 
 object Robot : LoggedRobot() {
   val logFolderAlert =
@@ -55,6 +59,7 @@ object Robot : LoggedRobot() {
   lateinit var allianceSelected: GenericEntry
   lateinit var autonomousCommand: Command
   var scoringFirst: Boolean = false
+  var autoStartTime: Time = (-1337).seconds
 
   override fun robotInit() {
     // elastic layout upload dont remove
@@ -163,6 +168,13 @@ object Robot : LoggedRobot() {
   override fun autonomousInit() {
     val autonCommandWithWait = runOnce({ RobotContainer.zeroSensors() }).andThen(autonomousCommand)
     CommandScheduler.getInstance().schedule(autonCommandWithWait)
+    RobotContainer.intake.setBrakeMode(true)
+  }
+
+  override fun autonomousPeriodic() {
+    if (autoStartTime == (-1337).seconds && DriverStation.isAutonomousEnabled())
+        autoStartTime = Clock.timestamp
+    else if (DriverStation.isDisabled()) autoStartTime = (-1337).seconds
   }
 
   override fun disabledPeriodic() {
@@ -171,10 +183,11 @@ object Robot : LoggedRobot() {
 
   override fun disabledInit() {
     RobotContainer.resetSimulationField()
+    RobotContainer.intake.setBrakeMode(false)
   }
 
   override fun robotPeriodic() {
-    val startTime = Clock.fpgaTime
+    val startTime = Clock.timestamp
 
     // begin scheduling all commands
     CommandScheduler.getInstance().run()
@@ -189,18 +202,24 @@ object Robot : LoggedRobot() {
     ControlBoard.operatorRumbleConsumer.accept(false)
 
     CustomLogger.recordDebugOutput(
-        "LoggedRobot/totalMS", (Clock.fpgaTime - startTime).inMilliseconds)
+        "LoggedRobot/totalMS", (Clock.timestamp - startTime).inMilliseconds)
   }
 
   override fun teleopInit() {
     RobotContainer.mapTeleopControls()
     RobotContainer.getAutonomousCommand().cancel()
-    RobotContainer.setDriveBrakeMode()
     if (Constants.Tuning.TUNING_MODE) {
       RobotContainer.mapTunableCommands()
     }
     scoringFirst = (DriverStation.getGameSpecificMessage() == "R" && (DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Blue)) ||
         (DriverStation.getGameSpecificMessage() == "B" && (DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Red))
+    if (RobotContainer.superstructure.currentState ==
+        Superstructure.Companion.SuperstructureStates.CLIMB) {
+      RobotContainer.superstructure.currentRequest = Request.SuperstructureRequest.ExtendClimb()
+    } else {
+      RobotContainer.superstructure.currentRequest = Request.SuperstructureRequest.Idle()
+    }
+    RobotContainer.intake.setBrakeMode(true)
   }
 
   override fun teleopPeriodic() {
@@ -228,6 +247,7 @@ object Robot : LoggedRobot() {
   override fun testInit() {
     RobotContainer.mapTestControls()
     RobotContainer.getAutonomousCommand().cancel()
+    RobotContainer.intake.setBrakeMode(true)
   }
 
   override fun simulationPeriodic() {

@@ -4,6 +4,7 @@ import com.team4099.robot2026.util.AllianceFlipUtil
 import edu.wpi.first.apriltag.AprilTagFieldLayout
 import edu.wpi.first.apriltag.AprilTagFields
 import org.ironmaple.simulation.SimulatedArena
+import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Translation3d
 import org.team4099.lib.units.base.Length
@@ -12,7 +13,7 @@ import org.team4099.lib.units.base.meters
 
 /**
  * Contains various field dimensions and useful reference points. Dimensions are in meters, and sets
- * of corners start in the lower left moving clockwise. **All units in Meters** <br></br> <br></br>
+ * of corners start in the lower left moving clockwise.
  *
  * All translations and poses are stored with the origin at the rightmost point on the BLUE ALLIANCE
  * wall.<br></br> <br></br> Length refers to the *x* direction (as described by wpilib) <br></br>
@@ -42,10 +43,27 @@ object FieldConstants {
     get() = Translation3d(120.inches, 158.84.inches, 72.inches)
 
   fun inAllianceZone(pose: Pose3d): Boolean {
+    return inAllianceZone(pose.toPose2d())
+  }
+
+  fun inAllianceZone(pose: Pose2d): Boolean {
     return AllianceFlipUtil.shouldFlip() xor (pose.x < ALLIANCE_LINE_X)
   }
 
   fun inTrenchAllianceZone(pose: Pose3d): Boolean {
+    return inTrenchAllianceZone(pose.toPose2d())
+  }
+
+  fun inTrenchAllianceZone(pose: Pose2d): Boolean {
     return AllianceFlipUtil.shouldFlip() xor (pose.x < TRENCH_LINE_X)
+  }
+
+  fun inClimbLowerHalf(pose: Pose3d): Boolean {
+    return inClimbLowerHalf(pose.toPose2d())
+  }
+
+  fun inClimbLowerHalf(pose: Pose2d): Boolean {
+    return !AllianceFlipUtil.shouldFlip() && pose.y < 3.75.meters ||
+        AllianceFlipUtil.shouldFlip() && pose.y > 4.3.meters
   }
 }
