@@ -84,7 +84,7 @@ object ShooterIOSim : ShooterIO {
     setVoltage(pidOutput + ffOutput)
   }
 
-  override fun configurePID(
+  override fun configurePIDVoltage(
       kP: ProportionalGain<Fraction<Radian, Second>, Volt>,
       kI: IntegralGain<Fraction<Radian, Second>, Volt>,
       kD: DerivativeGain<Fraction<Radian, Second>, Volt>
@@ -92,7 +92,7 @@ object ShooterIOSim : ShooterIO {
     shooterPIDController.setPID(kP, kI, kD)
   }
 
-  override fun configureFF(
+  override fun configureFFVoltage(
       kS: StaticFeedforward<Volt>,
       kV: VelocityFeedforward<Radian, Volt>,
       kA: AccelerationFeedforward<Radian, Volt>

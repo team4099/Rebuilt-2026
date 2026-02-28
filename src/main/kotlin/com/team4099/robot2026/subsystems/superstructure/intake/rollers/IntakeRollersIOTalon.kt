@@ -37,7 +37,7 @@ object IntakeRollersIOTalon : IntakeRollersIO {
   var motorAccel: StatusSignal<AngularAcceleration>
   var motorVelo: StatusSignal<AngularVelocity>
 
-  val voltageControl = VoltageOut(0.0.volts.inVolts)
+  val voltageControl = VoltageOut(0.0.volts.inVolts).withEnableFOC(true)
 
   private var rollerSensor =
       ctreAngularMechanismSensor(
@@ -50,7 +50,7 @@ object IntakeRollersIOTalon : IntakeRollersIO {
     rollerConfig.CurrentLimits.StatorCurrentLimit = RollersConstants.STATOR_CURRENT_LIMIT.inAmperes
     rollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true
     rollerConfig.CurrentLimits.StatorCurrentLimitEnable = true
-    rollerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive
+    rollerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive
 
     statorCurrent = rollerTalon.statorCurrent
     supplyCurrent = rollerTalon.supplyCurrent

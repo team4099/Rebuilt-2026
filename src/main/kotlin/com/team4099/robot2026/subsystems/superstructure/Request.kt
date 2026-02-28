@@ -32,12 +32,16 @@ sealed interface Request {
     class Idle : HopperRequest
 
     class OpenLoop(val voltage: ElectricalPotential) : HopperRequest
+
+    class TargetVelocity(val velocity: AngularVelocity) : HopperRequest
   }
 
   sealed interface FeederRequest : Request {
     class Idle : FeederRequest
 
     class OpenLoop(val voltage: ElectricalPotential) : FeederRequest
+
+    class TargetVelocity(val velocity: AngularVelocity) : FeederRequest
   }
 
   sealed interface RollersRequest : Request {
@@ -49,7 +53,7 @@ sealed interface Request {
 
     class TargetingPosition(val pivotPosition: Angle) : IntakeRequest
 
-    class ZeroPivot() : IntakeRequest
+    class ZeroPivot : IntakeRequest
   }
 
   sealed interface ShooterRequest : Request {
@@ -57,6 +61,6 @@ sealed interface Request {
 
     class TargetVelocity(val targetVelocity: AngularVelocity) : ShooterRequest
 
-    class Idle() : ShooterRequest
+    class Idle : ShooterRequest
   }
 }
