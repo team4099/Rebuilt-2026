@@ -68,7 +68,7 @@ class TargetObjectCommand(
   }
 
   override fun initialize() {
-    startTime = Clock.fpgaTime
+    startTime = Clock.timestamp
     thetaPID.reset()
     hasThetaAligned = false
 
@@ -132,7 +132,7 @@ class TargetObjectCommand(
       }
     }
 
-    CustomLogger.recordOutput("TargetObjectCommand/lastInitialized", Clock.fpgaTime.inSeconds)
+    CustomLogger.recordOutput("TargetObjectCommand/lastInitialized", Clock.timestamp.inSeconds)
   }
 
   override fun execute() {
@@ -155,7 +155,7 @@ class TargetObjectCommand(
     val exists = (robotTObject != Translation2d())
 
     CustomLogger.recordOutput("TargetObjectCommand/odomTObjectExists", exists)
-    if (!exists || Clock.fpgaTime - lastUpdate.timestamp > .2.seconds) end(interrupted = true)
+    if (!exists || Clock.timestamp - lastUpdate.timestamp > .2.seconds) end(interrupted = true)
 
     CustomLogger.recordOutput("TargetObjectCommand/odomTObjectx", robotTObject.x.inMeters)
     CustomLogger.recordOutput("TargetObjectCommand/odomTObjecty", robotTObject.y.inMeters)

@@ -2,6 +2,7 @@ package com.team4099.robot2026.commands.drivetrain
 
 import choreo.trajectory.SwerveSample
 import choreo.trajectory.Trajectory
+import com.team4099.lib.hal.Clock
 import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.lib.math.asTransform2d
 import com.team4099.lib.trajectory.CustomHolonomicDriveController
@@ -18,7 +19,6 @@ import java.util.function.Supplier
 import kotlin.math.PI
 import org.team4099.lib.controller.PIDController
 import org.team4099.lib.geometry.Pose2d
-import org.team4099.lib.hal.Clock
 import org.team4099.lib.kinematics.ChassisSpeeds
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Meter
@@ -129,9 +129,9 @@ class FollowChoreoPath(
   }
 
   override fun execute() {
-    if (trajStartTime == 0.seconds) trajStartTime = Clock.fpgaTime
+    if (trajStartTime == 0.seconds) trajStartTime = Clock.timestamp
 
-    trajCurTime = Clock.fpgaTime - trajStartTime
+    trajCurTime = Clock.timestamp - trajStartTime
 
     val desiredState =
         trajectory.sampleAt(trajCurTime.inSeconds, AllianceFlipUtil.shouldFlip()).get()
@@ -177,7 +177,7 @@ class FollowChoreoPath(
   }
 
   override fun isFinished(): Boolean {
-    return Clock.fpgaTime - trajStartTime > trajectory.totalTime.seconds && atSetpoint() ||
+    return Clock.timestamp - trajStartTime > trajectory.totalTime.seconds && atSetpoint() ||
         !DriverStation.isAutonomous()
   }
 

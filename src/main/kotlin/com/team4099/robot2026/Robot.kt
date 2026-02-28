@@ -7,6 +7,8 @@ import com.team4099.robot2026.auto.AutonomousSelector
 import com.team4099.robot2026.commands.drivetrain.DrivePathOTF
 import com.team4099.robot2026.config.ControlBoard
 import com.team4099.robot2026.config.constants.Constants
+import com.team4099.robot2026.subsystems.superstructure.Request
+import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import com.team4099.robot2026.util.Alert
 import com.team4099.robot2026.util.Alert.AlertType
 import com.team4099.robot2026.util.CustomLogger
@@ -169,7 +171,7 @@ object Robot : LoggedRobot() {
 
   override fun autonomousPeriodic() {
     if (autoStartTime == (-1337).seconds && DriverStation.isAutonomousEnabled())
-        autoStartTime = Clock.fpgaTime
+        autoStartTime = Clock.timestamp
     else if (DriverStation.isDisabled()) autoStartTime = (-1337).seconds
   }
 
@@ -183,7 +185,7 @@ object Robot : LoggedRobot() {
   }
 
   override fun robotPeriodic() {
-    val startTime = Clock.fpgaTime
+    val startTime = Clock.timestamp
 
     // begin scheduling all commands
     CommandScheduler.getInstance().run()
@@ -198,7 +200,7 @@ object Robot : LoggedRobot() {
     ControlBoard.operatorRumbleConsumer.accept(false)
 
     CustomLogger.recordDebugOutput(
-        "LoggedRobot/totalMS", (Clock.fpgaTime - startTime).inMilliseconds)
+        "LoggedRobot/totalMS", (Clock.timestamp - startTime).inMilliseconds)
   }
 
   override fun teleopInit() {
@@ -206,6 +208,12 @@ object Robot : LoggedRobot() {
     RobotContainer.getAutonomousCommand().cancel()
     if (Constants.Tuning.TUNING_MODE) {
       RobotContainer.mapTunableCommands()
+    }
+    if (RobotContainer.superstructure.currentState ==
+        Superstructure.Companion.SuperstructureStates.CLIMB) {
+      RobotContainer.superstructure.currentRequest = Request.SuperstructureRequest.ExtendClimb()
+    } else {
+      RobotContainer.superstructure.currentRequest = Request.SuperstructureRequest.Idle()
     }
     RobotContainer.intake.setBrakeMode(true)
   }

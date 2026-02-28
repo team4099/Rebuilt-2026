@@ -498,7 +498,7 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
     }
 
     fun launchVelToShooterRPM(desiredLaunchVel: LinearVelocity): AngularVelocity {
-      return (6.33884 * desiredLaunchVel.inMetersPerSecond - 13.8).rotations.perSecond
+      return (6.33884 * desiredLaunchVel.inMetersPerSecond - 13.5).rotations.perSecond
     }
   }
 }
