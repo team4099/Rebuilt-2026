@@ -1,5 +1,6 @@
 package com.team4099.robot2026.auto
 
+import com.team4099.robot2026.auto.mode.CenterlineSweep
 import com.team4099.robot2026.auto.mode.ExamplePathAuto
 import com.team4099.robot2026.auto.mode.IntakeQuadrantL1
 import com.team4099.robot2026.auto.mode.PreloadL1Auto
@@ -100,6 +101,23 @@ object AutonomousSelector {
                             AllianceFlipUtil.apply(IntakeQuadrantL1.startingPose)))
               })
               .andThen(IntakeQuadrantL1(drivetrain, superstructure, flipVeritcally = true))
+
+      AutonomousMode.CENTERLINE_SWEEP_RIGHT ->
+        WaitCommand(waitTime.inSeconds)
+          .andThen({
+            drivetrain.pose = Pose3d(AllianceFlipUtil.apply(CenterlineSweep.startingPose))
+          })
+          .andThen(CenterlineSweep(drivetrain, superstructure, flipVeritcally = false))
+      AutonomousMode.CENTERLINE_SWEEP_LEFT ->
+        WaitCommand(waitTime.inSeconds)
+          .andThen({
+            drivetrain.pose =
+              Pose3d(
+                FollowChoreoPath.flipVertically(
+                  AllianceFlipUtil.apply(CenterlineSweep.startingPose)))
+          })
+          .andThen(CenterlineSweep(drivetrain, superstructure, flipVeritcally = true))
+
       AutonomousMode.PRELOAD_L1_AUTO ->
           WaitCommand(waitTime.inSeconds)
               .andThen({
@@ -120,6 +138,8 @@ private enum class AutonomousMode {
   AUTOPOS,
   INTAKE_RIGHT_QUAD_L1,
   INTAKE_LEFT_QUAD_L1,
+  CENTERLINE_SWEEP_RIGHT,
+  CENTERLINE_SWEEP_LEFT,
   PRELOAD_L1_AUTO,
   DO_NOTHING,
 }
