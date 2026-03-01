@@ -255,6 +255,8 @@ object RobotContainer {
             DrivePathOTF.alignClimbBottom(drivetrain), DrivePathOTF.alignClimbTop(drivetrain)) {
               FieldConstants.inClimbLowerHalf(drivetrain.pose)
             })
+
+    ControlBoard.eject.onTrue(superstructure.requestEjectCommand())
   }
 
   fun mapTestControls() {}

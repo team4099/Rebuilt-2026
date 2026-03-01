@@ -45,6 +45,8 @@ object ControlBoard {
 
   val climbOTF = Trigger { driver.yButton }
 
+  val eject = Trigger { driver.dPadUp }
+
   val prepScore = Trigger { operator.yButton }
   val forceIntakeFullUp = Trigger { operator.rightTriggerAxis > .5 }
   val forceIntakeHalfDown = Trigger { operator.rightShoulderButton }
