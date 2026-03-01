@@ -224,9 +224,14 @@ class Superstructure(
         intake.currentRequest =
             Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.INTAKE_ANGLE)
 
-        if (currentRequest is SuperstructureRequest.Idle) nextState = SuperstructureStates.IDLE
-        if (currentRequest is SuperstructureRequest.ExtendClimb)
-            nextState = SuperstructureStates.PREP_CLIMB
+        when (currentRequest) {
+          is SuperstructureRequest.Idle -> nextState = SuperstructureStates.IDLE
+          is SuperstructureRequest.PrepScore -> nextState = SuperstructureStates.PREP_SCORE
+          is SuperstructureRequest.Score -> nextState = SuperstructureStates.SCORE
+          is SuperstructureRequest.Eject -> nextState = SuperstructureStates.EJECT
+          is SuperstructureRequest.ExtendClimb -> nextState = SuperstructureStates.PREP_CLIMB
+          else -> {}
+        }
       }
       SuperstructureStates.PREP_CLIMB -> {
         shooter.currentRequest = Request.ShooterRequest.Idle()
