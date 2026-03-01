@@ -162,13 +162,12 @@ class Superstructure(
         intake.currentRequest =
             Request.IntakeRequest.OpenLoop(IntakeConstants.FORCE_HOME_INTAKE_VOLTAGE)
 
-        if (currentRequest is SuperstructureRequest.Idle
-          || currentRequest is SuperstructureRequest.Intake
-          || currentRequest is SuperstructureRequest.PrepScore
-          || currentRequest is SuperstructureRequest.Score
-          )
-          intake.currentRequest =
-            Request.IntakeRequest.ZeroPivot(IntakeConstants.ANGLES.INTAKE_ANGLE)
+        if (currentRequest is SuperstructureRequest.Idle ||
+            currentRequest is SuperstructureRequest.Intake ||
+            currentRequest is SuperstructureRequest.PrepScore ||
+            currentRequest is SuperstructureRequest.Score)
+            intake.currentRequest =
+                Request.IntakeRequest.ZeroPivot(IntakeConstants.ANGLES.INTAKE_ANGLE)
 
         when (currentRequest) {
           is SuperstructureRequest.Idle -> nextState = SuperstructureStates.IDLE
@@ -183,7 +182,7 @@ class Superstructure(
         hopper.currentRequest = Request.HopperRequest.Idle()
         feeder.currentRequest = Request.FeederRequest.Idle()
         intakeRollers.currentRequest =
-          Request.RollersRequest.OpenLoop(RollersConstants.IDLE_VOLTAGE)
+            Request.RollersRequest.OpenLoop(RollersConstants.IDLE_VOLTAGE)
 
         when (currentRequest) {
           is SuperstructureRequest.Idle -> nextState = SuperstructureStates.IDLE
@@ -226,16 +225,19 @@ class Superstructure(
             Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.INTAKE_ANGLE)
 
         if (currentRequest is SuperstructureRequest.Idle) nextState = SuperstructureStates.IDLE
-        if (currentRequest is SuperstructureRequest.ExtendClimb) nextState = SuperstructureStates.PREP_CLIMB
+        if (currentRequest is SuperstructureRequest.ExtendClimb)
+            nextState = SuperstructureStates.PREP_CLIMB
       }
       SuperstructureStates.PREP_CLIMB -> {
         shooter.currentRequest = Request.ShooterRequest.Idle()
         hopper.currentRequest = Request.HopperRequest.Idle()
         feeder.currentRequest = Request.FeederRequest.Idle()
-        intakeRollers.currentRequest = Request.RollersRequest.OpenLoop(RollersConstants.IDLE_VOLTAGE)
+        intakeRollers.currentRequest =
+            Request.RollersRequest.OpenLoop(RollersConstants.IDLE_VOLTAGE)
         climb.currentRequest =
             Request.ClimbRequest.TargetingPosition(ClimbConstants.UPWARDS_EXTENSION_LIMIT)
-        intake.currentRequest = Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.CLIMB_ANGLE)
+        intake.currentRequest =
+            Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.CLIMB_ANGLE)
 
         when (currentRequest) {
           is SuperstructureRequest.Idle -> {
@@ -251,7 +253,8 @@ class Superstructure(
       }
       SuperstructureStates.CLIMB -> {
         climb.currentRequest = Request.ClimbRequest.TargetingPosition(ClimbConstants.CLIMB_HEIGHT)
-        intake.currentRequest = Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.CLIMB_ANGLE)
+        intake.currentRequest =
+            Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.CLIMB_ANGLE)
 
         when (currentRequest) {
           is SuperstructureRequest.ExtendClimb -> nextState = SuperstructureStates.PREP_CLIMB
@@ -259,7 +262,8 @@ class Superstructure(
         }
       }
       SuperstructureStates.EJECT -> {
-        intake.currentRequest = Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.INTAKE_ANGLE)
+        intake.currentRequest =
+            Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.INTAKE_ANGLE)
         intakeRollers.currentRequest =
             Request.RollersRequest.OpenLoop(RollersConstants.EJECT_VOLTAGE)
 
