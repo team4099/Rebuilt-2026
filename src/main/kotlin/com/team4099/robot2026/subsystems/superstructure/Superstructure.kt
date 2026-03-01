@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.team4099.lib.units.AngularVelocity
+import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.derived.Angle
@@ -327,6 +328,15 @@ class Superstructure(
     }
 
     returnCommand.name = "RequestForceIntakeCommand"
+    return returnCommand
+  }
+
+  fun requestForceClimbCommand(wantedPosition: Length): Command {
+    val returnCommand = runOnce {
+      climb.currentRequest = Request.ClimbRequest.TargetingPosition(wantedPosition)
+    }
+
+    returnCommand.name = "RequestForceClimbCommand"
     return returnCommand
   }
 
