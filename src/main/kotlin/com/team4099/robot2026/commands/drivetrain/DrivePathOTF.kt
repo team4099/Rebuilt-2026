@@ -74,7 +74,7 @@ class DrivePathOTF(
     private val initialHeading: Angle,
     private val goalEndState: GoalEndState,
     private val tolerances: Tolerances = Tolerances(2.inches, 2.inches, 4.degrees),
-  maxVelocity: LinearVelocity = DrivetrainConstants.DRIVE_SETPOINT_MAX
+    maxVelocity: LinearVelocity = DrivetrainConstants.DRIVE_SETPOINT_MAX
 ) : Command() {
   private val DRIVE_ESCAPE_THRESHOLD = 0.4
   private val TURN_ESCAPE_THRESHOLD = 0.4
@@ -324,17 +324,23 @@ class DrivePathOTF(
                   { drivetrain.pose.toPose2d().pose2d },
                   listOf(DrivetrainConstants.OTF_PATHS.CLIMB_BOTTOM.first),
                   drivetrain.pose.rotation.z,
-                  GoalEndState(0.0.meters.perSecond, if (AllianceFlipUtil.shouldFlip()) -90.degrees else 90.degrees)),
-//              DrivePathOTF(
-//                  drivetrain,
-//                  { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-//                  { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-//                  { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
-//                  { drivetrain.pose.toPose2d().pose2d },
-//                  listOf(DrivetrainConstants.OTF_PATHS.CLIMB_BOTTOM.second),
-//                  drivetrain.pose.rotation.z,
-//                  GoalEndState(0.0.meters.perSecond, if (AllianceFlipUtil.shouldFlip()) -90.degrees else 90.degrees),
-//                  Tolerances(1.inches, 1.inches, 1.5.degrees))
+                  GoalEndState(
+                      0.0.meters.perSecond,
+                      if (AllianceFlipUtil.shouldFlip()) -90.degrees else 90.degrees)),
+              //              DrivePathOTF(
+              //                  drivetrain,
+              //                  {
+              // ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+              //                  {
+              // ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+              //                  {
+              // ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+              //                  { drivetrain.pose.toPose2d().pose2d },
+              //                  listOf(DrivetrainConstants.OTF_PATHS.CLIMB_BOTTOM.second),
+              //                  drivetrain.pose.rotation.z,
+              //                  GoalEndState(0.0.meters.perSecond, if
+              // (AllianceFlipUtil.shouldFlip()) -90.degrees else 90.degrees),
+              //                  Tolerances(1.inches, 1.inches, 1.5.degrees))
           )
       returnCommand.name = "DrivePathOTFAlignClimbBottom"
       return returnCommand
@@ -354,18 +360,22 @@ class DrivePathOTF(
                   GoalEndState(
                       0.0.meters.perSecond,
                       if (AllianceFlipUtil.shouldFlip()) 90.degrees else -90.degrees)),
-//              DrivePathOTF(
-//                  drivetrain,
-//                  { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-//                  { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-//                  { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
-//                  { drivetrain.pose.toPose2d().pose2d },
-//                  listOf(DrivetrainConstants.OTF_PATHS.CLIMB_TOP.second),
-//                  drivetrain.pose.rotation.z,
-//                  GoalEndState(
-//                      0.0.meters.perSecond,
-//                      if (AllianceFlipUtil.shouldFlip()) 90.degrees else -90.degrees),
-//                  Tolerances(1.inches, 1.inches, 1.5.degrees))
+              //              DrivePathOTF(
+              //                  drivetrain,
+              //                  {
+              // ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+              //                  {
+              // ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+              //                  {
+              // ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+              //                  { drivetrain.pose.toPose2d().pose2d },
+              //                  listOf(DrivetrainConstants.OTF_PATHS.CLIMB_TOP.second),
+              //                  drivetrain.pose.rotation.z,
+              //                  GoalEndState(
+              //                      0.0.meters.perSecond,
+              //                      if (AllianceFlipUtil.shouldFlip()) 90.degrees else
+              // -90.degrees),
+              //                  Tolerances(1.inches, 1.inches, 1.5.degrees))
           )
       returnCommand.name = "DrivePathOTFAlignClimbTop"
       return returnCommand
