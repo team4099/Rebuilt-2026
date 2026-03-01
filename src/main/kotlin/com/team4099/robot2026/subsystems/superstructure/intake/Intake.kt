@@ -32,11 +32,9 @@ class Intake(private val io: IntakeIO) : ControlledByStateMachine() {
         is Request.IntakeRequest.OpenLoop -> {
           pivotVoltageTarget = value.pivotVoltage
         }
-
         is Request.IntakeRequest.TargetingPosition -> {
           pivotPositionTarget = value.pivotPosition
         }
-
         is Request.IntakeRequest.ZeroPivot -> {
           pivotZero = value.zeroPosition
         }

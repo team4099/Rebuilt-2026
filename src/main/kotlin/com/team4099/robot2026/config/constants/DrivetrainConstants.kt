@@ -3,6 +3,7 @@ package com.team4099.robot2026.config.constants
 import com.team4099.robot2026.subsystems.drivetrain.generated.AlphaBotTunerConstants
 import com.team4099.robot2026.subsystems.drivetrain.generated.CompBotTunerConstants
 import com.team4099.robot2026.subsystems.drivetrain.generated.TestBotTunerConstants
+import com.team4099.robot2026.util.AllianceFlipUtil
 import edu.wpi.first.wpilibj.RobotBase
 import java.util.function.Supplier
 import kotlin.math.sqrt
@@ -282,11 +283,31 @@ object DrivetrainConstants {
         )
     val CLIMB_BOTTOM =
         Pair(
-            Supplier { Pose2d(1.195.meters, 2.5.meters, 90.degrees) },
-            Supplier { Pose2d(1.195.meters, 2.95.meters, 90.degrees) })
+            Supplier {
+              Pose2d(
+                  1.23.meters,
+                  2.5.meters,
+                  if (AllianceFlipUtil.shouldFlip()) -90.degrees else 90.degrees)
+            },
+            Supplier {
+              Pose2d(
+                  1.23.meters,
+                  3.02.meters,
+                  if (AllianceFlipUtil.shouldFlip()) -90.degrees else 90.degrees)
+            })
     val CLIMB_TOP =
         Pair(
-            Supplier { Pose2d(.98.meters, 5.meters, -90.degrees) },
-            Supplier { Pose2d(.98.meters, 4.515.meters, -90.degrees) })
+            Supplier {
+              Pose2d(
+                  .98.meters,
+                  5.meters,
+                  if (AllianceFlipUtil.shouldFlip()) 90.degrees else -90.degrees)
+            },
+            Supplier {
+              Pose2d(
+                  .98.meters,
+                  4.515.meters,
+                  if (AllianceFlipUtil.shouldFlip()) 90.degrees else -90.degrees)
+            })
   }
 }

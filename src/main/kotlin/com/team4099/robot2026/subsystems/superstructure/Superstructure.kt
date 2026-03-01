@@ -26,7 +26,6 @@ import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.derived.Angle
-import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.max
 
@@ -159,13 +158,14 @@ class Superstructure(
             }
       }
       SuperstructureStates.FORCE_HOME -> {
-        intake.currentRequest = Request.IntakeRequest.OpenLoop(IntakeConstants.FORCE_HOME_INTAKE_VOLTAGE)
+        intake.currentRequest =
+            Request.IntakeRequest.OpenLoop(IntakeConstants.FORCE_HOME_INTAKE_VOLTAGE)
 
         if (currentRequest is SuperstructureRequest.Idle ||
-          intake.inputs.intakeStatorCurrent > IntakeConstants.FORCE_HOME_INTAKE_STATOR &&
-          Clock.timestamp - lastTransitionTime > IntakeConstants.FORCE_HOME_INTAKE_TIME
-        ) {
-          intake.currentRequest = Request.IntakeRequest.ZeroPivot(IntakeConstants.ANGLES.INTAKE_ANGLE)
+            intake.inputs.intakeStatorCurrent > IntakeConstants.FORCE_HOME_INTAKE_STATOR &&
+                Clock.timestamp - lastTransitionTime > IntakeConstants.FORCE_HOME_INTAKE_TIME) {
+          intake.currentRequest =
+              Request.IntakeRequest.ZeroPivot(IntakeConstants.ANGLES.INTAKE_ANGLE)
           nextState = SuperstructureStates.IDLE
         }
       }
@@ -210,6 +210,7 @@ class Superstructure(
       SuperstructureStates.PREP_CLIMB -> {
         climb.currentRequest =
             Request.ClimbRequest.TargetingPosition(ClimbConstants.UPWARDS_EXTENSION_LIMIT)
+        intake.currentRequest = Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.CLIMB_ANGLE)
 
         when (currentRequest) {
           is SuperstructureRequest.Idle -> {
@@ -225,6 +226,8 @@ class Superstructure(
       }
       SuperstructureStates.CLIMB -> {
         climb.currentRequest = Request.ClimbRequest.TargetingPosition(ClimbConstants.CLIMB_HEIGHT)
+        intake.currentRequest = Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.CLIMB_ANGLE)
+
         when (currentRequest) {
           is SuperstructureRequest.ExtendClimb -> nextState = SuperstructureStates.PREP_CLIMB
           else -> {}

@@ -220,8 +220,6 @@ object RobotContainer {
     ControlBoard.forceIntakeFullDown.whileTrue(
         superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_DOWN_ANGLE))
 
-    ControlBoard.eject.onTrue(superstructure.requestEjectCommand())
-
     ControlBoard.score.whileTrue(
         ConditionalCommand(
             AimOTFCommand(

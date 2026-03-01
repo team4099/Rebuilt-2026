@@ -18,7 +18,7 @@ class ResetGyroYawCommand(val drivetrain: Drive, private val flipIfRed: Boolean 
   override fun initialize() {
     val angle = if (flipIfRed && AllianceFlipUtil.shouldFlip()) -PI.radians else 0.radians
     drivetrain.pose = Pose3d(drivetrain.pose.translation, Rotation3d(0.radians, 0.radians, angle))
-//    drivetrain.pointWheelsAt(angle)
+    //    drivetrain.pointWheelsAt(angle)
   }
 
   override fun execute() {
