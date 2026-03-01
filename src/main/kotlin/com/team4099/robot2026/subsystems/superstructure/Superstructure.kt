@@ -210,7 +210,8 @@ class Superstructure(
       SuperstructureStates.PREP_CLIMB -> {
         climb.currentRequest =
             Request.ClimbRequest.TargetingPosition(ClimbConstants.UPWARDS_EXTENSION_LIMIT)
-        intake.currentRequest = Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.CLIMB_ANGLE)
+        intake.currentRequest =
+            Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.CLIMB_ANGLE)
 
         when (currentRequest) {
           is SuperstructureRequest.Idle -> {
@@ -226,7 +227,8 @@ class Superstructure(
       }
       SuperstructureStates.CLIMB -> {
         climb.currentRequest = Request.ClimbRequest.TargetingPosition(ClimbConstants.CLIMB_HEIGHT)
-        intake.currentRequest = Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.CLIMB_ANGLE)
+        intake.currentRequest =
+            Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.CLIMB_ANGLE)
 
         when (currentRequest) {
           is SuperstructureRequest.ExtendClimb -> nextState = SuperstructureStates.PREP_CLIMB

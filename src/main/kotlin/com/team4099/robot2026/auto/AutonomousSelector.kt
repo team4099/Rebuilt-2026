@@ -101,23 +101,21 @@ object AutonomousSelector {
                             AllianceFlipUtil.apply(IntakeQuadrantL1.startingPose)))
               })
               .andThen(IntakeQuadrantL1(drivetrain, superstructure, flipVeritcally = true))
-
       AutonomousMode.CENTERLINE_SWEEP_RIGHT ->
-        WaitCommand(waitTime.inSeconds)
-          .andThen({
-            drivetrain.pose = Pose3d(AllianceFlipUtil.apply(CenterlineSweep.startingPose))
-          })
-          .andThen(CenterlineSweep(drivetrain, superstructure, flipVeritcally = false))
+          WaitCommand(waitTime.inSeconds)
+              .andThen({
+                drivetrain.pose = Pose3d(AllianceFlipUtil.apply(CenterlineSweep.startingPose))
+              })
+              .andThen(CenterlineSweep(drivetrain, superstructure, flipVeritcally = false))
       AutonomousMode.CENTERLINE_SWEEP_LEFT ->
-        WaitCommand(waitTime.inSeconds)
-          .andThen({
-            drivetrain.pose =
-              Pose3d(
-                FollowChoreoPath.flipVertically(
-                  AllianceFlipUtil.apply(CenterlineSweep.startingPose)))
-          })
-          .andThen(CenterlineSweep(drivetrain, superstructure, flipVeritcally = true))
-
+          WaitCommand(waitTime.inSeconds)
+              .andThen({
+                drivetrain.pose =
+                    Pose3d(
+                        FollowChoreoPath.flipVertically(
+                            AllianceFlipUtil.apply(CenterlineSweep.startingPose)))
+              })
+              .andThen(CenterlineSweep(drivetrain, superstructure, flipVeritcally = true))
       AutonomousMode.PRELOAD_L1_AUTO ->
           WaitCommand(waitTime.inSeconds)
               .andThen({
