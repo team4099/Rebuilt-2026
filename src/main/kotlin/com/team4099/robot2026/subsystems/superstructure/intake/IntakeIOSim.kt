@@ -78,7 +78,7 @@ object IntakeIOSim : IntakeIO {
     setVoltage(feedback)
   }
 
-  override fun zeroPivot() {}
+  override fun zeroPivot(zeroPosition: Angle) {}
 
   override fun configPID(
       kP: ProportionalGain<Radian, Volt>,

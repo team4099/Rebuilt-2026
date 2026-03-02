@@ -200,14 +200,20 @@ object RobotContainer {
 
   fun mapTeleopControls() {
     ControlBoard.resetGyro.whileTrue(ResetGyroYawCommand(drivetrain))
+    ControlBoard.forceHome.onTrue(superstructure.requestForceHomeCommand())
 
     ControlBoard.forceIdle.onTrue(superstructure.requestIdleCommand())
 
     ControlBoard.prepScore.onTrue(superstructure.requestPrepScoreCommand())
     ControlBoard.score.onTrue(superstructure.requestScoreCommand())
+    ControlBoard.score.onFalse(
+        ConditionalCommand(superstructure.requestIdleCommand(), InstantCommand()) {
+          superstructure.currentState == Superstructure.Companion.SuperstructureStates.PREP_SCORE ||
+              superstructure.currentState == Superstructure.Companion.SuperstructureStates.SCORE
+        })
 
     ControlBoard.prepClimb.onTrue(superstructure.requestPrepClimbCommand())
-    //    ControlBoard.climb.onTrue(superstructure.requestClimbCommand())
+    ControlBoard.climb.onTrue(superstructure.requestClimbCommand())
 
     ControlBoard.intake.onTrue(superstructure.requestIntakeCommand())
     ControlBoard.forceIntakeFullUp.whileTrue(
@@ -218,8 +224,6 @@ object RobotContainer {
         superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFDOWN_ANGLE))
     ControlBoard.forceIntakeFullDown.whileTrue(
         superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_DOWN_ANGLE))
-
-    ControlBoard.eject.onTrue(superstructure.requestEjectCommand())
 
     ControlBoard.score.whileTrue(
         ConditionalCommand(
@@ -256,6 +260,8 @@ object RobotContainer {
             DrivePathOTF.alignClimbBottom(drivetrain), DrivePathOTF.alignClimbTop(drivetrain)) {
               FieldConstants.inClimbLowerHalf(drivetrain.pose)
             })
+
+    ControlBoard.eject.onTrue(superstructure.requestEjectCommand())
   }
 
   fun mapTestControls() {}

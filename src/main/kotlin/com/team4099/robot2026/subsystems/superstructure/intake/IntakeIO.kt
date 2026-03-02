@@ -66,7 +66,7 @@ interface IntakeIO {
     }
   }
 
-  fun zeroPivot() {}
+  fun zeroPivot(zeroPosition: Angle) {}
 
   fun updateInputs(inputs: IntakeIOInputs) {}
 

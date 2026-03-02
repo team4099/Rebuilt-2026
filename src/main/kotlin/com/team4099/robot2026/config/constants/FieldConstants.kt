@@ -37,10 +37,10 @@ object FieldConstants {
     get() = AllianceFlipUtil.apply(181.56.inches)
 
   val HUB_POSE: Translation3d
-    get() = Translation3d(182.11.inches, 158.84.inches, 72.inches)
+    get() = AllianceFlipUtil.apply(Translation3d(182.11.inches, 158.84.inches, 72.inches))
 
   val ALLIANCE_ZONE_CENTER: Translation3d
-    get() = Translation3d(120.inches, 158.84.inches, 72.inches)
+    get() = AllianceFlipUtil.apply(Translation3d(120.inches, 158.84.inches, 72.inches))
 
   fun inAllianceZone(pose: Pose3d): Boolean {
     return inAllianceZone(pose.toPose2d())

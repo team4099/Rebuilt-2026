@@ -30,7 +30,7 @@ object IntakeConstants {
   val PIVOT_MAX_ANGLE = 120.degrees
   val PIVOT_MIN_ANGLE = (-50).degrees
 
-  val STATOR_CURRENT_LIMIT = 85.amps
+  val STATOR_CURRENT_LIMIT = 80.amps
   val SUPPLY_CURRENT_LIMIT = 40.amps
 
   val VOLTAGE_COMPENSATION = 12.0.volts
@@ -44,21 +44,27 @@ object IntakeConstants {
 
   val LENGTH_EXTENDED = 0.0.inches
 
+  val FORCE_HOME_INTAKE_VOLTAGE = -2.5.volts
+
   object ANGLES {
     val INTAKE_ANGLE = PIVOT_MIN_ANGLE
     val STOW_ANGLE = PIVOT_MAX_ANGLE
     val IDLE_ANGLE: Angle
       get() =
-          if (DriverStation.isAutonomous() && Clock.timestamp - Robot.autoStartTime < 0.5.seconds)
+          if (DriverStation.isAutonomous() && Clock.timestamp - Robot.autoStartTime < 0.3.seconds)
               STOW_ANGLE
-          else 10.degrees
+          else 0.degrees
 
     val EJECT_ANGLE = INTAKE_ANGLE
 
-    val FORCE_UP_ANGLE = 110.degrees
-    val FORCE_HALFUP_ANGLE = 75.degrees
-    val FORCE_HALFDOWN_ANGLE = 45.degrees
-    val FORCE_DOWN_ANGLE = 10.degrees
+    val CLIMB_ANGLE = PIVOT_MAX_ANGLE
+
+    val FORCE_UP_ANGLE = 105.degrees
+    val FORCE_HALFUP_ANGLE = 50.degrees
+    val FORCE_HALFDOWN_ANGLE = 20.degrees
+    val FORCE_DOWN_ANGLE = -30.degrees
+
+    val RESET_INTAKE_ANGLE = INTAKE_ANGLE - 3.degrees
   }
 
   object PID {

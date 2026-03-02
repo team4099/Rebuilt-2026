@@ -168,15 +168,11 @@ object Robot : LoggedRobot() {
     val autonCommandWithWait = runOnce({ RobotContainer.zeroSensors() }).andThen(autonomousCommand)
     CommandScheduler.getInstance().schedule(autonCommandWithWait)
     RobotContainer.intake.setBrakeMode(true)
-  }
-
-  override fun autonomousPeriodic() {
-    if (autoStartTime == (-1337).seconds && DriverStation.isAutonomousEnabled())
-        autoStartTime = Clock.timestamp
-    else if (DriverStation.isDisabled()) autoStartTime = (-1337).seconds
+    autoStartTime = Clock.timestamp
   }
 
   override fun disabledPeriodic() {
+    autoStartTime = -1337.seconds
     autonomousCommand = RobotContainer.getAutonomousCommand()
   }
 

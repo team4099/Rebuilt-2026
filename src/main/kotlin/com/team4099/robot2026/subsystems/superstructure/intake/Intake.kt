@@ -21,6 +21,9 @@ class Intake(private val io: IntakeIO) : ControlledByStateMachine() {
   var pivotVoltageTarget: ElectricalPotential = 0.0.volts
     private set
 
+  var pivotZero: Angle = IntakeConstants.ANGLES.STOW_ANGLE
+    private set
+
   var currentState: IntakeState = IntakeState.UNINITIALIZED
 
   var currentRequest: Request.IntakeRequest = Request.IntakeRequest.ZeroPivot()
@@ -32,7 +35,9 @@ class Intake(private val io: IntakeIO) : ControlledByStateMachine() {
         is Request.IntakeRequest.TargetingPosition -> {
           pivotPositionTarget = value.pivotPosition
         }
-        else -> {}
+        is Request.IntakeRequest.ZeroPivot -> {
+          pivotZero = value.zeroPosition
+        }
       }
       field = value
     }
@@ -85,7 +90,7 @@ class Intake(private val io: IntakeIO) : ControlledByStateMachine() {
         nextState = fromRequestToState(currentRequest)
       }
       IntakeState.ZEROING_PIVOT -> {
-        io.zeroPivot()
+        io.zeroPivot(pivotZero)
         currentRequest = Request.IntakeRequest.OpenLoop(0.volts)
         nextState = fromRequestToState(currentRequest)
       }
