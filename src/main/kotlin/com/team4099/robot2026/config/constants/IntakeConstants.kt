@@ -44,7 +44,7 @@ object IntakeConstants {
 
   val LENGTH_EXTENDED = 0.0.inches
 
-  val FORCE_HOME_INTAKE_VOLTAGE = -4.volts
+  val FORCE_HOME_INTAKE_VOLTAGE = -2.5.volts
 
   object ANGLES {
     val INTAKE_ANGLE = PIVOT_MIN_ANGLE
@@ -59,10 +59,12 @@ object IntakeConstants {
 
     val CLIMB_ANGLE = PIVOT_MAX_ANGLE
 
-    val FORCE_UP_ANGLE = 110.degrees
+    val FORCE_UP_ANGLE = 105.degrees
     val FORCE_HALFUP_ANGLE = 50.degrees
     val FORCE_HALFDOWN_ANGLE = 20.degrees
-    val FORCE_DOWN_ANGLE = INTAKE_ANGLE - 8.degrees
+    val FORCE_DOWN_ANGLE = -30.degrees
+
+    val RESET_INTAKE_ANGLE = INTAKE_ANGLE - 3.degrees
   }
 
   object PID {

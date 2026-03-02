@@ -206,6 +206,11 @@ object RobotContainer {
 
     ControlBoard.prepScore.onTrue(superstructure.requestPrepScoreCommand())
     ControlBoard.score.onTrue(superstructure.requestScoreCommand())
+    ControlBoard.score.onFalse(
+        ConditionalCommand(superstructure.requestIdleCommand(), InstantCommand()) {
+          superstructure.currentState == Superstructure.Companion.SuperstructureStates.PREP_SCORE ||
+              superstructure.currentState == Superstructure.Companion.SuperstructureStates.SCORE
+        })
 
     ControlBoard.prepClimb.onTrue(superstructure.requestPrepClimbCommand())
     ControlBoard.climb.onTrue(superstructure.requestClimbCommand())

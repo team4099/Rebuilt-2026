@@ -110,8 +110,6 @@ class AimOTFCommand(
 
   private var startedInAuto = false
 
-  var hasAligned: Boolean = false
-
   init {
     thetaPID =
         PIDController(
@@ -209,5 +207,9 @@ class AimOTFCommand(
     RobotContainer.isAligning = false
 
     CustomLogger.recordOutput("ActiveCommands/FaceHubCommand", false)
+  }
+
+  companion object {
+    var hasAligned: Boolean = false
   }
 }

@@ -1,6 +1,8 @@
 package com.team4099.robot2026.subsystems.superstructure
 
 import com.team4099.lib.hal.Clock
+import com.team4099.robot2026.RobotContainer
+import com.team4099.robot2026.commands.drivetrain.AimOTFCommand
 import com.team4099.robot2026.config.constants.ClimbConstants
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.FeederConstants
@@ -167,7 +169,7 @@ class Superstructure(
             currentRequest is SuperstructureRequest.PrepScore ||
             currentRequest is SuperstructureRequest.Score)
             intake.currentRequest =
-                Request.IntakeRequest.ZeroPivot(IntakeConstants.ANGLES.INTAKE_ANGLE)
+                Request.IntakeRequest.ZeroPivot(IntakeConstants.ANGLES.RESET_INTAKE_ANGLE)
 
         when (currentRequest) {
           is SuperstructureRequest.Idle -> nextState = SuperstructureStates.IDLE
@@ -199,7 +201,8 @@ class Superstructure(
       SuperstructureStates.SCORE -> {
         shooter.currentRequest = Request.ShooterRequest.TargetVelocity(shooterTargetRPM)
 
-        if (shooter.isAtTargetedVelocity) {
+        if (shooter.isAtTargetedVelocity &&
+            (RobotContainer.isAligning == AimOTFCommand.hasAligned)) {
           feeder.currentRequest =
               Request.FeederRequest.TargetVelocity(FeederConstants.SCORE_VELOCITY)
           hopper.currentRequest =
@@ -268,7 +271,7 @@ class Superstructure(
       }
       SuperstructureStates.EJECT -> {
         intake.currentRequest =
-            Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.INTAKE_ANGLE)
+            Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.EJECT_ANGLE)
         intakeRollers.currentRequest =
             Request.RollersRequest.OpenLoop(RollersConstants.EJECT_VOLTAGE)
 
