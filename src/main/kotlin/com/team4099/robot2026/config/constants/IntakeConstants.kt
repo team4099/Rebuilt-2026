@@ -44,8 +44,6 @@ object IntakeConstants {
 
   val LENGTH_EXTENDED = 0.0.inches
 
-  val FORCE_HOME_INTAKE_STATOR = 65.amps
-  val FORCE_HOME_INTAKE_TIME = .5.seconds
   val FORCE_HOME_INTAKE_VOLTAGE = -4.volts
 
   object ANGLES {
