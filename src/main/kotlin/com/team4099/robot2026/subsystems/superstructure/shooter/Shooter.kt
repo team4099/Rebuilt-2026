@@ -56,6 +56,8 @@ import org.team4099.lib.units.inMetersPerSecondPerSecond
 import org.team4099.lib.units.inRadiansPerSecond
 import org.team4099.lib.units.inRotationsPerMinute
 import org.team4099.lib.units.inRotationsPerSecond
+import org.team4099.lib.units.max
+import org.team4099.lib.units.min
 import org.team4099.lib.units.perSecond
 
 class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
@@ -486,9 +488,13 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
         return launchVelToShooterMap.get(desiredLaunchVel)
       }
       if (7.46.meters.perSecond > desiredLaunchVel) {
-        return (3.74532 * desiredLaunchVel.inMetersPerSecond + 7.05993).rotations.perSecond
+        return max(
+            ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY,
+            (3.74532 * desiredLaunchVel.inMetersPerSecond + 7.05993).rotations.perSecond)
       }
-      return (13.19736 * desiredLaunchVel.inMetersPerSecond - 57.87283).rotations.perSecond
+      return min(
+          (13.19736 * desiredLaunchVel.inMetersPerSecond - 57.87283).rotations.perSecond,
+          ShooterConstants.VELOCITIES.MAXIMUM_LAUNCH_VELCOITY)
     }
   }
 }

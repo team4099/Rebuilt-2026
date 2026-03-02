@@ -1,5 +1,6 @@
 package com.team4099.robot2026.auto
 
+import com.team4099.robot2026.auto.mode.BigCircle
 import com.team4099.robot2026.auto.mode.CenterlineSweep
 import com.team4099.robot2026.auto.mode.ExamplePathAuto
 import com.team4099.robot2026.auto.mode.IntakeQuadrantL1
@@ -45,6 +46,7 @@ object AutonomousSelector {
     autonomousModeChooser.addOption("Intake Left Quadrant L1", AutonomousMode.INTAKE_LEFT_QUAD_L1)
     autonomousModeChooser.addOption("Preload L1 Auto", AutonomousMode.PRELOAD_L1_AUTO)
     autonomousModeChooser.addOption("Do nothing", AutonomousMode.DO_NOTHING)
+    autonomousModeChooser.addOption("BIG CIRCLE AUTO RUN ONLY AT 836", AutonomousMode.BIG_CIRCLE)
 
     autoTab.add("Mode", autonomousModeChooser.sendableChooser).withSize(4, 2).withPosition(2, 0)
 
@@ -122,6 +124,10 @@ object AutonomousSelector {
                 drivetrain.pose = Pose3d(AllianceFlipUtil.apply(PreloadL1Auto.startingPose))
               })
               .andThen(PreloadL1Auto(drivetrain, superstructure))
+      AutonomousMode.BIG_CIRCLE ->
+          WaitCommand(waitTime.inSeconds)
+              .andThen({ drivetrain.pose = Pose3d(AllianceFlipUtil.apply(BigCircle.startingPose)) })
+              .andThen(BigCircle(drivetrain))
       AutonomousMode.DO_NOTHING -> InstantCommand()
       else -> InstantCommand()
     }
@@ -140,4 +146,5 @@ private enum class AutonomousMode {
   CENTERLINE_SWEEP_LEFT,
   PRELOAD_L1_AUTO,
   DO_NOTHING,
+  BIG_CIRCLE
 }
