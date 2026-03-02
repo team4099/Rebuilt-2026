@@ -10,6 +10,7 @@ import org.team4099.lib.units.perSecond
 
 object ClimbConstants {
   val DOWNWARDS_EXTENSION_LIMIT = 0.0.inches
+  val CLIMB_HEIGHT = .85.inches
   val UPWARDS_EXTENSION_LIMIT = 8.5.inches // TODO: might need to tune height
   val CLIMB_MASS = 5.5444326.pounds
 

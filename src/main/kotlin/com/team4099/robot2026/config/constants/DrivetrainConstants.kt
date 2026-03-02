@@ -3,6 +3,7 @@ package com.team4099.robot2026.config.constants
 import com.team4099.robot2026.subsystems.drivetrain.generated.AlphaBotTunerConstants
 import com.team4099.robot2026.subsystems.drivetrain.generated.CompBotTunerConstants
 import com.team4099.robot2026.subsystems.drivetrain.generated.TestBotTunerConstants
+import com.team4099.robot2026.util.AllianceFlipUtil
 import edu.wpi.first.wpilibj.RobotBase
 import java.util.function.Supplier
 import kotlin.math.sqrt
@@ -115,7 +116,7 @@ object DrivetrainConstants {
     val AUTO_POS_KP: ProportionalGain<Meter, Velocity<Meter>>
       get() {
         if (RobotBase.isReal()) {
-          return 2.8.meters.perSecond / 1.0.meters // todo:3.15
+          return 2.5.meters.perSecond / 1.0.meters // todo:3.15
         } else {
           return 20.meters.perSecond / 1.0.meters
         }
@@ -133,7 +134,7 @@ object DrivetrainConstants {
     val AUTO_POS_KD: DerivativeGain<Meter, Velocity<Meter>>
       get() {
         if (RobotBase.isReal()) {
-          return (0.6.meters.perSecond / (1.0.meters.perSecond)) // 0.6
+          return (0.5.meters.perSecond / (1.0.meters.perSecond)) // 0.6
               .metersPerSecondPerMetersPerSecond // todo: 0.25
         } else {
           return (0.5.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
@@ -145,7 +146,7 @@ object DrivetrainConstants {
     val LIMELIGHT_THETA_KD =
         (0.1.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
 
-    val AUTO_THETA_PID_KP = (2.5.degrees.perSecond / 1.degrees)
+    val AUTO_THETA_PID_KP = (2.7.degrees.perSecond / 1.degrees)
     val AUTO_THETA_PID_KI = (0.0.radians.perSecond / (1.radians * 1.seconds))
     val AUTO_THETA_PID_KD =
         (0.3.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
@@ -282,11 +283,31 @@ object DrivetrainConstants {
         )
     val CLIMB_BOTTOM =
         Pair(
-            Supplier { Pose2d(1.195.meters, 2.5.meters, 90.degrees) },
-            Supplier { Pose2d(1.195.meters, 2.95.meters, 90.degrees) })
+            Supplier {
+              Pose2d(
+                  1.23.meters,
+                  2.5.meters,
+                  if (AllianceFlipUtil.shouldFlip()) -90.degrees else 90.degrees)
+            },
+            Supplier {
+              Pose2d(
+                  1.23.meters,
+                  3.02.meters,
+                  if (AllianceFlipUtil.shouldFlip()) -90.degrees else 90.degrees)
+            })
     val CLIMB_TOP =
         Pair(
-            Supplier { Pose2d(.96.meters, 5.meters, -90.degrees) },
-            Supplier { Pose2d(.96.meters, 4.515.meters, -90.degrees) })
+            Supplier {
+              Pose2d(
+                  .98.meters,
+                  5.meters,
+                  if (AllianceFlipUtil.shouldFlip()) 90.degrees else -90.degrees)
+            },
+            Supplier {
+              Pose2d(
+                  .98.meters,
+                  4.515.meters,
+                  if (AllianceFlipUtil.shouldFlip()) 90.degrees else -90.degrees)
+            })
   }
 }

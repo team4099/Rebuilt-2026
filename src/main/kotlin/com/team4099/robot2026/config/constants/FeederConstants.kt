@@ -29,7 +29,7 @@ object FeederConstants {
   val MOMENT_OF_INERTIA = 0.35.grams.meterSquared
   val VOLTAGE_COMPENSATION = 12.0.volts
 
-  val IDLE_VOLTAGE = if (Constants.Tuning.TUNING_MODE) 0.volts else -.5.volts
+  val IDLE_VOLTAGE = if (Constants.Tuning.TUNING_MODE) 0.volts else -1.volts
   val SCORE_VELOCITY = 28.rotations.perSecond
 
   object PID {

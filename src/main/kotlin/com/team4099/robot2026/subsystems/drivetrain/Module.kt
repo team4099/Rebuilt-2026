@@ -78,7 +78,6 @@ class Module(
 
     // Apply setpoints
     io.setDriveVelocity(state.speedMetersPerSecond / constants.WheelRadius)
-    //    io.setDriveOpenLoop(desiredVoltage)
     io.setTurnPosition(state.angle)
   }
 
