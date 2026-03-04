@@ -2,6 +2,7 @@ name: Build Project
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened]
   push:
     branches: [ master ]
 
@@ -17,13 +18,14 @@ jobs:
       - name: Checkout branch
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.head_ref || github.ref_name }}
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Check spotless
+      - name: Check Spotless
         id: spotless
         run: |
           if ./gradlew spotlessKotlinCheck; then
@@ -33,14 +35,14 @@ jobs:
             echo "clean=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Commit spotless fixes
+      - name: Commit and push Spotless fixes
         if: steps.spotless.outputs.clean == 'false'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add .
           git commit -m "chore: auto-fix Spotless formatting"
-          git push
+          git push origin HEAD:${{ github.head_ref || github.ref_name }}
           exit 0
 
       - name: Build
