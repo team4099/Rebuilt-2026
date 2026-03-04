@@ -44,6 +44,8 @@ object AutonomousSelector {
         "Auto Pose Tuner DO NOT RUN AT COMPETITION", AutonomousMode.AUTOPOS)
     autonomousModeChooser.addOption("Intake Right Quadrant L1", AutonomousMode.INTAKE_RIGHT_QUAD_L1)
     autonomousModeChooser.addOption("Intake Left Quadrant L1", AutonomousMode.INTAKE_LEFT_QUAD_L1)
+    autonomousModeChooser.addOption("Centerline Sweep Left", AutonomousMode.CENTERLINE_SWEEP_LEFT)
+    autonomousModeChooser.addOption("Centerline Sweep Right", AutonomousMode.CENTERLINE_SWEEP_RIGHT)
     autonomousModeChooser.addOption("Preload L1 Auto", AutonomousMode.PRELOAD_L1_AUTO)
     autonomousModeChooser.addOption("Do nothing", AutonomousMode.DO_NOTHING)
     autonomousModeChooser.addOption("BIG CIRCLE AUTO RUN ONLY AT 836", AutonomousMode.BIG_CIRCLE)
@@ -67,7 +69,7 @@ object AutonomousSelector {
 
     return when (mode) {
       AutonomousMode.EXAMPLE_AUTO ->
-          WaitCommand(waitTime.inSeconds)
+          return WaitCommand(waitTime.inSeconds)
               .andThen({
                 drivetrain.pose = Pose3d(AllianceFlipUtil.apply(ExamplePathAuto.startingPose))
               })
@@ -108,7 +110,7 @@ object AutonomousSelector {
               .andThen({
                 drivetrain.pose = Pose3d(AllianceFlipUtil.apply(CenterlineSweep.startingPose))
               })
-              .andThen(CenterlineSweep(drivetrain, superstructure, flipVeritcally = false))
+              .andThen(CenterlineSweep(drivetrain, superstructure, flipVeritcally = true))
       AutonomousMode.CENTERLINE_SWEEP_LEFT ->
           WaitCommand(waitTime.inSeconds)
               .andThen({
@@ -117,7 +119,7 @@ object AutonomousSelector {
                         FollowChoreoPath.flipVertically(
                             AllianceFlipUtil.apply(CenterlineSweep.startingPose)))
               })
-              .andThen(CenterlineSweep(drivetrain, superstructure, flipVeritcally = true))
+              .andThen(CenterlineSweep(drivetrain, superstructure, flipVeritcally = false))
       AutonomousMode.PRELOAD_L1_AUTO ->
           WaitCommand(waitTime.inSeconds)
               .andThen({
@@ -146,5 +148,5 @@ private enum class AutonomousMode {
   CENTERLINE_SWEEP_LEFT,
   PRELOAD_L1_AUTO,
   DO_NOTHING,
-  BIG_CIRCLE
+  BIG_CIRCLE,
 }
