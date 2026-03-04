@@ -28,9 +28,9 @@ object IntakeConstants {
   val PIVOT_INERTIA = 1.0.grams.meterSquared
   val PIVOT_LENGTH = 1.0.inches
   val PIVOT_MAX_ANGLE = 120.degrees
-  val PIVOT_MIN_ANGLE = (-50).degrees
+  val PIVOT_MIN_ANGLE = (-55).degrees
 
-  val STATOR_CURRENT_LIMIT = 80.amps
+  val STATOR_CURRENT_LIMIT = 120.amps
   val SUPPLY_CURRENT_LIMIT = 40.amps
 
   val VOLTAGE_COMPENSATION = 12.0.volts
@@ -51,7 +51,7 @@ object IntakeConstants {
     val STOW_ANGLE = PIVOT_MAX_ANGLE
     val IDLE_ANGLE: Angle
       get() =
-          if (DriverStation.isAutonomous() && Clock.timestamp - Robot.autoStartTime < 0.3.seconds)
+          if (DriverStation.isDisabled() || DriverStation.isAutonomous() && (Robot.autoStartTime < 0.seconds || Clock.timestamp - Robot.autoStartTime < 1.25.seconds))
               STOW_ANGLE
           else 0.degrees
 
@@ -69,7 +69,7 @@ object IntakeConstants {
 
   object PID {
     // PID Constants
-    val REAL_PIVOT_KP: ProportionalGain<Radian, Volt> = 35.volts / 1.0.radians
+    val REAL_PIVOT_KP: ProportionalGain<Radian, Volt> = 40.volts / 1.0.radians
     val REAL_PIVOT_KI: IntegralGain<Radian, Volt> = 0.0.volts / (1.0.radians * 1.0.seconds)
     val REAL_PIVOT_KD: DerivativeGain<Radian, Volt> = 0.0.volts / 1.0.radians.perSecond
 

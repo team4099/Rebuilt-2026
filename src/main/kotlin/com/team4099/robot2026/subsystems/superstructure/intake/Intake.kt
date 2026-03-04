@@ -15,7 +15,7 @@ import org.team4099.lib.units.derived.volts
 class Intake(private val io: IntakeIO) : ControlledByStateMachine() {
   val inputs = IntakeIO.IntakeIOInputs()
 
-  var pivotPositionTarget: Angle = 0.0.degrees
+  var pivotPositionTarget: Angle = IntakeConstants.ANGLES.STOW_ANGLE
     private set
 
   var pivotVoltageTarget: ElectricalPotential = 0.0.volts

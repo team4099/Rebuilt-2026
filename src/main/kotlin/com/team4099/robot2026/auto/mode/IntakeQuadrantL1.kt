@@ -23,14 +23,14 @@ class IntakeQuadrantL1(
     flipVeritcally: Boolean
 ) : SequentialCommandGroup() {
   init {
-    addRequirements(drivetrain, superstructure)
     addCommands(
         SequentialCommandGroup(
                 ParallelCommandGroup(
                     FollowChoreoPath(drivetrain, mainTraj, flipVertically = flipVeritcally),
                     SequentialCommandGroup(
+                        WaitCommand(1.0),
                         superstructure.requestIntakeCommand(),
-                        WaitCommand(5.0),
+                        WaitCommand(2.5),
                         superstructure.requestIdleCommand(),
                         WaitCommand(.5),
                         superstructure.requestPrepScoreCommand())),
