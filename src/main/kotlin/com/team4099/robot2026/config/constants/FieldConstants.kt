@@ -4,6 +4,7 @@ import com.team4099.robot2026.util.AllianceFlipUtil
 import edu.wpi.first.apriltag.AprilTagFieldLayout
 import edu.wpi.first.apriltag.AprilTagFields
 import org.ironmaple.simulation.SimulatedArena
+import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Translation3d
 import org.team4099.lib.units.base.Length
@@ -36,16 +37,33 @@ object FieldConstants {
     get() = AllianceFlipUtil.apply(181.56.inches)
 
   val HUB_POSE: Translation3d
-    get() = Translation3d(182.11.inches, 158.84.inches, 72.inches)
+    get() = AllianceFlipUtil.apply(Translation3d(182.11.inches, 158.84.inches, 72.inches))
 
   val ALLIANCE_ZONE_CENTER: Translation3d
-    get() = Translation3d(120.inches, 158.84.inches, 72.inches)
+    get() = AllianceFlipUtil.apply(Translation3d(120.inches, 158.84.inches, 72.inches))
 
   fun inAllianceZone(pose: Pose3d): Boolean {
+    return inAllianceZone(pose.toPose2d())
+  }
+
+  fun inAllianceZone(pose: Pose2d): Boolean {
     return AllianceFlipUtil.shouldFlip() xor (pose.x < ALLIANCE_LINE_X)
   }
 
   fun inTrenchAllianceZone(pose: Pose3d): Boolean {
+    return inTrenchAllianceZone(pose.toPose2d())
+  }
+
+  fun inTrenchAllianceZone(pose: Pose2d): Boolean {
     return AllianceFlipUtil.shouldFlip() xor (pose.x < TRENCH_LINE_X)
+  }
+
+  fun inClimbLowerHalf(pose: Pose3d): Boolean {
+    return inClimbLowerHalf(pose.toPose2d())
+  }
+
+  fun inClimbLowerHalf(pose: Pose2d): Boolean {
+    return !AllianceFlipUtil.shouldFlip() && pose.y < 3.75.meters ||
+        AllianceFlipUtil.shouldFlip() && pose.y > 4.3.meters
   }
 }

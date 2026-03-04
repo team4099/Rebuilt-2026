@@ -6,15 +6,20 @@ import com.team4099.robot2026.config.constants.FeederConstants
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.math.system.plant.LinearSystemId
 import edu.wpi.first.wpilibj.simulation.FlywheelSim
+import org.team4099.lib.controller.PIDController
+import org.team4099.lib.controller.SimpleMotorFeedforward
+import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.inKilogramsMeterSquared
 import org.team4099.lib.units.derived.inVolts
+import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perMinute
+import org.team4099.lib.units.perSecond
 
 object FeederIOSim : FeederIO {
   private var appliedVoltage = 0.0.volts
@@ -25,6 +30,14 @@ object FeederIOSim : FeederIO {
               FeederConstants.MOMENT_OF_INERTIA.inKilogramsMeterSquared,
               1 / FeederConstants.GEAR_RATIO),
           DCMotor.getKrakenX44(1))
+
+  private val feederPIDController =
+      PIDController(
+          FeederConstants.PID.SIM_KP, FeederConstants.PID.SIM_KI, FeederConstants.PID.SIM_KD)
+
+  private var feederFFController =
+      SimpleMotorFeedforward(
+          FeederConstants.PID.SIM_KS, FeederConstants.PID.SIM_KV, FeederConstants.PID.SIM_KA)
 
   override fun updateInputs(inputs: FeederIO.FeederIOInputs) {
     subsystemSim.update(Constants.Universal.LOOP_PERIOD_TIME.inSeconds)
@@ -41,5 +54,16 @@ object FeederIOSim : FeederIO {
         clamp(voltage, -FeederConstants.VOLTAGE_COMPENSATION, FeederConstants.VOLTAGE_COMPENSATION)
     subsystemSim.setInputVoltage(clampedVoltage.inVolts)
     appliedVoltage = clampedVoltage
+  }
+
+  override fun setVelocity(velocity: AngularVelocity) {
+    var pidOutput =
+        feederPIDController.calculate(
+            subsystemSim.angularVelocityRadPerSec.radians.perSecond, velocity)
+    if (pidOutput.inVolts.isNaN()) pidOutput = 0.volts
+    val ffOutput =
+        feederFFController.calculateWithVelocities(
+            subsystemSim.angularVelocityRadPerSec.radians.perSecond, velocity)
+    setVoltage(pidOutput + ffOutput)
   }
 }

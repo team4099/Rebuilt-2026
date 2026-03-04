@@ -40,11 +40,9 @@ class ModuleIOTalonFXReal(
     super.updateInputs(inputs)
 
     // Update odometry inputs
-    inputs.odometryTimestamps = timestampQueue.map { value: Double -> value }.toDoubleArray()
-    inputs.odometryDrivePositions =
-        drivePositionQueue.map { value: Double -> value.rotations }.toTypedArray()
-    inputs.odometryTurnPositions =
-        turnPositionQueue.map { value: Double -> value.rotations }.toTypedArray()
+    inputs.odometryTimestamps = timestampQueue.toDoubleArray()
+    inputs.odometryDrivePositions = drivePositionQueue.map(Double::rotations).toTypedArray()
+    inputs.odometryTurnPositions = turnPositionQueue.map(Double::rotations).toTypedArray()
     timestampQueue.clear()
     drivePositionQueue.clear()
     turnPositionQueue.clear()

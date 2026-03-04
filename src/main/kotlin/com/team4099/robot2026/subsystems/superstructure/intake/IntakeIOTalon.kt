@@ -50,7 +50,7 @@ import org.team4099.lib.units.perSecond
 object IntakeIOTalon : IntakeIO {
   private val intakeTalon: TalonFX = TalonFX(Constants.Intake.INTAKE_PIVOT_MOTOR_ID)
   private val intakeConfiguration: TalonFXConfiguration = TalonFXConfiguration()
-  private val voltageControl = VoltageOut(-1337.volts.inVolts)
+  private val voltageControl = VoltageOut(-1337.volts.inVolts).withEnableFOC(true)
   private val motionMagicVoltage = MotionMagicVoltage(-1337.degrees.inDegrees)
 
   private var temperatureSignal: StatusSignal<Temperature>
@@ -80,7 +80,7 @@ object IntakeIOTalon : IntakeIO {
         IntakeConstants.MAX_JERK.inRotationsPerSecondPerSecondPerSecond
 
     intakeConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake
-    intakeConfiguration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive
+    intakeConfiguration.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive
     intakeConfiguration.Feedback.SensorToMechanismRatio = 1.0 / IntakeConstants.GEAR_RATIO
     intakeTalon.configurator.apply(intakeConfiguration)
 
@@ -127,7 +127,7 @@ object IntakeIOTalon : IntakeIO {
     intakeConfiguration.Slot0.kI = kI.inVoltsPerRadianSeconds
     intakeConfiguration.Slot0.kD = kD.inVoltsPerRadianPerSecond
 
-    intakeTalon.configurator.apply(intakeConfiguration.Slot0)
+    intakeTalon.configurator.apply(intakeConfiguration)
   }
 
   override fun configFF(
@@ -141,7 +141,7 @@ object IntakeIOTalon : IntakeIO {
     intakeConfiguration.Slot0.kA = kA.inVoltsPerRadiansPerSecondPerSecond
     intakeConfiguration.Slot0.kV = kV.inVoltsPerRadiansPerSecond
 
-    intakeTalon.configurator.apply(intakeConfiguration.Slot0)
+    intakeTalon.configurator.apply(intakeConfiguration)
   }
 
   override fun updateInputs(inputs: IntakeIO.IntakeIOInputs) {
@@ -154,7 +154,7 @@ object IntakeIOTalon : IntakeIO {
     inputs.position = positionSignal.valueAsDouble.rotations
   }
 
-  override fun zeroPivot() {
-    intakeTalon.setPosition(IntakeConstants.ANGLES.STOW_ANGLE.inRotations)
+  override fun zeroPivot(zeroPosition: Angle) {
+    intakeTalon.setPosition(zeroPosition.inRotations)
   }
 }

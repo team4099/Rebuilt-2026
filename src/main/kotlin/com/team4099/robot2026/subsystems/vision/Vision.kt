@@ -1,7 +1,6 @@
 package com.team4099.robot2026.subsystems.vision
 
 import com.team4099.lib.hal.Clock
-import com.team4099.lib.logging.TunableNumber
 import com.team4099.lib.vision.TimestampedObjectVisionUpdate
 import com.team4099.lib.vision.TimestampedTrigVisionUpdate
 import com.team4099.lib.vision.TimestampedVisionUpdate
@@ -9,17 +8,13 @@ import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.FieldConstants
 import com.team4099.robot2026.config.constants.VisionConstants
 import com.team4099.robot2026.subsystems.vision.camera.CameraIO
-import com.team4099.robot2026.util.AllianceFlipUtil
 import com.team4099.robot2026.util.CustomLogger
 import com.team4099.robot2026.util.toPose3d
-import edu.wpi.first.math.geometry.Pose3d as WPIPose3d
-import edu.wpi.first.math.geometry.Rotation3d as WPIRotation3d
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import java.util.function.Supplier
 import org.ironmaple.simulation.SimulatedArena
-import org.littletonrobotics.junction.Logger
 import org.photonvision.simulation.VisionSystemSim
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Rotation3d
@@ -44,22 +39,18 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
   var isAutoAligning = false
   var isAligned = false
 
-  private val xyStdDev = TunableNumber("Vision/xystdev", VisionConstants.XY_STDDEV)
-
-  private val thetaStdDev = TunableNumber("Vision/thetaStdDev", VisionConstants.THETA_STDDEV)
-
   private var cameraPreference = 0 // 0 for left 1 for right
 
   private var closestTargetTagAcrossCams: Map.Entry<Int, Pair<Int, Transform3d>?>? = null
 
-  var lastTrigVisionUpdate = TimestampedTrigVisionUpdate(Clock.fpgaTime, -1, Transform3d())
+  var lastTrigVisionUpdate = TimestampedTrigVisionUpdate(Clock.timestamp, -1, Transform3d())
 
   var objectsDetected: MutableList<MutableList<Translation3d>> =
       MutableList(VisionConstants.OBJECT_CLASS.entries.size) { mutableListOf() }
 
   var lastObjectVisionUpdate: MutableList<TimestampedObjectVisionUpdate> =
       VisionConstants.OBJECT_CLASS.entries
-          .map { TimestampedObjectVisionUpdate(Clock.fpgaTime, it, Translation3d()) }
+          .map { TimestampedObjectVisionUpdate(Clock.timestamp, it, Translation3d()) }
           .toMutableList()
 
   private var lastSeenTagId: Int? = null
@@ -81,10 +72,8 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
   }
 
   override fun periodic() {
-    val startTime = Clock.fpgaTime
+    val startTime = Clock.epochTime
     visionSim?.update(poseSupplier.get().pose3d)
-
-    Logger.recordOutput("Vision/currentTrigUpdateID", lastTrigVisionUpdate.targetTagID)
 
     tagIDFilter =
         if (DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) ==
@@ -94,8 +83,9 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
 
     for (instance in io.indices) {
       io[instance].updateInputs(inputs[instance])
-      Logger.processInputs("Vision/${io[instance].identifier}", inputs[instance])
-      Logger.recordOutput("Vision/cameraTransform$instance", io[instance].transform.transform3d)
+      CustomLogger.processInputs("Vision/${io[instance].identifier}", inputs[instance])
+      // CustomLogger.recordOutput("Vision/cameraTransform$instance",
+      // io[instance].transform.transform3d)
     }
 
     val visionUpdates = mutableListOf<TimestampedVisionUpdate>()
@@ -119,41 +109,25 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
           for (tag in tagTargets) {
             if (tag.poseAmbiguity < VisionConstants.AMBIGUITY_THESHOLD) {
               if (DriverStation.getAlliance().isPresent) {
-                if ((tag.fiducialId in VisionConstants.BLUE_TARGET_TAGS &&
-                    !AllianceFlipUtil.shouldFlip()) ||
-                    (tag.fiducialId in VisionConstants.RED_TARGET_TAGS &&
-                        AllianceFlipUtil.shouldFlip())) {
-                  val fieldTTag =
-                      Pose3d(
-                          FieldConstants.fieldLayout
-                              .getTagPose(tag.fiducialId)
-                              .orElse(WPIPose3d(-1337.0, -1337.0, -1337.0, WPIRotation3d.kZero)))
+                val robotTTag = io[instance].transform.plus(Transform3d(tag.bestCameraToTarget))
 
-                  val robotTTag = io[instance].transform.plus(Transform3d(tag.bestCameraToTarget))
+                val distanceToTarget = robotTTag.translation.norm
 
-                  val fieldTRobot = fieldTTag.transformBy(robotTTag.inverse())
-                  val distanceToTarget = robotTTag.translation.norm
+                CustomLogger.recordDebugOutput(
+                    "Vision/${io[instance].identifier}/${tag.fiducialId}/robotDistanceToTarget",
+                    distanceToTarget.inMeters)
 
-                  Logger.recordOutput(
-                      "Vision/${io[instance].identifier}/${tag.fiducialId}/robotDistanceToTarget",
-                      distanceToTarget.inMeters)
+                CustomLogger.recordOutput(
+                    "Vision/${io[instance].identifier}/${tag.fiducialId}/robotTTag",
+                    robotTTag.transform3d)
 
-                  Logger.recordOutput(
-                      "Vision/${io[instance].identifier}/${tag.fiducialId}/robotTTag",
-                      robotTTag.transform3d)
+                for (corner in tag.detectedCorners) {
+                  cornerData.add(corner.x)
+                  cornerData.add(corner.y)
+                }
 
-                  Logger.recordOutput(
-                      "Vision/${io[instance].identifier}/${tag.fiducialId}/fieldTRobot",
-                      fieldTRobot.pose3d)
-
-                  for (corner in tag.detectedCorners) {
-                    cornerData.add(corner.x)
-                    cornerData.add(corner.y)
-                  }
-
-                  if (tag.fiducialId in tagIDFilter) {
-                    targetingTags.add(Pair(tag.fiducialId, robotTTag))
-                  }
+                if (tag.fiducialId in tagIDFilter) {
+                  targetingTags.add(Pair(tag.fiducialId, robotTTag))
                 }
               }
 
@@ -161,21 +135,17 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
 
               closestTargetingTags[instance] = closestTargetTag
 
-              Logger.recordOutput(
+              CustomLogger.recordDebugOutput(
                   "Vision/${io[instance].identifier}/cornerDetections", cornerData.toDoubleArray())
 
-              Logger.recordOutput(
+              CustomLogger.recordOutput(
                   "Vision/${io[instance].identifier}/closestTargetTagID",
                   closestTargetTag?.first ?: -1)
 
-              Logger.recordOutput(
+              CustomLogger.recordOutput(
                   "Vision/${io[instance].identifier}/closestTargetTagPose",
                   closestTargetTag?.second?.transform3d ?: Transform3dWPILIB())
             }
-
-            Logger.recordOutput(
-                "Vision/viewingSameTag",
-                closestTargetingTags[0]?.first == closestTargetingTags[1]?.first)
 
             closestTargetTagAcrossCams =
                 if (closestTargetingTags[0]?.first != closestTargetingTags[1]?.first) {
@@ -188,11 +158,11 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
                   }
                 }
 
-            Logger.recordOutput(
+            CustomLogger.recordOutput(
                 "Vision/ClosestTargetTagAcrossAllCams/TagID",
                 closestTargetTagAcrossCams?.value?.first ?: -1)
 
-            Logger.recordOutput(
+            CustomLogger.recordDebugOutput(
                 "Vision/ClosestTargetTagAcrossAllCams/TargetTagPose",
                 closestTargetTagAcrossCams?.value?.second?.transform3d ?: Transform3dWPILIB())
 
@@ -272,11 +242,11 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
                 "Vision/Last${objects.name}VisionUpdate/timestampSeconds",
                 lastObjectVisionUpdate[objects.id].timestamp.inSeconds)
 
-            CustomLogger.recordOutput(
+            CustomLogger.recordDebugOutput(
                 "Vision/Last${objects.name}VisionUpdate/robotTObject",
                 lastObjectVisionUpdate[objects.id].robotTObject.translation3d)
 
-            CustomLogger.recordOutput(
+            CustomLogger.recordDebugOutput(
                 "Vision/Last${objects.name}VisionUpdate/closestObjectPose",
                 poseSupplier
                     .get()
@@ -288,7 +258,7 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
       }
     }
 
-    val now = Clock.fpgaTime
+    val now = Clock.timestamp
 
     val tagId0 = closestTargetingTags[0]?.first
     val tagId1 = closestTargetingTags[1]?.first
@@ -298,12 +268,6 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
     val currentTagId = if (bothSeeingSameTag) tagId0 else null
     val distanceToTag =
         closestTargetTagAcrossCams?.value?.second?.translation?.norm ?: 1000000.meters
-
-    CustomLogger.recordOutput(
-        "Vision/rumble",
-        currentTagId != null &&
-            currentTagId in tagIDFilter &&
-            distanceToTag <= VisionConstants.CONTROLLER_RUMBLE_DIST)
 
     if (currentTagId != null &&
         currentTagId in tagIDFilter &&
@@ -321,7 +285,7 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
       autoAlignReadyRumble = false
     }
 
-    Logger.recordOutput(
-        "LoggedRobot/Subsystems/VisionLoopTimeMS", (Clock.fpgaTime - startTime).inMilliseconds)
+    CustomLogger.recordOutput(
+        "LoggedRobot/Subsystems/VisionLoopTimeMS", (Clock.epochTime - startTime).inMilliseconds)
   }
 }
