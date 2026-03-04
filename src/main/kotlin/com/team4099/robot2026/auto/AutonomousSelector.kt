@@ -110,7 +110,7 @@ object AutonomousSelector {
               .andThen({
                 drivetrain.pose = Pose3d(AllianceFlipUtil.apply(CenterlineSweep.startingPose))
               })
-              .andThen(CenterlineSweep(drivetrain, superstructure, flipVeritcally = false))
+              .andThen(CenterlineSweep(drivetrain, superstructure, flipVeritcally = true))
       AutonomousMode.CENTERLINE_SWEEP_LEFT ->
           WaitCommand(waitTime.inSeconds)
               .andThen({
@@ -119,7 +119,7 @@ object AutonomousSelector {
                         FollowChoreoPath.flipVertically(
                             AllianceFlipUtil.apply(CenterlineSweep.startingPose)))
               })
-              .andThen(CenterlineSweep(drivetrain, superstructure, flipVeritcally = true))
+              .andThen(CenterlineSweep(drivetrain, superstructure, flipVeritcally = false))
       AutonomousMode.PRELOAD_L1_AUTO ->
           WaitCommand(waitTime.inSeconds)
               .andThen({
