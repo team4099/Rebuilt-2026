@@ -42,6 +42,12 @@ object FieldConstants {
   val ALLIANCE_ZONE_CENTER: Translation3d
     get() = AllianceFlipUtil.apply(Translation3d(120.inches, 158.84.inches, 72.inches))
 
+  val PASSING_LEFT_TARGET: Translation3d
+    get() = AllianceFlipUtil.apply(Translation3d(2.meters, 6.5.meters, 0.meters))
+
+  val PASSING_RIGHT_TARGET: Translation3d
+    get() = AllianceFlipUtil.apply(Translation3d(2.meters, 1.5.meters, 0.meters))
+
   fun inAllianceZone(pose: Pose3d): Boolean {
     return inAllianceZone(pose.toPose2d())
   }
@@ -65,5 +71,21 @@ object FieldConstants {
   fun inClimbLowerHalf(pose: Pose2d): Boolean {
     return !AllianceFlipUtil.shouldFlip() && pose.y < 3.75.meters ||
         AllianceFlipUtil.shouldFlip() && pose.y > 4.3.meters
+  }
+
+  fun inLeft(pose: Pose3d): Boolean {
+    return inLeft(pose.toPose2d())
+  }
+
+  fun inLeft(pose: Pose2d): Boolean {
+    return AllianceFlipUtil.shouldFlip() xor (pose.y > fieldWidth / 2.0)
+  }
+
+  fun inRight(pose: Pose3d): Boolean {
+    return !inLeft(pose)
+  }
+
+  fun inRight(pose: Pose2d): Boolean {
+    return !inLeft(pose)
   }
 }
