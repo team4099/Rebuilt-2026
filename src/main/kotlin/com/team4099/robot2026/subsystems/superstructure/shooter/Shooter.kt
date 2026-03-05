@@ -229,7 +229,11 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
           if (FieldConstants.inAllianceZone(drivetrainPose)) {
             FieldConstants.HUB_POSE
           } else {
-            FieldConstants.ALLIANCE_ZONE_CENTER
+            if (FieldConstants.inLeft(drivetrainPose)) {
+              FieldConstants.PASSING_LEFT_TARGET
+            } else {
+              FieldConstants.PASSING_RIGHT_TARGET
+            }
           })
     }
 
