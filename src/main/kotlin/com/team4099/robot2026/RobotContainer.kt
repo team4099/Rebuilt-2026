@@ -99,7 +99,8 @@ object RobotContainer {
                         { drivetrain.rotation })
                   }
                   .toTypedArray(),
-              poseSupplier = { drivetrain.pose })
+              poseSupplier = { drivetrain.pose },
+              chassisSpeedsSupplier = { drivetrain.chassisSpeeds })
 
       when (Constants.Universal.whoami) {
         Constants.WHOAMI.COMPBOT,
@@ -156,7 +157,8 @@ object RobotContainer {
                             { drivetrain.rotation })
                       }
                       .toTypedArray(),
-                  poseSupplier = { drivetrain.pose })
+                  poseSupplier = { drivetrain.pose },
+                  chassisSpeedsSupplier = { drivetrain.chassisSpeeds })
           else Vision(poseSupplier = { Pose3d() })
 
       climb = Climb(ClimbIOSim)

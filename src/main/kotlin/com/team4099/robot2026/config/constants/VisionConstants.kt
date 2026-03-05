@@ -26,7 +26,16 @@ object VisionConstants {
 
   val CONFIDENCE_THRESHOLD = 0.75
   val TAG_TRUST_THRESHOLD = 0.85
-  // lwk 85% trust rating to work but lwk idk if we want ts higher or lower
+
+  // Trust rating weights
+  val AMBIGUITY_TRUST_RATING = 0.35
+  val DISTANCE_TRUST_RATING = 0.20
+  val ANGLE_TRUST_RATING = 0.10
+  val VELOCITY_TRUST_RATING = 0.20
+
+  // Velocity trust sub-weights
+  val LINEAR_VELOCITY_TRUST_WEIGHT = 0.40
+  val ANGULAR_VELOCITY_TRUST_WEIGHT = 0.60
 
   val CAMERAS: Map<String, Pair<CameraIO.DetectionPipeline, Transform3d>>
     get() =

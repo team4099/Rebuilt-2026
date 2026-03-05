@@ -19,8 +19,11 @@ import org.photonvision.targeting.PhotonTrackedTarget
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Pose3dWPILIB
 import org.team4099.lib.geometry.Rotation3d
+import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.seconds
+import org.team4099.lib.units.inMetersPerSecond
+import org.team4099.lib.units.inRadiansPerSecond
 
 interface CameraIO {
   enum class DetectionPipeline {
@@ -38,6 +41,62 @@ interface CameraIO {
   var cameraSim: PhotonCameraSim?
   var curStdDevs: Matrix<N4?, N1?>
   val photonEstimator: PhotonPoseEstimator
+
+  fun calculateTagTrust(
+      tag: PhotonTrackedTarget,
+      distanceToTarget: Double,
+      robotTTag: org.team4099.lib.geometry.Transform3d,
+      chassisSpeeds: org.team4099.lib.kinematics.ChassisSpeeds
+  ): Double {
+    // 1. Ambiguity trust (0-1, higher is better)
+    val ambiguityTrust = (1.0 - tag.poseAmbiguity)
+
+    // 2. Distance trust (0-1, closer is better)
+    val distanceTrust = when {
+      distanceToTarget <= 2.0 -> 1.0
+      distanceToTarget <= 4.0 -> 1.0 - ((distanceToTarget - 2.0) / 2.0) * 0.3
+      distanceToTarget <= 6.0 -> 0.7 - ((distanceToTarget - 4.0) / 2.0) * 0.35
+      else -> 0.35
+    }
+
+    // 3. Angle trust
+    val angleToTag = kotlin.math.abs(kotlin.math.atan2(robotTTag.y.inMeters, robotTTag.x.inMeters))
+    val angleTrust = when {
+      angleToTag <= kotlin.math.PI / 6 -> 1.0  // Within 30 degrees
+      angleToTag <= kotlin.math.PI / 3 -> 1.0 - ((angleToTag - kotlin.math.PI / 6) / (kotlin.math.PI / 6)) * 0.3  // 30-60 degrees
+      angleToTag <= kotlin.math.PI / 2 -> 0.7 - ((angleToTag - kotlin.math.PI / 3) / (kotlin.math.PI / 6)) * 0.4  // 60-90 degrees
+      else -> 0.3  // Greater than 90 degrees
+    }
+
+    // 4. Drivetrain velocity trust (slower is better)
+    val linearVelocity = kotlin.math.hypot(chassisSpeeds.vx.inMetersPerSecond, chassisSpeeds.vy.inMetersPerSecond)
+    val angularVelocity = kotlin.math.abs(chassisSpeeds.omega.inRadiansPerSecond)
+
+    // Linear velocity trust: 1.0 when stationary, decreases with speed
+    val linearVelocityTrust = when {
+      linearVelocity <= 0.5 -> 1.0
+      linearVelocity <= 2.0 -> 1.0 - ((linearVelocity - 0.5) / 1.5) * 0.4
+      linearVelocity <= 4.0 -> 0.6 - ((linearVelocity - 2.0) / 2.0) * 0.3
+      else -> 0.3
+    }
+
+    // Angular velocity trust: rotation heavily impacts vision
+    val angularVelocityTrust = when {
+      angularVelocity <= 0.5 -> 1.0
+      angularVelocity <= 2.0 -> 1.0 - ((angularVelocity - 0.5) / 1.5) * 0.5
+      angularVelocity <= 4.0 -> 0.5 - ((angularVelocity - 2.0) / 2.0) * 0.35
+      else -> 0.15
+    }
+
+    // Combined velocity trust
+    val velocityTrust = (linearVelocityTrust * VisionConstants.LINEAR_VELOCITY_TRUST_WEIGHT) +
+                        (angularVelocityTrust * VisionConstants.ANGULAR_VELOCITY_TRUST_WEIGHT)
+
+    return (ambiguityTrust * VisionConstants.AMBIGUITY_TRUST_RATING) +
+           (distanceTrust * VisionConstants.DISTANCE_TRUST_RATING) +
+           (angleTrust * VisionConstants.ANGLE_TRUST_RATING) +
+           (velocityTrust * VisionConstants.VELOCITY_TRUST_RATING)
+  }
 
   class CameraInputs : LoggableInputs {
     var timestamp = 0.0.seconds

@@ -3,7 +3,6 @@ package com.team4099.robot2026.subsystems.vision
 import com.team4099.lib.hal.Clock
 import com.team4099.lib.vision.TimestampedObjectVisionUpdate
 import com.team4099.lib.vision.TimestampedTrigVisionUpdate
-import com.team4099.lib.vision.TimestampedVisionUpdate
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.FieldConstants
 import com.team4099.robot2026.config.constants.VisionConstants
@@ -16,7 +15,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import java.util.function.Supplier
 import org.ironmaple.simulation.SimulatedArena
 import org.photonvision.simulation.VisionSystemSim
-import org.photonvision.targeting.PhotonTrackedTarget
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.geometry.Transform3d
@@ -30,30 +28,15 @@ import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.sin
+import org.team4099.lib.kinematics.ChassisSpeeds
 
-class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : SubsystemBase() {
+class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>, val chassisSpeedsSupplier: Supplier<ChassisSpeeds> = Supplier { ChassisSpeeds() }) : SubsystemBase() {
   val io: List<CameraIO> = cameras.toList()
   val inputs = List(io.size) { CameraIO.CameraInputs() }
 
   var tagIDFilter = arrayOf<Int>()
 
 
-  private fun calculateTagTrust(
-      tag: PhotonTrackedTarget,
-      distanceToTarget: Double
-  ): Double {
-    val ambiguityTrust = (1.0 - tag.poseAmbiguity)
-    //ambigity from 0-1
-    //1 is good and 0 is ass
-    val distanceTrust = when {
-      distanceToTarget <= 2.0 -> 1.0
-      distanceToTarget <= 4.0 -> 1.0 - ((distanceToTarget - 2.0) / 2.0) * 0.3
-      distanceToTarget <= 6.0 -> 0.7 - ((distanceToTarget - 4.0) / 2.0) * 0.35
-      else -> 0.35
-    } // dist trust in meters, full trust at 2m 0.7 at 4m 0.35 at 6, and 0 if bigger
-    return (ambiguityTrust * 0.6)  + (distanceTrust * 0.4)
-    // cam ambiguity 60% and dist 40% bc i think that ambiguity > dist
-  }
 
   var isAutoAligning = false
   var isAligned = false
@@ -107,8 +90,6 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
       // io[instance].transform.transform3d)
     }
 
-    val visionUpdates = mutableListOf<TimestampedVisionUpdate>()
-
     val closestTargetingTags = mutableMapOf<Int, Pair<Int, Transform3d>?>()
     for (i in io.indices) {
       closestTargetingTags[i] = null
@@ -118,10 +99,10 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
 
       when (io[instance].pipeline) {
         CameraIO.DetectionPipeline.APRIL_TAG -> {
-          var targetingTags = mutableListOf<Pair<Int, Transform3d>>()
+          val targetingTags = mutableListOf<Pair<Int, Transform3d>>()
           var closestTargetTag: Pair<Int, Transform3d>? = null
 
-          var tagTargets = inputs[instance].cameraTargets.filter { it.fiducialId != -1 }
+          val tagTargets = inputs[instance].cameraTargets.filter { it.fiducialId != -1 }
 
           val cornerData = mutableListOf<Double>()
 
@@ -131,7 +112,7 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
                 val robotTTag = io[instance].transform.plus(Transform3d(tag.bestCameraToTarget))
 
                 val distanceToTarget = robotTTag.translation.norm
-                val trustRating = calculateTagTrust(tag, distanceToTarget.inMeters)
+                val trustRating = io[instance].calculateTagTrust(tag, distanceToTarget.inMeters, robotTTag, chassisSpeedsSupplier.get())
                 CustomLogger.recordDebugOutput(
                     "Vision/${io[instance].identifier}/${tag.fiducialId}/trustRating",
                     trustRating)
@@ -139,6 +120,14 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
                 CustomLogger.recordDebugOutput(
                     "Vision/${io[instance].identifier}/${tag.fiducialId}/robotDistanceToTarget",
                     distanceToTarget.inMeters)
+
+                CustomLogger.recordDebugOutput(
+                    "Vision/${io[instance].identifier}/${tag.fiducialId}/tagArea",
+                    tag.area)
+
+                CustomLogger.recordDebugOutput(
+                    "Vision/${io[instance].identifier}/${tag.fiducialId}/numCorners",
+                    tag.detectedCorners.size)
 
                 CustomLogger.recordOutput(
                     "Vision/${io[instance].identifier}/${tag.fiducialId}/robotTTag",
