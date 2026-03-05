@@ -51,7 +51,10 @@ object IntakeConstants {
     val STOW_ANGLE = PIVOT_MAX_ANGLE
     val IDLE_ANGLE: Angle
       get() =
-          if (DriverStation.isDisabled() || DriverStation.isAutonomous() && (Robot.autoStartTime < 0.seconds || Clock.timestamp - Robot.autoStartTime < 1.25.seconds))
+          if (DriverStation.isDisabled() ||
+              DriverStation.isAutonomous() &&
+                  (Robot.autoStartTime < 0.seconds ||
+                      Clock.timestamp - Robot.autoStartTime < 1.25.seconds))
               STOW_ANGLE
           else 0.degrees
 

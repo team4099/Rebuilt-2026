@@ -174,10 +174,11 @@ class AimOTFCommand(
     }
 
     if (RobotBase.isSimulation() &&
-        hasAligned &&
-        Clock.timestamp.inSeconds % 1 < 0.04 &&
-        RobotContainer.superstructure.currentState ==
-            Superstructure.Companion.SuperstructureStates.SCORE || DriverStation.isAutonomous()) {
+        (hasAligned &&
+            Clock.timestamp.inSeconds % 1 < 0.04 &&
+            RobotContainer.superstructure.currentState ==
+                Superstructure.Companion.SuperstructureStates.SCORE ||
+            DriverStation.isAutonomous())) {
       SimulatedArena.getInstance()
           .addGamePieceProjectile(
               RebuiltFuelOnFly(
