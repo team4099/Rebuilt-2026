@@ -20,6 +20,7 @@ import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.geometry.Transform3d
 import org.team4099.lib.geometry.Transform3dWPILIB
 import org.team4099.lib.geometry.Translation3d
+import org.team4099.lib.kinematics.ChassisSpeeds
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.base.inSeconds
@@ -28,15 +29,16 @@ import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.sin
-import org.team4099.lib.kinematics.ChassisSpeeds
 
-class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>, val chassisSpeedsSupplier: Supplier<ChassisSpeeds> = Supplier { ChassisSpeeds() }) : SubsystemBase() {
+class Vision(
+    vararg cameras: CameraIO,
+    val poseSupplier: Supplier<Pose3d>,
+    val chassisSpeedsSupplier: Supplier<ChassisSpeeds> = Supplier { ChassisSpeeds() }
+) : SubsystemBase() {
   val io: List<CameraIO> = cameras.toList()
   val inputs = List(io.size) { CameraIO.CameraInputs() }
 
   var tagIDFilter = arrayOf<Int>()
-
-
 
   var isAutoAligning = false
   var isAligned = false
@@ -112,18 +114,18 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>, val c
                 val robotTTag = io[instance].transform.plus(Transform3d(tag.bestCameraToTarget))
 
                 val distanceToTarget = robotTTag.translation.norm
-                val trustRating = io[instance].calculateTagTrust(tag, distanceToTarget.inMeters, robotTTag, chassisSpeedsSupplier.get())
+                val trustRating =
+                    io[instance].calculateTagTrust(
+                        tag, distanceToTarget.inMeters, robotTTag, chassisSpeedsSupplier.get())
                 CustomLogger.recordDebugOutput(
-                    "Vision/${io[instance].identifier}/${tag.fiducialId}/trustRating",
-                    trustRating)
+                    "Vision/${io[instance].identifier}/${tag.fiducialId}/trustRating", trustRating)
 
                 CustomLogger.recordDebugOutput(
                     "Vision/${io[instance].identifier}/${tag.fiducialId}/robotDistanceToTarget",
                     distanceToTarget.inMeters)
 
                 CustomLogger.recordDebugOutput(
-                    "Vision/${io[instance].identifier}/${tag.fiducialId}/tagArea",
-                    tag.area)
+                    "Vision/${io[instance].identifier}/${tag.fiducialId}/tagArea", tag.area)
 
                 CustomLogger.recordDebugOutput(
                     "Vision/${io[instance].identifier}/${tag.fiducialId}/numCorners",
@@ -137,7 +139,8 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>, val c
                   cornerData.add(corner.x)
                   cornerData.add(corner.y)
                 }
-                if (tag.fiducialId in tagIDFilter && trustRating >= VisionConstants.TAG_TRUST_THRESHOLD) {
+                if (tag.fiducialId in tagIDFilter &&
+                    trustRating >= VisionConstants.TAG_TRUST_THRESHOLD) {
                   targetingTags.add(Pair(tag.fiducialId, robotTTag))
                 }
               }
