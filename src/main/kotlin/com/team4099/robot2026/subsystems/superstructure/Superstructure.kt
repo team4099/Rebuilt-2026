@@ -58,10 +58,11 @@ class Superstructure(
 
   val shooterTargetRPM: AngularVelocity
     get() {
-      return if (overrideShooterVelocity) 40.rotations.perSecond else
-        max(
-          Shooter.launchVelToShooterRPM(launchData.launchVelocity),
-          ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY)
+      return if (overrideShooterVelocity) 40.rotations.perSecond
+      else
+          max(
+              Shooter.launchVelToShooterRPM(launchData.launchVelocity),
+              ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY)
     }
 
   val field = Field2d()
