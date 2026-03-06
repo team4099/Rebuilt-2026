@@ -52,11 +52,15 @@ class Superstructure(
   val launchData: Shooter.Companion.CalculatedLaunchData
     get() = Shooter.calculateLaunchData(drivetrain.pose.toPose2d(), drivetrain.chassisSpeeds)
 
-  inline val shooterTargetRPM: AngularVelocity
+  var overrideShooterVelocity = false
+
+  val shooterTargetRPM: AngularVelocity
     get() {
-      return max(
-          Shooter.launchVelToShooterRPM(launchData.launchVelocity),
-          ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY)
+      return if (overrideShooterVelocity) ShooterConstants.VELOCITIES.MANUAL_SHOOTING
+      else
+          max(
+              Shooter.launchVelToShooterRPM(launchData.launchVelocity),
+              ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY)
     }
 
   val field = Field2d()
@@ -111,6 +115,7 @@ class Superstructure(
 
     CustomLogger.recordOutput("Superstructure/currentState", currentState)
     CustomLogger.recordOutput("Superstructure/currentRequest", currentRequest.javaClass.simpleName)
+    CustomLogger.recordOutput("Superstructure/overrideShooterVelocity", overrideShooterVelocity)
 
     when (currentState) {
       SuperstructureStates.UNINITALIZED -> {
