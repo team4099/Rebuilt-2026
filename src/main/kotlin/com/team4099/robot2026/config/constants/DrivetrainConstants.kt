@@ -161,10 +161,10 @@ object DrivetrainConstants {
     val AUTO_REEF_PID_KD =
         (0.4.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
 
-    val TELEOP_THETA_PID_KP = 8.degrees.perSecond / 1.degrees
+    val TELEOP_THETA_PID_KP = 2.2.degrees.perSecond / 1.degrees
     val TELEOP_THETA_PID_KI = 0.0.degrees.perSecond / (1.degrees * 1.seconds)
     val TELEOP_THETA_PID_KD =
-        (0.1.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
+        (0.2.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
 
     val TELEOP_X_PID_KP = 2.8.meters.perSecond / 1.meters
     val TELEOP_X_PID_KI = 0.0.meters.perSecond / (1.meters * 1.seconds)
@@ -253,12 +253,12 @@ object DrivetrainConstants {
 
     val LEFT_TO_ALLIANCE_1 =
         listOf(
+            Supplier { Pose2d(6.5.meters, 7.4.meters, 180.degrees) },
             Supplier { Pose2d(6.0.meters, 7.4.meters, 180.degrees) },
-            Supplier { Pose2d(4.6.meters, 7.4.meters, 180.degrees) },
         )
     val LEFT_TO_ALLIANCE_2 =
         listOf(
-            Supplier { Pose2d(4.6.meters, 7.4.meters, 180.degrees) },
+            Supplier { Pose2d(6.0.meters, 7.4.meters, 180.degrees) },
             Supplier { Pose2d(3.0.meters, 7.4.meters, 180.degrees) },
         )
     val RIGHT_TO_NEUTRAL_1 =
@@ -273,12 +273,12 @@ object DrivetrainConstants {
         )
     val RIGHT_TO_ALLIANCE_1 =
         listOf(
-            Supplier { Pose2d(6.meters, .63.meters, 180.degrees) },
-            Supplier { Pose2d(4.6.meters, 0.631.meters, 180.degrees) },
+            Supplier { Pose2d(6.5.meters, .63.meters, 180.degrees) },
+            Supplier { Pose2d(6.0.meters, 0.631.meters, 180.degrees) },
         )
     val RIGHT_TO_ALLIANCE_2 =
         listOf(
-            Supplier { Pose2d(4.6.meters, 0.631.meters, 180.degrees) },
+            Supplier { Pose2d(6.0.meters, 0.631.meters, 180.degrees) },
             Supplier { Pose2d(3.0.meters, .63.meters, 180.degrees) },
         )
     val CLIMB_BOTTOM =

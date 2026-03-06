@@ -213,7 +213,9 @@ object RobotContainer {
     ControlBoard.score.onFalse(
         ConditionalCommand(superstructure.requestIdleCommand(), InstantCommand()) {
           superstructure.currentState == Superstructure.Companion.SuperstructureStates.PREP_SCORE ||
-              superstructure.currentState == Superstructure.Companion.SuperstructureStates.SCORE
+              superstructure.currentState == Superstructure.Companion.SuperstructureStates.SCORE ||
+              superstructure.currentState ==
+                  Superstructure.Companion.SuperstructureStates.SCORE_AND_INTAKE
         })
     ControlBoard.manualScore.onTrue(
         Commands.runOnce({

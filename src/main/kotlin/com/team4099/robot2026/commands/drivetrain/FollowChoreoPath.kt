@@ -46,7 +46,8 @@ class FollowChoreoPath(
     val drivetrain: Drive,
     val trajectory: Trajectory<SwerveSample>,
     val overrideRotationTrigger: Supplier<Boolean> = Supplier { false },
-    val flipVertically: Boolean = false
+    val flipVertically: Boolean = false,
+    val interruptAtTimeout: Boolean = false
 ) : Command() {
 
   private val xPID: PIDController<Meter, Velocity<Meter>>
@@ -184,8 +185,8 @@ class FollowChoreoPath(
   }
 
   override fun isFinished(): Boolean {
-    return Clock.timestamp - trajStartTime > trajectory.totalTime.seconds && atSetpoint() ||
-        !DriverStation.isAutonomous()
+    val timedOut = Clock.timestamp - trajStartTime > trajectory.totalTime.seconds
+    return timedOut && (interruptAtTimeout || atSetpoint()) || !DriverStation.isAutonomous()
   }
 
   override fun end(interrupted: Boolean) {

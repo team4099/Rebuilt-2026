@@ -222,16 +222,20 @@ class DrivePathOTF(
                   { drivetrain.pose.toPose2d().pose2d },
                   DrivetrainConstants.OTF_PATHS.LEFT_TO_NEUTRAL_1,
                   0.0.degrees,
-                  GoalEndState(4.0.meters.perSecond, 0.degrees)),
-              DrivePathOTF(
-                  drivetrain,
-                  { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-                  { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-                  { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
-                  { drivetrain.pose.toPose2d().pose2d },
-                  DrivetrainConstants.OTF_PATHS.LEFT_TO_NEUTRAL_2,
-                  180.0.degrees,
-                  GoalEndState(0.0.meters.perSecond, 0.degrees)))
+                  GoalEndState(0.0.meters.perSecond, 0.degrees)),
+              //              DrivePathOTF(
+              //                  drivetrain,
+              //                  {
+              // ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+              //                  {
+              // ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+              //                  {
+              // ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+              //                  { drivetrain.pose.toPose2d().pose2d },
+              //                  DrivetrainConstants.OTF_PATHS.LEFT_TO_NEUTRAL_2,
+              //                  180.0.degrees,
+              //                  GoalEndState(0.0.meters.perSecond, 0.degrees))
+          )
       returnCommand.name = "DrivePathOTFAllianceZoneToNeutralInLeftTrench"
       return returnCommand
     }
@@ -247,16 +251,20 @@ class DrivePathOTF(
                   { drivetrain.pose.toPose2d().pose2d },
                   DrivetrainConstants.OTF_PATHS.RIGHT_TO_NEUTRAL_1,
                   0.0.degrees,
-                  GoalEndState(3.0.meters.perSecond, 0.degrees)),
-              DrivePathOTF(
-                  drivetrain,
-                  { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-                  { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-                  { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
-                  { drivetrain.pose.toPose2d().pose2d },
-                  DrivetrainConstants.OTF_PATHS.RIGHT_TO_NEUTRAL_2,
-                  0.0.degrees,
                   GoalEndState(0.0.meters.perSecond, 0.degrees)),
+              //              DrivePathOTF(
+              //                  drivetrain,
+              //                  {
+              // ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+              //                  {
+              // ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+              //                  {
+              // ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+              //                  { drivetrain.pose.toPose2d().pose2d },
+              //                  DrivetrainConstants.OTF_PATHS.RIGHT_TO_NEUTRAL_2,
+              //                  0.0.degrees,
+              //                  GoalEndState(0.0.meters.perSecond, 0.degrees)
+              //              ),
           )
       returnCommand.name = "DrivePathOTFAllianceZoneToNeutralInRightTrench"
       return returnCommand
@@ -273,16 +281,20 @@ class DrivePathOTF(
                   { drivetrain.pose.toPose2d().pose2d },
                   DrivetrainConstants.OTF_PATHS.LEFT_TO_ALLIANCE_1,
                   0.0.degrees,
-                  GoalEndState(3.0.meters.perSecond, 0.degrees)),
-              DrivePathOTF(
-                  drivetrain,
-                  { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-                  { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-                  { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
-                  { drivetrain.pose.toPose2d().pose2d },
-                  DrivetrainConstants.OTF_PATHS.LEFT_TO_ALLIANCE_2,
-                  0.0.degrees,
-                  GoalEndState(0.0.meters.perSecond, 0.degrees)))
+                  GoalEndState(0.0.meters.perSecond, 180.degrees)),
+              //              DrivePathOTF(
+              //                  drivetrain,
+              //                  {
+              // ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+              //                  {
+              // ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+              //                  {
+              // ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+              //                  { drivetrain.pose.toPose2d().pose2d },
+              //                  DrivetrainConstants.OTF_PATHS.LEFT_TO_ALLIANCE_2,
+              //                  0.0.degrees,
+              //                  GoalEndState(0.0.meters.perSecond, 0.degrees))
+          )
       returnCommand.name = "DrivePathOTFNeutralZoneToAllianceInLeftTrench"
       return returnCommand
     }
@@ -298,16 +310,19 @@ class DrivePathOTF(
                   { drivetrain.pose.toPose2d().pose2d },
                   DrivetrainConstants.OTF_PATHS.RIGHT_TO_ALLIANCE_1,
                   0.0.degrees,
-                  GoalEndState(3.0.meters.perSecond, 180.degrees)),
-              DrivePathOTF(
-                  drivetrain,
-                  { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-                  { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-                  { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
-                  { drivetrain.pose.toPose2d().pose2d },
-                  DrivetrainConstants.OTF_PATHS.RIGHT_TO_ALLIANCE_2,
-                  0.0.degrees,
-                  GoalEndState(0.0.meters.perSecond, 0.degrees)),
+                  GoalEndState(0.0.meters.perSecond, 180.degrees)),
+              //              DrivePathOTF(
+              //                  drivetrain,
+              //                  {
+              // ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+              //                  {
+              // ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+              //                  {
+              // ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+              //                  { drivetrain.pose.toPose2d().pose2d },
+              //                  DrivetrainConstants.OTF_PATHS.RIGHT_TO_ALLIANCE_2,
+              //                  0.0.degrees,
+              //                  GoalEndState(0.0.meters.perSecond, 0.degrees)),
           )
       returnCommand.name = "DrivePathOTFNeutralZoneToAllianceInRightTrench"
       return returnCommand

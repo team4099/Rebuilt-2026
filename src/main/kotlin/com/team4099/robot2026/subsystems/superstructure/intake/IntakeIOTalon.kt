@@ -91,6 +91,8 @@ object IntakeIOTalon : IntakeIO {
     supplyCurrentSignal = intakeTalon.supplyCurrent
     acelSignal = intakeTalon.acceleration
     positionSignal = intakeTalon.position
+
+    zeroPivot(IntakeConstants.ANGLES.STOW_ANGLE)
   }
 
   override fun setBrakeMode(brake: Boolean) {
