@@ -58,7 +58,7 @@ class Superstructure(
 
   val shooterTargetRPM: AngularVelocity
     get() {
-      return if (overrideShooterVelocity) 40.rotations.perSecond
+      return if (overrideShooterVelocity) ShooterConstants.VELOCITIES.MANUAL_SHOOTING
       else
           max(
               Shooter.launchVelToShooterRPM(launchData.launchVelocity),
@@ -115,6 +115,7 @@ class Superstructure(
 
     CustomLogger.recordOutput("Superstructure/currentState", currentState)
     CustomLogger.recordOutput("Superstructure/currentRequest", currentRequest.javaClass.simpleName)
+    CustomLogger.recordOutput("Superstructure/overrideShooterVelocity", overrideShooterVelocity)
 
     when (currentState) {
       SuperstructureStates.UNINITALIZED -> {
@@ -154,8 +155,6 @@ class Superstructure(
         intakeRollers.currentRequest =
             Request.RollersRequest.OpenLoop(RollersConstants.IDLE_VOLTAGE)
         shooter.currentRequest = Request.ShooterRequest.Idle()
-
-        overrideShooterVelocity = false
 
         nextState =
             when (currentRequest) {

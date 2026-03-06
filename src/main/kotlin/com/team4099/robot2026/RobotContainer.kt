@@ -50,8 +50,10 @@ import com.team4099.robot2026.subsystems.vision.camera.CameraIOPVSim
 import com.team4099.robot2026.subsystems.vision.camera.CameraIOPhotonvision
 import com.team4099.robot2026.util.driver.Jessika
 import edu.wpi.first.wpilibj.RobotBase
+import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.ConditionalCommand
 import edu.wpi.first.wpilibj2.command.InstantCommand
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import org.ironmaple.simulation.SimulatedArena
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.Arena2026Rebuilt
@@ -204,18 +206,25 @@ object RobotContainer {
 
     ControlBoard.forceIdle.onTrue(superstructure.requestIdleCommand())
 
-    ControlBoard.prepScore.onTrue(superstructure.requestPrepScoreCommand())
-    ControlBoard.score.onTrue(superstructure.requestScoreCommand())
+    ControlBoard.prepScore.onTrue(SequentialCommandGroup(
+      Commands.runOnce({ superstructure.overrideShooterVelocity = false }),
+      superstructure.requestPrepScoreCommand()))
+    ControlBoard.score.onTrue(SequentialCommandGroup(
+      Commands.runOnce({ superstructure.overrideShooterVelocity = false }),
+      superstructure.requestScoreCommand()
+    ))
+
     ControlBoard.score.onFalse(
         ConditionalCommand(superstructure.requestIdleCommand(), InstantCommand()) {
           superstructure.currentState == Superstructure.Companion.SuperstructureStates.PREP_SCORE ||
               superstructure.currentState == Superstructure.Companion.SuperstructureStates.SCORE
         })
     ControlBoard.manualScore.onTrue(
-        superstructure
-            .runOnce { superstructure.overrideShooterVelocity = true }
-            .andThen(superstructure.requestScoreCommand()))
-
+      SequentialCommandGroup(
+        Commands.runOnce({ superstructure.overrideShooterVelocity = true }),
+        superstructure.requestScoreCommand()
+      )
+    )
     ControlBoard.prepClimb.onTrue(superstructure.requestPrepClimbCommand())
     ControlBoard.climb.onTrue(superstructure.requestClimbCommand())
 
