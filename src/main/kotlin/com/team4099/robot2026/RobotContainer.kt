@@ -222,8 +222,8 @@ object RobotContainer {
             SequentialCommandGroup(
                 superstructure.runOnce { superstructure.jigglingIntake = true },
                 WaitCommand(0.5),
-              superstructure.runOnce { superstructure.jigglingIntake = false }),
-          superstructure.requestIntakeCommand()) {
+                superstructure.runOnce { superstructure.jigglingIntake = false }),
+            superstructure.requestIntakeCommand()) {
               superstructure.currentState == Superstructure.Companion.SuperstructureStates.INTAKE
             })
     ControlBoard.forceIntakeFullUp.whileTrue(
