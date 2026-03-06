@@ -221,16 +221,18 @@ class Superstructure(
         }
       }
       SuperstructureStates.SCORE_AND_INTAKE -> {
-        intake.currentRequest = Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.INTAKE_ANGLE)
-        intakeRollers.currentRequest = Request.RollersRequest.OpenLoop(RollersConstants.INTAKE_VOLTAGE)
+        intake.currentRequest =
+            Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.INTAKE_ANGLE)
+        intakeRollers.currentRequest =
+            Request.RollersRequest.OpenLoop(RollersConstants.INTAKE_VOLTAGE)
         shooter.currentRequest = Request.ShooterRequest.TargetVelocity(shooterTargetRPM)
 
         if (shooter.isAtTargetedVelocity &&
-          (AimOTFCommand.hasAligned || !RobotContainer.isAligning)) {
+            (AimOTFCommand.hasAligned || !RobotContainer.isAligning)) {
           feeder.currentRequest =
-            Request.FeederRequest.TargetVelocity(FeederConstants.SCORE_VELOCITY)
+              Request.FeederRequest.TargetVelocity(FeederConstants.SCORE_VELOCITY)
           hopper.currentRequest =
-            Request.HopperRequest.TargetVelocity(HopperConstants.VELOCITIES.SCORE_VELOCITY)
+              Request.HopperRequest.TargetVelocity(HopperConstants.VELOCITIES.SCORE_VELOCITY)
         }
 
         when (currentRequest) {

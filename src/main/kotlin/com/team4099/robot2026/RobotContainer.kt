@@ -212,7 +212,8 @@ object RobotContainer {
         ConditionalCommand(superstructure.requestIdleCommand(), InstantCommand()) {
           superstructure.currentState == Superstructure.Companion.SuperstructureStates.PREP_SCORE ||
               superstructure.currentState == Superstructure.Companion.SuperstructureStates.SCORE ||
-                  superstructure.currentState == Superstructure.Companion.SuperstructureStates.SCORE_AND_INTAKE
+              superstructure.currentState ==
+                  Superstructure.Companion.SuperstructureStates.SCORE_AND_INTAKE
         })
 
     ControlBoard.prepClimb.onTrue(superstructure.requestPrepClimbCommand())

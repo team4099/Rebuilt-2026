@@ -7,11 +7,12 @@ import edu.wpi.first.wpilibj2.command.RepeatCommand
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.WaitCommand
 
-class TestingAuto(val drivetrain: Drive, val superstructure: Superstructure): SequentialCommandGroup() {
-    init {
-        addCommands(
-            superstructure.requestScoreCommand(),
-            RepeatCommand(
+class TestingAuto(val drivetrain: Drive, val superstructure: Superstructure) :
+    SequentialCommandGroup() {
+  init {
+    addCommands(
+        superstructure.requestScoreCommand(),
+        RepeatCommand(
                 SequentialCommandGroup(
                     superstructure.requestForceIntakeCommand(
                         IntakeConstants.ANGLES.FORCE_HALFDOWN_ANGLE),
@@ -19,15 +20,13 @@ class TestingAuto(val drivetrain: Drive, val superstructure: Superstructure): Se
                     superstructure.requestForceIntakeCommand(
                         IntakeConstants.ANGLES.FORCE_DOWN_ANGLE),
                     WaitCommand(0.1)))
-                .withTimeout(4.5),
-            RepeatCommand(
-                SequentialCommandGroup(
-                    superstructure.requestForceIntakeCommand(
-                        IntakeConstants.ANGLES.FORCE_UP_ANGLE),
-                    WaitCommand(0.1),
-                    superstructure.requestForceIntakeCommand(
-                        IntakeConstants.ANGLES.FORCE_HALFDOWN_ANGLE),
-                    WaitCommand(0.1)))
-        )
-    }
+            .withTimeout(4.5),
+        RepeatCommand(
+            SequentialCommandGroup(
+                superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_UP_ANGLE),
+                WaitCommand(0.1),
+                superstructure.requestForceIntakeCommand(
+                    IntakeConstants.ANGLES.FORCE_HALFDOWN_ANGLE),
+                WaitCommand(0.1))))
+  }
 }
