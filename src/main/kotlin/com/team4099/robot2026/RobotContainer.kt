@@ -218,14 +218,15 @@ object RobotContainer {
     ControlBoard.climb.onTrue(superstructure.requestClimbCommand())
 
     ControlBoard.intake.onTrue(superstructure.requestIntakeCommand())
-    ControlBoard.intake.onTrue(ConditionalCommand(
-      SequentialCommandGroup(
-        superstructure.requestIdleCommand(),
-        WaitCommand(0.5),
-        superstructure.requestIntakeCommand()
-      ),
-      InstantCommand()
-    ) { superstructure.currentState == Superstructure.Companion.SuperstructureStates.INTAKE })
+    ControlBoard.intake.onTrue(
+        ConditionalCommand(
+            SequentialCommandGroup(
+                superstructure.requestIdleCommand(),
+                WaitCommand(0.5),
+                superstructure.requestIntakeCommand()),
+            InstantCommand()) {
+              superstructure.currentState == Superstructure.Companion.SuperstructureStates.INTAKE
+            })
     ControlBoard.forceIntakeFullUp.whileTrue(
         superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_UP_ANGLE))
     ControlBoard.forceIntakeHalfUp.whileTrue(
