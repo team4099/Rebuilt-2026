@@ -50,6 +50,7 @@ import com.team4099.robot2026.subsystems.vision.camera.CameraIOPVSim
 import com.team4099.robot2026.subsystems.vision.camera.CameraIOPhotonvision
 import com.team4099.robot2026.util.driver.Jessika
 import edu.wpi.first.wpilibj.RobotBase
+import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.ConditionalCommand
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
@@ -208,6 +209,7 @@ object RobotContainer {
 
     ControlBoard.prepScore.onTrue(superstructure.requestPrepScoreCommand())
     ControlBoard.score.onTrue(superstructure.requestScoreCommand())
+
     ControlBoard.score.onFalse(
         ConditionalCommand(superstructure.requestIdleCommand(), InstantCommand()) {
           superstructure.currentState == Superstructure.Companion.SuperstructureStates.PREP_SCORE ||
@@ -215,7 +217,10 @@ object RobotContainer {
               superstructure.currentState ==
                   Superstructure.Companion.SuperstructureStates.SCORE_AND_INTAKE
         })
-
+    ControlBoard.manualScore.onTrue(
+        Commands.runOnce({
+          superstructure.overrideShooterVelocity = !superstructure.overrideShooterVelocity
+        }))
     ControlBoard.prepClimb.onTrue(superstructure.requestPrepClimbCommand())
     ControlBoard.climb.onTrue(superstructure.requestClimbCommand())
 
