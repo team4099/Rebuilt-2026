@@ -213,7 +213,26 @@ class Superstructure(
 
         when (currentRequest) {
           is SuperstructureRequest.Idle -> nextState = SuperstructureStates.IDLE
-          is SuperstructureRequest.Intake -> nextState = SuperstructureStates.INTAKE
+          is SuperstructureRequest.Intake -> nextState = SuperstructureStates.SCORE_AND_INTAKE
+          is SuperstructureRequest.ExtendClimb -> nextState = SuperstructureStates.PREP_CLIMB
+          else -> {}
+        }
+      }
+      SuperstructureStates.SCORE_AND_INTAKE -> {
+        intake.currentRequest = Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.INTAKE_ANGLE)
+        intakeRollers.currentRequest = Request.RollersRequest.OpenLoop(RollersConstants.INTAKE_VOLTAGE)
+        shooter.currentRequest = Request.ShooterRequest.TargetVelocity(shooterTargetRPM)
+
+        if (shooter.isAtTargetedVelocity &&
+          (AimOTFCommand.hasAligned || !RobotContainer.isAligning)) {
+          feeder.currentRequest =
+            Request.FeederRequest.TargetVelocity(FeederConstants.SCORE_VELOCITY)
+          hopper.currentRequest =
+            Request.HopperRequest.TargetVelocity(HopperConstants.VELOCITIES.SCORE_VELOCITY)
+        }
+
+        when (currentRequest) {
+          is SuperstructureRequest.Idle -> nextState = SuperstructureStates.IDLE
           is SuperstructureRequest.ExtendClimb -> nextState = SuperstructureStates.PREP_CLIMB
           else -> {}
         }
@@ -366,6 +385,7 @@ class Superstructure(
       FORCE_HOME,
       PREP_SCORE,
       SCORE,
+      SCORE_AND_INTAKE,
       INTAKE,
       PREP_CLIMB,
       CLIMB,

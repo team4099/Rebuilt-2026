@@ -113,9 +113,9 @@ class AimOTFCommand(
   init {
     thetaPID =
         PIDController(
-            DrivetrainConstants.PID.AUTO_THETA_PID_KP,
-            DrivetrainConstants.PID.AUTO_THETA_PID_KI,
-            DrivetrainConstants.PID.AUTO_THETA_PID_KD)
+            DrivetrainConstants.PID.TELEOP_THETA_PID_KP,
+            DrivetrainConstants.PID.TELEOP_THETA_PID_KI,
+            DrivetrainConstants.PID.TELEOP_THETA_PID_KD)
 
     thetaPID.enableContinuousInput(-PI.radians, PI.radians)
   }

@@ -43,10 +43,10 @@ object FieldConstants {
     get() = AllianceFlipUtil.apply(Translation3d(120.inches, 158.84.inches, 72.inches))
 
   val PASSING_LEFT_TARGET: Translation3d
-    get() = AllianceFlipUtil.apply(Translation3d(2.meters, 6.5.meters, 0.meters))
+    get() = AllianceFlipUtil.apply(Translation3d(3.meters, 5.5.meters, 0.meters))
 
   val PASSING_RIGHT_TARGET: Translation3d
-    get() = AllianceFlipUtil.apply(Translation3d(2.meters, 1.5.meters, 0.meters))
+    get() = AllianceFlipUtil.apply(Translation3d(3.meters, 2.5.meters, 0.meters))
 
   fun inAllianceZone(pose: Pose3d): Boolean {
     return inAllianceZone(pose.toPose2d())
