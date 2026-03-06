@@ -53,6 +53,8 @@ import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.ConditionalCommand
 import edu.wpi.first.wpilibj2.command.InstantCommand
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
+import edu.wpi.first.wpilibj2.command.WaitCommand
 import org.ironmaple.simulation.SimulatedArena
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.Arena2026Rebuilt
@@ -220,7 +222,15 @@ object RobotContainer {
     ControlBoard.prepClimb.onTrue(superstructure.requestPrepClimbCommand())
     ControlBoard.climb.onTrue(superstructure.requestClimbCommand())
 
-    ControlBoard.intake.onTrue(superstructure.requestIntakeCommand())
+    ControlBoard.intake.onTrue(
+        ConditionalCommand(
+            SequentialCommandGroup(
+                superstructure.runOnce { superstructure.jigglingIntake = true },
+                WaitCommand(0.5),
+                superstructure.runOnce { superstructure.jigglingIntake = false }),
+            superstructure.requestIntakeCommand()) {
+              superstructure.currentState == Superstructure.Companion.SuperstructureStates.INTAKE
+            })
     ControlBoard.forceIntakeFullUp.whileTrue(
         superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_UP_ANGLE))
     ControlBoard.forceIntakeHalfUp.whileTrue(

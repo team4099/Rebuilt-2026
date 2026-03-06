@@ -65,6 +65,8 @@ class Superstructure(
 
   val field = Field2d()
 
+  var jigglingIntake = false
+
   init {
     SmartDashboard.putData("Field", field)
   }
@@ -230,7 +232,9 @@ class Superstructure(
         intakeRollers.currentRequest =
             Request.RollersRequest.OpenLoop(RollersConstants.INTAKE_VOLTAGE)
         intake.currentRequest =
-            Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.INTAKE_ANGLE)
+            Request.IntakeRequest.TargetingPosition(
+                if (jigglingIntake) IntakeConstants.ANGLES.INTAKING_JIGGLE_ANGLE
+                else IntakeConstants.ANGLES.INTAKE_ANGLE)
 
         when (currentRequest) {
           is SuperstructureRequest.Idle -> nextState = SuperstructureStates.IDLE
