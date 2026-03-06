@@ -68,6 +68,7 @@ object IntakeConstants {
     val FORCE_DOWN_ANGLE = -30.degrees
 
     val RESET_INTAKE_ANGLE = INTAKE_ANGLE - 3.degrees
+    val INTAKING_JIGGLE_ANGLE = INTAKE_ANGLE + 40.degrees
   }
 
   object PID {
@@ -76,7 +77,7 @@ object IntakeConstants {
     val REAL_PIVOT_KI: IntegralGain<Radian, Volt> = 0.0.volts / (1.0.radians * 1.0.seconds)
     val REAL_PIVOT_KD: DerivativeGain<Radian, Volt> = 0.0.volts / 1.0.radians.perSecond
 
-    val SIM_PIVOT_KP: ProportionalGain<Radian, Volt> = .1.volts / 1.0.radians
+    val SIM_PIVOT_KP: ProportionalGain<Radian, Volt> = 5.volts / 1.0.radians
     val SIM_PIVOT_KI: IntegralGain<Radian, Volt> = 0.0.volts / (1.0.radians * 1.0.seconds)
     val SIM_PIVOT_KD: DerivativeGain<Radian, Volt> = 0.0.volts / 1.0.radians.perSecond
 
