@@ -206,13 +206,14 @@ object RobotContainer {
 
     ControlBoard.forceIdle.onTrue(superstructure.requestIdleCommand())
 
-    ControlBoard.prepScore.onTrue(SequentialCommandGroup(
-      Commands.runOnce({ superstructure.overrideShooterVelocity = false }),
-      superstructure.requestPrepScoreCommand()))
-    ControlBoard.score.onTrue(SequentialCommandGroup(
-      Commands.runOnce({ superstructure.overrideShooterVelocity = false }),
-      superstructure.requestScoreCommand()
-    ))
+    ControlBoard.prepScore.onTrue(
+        SequentialCommandGroup(
+            Commands.runOnce({ superstructure.overrideShooterVelocity = false }),
+            superstructure.requestPrepScoreCommand()))
+    ControlBoard.score.onTrue(
+        SequentialCommandGroup(
+            Commands.runOnce({ superstructure.overrideShooterVelocity = false }),
+            superstructure.requestScoreCommand()))
 
     ControlBoard.score.onFalse(
         ConditionalCommand(superstructure.requestIdleCommand(), InstantCommand()) {
@@ -220,11 +221,9 @@ object RobotContainer {
               superstructure.currentState == Superstructure.Companion.SuperstructureStates.SCORE
         })
     ControlBoard.manualScore.onTrue(
-      SequentialCommandGroup(
-        Commands.runOnce({ superstructure.overrideShooterVelocity = true }),
-        superstructure.requestScoreCommand()
-      )
-    )
+        SequentialCommandGroup(
+            Commands.runOnce({ superstructure.overrideShooterVelocity = true }),
+            superstructure.requestScoreCommand()))
     ControlBoard.prepClimb.onTrue(superstructure.requestPrepClimbCommand())
     ControlBoard.climb.onTrue(superstructure.requestClimbCommand())
 
