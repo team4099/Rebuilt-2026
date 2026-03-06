@@ -29,8 +29,10 @@ import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.derived.Angle
+import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.max
+import org.team4099.lib.units.perSecond
 
 class Superstructure(
     private val drivetrain: Drive,
@@ -52,9 +54,12 @@ class Superstructure(
   val launchData: Shooter.Companion.CalculatedLaunchData
     get() = Shooter.calculateLaunchData(drivetrain.pose.toPose2d(), drivetrain.chassisSpeeds)
 
-  inline val shooterTargetRPM: AngularVelocity
+  var overrideShooterVelocity = false
+
+  val shooterTargetRPM: AngularVelocity
     get() {
-      return max(
+      return if (overrideShooterVelocity) 40.rotations.perSecond else
+        max(
           Shooter.launchVelToShooterRPM(launchData.launchVelocity),
           ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY)
     }
@@ -148,6 +153,8 @@ class Superstructure(
         intakeRollers.currentRequest =
             Request.RollersRequest.OpenLoop(RollersConstants.IDLE_VOLTAGE)
         shooter.currentRequest = Request.ShooterRequest.Idle()
+
+        overrideShooterVelocity = false
 
         nextState =
             when (currentRequest) {

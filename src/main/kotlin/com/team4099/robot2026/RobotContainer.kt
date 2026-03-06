@@ -211,7 +211,7 @@ object RobotContainer {
           superstructure.currentState == Superstructure.Companion.SuperstructureStates.PREP_SCORE ||
               superstructure.currentState == Superstructure.Companion.SuperstructureStates.SCORE
         })
-    ControlBoard.manualScore.onTrue(superstructure.requestScoreCommand())
+    ControlBoard.manualScore.onTrue(superstructure.runOnce { superstructure.overrideShooterVelocity = true }.andThen(superstructure.requestScoreCommand()))
 
     ControlBoard.prepClimb.onTrue(superstructure.requestPrepClimbCommand())
     ControlBoard.climb.onTrue(superstructure.requestClimbCommand())
