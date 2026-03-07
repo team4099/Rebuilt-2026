@@ -152,7 +152,9 @@ class Superstructure(
         feeder.currentRequest = Request.FeederRequest.Idle()
         hopper.currentRequest = Request.HopperRequest.Idle()
         intake.currentRequest =
-            Request.IntakeRequest.TargetingPosition(if (!defenseMode)IntakeConstants.ANGLES.IDLE_ANGLE else IntakeConstants.ANGLES.STOW_ANGLE)
+            Request.IntakeRequest.TargetingPosition(
+                if (!defenseMode) IntakeConstants.ANGLES.IDLE_ANGLE
+                else IntakeConstants.ANGLES.STOW_ANGLE)
         intakeRollers.currentRequest =
             Request.RollersRequest.OpenLoop(RollersConstants.IDLE_VOLTAGE)
         shooter.currentRequest = Request.ShooterRequest.Idle()
