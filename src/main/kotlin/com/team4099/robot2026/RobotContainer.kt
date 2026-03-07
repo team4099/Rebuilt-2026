@@ -221,6 +221,9 @@ object RobotContainer {
         Commands.runOnce({
           superstructure.overrideShooterVelocity = !superstructure.overrideShooterVelocity
         }))
+    ControlBoard.defenseMode.onTrue(
+        Commands.runOnce({ superstructure.defenseMode = !superstructure.defenseMode }))
+
     ControlBoard.prepClimb.onTrue(superstructure.requestPrepClimbCommand())
     ControlBoard.climb.onTrue(superstructure.requestClimbCommand())
 
