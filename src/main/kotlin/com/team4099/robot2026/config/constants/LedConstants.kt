@@ -14,6 +14,8 @@ object LedConstants {
 
   enum class CandleState(val request: ControlRequest) {
     NOTHING(SolidColor(START_INDEX, END_INDEX).withColor(RGBWColor(Color.kGhostWhite))),
+    FIRST_WARNING(SolidColor(START_INDEX, END_INDEX).withColor(RGBWColor(Color.kYellow))),
+    SECOND_WARNING(SolidColor(START_INDEX, END_INDEX).withColor(RGBWColor(Color.kRed))),
     TEST(
         RainbowAnimation(START_INDEX, END_INDEX)
             .withDirection(AnimationDirectionValue.Forward)
