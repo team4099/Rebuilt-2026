@@ -33,6 +33,8 @@ object HopperConstants {
   val MOMENT_OF_INERTIA = 0.016973.kilo.grams.meterSquared
   val MAX_ACCELERATION: AngularAcceleration = 1000.rotations.perSecond.perSecond
 
+  val UNJAM_VOLTAGE = -2.volts
+
   object VELOCITIES {
     val IDLE_VELOCITY = 0.rotations.perSecond
     val SCORE_VELOCITY = 9.rotations.perSecond

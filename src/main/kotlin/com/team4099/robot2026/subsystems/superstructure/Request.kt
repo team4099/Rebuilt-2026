@@ -12,6 +12,8 @@ sealed interface Request {
 
     class ForceHome() : SuperstructureRequest
 
+    class Unjam : SuperstructureRequest
+
     class ExtendClimb() : SuperstructureRequest
 
     class RetractClimb() : SuperstructureRequest
