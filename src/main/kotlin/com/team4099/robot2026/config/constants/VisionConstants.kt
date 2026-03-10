@@ -28,10 +28,10 @@ object VisionConstants {
   val TAG_TRUST_THRESHOLD = 0.85
 
   // Trust rating weights
-  val AMBIGUITY_TRUST_RATING = 0.35
-  val DISTANCE_TRUST_RATING = 0.20
-  val ANGLE_TRUST_RATING = 0.10
-  val VELOCITY_TRUST_RATING = 0.20
+  val AMBIGUITY_TRUST_RATING = 0.45
+  val DISTANCE_TRUST_RATING = 0.35
+  val ANGLE_TRUST_RATING = 0.15
+  val VELOCITY_TRUST_RATING = 0.15
 
   // Velocity trust sub-weights
   val LINEAR_VELOCITY_TRUST_WEIGHT = 0.40

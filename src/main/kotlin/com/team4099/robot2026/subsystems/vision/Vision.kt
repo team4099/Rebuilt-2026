@@ -112,10 +112,22 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>, val c
                 val robotTTag = io[instance].transform.plus(Transform3d(tag.bestCameraToTarget))
 
                 val distanceToTarget = robotTTag.translation.norm
-                val trustRating = io[instance].calculateTagTrust(tag, distanceToTarget.inMeters, robotTTag, chassisSpeedsSupplier.get())
+                val trustRating =
+                    io[instance].calculateTagTrustScore(
+                        tag, distanceToTarget.inMeters, robotTTag, chassisSpeedsSupplier.get())
+                val trustAccepted =
+                    io[instance].calculateTagTrust(
+                        tag,
+                        distanceToTarget.inMeters,
+                        robotTTag,
+                        chassisSpeedsSupplier.get(),
+                        VisionConstants.TAG_TRUST_THRESHOLD)
                 CustomLogger.recordDebugOutput(
                     "Vision/${io[instance].identifier}/${tag.fiducialId}/trustRating",
                     trustRating)
+                CustomLogger.recordDebugOutput(
+                    "Vision/${io[instance].identifier}/${tag.fiducialId}/trustAccepted",
+                    trustAccepted)
 
                 CustomLogger.recordDebugOutput(
                     "Vision/${io[instance].identifier}/${tag.fiducialId}/robotDistanceToTarget",
@@ -137,7 +149,7 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>, val c
                   cornerData.add(corner.x)
                   cornerData.add(corner.y)
                 }
-                if (tag.fiducialId in tagIDFilter && trustRating >= VisionConstants.TAG_TRUST_THRESHOLD) {
+                if (tag.fiducialId in tagIDFilter && trustAccepted) {
                   targetingTags.add(Pair(tag.fiducialId, robotTTag))
                 }
               }
