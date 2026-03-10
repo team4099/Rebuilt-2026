@@ -79,6 +79,7 @@ class AimCommand(
   override fun initialize() {
     thetaPID.reset()
 
+    convergedPose = Pose3d()
     hasAligned = false
     startTime = Clock.timestamp
     startedInAuto = DriverStation.isAutonomous()
