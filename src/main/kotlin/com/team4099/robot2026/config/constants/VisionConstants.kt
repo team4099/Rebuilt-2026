@@ -19,7 +19,7 @@ object VisionConstants {
   val BLUE_TARGET_TAGS = arrayOf<Int>(18, 19, 20, 21, 24, 25, 26, 27)
   val RED_TARGET_TAGS = arrayOf<Int>(2, 3, 4, 5, 8, 9, 10, 11)
 
-  val AMBIGUITY_THESHOLD = 1.0
+  val AMBIGUITY_THESHOLD = 0.5
   val CONFIDENCE_THRESHOLD = 0.75
 
   val CAMERAS: Map<String, Pair<CameraIO.DetectionPipeline, Transform3d>>

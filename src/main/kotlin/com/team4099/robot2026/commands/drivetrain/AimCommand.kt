@@ -2,7 +2,6 @@ package com.team4099.robot2026.commands.drivetrain
 
 import com.team4099.lib.hal.Clock
 import com.team4099.robot2026.RobotContainer
-import com.team4099.robot2026.RobotContainer.hasAligned
 import com.team4099.robot2026.config.constants.DrivetrainConstants
 import com.team4099.robot2026.config.constants.ShooterConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
@@ -59,9 +58,6 @@ class AimCommand(
 
   private val thetaPID: PIDController<Radian, Velocity<Radian>>
 
-  private var timeout = -1.seconds
-  private var startTime = -1.seconds
-
   private var startedInAuto = false
 
   private var convergedPose = Pose3d()
@@ -80,51 +76,51 @@ class AimCommand(
     thetaPID.reset()
 
     convergedPose = Pose3d()
-    hasAligned = false
-    startTime = Clock.timestamp
     startedInAuto = DriverStation.isAutonomous()
 
+    RobotContainer.hasAligned = false
     RobotContainer.isAligning = true
   }
 
   override fun execute() {
+    CustomLogger.recordOutput("ActiveCommands/AimCommand", true)
     val currentlyTrackedPose: Pose3d
 
-    val expectedPose = drivetrain.pose + vision.lastTagVisionUpdate.robotTTargetTag
+    val expectedPose =
+        if (Clock.timestamp - vision.lastTagVisionUpdate.timestamp < .2.seconds)
+            vision.lastTagVisionUpdate.estimatedPose
+        else drivetrain.pose
 
     if (convergedPose == Pose3d()) {
+      currentlyTrackedPose = expectedPose
       val robotTExpected = drivetrain.pose.relativeTo(expectedPose)
+
       if (robotTExpected.x.absoluteValue < 3.inches &&
           robotTExpected.y.absoluteValue < 3.inches &&
           (robotTExpected.rotation.z < 3.degrees ||
-              robotTExpected.rotation.z > (-180.degrees + 3.degrees))) {
-        currentlyTrackedPose = expectedPose
+              robotTExpected.rotation.z < (-180.degrees + 3.degrees))) {
         convergedPose = expectedPose
-      } else {
-        currentlyTrackedPose = drivetrain.pose
       }
     } else {
       currentlyTrackedPose = convergedPose
     }
-
-    CustomLogger.recordOutput("ActiveCommands/FaceHubCommand", true)
+    CustomLogger.recordOutput("AimCommand/currentlyTrackedPose", currentlyTrackedPose.pose3d)
 
     val (distanceToHub, launchSpeed, timeOfFlight, wantedRotation) =
         Shooter.calculateLaunchData(currentlyTrackedPose.toPose2d(), ChassisSpeeds())
 
     val thetaVel = thetaPID.calculate(currentlyTrackedPose.rotation.z, wantedRotation)
 
-    CustomLogger.recordOutput("FaceHubCommand/thetaError", thetaPID.error.inDegrees)
+    CustomLogger.recordOutput("AimCommand/thetaError", thetaPID.error.inDegrees)
 
     CustomLogger.recordOutput(
-        "FaceHubCommand/wantedPose",
+        "AimCommand/wantedPose",
         Pose2d(currentlyTrackedPose.x, currentlyTrackedPose.y, wantedRotation).pose2d)
 
-    hasAligned = thetaPID.error.absoluteValue < 3.degrees
+    RobotContainer.hasAligned =
+        RobotContainer.hasAligned || thetaPID.error.absoluteValue < 3.degrees
 
-    CustomLogger.recordOutput("FaceHubCommand/hasAligned", hasAligned)
-
-    if (!hasAligned) {
+    if (!RobotContainer.hasAligned) {
       drivetrain.runSpeeds(
           ChassisSpeeds.fromFieldRelativeSpeeds(
               0.meters.perSecond, 0.meters.perSecond, thetaVel, drivetrain.pose.rotation.z))
@@ -133,7 +129,7 @@ class AimCommand(
     }
 
     if (RobotBase.isSimulation() &&
-        (hasAligned &&
+        (RobotContainer.hasAligned &&
             Clock.timestamp.inSeconds % 1 < 0.04 &&
             RobotContainer.superstructure.currentState ==
                 Superstructure.Companion.SuperstructureStates.SCORE ||
@@ -160,11 +156,12 @@ class AimCommand(
   }
 
   override fun end(interrupted: Boolean) {
-    CustomLogger.recordOutput("FaceHubCommand/interrupted", interrupted)
+    CustomLogger.recordOutput("AimCommand/interrupted", interrupted)
 
     drivetrain.runSpeeds(ChassisSpeeds())
     RobotContainer.isAligning = false
+    RobotContainer.hasAligned = false
 
-    CustomLogger.recordOutput("ActiveCommands/FaceHubCommand", false)
+    CustomLogger.recordOutput("ActiveCommands/AimCommand", false)
   }
 }

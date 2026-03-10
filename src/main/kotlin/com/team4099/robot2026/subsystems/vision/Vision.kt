@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import java.util.function.Supplier
+import kotlin.jvm.optionals.getOrElse
 import org.ironmaple.simulation.SimulatedArena
 import org.photonvision.simulation.VisionSystemSim
 import org.team4099.lib.geometry.Pose3d
@@ -43,7 +44,7 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
 
   private var closestTargetTagAcrossCams: Map.Entry<Int, Pair<Int, Transform3d>?>? = null
 
-  var lastTagVisionUpdate = TimestampedTagVisionUpdate(Clock.timestamp, -1, Transform3d())
+  var lastTagVisionUpdate = TimestampedTagVisionUpdate(Clock.timestamp, -1, Transform3d(), Pose3d())
 
   var objectsDetected: MutableList<MutableList<Translation3d>> =
       MutableList(VisionConstants.OBJECT_CLASS.entries.size) { mutableListOf() }
@@ -104,12 +105,24 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
 
           var tagTargets = inputs[instance].cameraTargets.filter { it.fiducialId != -1 }
 
-          val cornerData = mutableListOf<Double>()
-
           for (tag in tagTargets) {
+            var estimatedDrivetrainPose = Pose3d()
             if (tag.poseAmbiguity < VisionConstants.AMBIGUITY_THESHOLD) {
               if (DriverStation.getAlliance().isPresent) {
                 val robotTTag = io[instance].transform.plus(Transform3d(tag.bestCameraToTarget))
+
+                val tagPose =
+                    Pose3d(
+                        FieldConstants.fieldLayout.getTagPose(tag.fiducialId).getOrElse {
+                          edu.wpi.first.math.geometry.Pose3d()
+                        })
+
+                // note: nathan - do not use as real pose
+                // fieldTTag + tagTCamera + cameraTRobot
+                estimatedDrivetrainPose =
+                    tagPose +
+                        Transform3d(tag.bestCameraToTarget.inverse()) +
+                        io[instance].transform.inverse()
 
                 val distanceToTarget = robotTTag.translation.norm
 
@@ -121,11 +134,6 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
                     "Vision/${io[instance].identifier}/${tag.fiducialId}/robotTTag",
                     robotTTag.transform3d)
 
-                for (corner in tag.detectedCorners) {
-                  cornerData.add(corner.x)
-                  cornerData.add(corner.y)
-                }
-
                 if (tag.fiducialId in tagIDFilter) {
                   targetingTags.add(Pair(tag.fiducialId, robotTTag))
                 }
@@ -134,9 +142,6 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
               closestTargetTag = targetingTags.minByOrNull { it.second.translation.norm }
 
               closestTargetingTags[instance] = closestTargetTag
-
-              CustomLogger.recordDebugOutput(
-                  "Vision/${io[instance].identifier}/cornerDetections", cornerData.toDoubleArray())
 
               CustomLogger.recordOutput(
                   "Vision/${io[instance].identifier}/closestTargetTagID",
@@ -174,7 +179,8 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
                       closestTargetTagAcrossCams?.value?.first ?: -1,
                       Transform3d(
                           closestTargetTagAcrossCams?.value?.second?.translation ?: Translation3d(),
-                          closestTargetTagAcrossCams?.value?.second?.rotation ?: Rotation3d()))
+                          closestTargetTagAcrossCams?.value?.second?.rotation ?: Rotation3d()),
+                      estimatedDrivetrainPose)
             }
           }
         }
