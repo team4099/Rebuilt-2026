@@ -67,7 +67,7 @@ object IntakeConstants {
     val FORCE_HALFDOWN_ANGLE = 20.degrees
     val FORCE_DOWN_ANGLE = -30.degrees
 
-    val RESET_INTAKE_ANGLE = INTAKE_ANGLE - 3.degrees
+    val RESET_INTAKE_ANGLE = INTAKE_ANGLE - 6.degrees
     val INTAKING_JIGGLE_ANGLE = INTAKE_ANGLE + 40.degrees
   }
 

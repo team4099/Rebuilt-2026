@@ -21,6 +21,7 @@ import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.kinematics.ChassisSpeeds
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Meter
+import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
@@ -47,7 +48,8 @@ class FollowChoreoPath(
     val trajectory: Trajectory<SwerveSample>,
     val overrideRotationTrigger: Supplier<Boolean> = Supplier { false },
     val flipVertically: Boolean = false,
-    val interruptAtTimeout: Boolean = false
+    val interruptAtTimeout: Boolean = false,
+    val extraTime: Time = 0.seconds
 ) : Command() {
 
   private val xPID: PIDController<Meter, Velocity<Meter>>
@@ -185,7 +187,7 @@ class FollowChoreoPath(
   }
 
   override fun isFinished(): Boolean {
-    val timedOut = Clock.timestamp - trajStartTime > trajectory.totalTime.seconds
+    val timedOut = Clock.timestamp - trajStartTime > trajectory.totalTime.seconds + extraTime
     return timedOut && (interruptAtTimeout || atSetpoint()) || !DriverStation.isAutonomous()
   }
 
