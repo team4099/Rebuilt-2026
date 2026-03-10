@@ -43,76 +43,78 @@ interface CameraIO {
   val photonEstimator: PhotonPoseEstimator
 
   fun calculateTagTrustScore(
-    tag: PhotonTrackedTarget,
-    distanceToTarget: Double,
-    robotTTag: org.team4099.lib.geometry.Transform3d,
-    chassisSpeeds: org.team4099.lib.kinematics.ChassisSpeeds
+      tag: PhotonTrackedTarget,
+      distanceToTarget: Double,
+      robotTTag: org.team4099.lib.geometry.Transform3d,
+      chassisSpeeds: org.team4099.lib.kinematics.ChassisSpeeds
   ): Double {
     // 1. Ambiguity trust (0-1, higher is better)
     val ambiguityTrust = (1.0 - tag.poseAmbiguity).coerceIn(0.0, 1.0)
 
     // 2. Distance trust (0-1, closer is better)
-    val distanceTrust = when {
-      distanceToTarget <= 2.0 -> 1.0
-      distanceToTarget <= 4.0 -> 1.0 - ((distanceToTarget - 2.0) / 2.0) * 0.3
-      distanceToTarget <= 6.0 -> 0.7 - ((distanceToTarget - 4.0) / 2.0) * 0.35
-      else -> 0.35
-    }
+    val distanceTrust =
+        when {
+          distanceToTarget <= 2.0 -> 1.0
+          distanceToTarget <= 4.0 -> 1.0 - ((distanceToTarget - 2.0) / 2.0) * 0.3
+          distanceToTarget <= 6.0 -> 0.7 - ((distanceToTarget - 4.0) / 2.0) * 0.35
+          else -> 0.35
+        }
 
     // 3. Angle trust
     val angleToTag = kotlin.math.abs(kotlin.math.atan2(robotTTag.y.inMeters, robotTTag.x.inMeters))
-    val angleTrust = when {
-      angleToTag <= kotlin.math.PI / 6 -> 1.0
-      angleToTag <= kotlin.math.PI / 3 ->
-        1.0 - ((angleToTag - kotlin.math.PI / 6) / (kotlin.math.PI / 6)) * 0.3
-      angleToTag <= kotlin.math.PI / 2 ->
-        0.7 - ((angleToTag - kotlin.math.PI / 3) / (kotlin.math.PI / 6)) * 0.4
-      else -> 0.3
-    }
+    val angleTrust =
+        when {
+          angleToTag <= kotlin.math.PI / 6 -> 1.0
+          angleToTag <= kotlin.math.PI / 3 ->
+              1.0 - ((angleToTag - kotlin.math.PI / 6) / (kotlin.math.PI / 6)) * 0.3
+          angleToTag <= kotlin.math.PI / 2 ->
+              0.7 - ((angleToTag - kotlin.math.PI / 3) / (kotlin.math.PI / 6)) * 0.4
+          else -> 0.3
+        }
 
     // 4. Drivetrain velocity trust (slower is better)
     val linearVelocity =
-      kotlin.math.hypot(chassisSpeeds.vx.inMetersPerSecond, chassisSpeeds.vy.inMetersPerSecond)
+        kotlin.math.hypot(chassisSpeeds.vx.inMetersPerSecond, chassisSpeeds.vy.inMetersPerSecond)
     val angularVelocity = kotlin.math.abs(chassisSpeeds.omega.inRadiansPerSecond)
 
-    val linearVelocityTrust = when {
-      linearVelocity <= 0.5 -> 1.0
-      linearVelocity <= 2.0 -> 1.0 - ((linearVelocity - 0.5) / 1.5) * 0.4
-      linearVelocity <= 4.0 -> 0.6 - ((linearVelocity - 2.0) / 2.0) * 0.3
-      else -> 0.3
-    }
+    val linearVelocityTrust =
+        when {
+          linearVelocity <= 0.5 -> 1.0
+          linearVelocity <= 2.0 -> 1.0 - ((linearVelocity - 0.5) / 1.5) * 0.4
+          linearVelocity <= 4.0 -> 0.6 - ((linearVelocity - 2.0) / 2.0) * 0.3
+          else -> 0.3
+        }
 
-    val angularVelocityTrust = when {
-      angularVelocity <= 0.5 -> 1.0
-      angularVelocity <= 2.0 -> 1.0 - ((angularVelocity - 0.5) / 1.5) * 0.5
-      angularVelocity <= 4.0 -> 0.5 - ((angularVelocity - 2.0) / 2.0) * 0.35
-      else -> 0.15
-    }
+    val angularVelocityTrust =
+        when {
+          angularVelocity <= 0.5 -> 1.0
+          angularVelocity <= 2.0 -> 1.0 - ((angularVelocity - 0.5) / 1.5) * 0.5
+          angularVelocity <= 4.0 -> 0.5 - ((angularVelocity - 2.0) / 2.0) * 0.35
+          else -> 0.15
+        }
 
     val velocityTrust =
-      (linearVelocityTrust * VisionConstants.LINEAR_VELOCITY_TRUST_WEIGHT) +
-          (angularVelocityTrust * VisionConstants.ANGULAR_VELOCITY_TRUST_WEIGHT)
-
-
+        (linearVelocityTrust * VisionConstants.LINEAR_VELOCITY_TRUST_WEIGHT) +
+            (angularVelocityTrust * VisionConstants.ANGULAR_VELOCITY_TRUST_WEIGHT)
 
     val weightedTrust =
-      (ambiguityTrust * VisionConstants.AMBIGUITY_TRUST_RATING) +
-          (distanceTrust * VisionConstants.DISTANCE_TRUST_RATING) +
-          (angleTrust * VisionConstants.ANGLE_TRUST_RATING) +
-          (velocityTrust * VisionConstants.VELOCITY_TRUST_RATING)
-
+        (ambiguityTrust * VisionConstants.AMBIGUITY_TRUST_RATING) +
+            (distanceTrust * VisionConstants.DISTANCE_TRUST_RATING) +
+            (angleTrust * VisionConstants.ANGLE_TRUST_RATING) +
+            (velocityTrust * VisionConstants.VELOCITY_TRUST_RATING)
 
     return weightedTrust.coerceIn(0.0, 1.0)
   }
 
   fun calculateTagTrust(
-    tag: PhotonTrackedTarget,
-    distanceToTarget: Double,
-    robotTTag: org.team4099.lib.geometry.Transform3d,
-    chassisSpeeds: org.team4099.lib.kinematics.ChassisSpeeds,
-    minTrustThreshold: Double = VisionConstants.TAG_TRUST_THRESHOLD
+      tag: PhotonTrackedTarget,
+      distanceToTarget: Double,
+      robotTTag: org.team4099.lib.geometry.Transform3d,
+      chassisSpeeds: org.team4099.lib.kinematics.ChassisSpeeds,
+      minTrustThreshold: Double = VisionConstants.TAG_TRUST_THRESHOLD
   ): Boolean {
-    return calculateTagTrustScore(tag, distanceToTarget, robotTTag, chassisSpeeds) >= minTrustThreshold
+    return calculateTagTrustScore(tag, distanceToTarget, robotTTag, chassisSpeeds) >=
+        minTrustThreshold
   }
 
   class CameraInputs : LoggableInputs {
