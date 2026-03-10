@@ -4,6 +4,10 @@ import com.team4099.robot2026.subsystems.drivetrain.generated.AlphaBotTunerConst
 import com.team4099.robot2026.subsystems.drivetrain.generated.CompBotTunerConstants
 import com.team4099.robot2026.subsystems.drivetrain.generated.TestBotTunerConstants
 import com.team4099.robot2026.util.AllianceFlipUtil
+import edu.wpi.first.math.Matrix
+import edu.wpi.first.math.VecBuilder
+import edu.wpi.first.math.numbers.N1
+import edu.wpi.first.math.numbers.N4
 import edu.wpi.first.wpilibj.RobotBase
 import java.util.function.Supplier
 import kotlin.math.sqrt
@@ -111,6 +115,8 @@ object DrivetrainConstants {
       }
 
   val INITIAL_SIM_POSE = Pose3d(3.meters, 3.meters, 0.meters, Rotation3d()).pose3d
+
+  val STATE_STDEVS: Matrix<N4?, N1?> = VecBuilder.fill(0.003, 0.003, 0.003, 0.002)
 
   object PID {
     val AUTO_POS_KP: ProportionalGain<Meter, Velocity<Meter>>
