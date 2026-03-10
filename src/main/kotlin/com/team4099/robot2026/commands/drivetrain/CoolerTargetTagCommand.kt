@@ -128,7 +128,7 @@ class CoolerTargetTagCommand(
   override fun execute() {
     CustomLogger.recordOutput("ActiveCommands/CoolerTargetTagCommand", true)
 
-    val lastUpdate = vision.lastTrigVisionUpdate
+    val lastUpdate = vision.lastTagVisionUpdate
     val odomTTag = lastUpdate.robotTTargetTag
 
     val exists = odomTTag.translation.norm != 0.meters

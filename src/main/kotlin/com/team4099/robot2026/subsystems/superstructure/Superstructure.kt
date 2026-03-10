@@ -2,7 +2,7 @@ package com.team4099.robot2026.subsystems.superstructure
 
 import com.team4099.lib.hal.Clock
 import com.team4099.robot2026.RobotContainer
-import com.team4099.robot2026.commands.drivetrain.AimOTFCommand
+import com.team4099.robot2026.RobotContainer.hasAligned
 import com.team4099.robot2026.config.constants.ClimbConstants
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.FeederConstants
@@ -211,8 +211,7 @@ class Superstructure(
       SuperstructureStates.SCORE -> {
         shooter.currentRequest = Request.ShooterRequest.TargetVelocity(shooterTargetRPM)
 
-        if (shooter.isAtTargetedVelocity &&
-            (AimOTFCommand.hasAligned || !RobotContainer.isAligning)) {
+        if (shooter.isAtTargetedVelocity && (hasAligned || !RobotContainer.isAligning)) {
           feeder.currentRequest =
               Request.FeederRequest.TargetVelocity(FeederConstants.SCORE_VELOCITY)
           hopper.currentRequest =
@@ -235,8 +234,7 @@ class Superstructure(
             Request.RollersRequest.OpenLoop(RollersConstants.INTAKE_VOLTAGE)
         shooter.currentRequest = Request.ShooterRequest.TargetVelocity(shooterTargetRPM)
 
-        if (shooter.isAtTargetedVelocity &&
-            (AimOTFCommand.hasAligned || !RobotContainer.isAligning)) {
+        if (shooter.isAtTargetedVelocity && (hasAligned || !RobotContainer.isAligning)) {
           feeder.currentRequest =
               Request.FeederRequest.TargetVelocity(FeederConstants.SCORE_VELOCITY)
           hopper.currentRequest =

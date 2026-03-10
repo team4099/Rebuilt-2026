@@ -2,7 +2,7 @@ package com.team4099.robot2026.subsystems.vision
 
 import com.team4099.lib.hal.Clock
 import com.team4099.lib.vision.TimestampedObjectVisionUpdate
-import com.team4099.lib.vision.TimestampedTrigVisionUpdate
+import com.team4099.lib.vision.TimestampedTagVisionUpdate
 import com.team4099.lib.vision.TimestampedVisionUpdate
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.FieldConstants
@@ -39,11 +39,11 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
   var isAutoAligning = false
   var isAligned = false
 
-  private var cameraPreference = 0 // 0 for left 1 for right
+  private var cameraPreference = 0 // index in vision constants
 
   private var closestTargetTagAcrossCams: Map.Entry<Int, Pair<Int, Transform3d>?>? = null
 
-  var lastTrigVisionUpdate = TimestampedTrigVisionUpdate(Clock.timestamp, -1, Transform3d())
+  var lastTagVisionUpdate = TimestampedTagVisionUpdate(Clock.timestamp, -1, Transform3d())
 
   var objectsDetected: MutableList<MutableList<Translation3d>> =
       MutableList(VisionConstants.OBJECT_CLASS.entries.size) { mutableListOf() }
@@ -168,8 +168,8 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
 
             if (closestTargetTagAcrossCams?.key != null &&
                 closestTargetTagAcrossCams?.value != null) {
-              lastTrigVisionUpdate =
-                  TimestampedTrigVisionUpdate(
+              lastTagVisionUpdate =
+                  TimestampedTagVisionUpdate(
                       inputs[closestTargetTagAcrossCams?.key ?: 0].timestamp,
                       closestTargetTagAcrossCams?.value?.first ?: -1,
                       Transform3d(

@@ -2,6 +2,7 @@ package com.team4099.robot2026.auto.mode
 
 import choreo.Choreo
 import choreo.trajectory.SwerveSample
+import com.team4099.robot2026.RobotContainer.hasAligned
 import com.team4099.robot2026.commands.drivetrain.AimOTFCommand
 import com.team4099.robot2026.commands.drivetrain.FollowChoreoPath
 import com.team4099.robot2026.config.constants.IntakeConstants
@@ -35,7 +36,7 @@ class IntakeQuadrantL1(
                     superstructure.requestIdleCommand(),
                     WaitCommand(3.5),
                     superstructure.requestPrepScoreCommand())),
-            AimOTFCommand(drivetrain, 1.seconds).until { AimOTFCommand.hasAligned },
+            AimOTFCommand(drivetrain, 1.seconds).until { hasAligned },
             superstructure.requestScoreCommand(),
             RepeatCommand(
                     SequentialCommandGroup(

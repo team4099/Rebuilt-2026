@@ -2,7 +2,7 @@ package com.team4099.robot2026
 
 import com.ctre.phoenix6.signals.NeutralModeValue
 import com.team4099.robot2026.auto.AutonomousSelector
-import com.team4099.robot2026.commands.drivetrain.AimOTFCommand
+import com.team4099.robot2026.commands.drivetrain.AimCommand
 import com.team4099.robot2026.commands.drivetrain.DrivePathOTF
 import com.team4099.robot2026.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2026.commands.drivetrain.TeleopDriveCommand
@@ -77,6 +77,7 @@ object RobotContainer {
 
   var driveSimulation: SwerveDriveSimulation? = null
   var isAligning = false
+  var hasAligned = false
 
   init {
     SimulatedArena.overrideInstance(Arena2026Rebuilt(false))
@@ -246,21 +247,13 @@ object RobotContainer {
         superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_DOWN_ANGLE))
 
     ControlBoard.score.whileTrue(
-        ConditionalCommand(
-            AimOTFCommand(
-                drivetrain,
-                { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-                { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-                { ControlBoard.slowMode },
-                driver = Jessika(),
-            ),
-            InstantCommand()) {
-              true
-              //              superstructure.currentState ==
-              // Superstructure.Companion.SuperstructureStates.SCORE ||
-              //                  superstructure.currentState ==
-              //                      Superstructure.Companion.SuperstructureStates.PREP_SCORE
-            })
+        ConditionalCommand(AimCommand(drivetrain, vision), InstantCommand()) {
+          true
+          //              superstructure.currentState ==
+          // Superstructure.Companion.SuperstructureStates.SCORE ||
+          //                  superstructure.currentState ==
+          //                      Superstructure.Companion.SuperstructureStates.PREP_SCORE
+        })
 
     ControlBoard.leftTrenchOTF.whileTrue(
         ConditionalCommand(

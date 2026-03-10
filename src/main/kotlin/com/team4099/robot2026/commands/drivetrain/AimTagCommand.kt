@@ -49,7 +49,7 @@ class AimTagCommand(val drivetrain: Drive, val vision: Vision) : Command() {
   }
 
   override fun execute() {
-    val lastUpdate = vision.lastTrigVisionUpdate
+    val lastUpdate = vision.lastTagVisionUpdate
     if (lastUpdate.timestamp <= 0.seconds ||
         lastUpdate.robotTTargetTag.transform3d == Transform3d())
         return
