@@ -204,6 +204,7 @@ object RobotContainer {
   fun mapTeleopControls() {
     ControlBoard.resetGyro.whileTrue(ResetGyroYawCommand(drivetrain))
     ControlBoard.forceHome.onTrue(superstructure.requestForceHomeCommand())
+    ControlBoard.unjam.onTrue(superstructure.requestUnjamCommand())
 
     ControlBoard.forceIdle.onTrue(superstructure.requestIdleCommand())
 
@@ -255,7 +256,7 @@ object RobotContainer {
                 driver = Jessika(),
             ),
             InstantCommand()) {
-              true
+              !superstructure.overrideShooterVelocity
               //              superstructure.currentState ==
               // Superstructure.Companion.SuperstructureStates.SCORE ||
               //                  superstructure.currentState ==

@@ -479,26 +479,30 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
             })
 
     init {
-      launchVelToShooterMap.put(7.147.meters.perSecond, 30.rotations.perSecond)
-      launchVelToShooterMap.put(7.68.meters.perSecond, 33.rotations.perSecond)
+      launchVelToShooterMap.put(7.06.meters.perSecond, 31.rotations.perSecond)
+      launchVelToShooterMap.put(7.47.meters.perSecond, 33.rotations.perSecond)
+      launchVelToShooterMap.put(7.82.meters.perSecond, 35.5.rotations.perSecond)
       launchVelToShooterMap.put(7.994.meters.perSecond, 37.rotations.perSecond)
-      launchVelToShooterMap.put(8.78.meters.perSecond, 58.rotations.perSecond)
-      launchVelToShooterMap.put(10.447.meters.perSecond, 80.rotations.perSecond)
+      //      launchVelToShooterMap.put(8.57.meters.perSecond, 42.rotations.perSecond)
+      launchVelToShooterMap.put(9.3.meters.perSecond, 47.rotations.perSecond)
+      launchVelToShooterMap.put(10.12.meters.perSecond, 52.rotations.perSecond)
+      launchVelToShooterMap.put(11.17.meters.perSecond, 70.rotations.perSecond)
+      //      launchVelToShooterMap.put(8.65.meters.perSecond, 49.5.rotations.perSecond)
+      //      launchVelToShooterMap.put(9.34.meters.perSecond, 50.rotations.perSecond)
+      //      launchVelToShooterMap.put(9.47.meters.perSecond, 55.5.rotations.perSecond)
+      //      launchVelToShooterMap.put(9.80.meters.perSecond, 55.rotations.perSecond)
+      //      launchVelToShooterMap.put(10.44.meters.perSecond, 60.rotations.perSecond)
     }
 
     fun launchVelToShooterRPM(desiredLaunchVel: LinearVelocity): AngularVelocity {
-      if (7.46.meters.perSecond <= desiredLaunchVel &&
-          desiredLaunchVel <= 10.447.meters.perSecond) {
+      if (7.06.meters.perSecond <= desiredLaunchVel && desiredLaunchVel <= 11.17.meters.perSecond) {
         return launchVelToShooterMap.get(desiredLaunchVel)
       }
-      if (7.46.meters.perSecond > desiredLaunchVel) {
-        return max(
-            ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY,
-            (3.74532 * desiredLaunchVel.inMetersPerSecond + 7.05993).rotations.perSecond)
-      }
-      return min(
-          (13.19736 * desiredLaunchVel.inMetersPerSecond - 57.87283).rotations.perSecond,
-          ShooterConstants.VELOCITIES.MAXIMUM_LAUNCH_VELCOITY)
+      return max(
+          ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY,
+          min(
+              (8.93492 * desiredLaunchVel.inMetersPerSecond - 34.1343).rotations.perSecond,
+              ShooterConstants.VELOCITIES.MAXIMUM_LAUNCH_VELCOITY))
     }
   }
 }
