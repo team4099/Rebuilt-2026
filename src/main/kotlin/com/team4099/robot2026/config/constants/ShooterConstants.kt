@@ -49,6 +49,7 @@ object ShooterConstants {
     val MAXIMUM_LAUNCH_VELCOITY = 85.rotations.perSecond
     val IDLE_VELOCITY =
         if (Constants.Tuning.TUNING_MODE) 0.rotations.perSecond else .5.rotations.perSecond
+    val MANUAL_SHOOTING = 2800.rotations.perMinute
   }
 
   object PID {

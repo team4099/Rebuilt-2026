@@ -50,8 +50,11 @@ import com.team4099.robot2026.subsystems.vision.camera.CameraIOPVSim
 import com.team4099.robot2026.subsystems.vision.camera.CameraIOPhotonvision
 import com.team4099.robot2026.util.driver.Jessika
 import edu.wpi.first.wpilibj.RobotBase
+import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.ConditionalCommand
 import edu.wpi.first.wpilibj2.command.InstantCommand
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
+import edu.wpi.first.wpilibj2.command.WaitCommand
 import org.ironmaple.simulation.SimulatedArena
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.Arena2026Rebuilt
@@ -201,21 +204,39 @@ object RobotContainer {
   fun mapTeleopControls() {
     ControlBoard.resetGyro.whileTrue(ResetGyroYawCommand(drivetrain))
     ControlBoard.forceHome.onTrue(superstructure.requestForceHomeCommand())
+    ControlBoard.unjam.onTrue(superstructure.requestUnjamCommand())
 
     ControlBoard.forceIdle.onTrue(superstructure.requestIdleCommand())
 
     ControlBoard.prepScore.onTrue(superstructure.requestPrepScoreCommand())
     ControlBoard.score.onTrue(superstructure.requestScoreCommand())
+
     ControlBoard.score.onFalse(
         ConditionalCommand(superstructure.requestIdleCommand(), InstantCommand()) {
           superstructure.currentState == Superstructure.Companion.SuperstructureStates.PREP_SCORE ||
-              superstructure.currentState == Superstructure.Companion.SuperstructureStates.SCORE
+              superstructure.currentState == Superstructure.Companion.SuperstructureStates.SCORE ||
+              superstructure.currentState ==
+                  Superstructure.Companion.SuperstructureStates.SCORE_AND_INTAKE
         })
+    ControlBoard.manualScore.onTrue(
+        Commands.runOnce({
+          superstructure.overrideShooterVelocity = !superstructure.overrideShooterVelocity
+        }))
+    ControlBoard.defenseMode.onTrue(
+        Commands.runOnce({ superstructure.defenseMode = !superstructure.defenseMode }))
 
     ControlBoard.prepClimb.onTrue(superstructure.requestPrepClimbCommand())
     ControlBoard.climb.onTrue(superstructure.requestClimbCommand())
 
-    ControlBoard.intake.onTrue(superstructure.requestIntakeCommand())
+    ControlBoard.intake.onTrue(
+        ConditionalCommand(
+            SequentialCommandGroup(
+                superstructure.runOnce { superstructure.jigglingIntake = true },
+                WaitCommand(0.5),
+                superstructure.runOnce { superstructure.jigglingIntake = false }),
+            superstructure.requestIntakeCommand()) {
+              superstructure.currentState == Superstructure.Companion.SuperstructureStates.INTAKE
+            })
     ControlBoard.forceIntakeFullUp.whileTrue(
         superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_UP_ANGLE))
     ControlBoard.forceIntakeHalfUp.whileTrue(
@@ -235,7 +256,7 @@ object RobotContainer {
                 driver = Jessika(),
             ),
             InstantCommand()) {
-              true
+              !superstructure.overrideShooterVelocity
               //              superstructure.currentState ==
               // Superstructure.Companion.SuperstructureStates.SCORE ||
               //                  superstructure.currentState ==

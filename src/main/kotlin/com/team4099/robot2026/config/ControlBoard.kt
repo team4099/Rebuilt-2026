@@ -38,10 +38,15 @@ object ControlBoard {
 
   val intake = Trigger { driver.leftTriggerAxis > .5 }
   val score = Trigger { driver.rightTriggerAxis > .5 }
+
+  val manualScore = Trigger { operator.bButton && operator.dPadLeft }
+  val defenseMode = Trigger { operator.bButton && operator.dPadRight }
+  val unjam = Trigger { operator.bButton && operator.dPadUp }
+
   val climb = Trigger { driver.aButton }
   val forceIdle = Trigger { driver.dPadDown || operator.dPadDown }
-  val leftTrenchOTF = Trigger { driver.dPadLeft && driver.xButton }
-  val rightTrenchOTF = Trigger { driver.dPadRight && driver.xButton }
+  val leftTrenchOTF = Trigger { driver.leftShoulderButton }
+  val rightTrenchOTF = Trigger { driver.rightShoulderButton }
 
   val climbOTF = Trigger { driver.yButton }
 

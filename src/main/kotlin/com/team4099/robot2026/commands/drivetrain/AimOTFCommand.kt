@@ -113,9 +113,9 @@ class AimOTFCommand(
   init {
     thetaPID =
         PIDController(
-            DrivetrainConstants.PID.AUTO_THETA_PID_KP,
-            DrivetrainConstants.PID.AUTO_THETA_PID_KI,
-            DrivetrainConstants.PID.AUTO_THETA_PID_KD)
+            DrivetrainConstants.PID.TELEOP_THETA_PID_KP,
+            DrivetrainConstants.PID.TELEOP_THETA_PID_KI,
+            DrivetrainConstants.PID.TELEOP_THETA_PID_KD)
 
     thetaPID.enableContinuousInput(-PI.radians, PI.radians)
   }
@@ -144,7 +144,7 @@ class AimOTFCommand(
         "FaceHubCommand/wantedPose",
         Pose2d(drivetrain.pose.x, drivetrain.pose.y, wantedRotation).pose2d)
 
-    hasAligned = thetaPID.error.absoluteValue < 2.degrees
+    hasAligned = thetaPID.error.absoluteValue < 3.degrees
 
     CustomLogger.recordOutput("FaceHubCommand/hasAligned", hasAligned)
 
@@ -174,10 +174,11 @@ class AimOTFCommand(
     }
 
     if (RobotBase.isSimulation() &&
-        hasAligned &&
-        Clock.timestamp.inSeconds % 1 < 0.04 &&
-        RobotContainer.superstructure.currentState ==
-            Superstructure.Companion.SuperstructureStates.SCORE || DriverStation.isAutonomous()) {
+        (hasAligned &&
+            Clock.timestamp.inSeconds % 1 < 0.04 &&
+            RobotContainer.superstructure.currentState ==
+                Superstructure.Companion.SuperstructureStates.SCORE ||
+            DriverStation.isAutonomous())) {
       SimulatedArena.getInstance()
           .addGamePieceProjectile(
               RebuiltFuelOnFly(

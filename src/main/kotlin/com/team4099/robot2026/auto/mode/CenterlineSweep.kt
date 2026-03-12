@@ -2,13 +2,11 @@ package com.team4099.robot2026.auto.mode
 
 import choreo.Choreo
 import choreo.trajectory.SwerveSample
-import com.team4099.robot2026.auto.mode.IntakeQuadrantL1.Companion.climbFlippedTraj
 import com.team4099.robot2026.commands.drivetrain.FollowChoreoPath
 import com.team4099.robot2026.config.constants.IntakeConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import edu.wpi.first.wpilibj2.command.ConditionalCommand
-import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
 import edu.wpi.first.wpilibj2.command.RepeatCommand
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
@@ -28,9 +26,11 @@ class CenterlineSweep(
                 ParallelCommandGroup(
                     FollowChoreoPath(drivetrain, mainTraj, flipVertically = flipVeritcally),
                     SequentialCommandGroup(
+                        WaitCommand(0.75),
                         superstructure.requestIntakeCommand(),
-                        WaitCommand(3.0),
+                        WaitCommand(3.5),
                         superstructure.requestIdleCommand(),
+                        WaitCommand(1.5),
                         superstructure.requestPrepScoreCommand())),
                 superstructure.requestScoreCommand(),
                 WaitUntilCommand({
@@ -61,16 +61,21 @@ class CenterlineSweep(
             .withTimeout(12.0),
         superstructure.requestIdleCommand(),
         superstructure.requestPrepClimbCommand(),
-        ConditionalCommand(FollowChoreoPath(drivetrain, climbFlippedTraj), InstantCommand()) {
-          flipVeritcally
-        },
+        ConditionalCommand(
+            FollowChoreoPath(drivetrain, climbFlippedTraj),
+            FollowChoreoPath(drivetrain, climbUnflippedTraj)) {
+              flipVeritcally
+            },
         superstructure.requestClimbCommand())
   }
 
   companion object {
     val mainTraj = Choreo.loadTrajectory<SwerveSample>("SweepCenter/MidlineSweep.traj").get()
 
-    val climbFlippedTraj = Choreo.loadTrajectory<SwerveSample>("SweepCenter/Climb.traj").get()
+    val climbUnflippedTraj =
+        Choreo.loadTrajectory<SwerveSample>("SweepCenter/ClimbUnflipped.traj").get()
+    val climbFlippedTraj =
+        Choreo.loadTrajectory<SwerveSample>("SweepCenter/ClimbFlipped.traj").get()
 
     val startingPose = Pose2d(mainTraj.getInitialPose(false).get())
   }
