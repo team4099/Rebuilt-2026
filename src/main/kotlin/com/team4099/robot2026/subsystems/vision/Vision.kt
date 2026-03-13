@@ -103,93 +103,112 @@ class Vision(
         CameraIO.DetectionPipeline.APRIL_TAG -> {
           val targetingTags = mutableListOf<Pair<Int, Transform3d>>()
           var closestTargetTag: Pair<Int, Transform3d>? = null
-
-          val tagTargets = inputs[instance].cameraTargets.filter { it.fiducialId != -1 }
-
           val cornerData = mutableListOf<Double>()
 
-          for (tag in tagTargets) {
-            if (tag.poseAmbiguity < VisionConstants.AMBIGUITY_THESHOLD) {
-              if (DriverStation.getAlliance().isPresent) {
-                val robotTTag = io[instance].transform.plus(Transform3d(tag.bestCameraToTarget))
+          val chassisSpeeds = chassisSpeedsSupplier.get()
+          val hasTagEstimate = inputs[instance].cameraTargets.any { it.fiducialId != -1 }
+          val poseForAcceptance = if (hasTagEstimate) inputs[instance].frame else poseSupplier.get()
+          val robotPoseAccepted = io[instance].calculatePoseAcceptance(chassisSpeeds, poseForAcceptance)
 
-                val distanceToTarget = robotTTag.translation.norm
-                val trustRating =
-                    io[instance].calculateTagTrust(
-                        tag, distanceToTarget.inMeters, robotTTag, chassisSpeedsSupplier.get())
-                CustomLogger.recordDebugOutput(
-                    "Vision/${io[instance].identifier}/${tag.fiducialId}/trustRating", trustRating)
+          CustomLogger.recordDebugOutput(
+              "Vision/${io[instance].identifier}/poseAcceptedForTagTrust", robotPoseAccepted)
+          CustomLogger.recordDebugOutput(
+              "Vision/${io[instance].identifier}/hasTagEstimate", hasTagEstimate)
 
-                CustomLogger.recordDebugOutput(
-                    "Vision/${io[instance].identifier}/${tag.fiducialId}/robotDistanceToTarget",
-                    distanceToTarget.inMeters)
+          if (robotPoseAccepted && hasTagEstimate) {
+            io[instance].poseMeasurementConsumer(
+                inputs[instance].frame.pose3d,
+                inputs[instance].timestamp.inSeconds,
+                io[instance].curStdDevs)
+          }
 
-                CustomLogger.recordDebugOutput(
-                    "Vision/${io[instance].identifier}/${tag.fiducialId}/tagArea", tag.area)
+          if (!robotPoseAccepted) {
+            closestTargetingTags[instance] = null
+            CustomLogger.recordOutput("Vision/${io[instance].identifier}/closestTargetTagID", -1)
+            CustomLogger.recordOutput(
+                "Vision/${io[instance].identifier}/closestTargetTagPose", Transform3dWPILIB())
+          } else {
+            val tagTargets = inputs[instance].cameraTargets.filter { it.fiducialId != -1 }
 
-                CustomLogger.recordDebugOutput(
-                    "Vision/${io[instance].identifier}/${tag.fiducialId}/numCorners",
-                    tag.detectedCorners.size)
+            for (tag in tagTargets) {
+              if (tag.poseAmbiguity < VisionConstants.AMBIGUITY_THESHOLD) {
+                if (DriverStation.getAlliance().isPresent) {
+                  val robotTTag = io[instance].transform.plus(Transform3d(tag.bestCameraToTarget))
 
-                CustomLogger.recordOutput(
-                    "Vision/${io[instance].identifier}/${tag.fiducialId}/robotTTag",
-                    robotTTag.transform3d)
+                  val distanceToTarget = robotTTag.translation.norm
+                  val trustRating =
+                      io[instance].calculateTagTrust(
+                          tag, distanceToTarget.inMeters, robotTTag, chassisSpeeds)
+                  CustomLogger.recordDebugOutput(
+                      "Vision/${io[instance].identifier}/${tag.fiducialId}/trustRating", trustRating)
 
-                for (corner in tag.detectedCorners) {
-                  cornerData.add(corner.x)
-                  cornerData.add(corner.y)
+                  CustomLogger.recordDebugOutput(
+                      "Vision/${io[instance].identifier}/${tag.fiducialId}/robotDistanceToTarget",
+                      distanceToTarget.inMeters)
+
+                  CustomLogger.recordDebugOutput(
+                      "Vision/${io[instance].identifier}/${tag.fiducialId}/tagArea", tag.area)
+
+                  CustomLogger.recordDebugOutput(
+                      "Vision/${io[instance].identifier}/${tag.fiducialId}/numCorners",
+                      tag.detectedCorners.size)
+
+                  CustomLogger.recordOutput(
+                      "Vision/${io[instance].identifier}/${tag.fiducialId}/robotTTag",
+                      robotTTag.transform3d)
+
+                  for (corner in tag.detectedCorners) {
+                    cornerData.add(corner.x)
+                    cornerData.add(corner.y)
+                  }
+                  if (tag.fiducialId in tagIDFilter && trustRating) {
+                    targetingTags.add(Pair(tag.fiducialId, robotTTag))
+                  }
                 }
-                if (tag.fiducialId in tagIDFilter &&
-                    trustRating >= VisionConstants.TAG_TRUST_THRESHOLD) {
-                  targetingTags.add(Pair(tag.fiducialId, robotTTag))
+              }
+            }
+
+            closestTargetTag = targetingTags.minByOrNull { it.second.translation.norm }
+            closestTargetingTags[instance] = closestTargetTag
+
+            CustomLogger.recordDebugOutput(
+                "Vision/${io[instance].identifier}/cornerDetections", cornerData.toDoubleArray())
+
+            CustomLogger.recordOutput(
+                "Vision/${io[instance].identifier}/closestTargetTagID",
+                closestTargetTag?.first ?: -1)
+
+            CustomLogger.recordOutput(
+                "Vision/${io[instance].identifier}/closestTargetTagPose",
+                closestTargetTag?.second?.transform3d ?: Transform3dWPILIB())
+          }
+
+          closestTargetTagAcrossCams =
+              if (closestTargetingTags[0]?.first != closestTargetingTags[1]?.first) {
+                closestTargetingTags.minByOrNull { it.value?.second?.translation?.norm ?: 1000000.meters }
+              } else {
+                mapOf(cameraPreference to closestTargetingTags[cameraPreference]).minByOrNull {
+                  it.value?.second?.translation?.norm ?: 1000000.meters
                 }
               }
 
-              closestTargetTag = targetingTags.minByOrNull { it.second.translation.norm }
+          CustomLogger.recordOutput(
+              "Vision/ClosestTargetTagAcrossAllCams/TagID",
+              closestTargetTagAcrossCams?.value?.first ?: -1)
 
-              closestTargetingTags[instance] = closestTargetTag
+          CustomLogger.recordDebugOutput(
+              "Vision/ClosestTargetTagAcrossAllCams/TargetTagPose",
+              closestTargetTagAcrossCams?.value?.second?.transform3d ?: Transform3dWPILIB())
 
-              CustomLogger.recordDebugOutput(
-                  "Vision/${io[instance].identifier}/cornerDetections", cornerData.toDoubleArray())
-
-              CustomLogger.recordOutput(
-                  "Vision/${io[instance].identifier}/closestTargetTagID",
-                  closestTargetTag?.first ?: -1)
-
-              CustomLogger.recordOutput(
-                  "Vision/${io[instance].identifier}/closestTargetTagPose",
-                  closestTargetTag?.second?.transform3d ?: Transform3dWPILIB())
-            }
-
-            closestTargetTagAcrossCams =
-                if (closestTargetingTags[0]?.first != closestTargetingTags[1]?.first) {
-                  closestTargetingTags.minByOrNull {
-                    it.value?.second?.translation?.norm ?: 1000000.meters
-                  }
-                } else {
-                  mapOf(cameraPreference to closestTargetingTags[cameraPreference]).minByOrNull {
-                    it.value?.second?.translation?.norm ?: 1000000.meters
-                  }
-                }
-
-            CustomLogger.recordOutput(
-                "Vision/ClosestTargetTagAcrossAllCams/TagID",
-                closestTargetTagAcrossCams?.value?.first ?: -1)
-
-            CustomLogger.recordDebugOutput(
-                "Vision/ClosestTargetTagAcrossAllCams/TargetTagPose",
-                closestTargetTagAcrossCams?.value?.second?.transform3d ?: Transform3dWPILIB())
-
-            if (closestTargetTagAcrossCams?.key != null &&
-                closestTargetTagAcrossCams?.value != null) {
-              lastTrigVisionUpdate =
-                  TimestampedTrigVisionUpdate(
-                      inputs[closestTargetTagAcrossCams?.key ?: 0].timestamp,
-                      closestTargetTagAcrossCams?.value?.first ?: -1,
-                      Transform3d(
-                          closestTargetTagAcrossCams?.value?.second?.translation ?: Translation3d(),
-                          closestTargetTagAcrossCams?.value?.second?.rotation ?: Rotation3d()))
-            }
+          if (closestTargetTagAcrossCams?.key != null &&
+              closestTargetTagAcrossCams?.value != null) {
+            lastTrigVisionUpdate =
+                TimestampedTrigVisionUpdate(
+                    inputs[closestTargetTagAcrossCams?.key ?: 0].timestamp,
+                    closestTargetTagAcrossCams?.value?.first ?: -1,
+                    Transform3d(
+                        closestTargetTagAcrossCams?.value?.second?.translation ?: Translation3d(),
+                        closestTargetTagAcrossCams?.value?.second?.rotation ?: Rotation3d()))
           }
         }
         CameraIO.DetectionPipeline.OBJECT_DETECTION -> {

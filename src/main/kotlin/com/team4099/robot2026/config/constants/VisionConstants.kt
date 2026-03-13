@@ -27,13 +27,18 @@ object VisionConstants {
   val CONFIDENCE_THRESHOLD = 0.75
   val TAG_TRUST_THRESHOLD = 0.85
 
+  // Pose acceptance thresholds
+  val POSE_FIELD_BOUNDARY_TOLERANCE_METERS = 0.10
+  val POSE_ACCEPTANCE_MAX_LINEAR_SPEED_MPS = 6.0
+  val POSE_ACCEPTANCE_MAX_ANGULAR_SPEED_RADPS = 12.0
+
   // Trust rating weights
   val AMBIGUITY_TRUST_RATING = 0.45
   val DISTANCE_TRUST_RATING = 0.35
   val ANGLE_TRUST_RATING = 0.15
   val VELOCITY_TRUST_RATING = 0.15
 
-  // Velocity trust sub-weights
+  // Velocity trust
   val LINEAR_VELOCITY_TRUST_WEIGHT = 0.40
   val ANGULAR_VELOCITY_TRUST_WEIGHT = 0.60
 

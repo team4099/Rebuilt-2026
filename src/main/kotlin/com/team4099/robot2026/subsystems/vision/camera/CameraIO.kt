@@ -1,5 +1,6 @@
 package com.team4099.robot2026.subsystems.vision.camera
 
+import com.team4099.robot2026.config.constants.FieldConstants
 import com.team4099.robot2026.config.constants.VisionConstants
 import edu.wpi.first.math.Matrix
 import edu.wpi.first.math.VecBuilder
@@ -19,6 +20,7 @@ import org.photonvision.targeting.PhotonTrackedTarget
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Pose3dWPILIB
 import org.team4099.lib.geometry.Rotation3d
+import org.team4099.lib.kinematics.ChassisSpeeds
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.seconds
@@ -42,11 +44,41 @@ interface CameraIO {
   var curStdDevs: Matrix<N4?, N1?>
   val photonEstimator: PhotonPoseEstimator
 
+  fun calculatePoseAcceptance(
+    chassisSpeeds: ChassisSpeeds,
+    robotPose: Pose3d,
+    fieldBoundaryToleranceMeters: Double = VisionConstants.POSE_FIELD_BOUNDARY_TOLERANCE_METERS,
+    maxLinearSpeedForAcceptanceMetersPerSecond: Double =
+      VisionConstants.POSE_ACCEPTANCE_MAX_LINEAR_SPEED_MPS,
+    maxAngularSpeedForAcceptanceRadPerSec: Double =
+      VisionConstants.POSE_ACCEPTANCE_MAX_ANGULAR_SPEED_RADPS
+  ): Boolean {
+    val xMeters = robotPose.x.inMeters
+    val yMeters = robotPose.y.inMeters
+    val zMeters = robotPose.z.inMeters
+
+    // rejects robot below field z<0
+    if (zMeters < 0.0) return false
+
+    val minBound = -fieldBoundaryToleranceMeters
+    val maxX = FieldConstants.fieldLength.inMeters + fieldBoundaryToleranceMeters
+    val maxY = FieldConstants.fieldWidth.inMeters + fieldBoundaryToleranceMeters
+    val insideFieldBounds = xMeters in minBound..maxX && yMeters in minBound..maxY
+
+    if (!insideFieldBounds) return false
+
+    val linearSpeed = kotlin.math.hypot(chassisSpeeds.vx.inMetersPerSecond, chassisSpeeds.vy.inMetersPerSecond)
+    val angularSpeed = kotlin.math.abs(chassisSpeeds.omega.inRadiansPerSecond)
+
+    return linearSpeed <= maxLinearSpeedForAcceptanceMetersPerSecond &&
+      angularSpeed <= maxAngularSpeedForAcceptanceRadPerSec
+  }
+
   fun calculateTagTrustScore(
     tag: PhotonTrackedTarget,
     distanceToTarget: Double,
     robotTTag: org.team4099.lib.geometry.Transform3d,
-    chassisSpeeds: org.team4099.lib.kinematics.ChassisSpeeds
+    chassisSpeeds: ChassisSpeeds
   ): Double {
     // 1. Ambiguity trust (0-1, higher is better)
     val ambiguityTrust = (1.0 - tag.poseAmbiguity).coerceIn(0.0, 1.0)
@@ -109,7 +141,7 @@ interface CameraIO {
     tag: PhotonTrackedTarget,
     distanceToTarget: Double,
     robotTTag: org.team4099.lib.geometry.Transform3d,
-    chassisSpeeds: org.team4099.lib.kinematics.ChassisSpeeds,
+    chassisSpeeds: ChassisSpeeds,
     minTrustThreshold: Double = VisionConstants.TAG_TRUST_THRESHOLD
   ): Boolean {
     return calculateTagTrustScore(tag, distanceToTarget, robotTTag, chassisSpeeds) >= minTrustThreshold
@@ -208,8 +240,6 @@ interface CameraIO {
               inputs.frame = Pose3d(poseEst)
 
               updateEstimationStdDevs(visionEst, result.getTargets())
-
-              poseMeasurementConsumer(poseEst, visionEst.get().timestampSeconds, curStdDevs)
             }
           }
         }
