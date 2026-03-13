@@ -108,7 +108,8 @@ class Vision(
           val chassisSpeeds = chassisSpeedsSupplier.get()
           val hasTagEstimate = inputs[instance].cameraTargets.any { it.fiducialId != -1 }
           val poseForAcceptance = if (hasTagEstimate) inputs[instance].frame else poseSupplier.get()
-          val robotPoseAccepted = io[instance].calculatePoseAcceptance(chassisSpeeds, poseForAcceptance)
+          val robotPoseAccepted =
+              io[instance].calculatePoseAcceptance(chassisSpeeds, poseForAcceptance)
 
           CustomLogger.recordDebugOutput(
               "Vision/${io[instance].identifier}/poseAcceptedForTagTrust", robotPoseAccepted)
@@ -140,7 +141,8 @@ class Vision(
                       io[instance].calculateTagTrust(
                           tag, distanceToTarget.inMeters, robotTTag, chassisSpeeds)
                   CustomLogger.recordDebugOutput(
-                      "Vision/${io[instance].identifier}/${tag.fiducialId}/trustRating", trustRating)
+                      "Vision/${io[instance].identifier}/${tag.fiducialId}/trustRating",
+                      trustRating)
 
                   CustomLogger.recordDebugOutput(
                       "Vision/${io[instance].identifier}/${tag.fiducialId}/robotDistanceToTarget",
@@ -185,7 +187,9 @@ class Vision(
 
           closestTargetTagAcrossCams =
               if (closestTargetingTags[0]?.first != closestTargetingTags[1]?.first) {
-                closestTargetingTags.minByOrNull { it.value?.second?.translation?.norm ?: 1000000.meters }
+                closestTargetingTags.minByOrNull {
+                  it.value?.second?.translation?.norm ?: 1000000.meters
+                }
               } else {
                 mapOf(cameraPreference to closestTargetingTags[cameraPreference]).minByOrNull {
                   it.value?.second?.translation?.norm ?: 1000000.meters
