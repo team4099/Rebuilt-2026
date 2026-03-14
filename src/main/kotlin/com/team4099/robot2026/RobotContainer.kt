@@ -24,7 +24,6 @@ import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import com.team4099.robot2026.subsystems.superstructure.climb.Climb
 import com.team4099.robot2026.subsystems.superstructure.climb.ClimbIO
 import com.team4099.robot2026.subsystems.superstructure.climb.ClimbIOSim
-import com.team4099.robot2026.subsystems.superstructure.climb.ClimbIOTalon
 import com.team4099.robot2026.subsystems.superstructure.feeder.Feeder
 import com.team4099.robot2026.subsystems.superstructure.feeder.FeederIO
 import com.team4099.robot2026.subsystems.superstructure.feeder.FeederIOSim
@@ -107,7 +106,7 @@ object RobotContainer {
       when (Constants.Universal.whoami) {
         Constants.WHOAMI.COMPBOT,
         Constants.WHOAMI.ALPHABOT -> {
-          climb = Climb(ClimbIOTalon)
+          climb = Climb(object : ClimbIO {})
           feeder = Feeder(FeederIOTalonFX)
           hopper = Hopper(HopperIOTalon)
           intake = Intake(IntakeIOTalon)

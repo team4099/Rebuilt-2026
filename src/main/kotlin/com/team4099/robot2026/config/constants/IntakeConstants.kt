@@ -62,7 +62,7 @@ object IntakeConstants {
 
     val CLIMB_ANGLE = PIVOT_MAX_ANGLE
 
-    val FORCE_UP_ANGLE = 105.degrees
+    val FORCE_UP_ANGLE = 80.degrees
     val FORCE_HALFUP_ANGLE = 50.degrees
     val FORCE_HALFDOWN_ANGLE = 20.degrees
     val FORCE_DOWN_ANGLE = -30.degrees

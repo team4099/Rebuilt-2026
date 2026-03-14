@@ -60,7 +60,7 @@ object ShooterConstants {
         0.01.amps / (1.0.radians.perSecond / 1.0.seconds)
 
     val REAL_KS: StaticFeedforward<Ampere> = 10.75.amps
-    val REAL_KV: VelocityFeedforward<Radian, Ampere> = 0.08.amps / 1.radians.perSecond
+    val REAL_KV: VelocityFeedforward<Radian, Ampere> = 0.088.amps / 1.radians.perSecond
     val REAL_KA: AccelerationFeedforward<Radian, Ampere> =
         (MOMENT_OF_INERTIA.inKilogramsMeterSquared /
                 (Constants.MOTOR_CONSTANTS.KRAKENX60FOC_kT / GEAR_RATIO))

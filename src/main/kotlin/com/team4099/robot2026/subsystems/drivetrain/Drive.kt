@@ -119,8 +119,8 @@ class Drive(
           rawGyroRotation.rotation3d,
           lastModulePositions,
           DrivetrainConstants.INITIAL_SIM_POSE,
-        DrivetrainConstants.STATE_STDEVS,
-        VisionConstants.singleTagStdDevs)
+          DrivetrainConstants.STATE_STDEVS,
+          VisionConstants.singleTagStdDevs)
 
   var targetSpeeds = ChassisSpeeds()
     private set
