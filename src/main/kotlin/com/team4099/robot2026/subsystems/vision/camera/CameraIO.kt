@@ -1,6 +1,5 @@
 package com.team4099.robot2026.subsystems.vision.camera
 
-import com.sun.jdi.connect.Connector
 import com.team4099.robot2026.config.constants.FieldConstants
 import com.team4099.robot2026.config.constants.VisionConstants
 import edu.wpi.first.math.Matrix
@@ -46,13 +45,18 @@ interface CameraIO {
   val photonEstimator: PhotonPoseEstimator
 
   fun shouldAcceptPose(
-    chassisSpeeds: ChassisSpeeds,
-    visionPose: Pose3d,
-    ambiguityRating: Double
+      chassisSpeeds: ChassisSpeeds,
+      visionPose: Pose3d,
+      ambiguityRating: Double
   ): Boolean {
     if (ambiguityRating > VisionConstants.AMBIGUITY_THESHOLD) return false
-    if (visionPose.z < VisionConstants.Z_MINIMUM || visionPose.z > VisionConstants.Z_MAXIMUM) return false
-    val outOfFieldBounds = visionPose.x < 0.meters || visionPose.y < 0.meters || visionPose.x > FieldConstants.fieldLength || visionPose.y > FieldConstants.fieldWidth
+    if (visionPose.z < VisionConstants.Z_MINIMUM || visionPose.z > VisionConstants.Z_MAXIMUM)
+        return false
+    val outOfFieldBounds =
+        visionPose.x < 0.meters ||
+            visionPose.y < 0.meters ||
+            visionPose.x > FieldConstants.fieldLength ||
+            visionPose.y > FieldConstants.fieldWidth
 
     if (outOfFieldBounds) return false
 
@@ -158,9 +162,14 @@ interface CameraIO {
               val poseEst = visionEst.get().estimatedPose
               inputs.frame = Pose3d(poseEst)
 
-              val avgAmbiguityAcrossTargets = visionEst.get().targetsUsed.map { it.poseAmbiguity }.toTypedArray().average()
+              val avgAmbiguityAcrossTargets =
+                  visionEst.get().targetsUsed.map { it.poseAmbiguity }.toTypedArray().average()
 
-              inputs.frameAccepted = shouldAcceptPose(drivetrainChassisSpeedsSupplier.get(), inputs.frame, avgAmbiguityAcrossTargets)
+              inputs.frameAccepted =
+                  shouldAcceptPose(
+                      drivetrainChassisSpeedsSupplier.get(),
+                      inputs.frame,
+                      avgAmbiguityAcrossTargets)
 
               if (inputs.frameAccepted) {
                 updateEstimationStdDevs(visionEst, result.getTargets())
