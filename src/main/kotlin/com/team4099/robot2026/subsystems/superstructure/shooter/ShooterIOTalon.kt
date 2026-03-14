@@ -83,8 +83,6 @@ object ShooterIOTalon : ShooterIO {
     configs.CurrentLimits.StatorCurrentLimitEnable = true
     configs.MotorOutput.NeutralMode = NeutralModeValue.Coast
     configs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive
-    configs.TorqueCurrent.PeakReverseTorqueCurrent =
-        ShooterConstants.MAX_REVERSE_TORQUE_CURRENT.inAmperes
 
     leaderTalon.configurator.apply(configs)
     followerTalon.configurator.apply(configs)

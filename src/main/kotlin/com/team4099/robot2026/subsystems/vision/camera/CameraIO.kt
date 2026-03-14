@@ -1,5 +1,6 @@
 package com.team4099.robot2026.subsystems.vision.camera
 
+import com.sun.jdi.connect.Connector
 import com.team4099.robot2026.config.constants.FieldConstants
 import com.team4099.robot2026.config.constants.VisionConstants
 import edu.wpi.first.math.Matrix
@@ -21,11 +22,10 @@ import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Pose3dWPILIB
 import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.kinematics.ChassisSpeeds
-import org.team4099.lib.units.base.inMeters
+import org.team4099.lib.math.hypot
 import org.team4099.lib.units.base.inSeconds
+import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.seconds
-import org.team4099.lib.units.inMetersPerSecond
-import org.team4099.lib.units.inRadiansPerSecond
 
 interface CameraIO {
   enum class DetectionPipeline {
@@ -38,127 +38,42 @@ interface CameraIO {
   val transform: org.team4099.lib.geometry.Transform3d
   val poseMeasurementConsumer: (Pose3dWPILIB?, Double, Matrix<N4?, N1?>) -> Unit
   val drivetrainRotationSupplier: Supplier<Rotation3d>
+  val drivetrainChassisSpeedsSupplier: Supplier<ChassisSpeeds>
 
   val camera: PhotonCamera
   var cameraSim: PhotonCameraSim?
   var curStdDevs: Matrix<N4?, N1?>
   val photonEstimator: PhotonPoseEstimator
 
-  fun calculatePoseAcceptance(
-      chassisSpeeds: ChassisSpeeds,
-      robotPose: Pose3d,
-      fieldBoundaryToleranceMeters: Double = VisionConstants.POSE_FIELD_BOUNDARY_TOLERANCE_METERS,
-      maxLinearSpeedForAcceptanceMetersPerSecond: Double =
-          VisionConstants.POSE_ACCEPTANCE_MAX_LINEAR_SPEED_MPS,
-      maxAngularSpeedForAcceptanceRadPerSec: Double =
-          VisionConstants.POSE_ACCEPTANCE_MAX_ANGULAR_SPEED_RADPS
+  fun shouldAcceptPose(
+    chassisSpeeds: ChassisSpeeds,
+    visionPose: Pose3d,
+    ambiguityRating: Double
   ): Boolean {
-    val xMeters = robotPose.x.inMeters
-    val yMeters = robotPose.y.inMeters
-    val zMeters = robotPose.z.inMeters
+    if (ambiguityRating > VisionConstants.AMBIGUITY_THESHOLD) return false
+    if (visionPose.z < VisionConstants.Z_MINIMUM || visionPose.z > VisionConstants.Z_MAXIMUM) return false
+    val outOfFieldBounds = visionPose.x < 0.meters || visionPose.y < 0.meters || visionPose.x > FieldConstants.fieldLength || visionPose.y > FieldConstants.fieldWidth
 
-    // rejects robot below field z<0
-    if (zMeters < 0.0) return false
+    if (outOfFieldBounds) return false
 
-    val minBound = -fieldBoundaryToleranceMeters
-    val maxX = FieldConstants.fieldLength.inMeters + fieldBoundaryToleranceMeters
-    val maxY = FieldConstants.fieldWidth.inMeters + fieldBoundaryToleranceMeters
-    val insideFieldBounds = xMeters in minBound..maxX && yMeters in minBound..maxY
+    val linearSpeed = hypot(chassisSpeeds.vx, chassisSpeeds.vy)
+    val angularSpeed = chassisSpeeds.omega.absoluteValue
 
-    if (!insideFieldBounds) return false
-
-    val linearSpeed =
-        kotlin.math.hypot(chassisSpeeds.vx.inMetersPerSecond, chassisSpeeds.vy.inMetersPerSecond)
-    val angularSpeed = kotlin.math.abs(chassisSpeeds.omega.inRadiansPerSecond)
-
-    return linearSpeed <= maxLinearSpeedForAcceptanceMetersPerSecond &&
-        angularSpeed <= maxAngularSpeedForAcceptanceRadPerSec
-  }
-
-  fun calculateTagTrustScore(
-      tag: PhotonTrackedTarget,
-      distanceToTarget: Double,
-      robotTTag: org.team4099.lib.geometry.Transform3d,
-      chassisSpeeds: ChassisSpeeds
-  ): Double {
-    // 1. Ambiguity trust (0-1, higher is better)
-    val ambiguityTrust = (1.0 - tag.poseAmbiguity).coerceIn(0.0, 1.0)
-
-    // 2. Distance trust (0-1, closer is better)
-    val distanceTrust =
-        when {
-          distanceToTarget <= 2.0 -> 1.0
-          distanceToTarget <= 4.0 -> 1.0 - ((distanceToTarget - 2.0) / 2.0) * 0.3
-          distanceToTarget <= 6.0 -> 0.7 - ((distanceToTarget - 4.0) / 2.0) * 0.35
-          else -> 0.35
-        }
-
-    // 3. Angle trust
-    val angleToTag = kotlin.math.abs(kotlin.math.atan2(robotTTag.y.inMeters, robotTTag.x.inMeters))
-    val angleTrust =
-        when {
-          angleToTag <= kotlin.math.PI / 6 -> 1.0
-          angleToTag <= kotlin.math.PI / 3 ->
-              1.0 - ((angleToTag - kotlin.math.PI / 6) / (kotlin.math.PI / 6)) * 0.3
-          angleToTag <= kotlin.math.PI / 2 ->
-              0.7 - ((angleToTag - kotlin.math.PI / 3) / (kotlin.math.PI / 6)) * 0.4
-          else -> 0.3
-        }
-
-    // 4. Drivetrain velocity trust (slower is better)
-    val linearVelocity =
-        kotlin.math.hypot(chassisSpeeds.vx.inMetersPerSecond, chassisSpeeds.vy.inMetersPerSecond)
-    val angularVelocity = kotlin.math.abs(chassisSpeeds.omega.inRadiansPerSecond)
-
-    val linearVelocityTrust =
-        when {
-          linearVelocity <= 0.5 -> 1.0
-          linearVelocity <= 2.0 -> 1.0 - ((linearVelocity - 0.5) / 1.5) * 0.4
-          linearVelocity <= 4.0 -> 0.6 - ((linearVelocity - 2.0) / 2.0) * 0.3
-          else -> 0.3
-        }
-
-    val angularVelocityTrust =
-        when {
-          angularVelocity <= 0.5 -> 1.0
-          angularVelocity <= 2.0 -> 1.0 - ((angularVelocity - 0.5) / 1.5) * 0.5
-          angularVelocity <= 4.0 -> 0.5 - ((angularVelocity - 2.0) / 2.0) * 0.35
-          else -> 0.15
-        }
-
-    val velocityTrust =
-        (linearVelocityTrust * VisionConstants.LINEAR_VELOCITY_TRUST_WEIGHT) +
-            (angularVelocityTrust * VisionConstants.ANGULAR_VELOCITY_TRUST_WEIGHT)
-
-    val weightedTrust =
-        (ambiguityTrust * VisionConstants.AMBIGUITY_TRUST_RATING) +
-            (distanceTrust * VisionConstants.DISTANCE_TRUST_RATING) +
-            (angleTrust * VisionConstants.ANGLE_TRUST_RATING) +
-            (velocityTrust * VisionConstants.VELOCITY_TRUST_RATING)
-
-    return weightedTrust.coerceIn(0.0, 1.0)
-  }
-
-  fun calculateTagTrust(
-      tag: PhotonTrackedTarget,
-      distanceToTarget: Double,
-      robotTTag: org.team4099.lib.geometry.Transform3d,
-      chassisSpeeds: ChassisSpeeds,
-      minTrustThreshold: Double = VisionConstants.TAG_TRUST_THRESHOLD
-  ): Boolean {
-    return calculateTagTrustScore(tag, distanceToTarget, robotTTag, chassisSpeeds) >=
-        minTrustThreshold
+    return linearSpeed <= VisionConstants.POSE_ACCEPTANCE_MAX_LINEAR_SPEED &&
+        angularSpeed <= VisionConstants.POSE_ACCEPTANCE_MAX_ANGULAR_SPEED
   }
 
   class CameraInputs : LoggableInputs {
     var timestamp = 0.0.seconds
     var frame: Pose3d = Pose3d()
+    var frameAccepted: Boolean = false
     var cameraTargets = mutableListOf<PhotonTrackedTarget>()
     var indices = 0
 
     override fun toLog(table: LogTable) {
       table.put("timestampSeconds", timestamp.inSeconds)
       table.put("frame", frame.pose3d)
+      table.put("frameAccepted", frameAccepted)
 
       table.put("cameraTargets/indices", cameraTargets.size)
 
@@ -189,6 +104,7 @@ interface CameraIO {
     override fun fromLog(table: LogTable) {
       table.get("timestampSeconds", 0.0).let { timestamp = it.seconds }
       table.get("frame", Pose3dWPILIB()).let { frame = Pose3d(it.get(0)) }
+      table.get("frameAccepted", false).let { frameAccepted = it }
 
       table.get("cameraTargets/indices", 0).let { indices = it }
 
@@ -242,7 +158,15 @@ interface CameraIO {
               val poseEst = visionEst.get().estimatedPose
               inputs.frame = Pose3d(poseEst)
 
-              updateEstimationStdDevs(visionEst, result.getTargets())
+              val avgAmbiguityAcrossTargets = visionEst.get().targetsUsed.map { it.poseAmbiguity }.toTypedArray().average()
+
+              inputs.frameAccepted = shouldAcceptPose(drivetrainChassisSpeedsSupplier.get(), inputs.frame, avgAmbiguityAcrossTargets)
+
+              if (inputs.frameAccepted) {
+                updateEstimationStdDevs(visionEst, result.getTargets())
+
+                poseMeasurementConsumer(poseEst, visionEst.get().timestampSeconds, curStdDevs)
+              }
             }
           }
         }

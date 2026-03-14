@@ -11,7 +11,9 @@ import org.team4099.lib.geometry.Transform3d
 import org.team4099.lib.geometry.Translation3d
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
+import org.team4099.lib.units.centi
 import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.perSecond
 
 object VisionConstants {
   val CONTROLLER_RUMBLE_DIST = 2.25.meters
@@ -19,24 +21,15 @@ object VisionConstants {
   val BLUE_TARGET_TAGS = arrayOf<Int>()
   val RED_TARGET_TAGS = arrayOf<Int>()
 
-  val AMBIGUITY_THESHOLD = 1.0
+  val AMBIGUITY_THESHOLD = .4
   val CONFIDENCE_THRESHOLD = 0.75
   val TAG_TRUST_THRESHOLD = 0.85
 
   // Pose acceptance thresholds
-  val POSE_FIELD_BOUNDARY_TOLERANCE_METERS = 0.10
-  val POSE_ACCEPTANCE_MAX_LINEAR_SPEED_MPS = 6.0
-  val POSE_ACCEPTANCE_MAX_ANGULAR_SPEED_RADPS = 12.0
-
-  // Trust rating weights
-  val AMBIGUITY_TRUST_RATING = 0.45
-  val DISTANCE_TRUST_RATING = 0.35
-  val ANGLE_TRUST_RATING = 0.15
-  val VELOCITY_TRUST_RATING = 0.15
-
-  // Velocity trust
-  val LINEAR_VELOCITY_TRUST_WEIGHT = 0.40
-  val ANGULAR_VELOCITY_TRUST_WEIGHT = 0.60
+  val Z_MINIMUM = -10.centi.meters
+  val Z_MAXIMUM = 8.inches + 10.centi.meters
+  val POSE_ACCEPTANCE_MAX_LINEAR_SPEED = 3.meters.perSecond
+  val POSE_ACCEPTANCE_MAX_ANGULAR_SPEED = 225.degrees.perSecond
 
   val CAMERAS: Map<String, Pair<CameraIO.DetectionPipeline, Transform3d>>
     get() =

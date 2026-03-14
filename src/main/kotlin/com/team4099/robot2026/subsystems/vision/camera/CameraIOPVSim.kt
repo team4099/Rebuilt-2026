@@ -13,6 +13,7 @@ import org.photonvision.simulation.PhotonCameraSim
 import org.photonvision.simulation.SimCameraProperties
 import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.geometry.Transform3d
+import org.team4099.lib.kinematics.ChassisSpeeds
 import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.degrees
@@ -25,7 +26,8 @@ class CameraIOPVSim(
     override val transform: Transform3d,
     override val poseMeasurementConsumer: (Pose3d?, Double, Matrix<N4?, N1?>) -> Unit = { _, _, _ ->
     },
-    override val drivetrainRotationSupplier: Supplier<Rotation3d>
+    override val drivetrainRotationSupplier: Supplier<Rotation3d>,
+    override val drivetrainChassisSpeedsSupplier: Supplier<ChassisSpeeds>
 ) : CameraIO {
   private val cameraProperties: SimCameraProperties = SimCameraProperties()
 
