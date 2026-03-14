@@ -24,7 +24,6 @@ import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import com.team4099.robot2026.subsystems.superstructure.climb.Climb
 import com.team4099.robot2026.subsystems.superstructure.climb.ClimbIO
 import com.team4099.robot2026.subsystems.superstructure.climb.ClimbIOSim
-import com.team4099.robot2026.subsystems.superstructure.climb.ClimbIOTalon
 import com.team4099.robot2026.subsystems.superstructure.feeder.Feeder
 import com.team4099.robot2026.subsystems.superstructure.feeder.FeederIO
 import com.team4099.robot2026.subsystems.superstructure.feeder.FeederIOSim
@@ -50,8 +49,11 @@ import com.team4099.robot2026.subsystems.vision.camera.CameraIOPVSim
 import com.team4099.robot2026.subsystems.vision.camera.CameraIOPhotonvision
 import com.team4099.robot2026.util.driver.Jessika
 import edu.wpi.first.wpilibj.RobotBase
+import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.ConditionalCommand
 import edu.wpi.first.wpilibj2.command.InstantCommand
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
+import edu.wpi.first.wpilibj2.command.WaitCommand
 import org.ironmaple.simulation.SimulatedArena
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.Arena2026Rebuilt
@@ -105,7 +107,7 @@ object RobotContainer {
       when (Constants.Universal.whoami) {
         Constants.WHOAMI.COMPBOT,
         Constants.WHOAMI.ALPHABOT -> {
-          climb = Climb(ClimbIOTalon)
+          climb = Climb(object : ClimbIO {})
           feeder = Feeder(FeederIOTalonFX)
           hopper = Hopper(HopperIOTalon)
           intake = Intake(IntakeIOTalon)
@@ -202,16 +204,40 @@ object RobotContainer {
 
   fun mapTeleopControls() {
     ControlBoard.resetGyro.whileTrue(ResetGyroYawCommand(drivetrain))
+    ControlBoard.forceHome.onTrue(superstructure.requestForceHomeCommand())
+    ControlBoard.unjam.onTrue(superstructure.requestUnjamCommand())
 
     ControlBoard.forceIdle.onTrue(superstructure.requestIdleCommand())
 
     ControlBoard.prepScore.onTrue(superstructure.requestPrepScoreCommand())
     ControlBoard.score.onTrue(superstructure.requestScoreCommand())
 
-    ControlBoard.prepClimb.onTrue(superstructure.requestPrepClimbCommand())
-    //    ControlBoard.climb.onTrue(superstructure.requestClimbCommand())
+    ControlBoard.score.onFalse(
+        ConditionalCommand(superstructure.requestIdleCommand(), InstantCommand()) {
+          superstructure.currentState == Superstructure.Companion.SuperstructureStates.PREP_SCORE ||
+              superstructure.currentState == Superstructure.Companion.SuperstructureStates.SCORE ||
+              superstructure.currentState ==
+                  Superstructure.Companion.SuperstructureStates.SCORE_AND_INTAKE
+        })
+    ControlBoard.manualScore.onTrue(
+        Commands.runOnce({
+          superstructure.overrideShooterVelocity = !superstructure.overrideShooterVelocity
+        }))
+    ControlBoard.defenseMode.onTrue(
+        Commands.runOnce({ superstructure.defenseMode = !superstructure.defenseMode }))
 
-    ControlBoard.intake.onTrue(superstructure.requestIntakeCommand())
+    ControlBoard.prepClimb.onTrue(superstructure.requestPrepClimbCommand())
+    ControlBoard.climb.onTrue(superstructure.requestClimbCommand())
+
+    ControlBoard.intake.onTrue(
+        ConditionalCommand(
+            SequentialCommandGroup(
+                superstructure.runOnce { superstructure.jigglingIntake = true },
+                WaitCommand(0.5),
+                superstructure.runOnce { superstructure.jigglingIntake = false }),
+            superstructure.requestIntakeCommand()) {
+              superstructure.currentState == Superstructure.Companion.SuperstructureStates.INTAKE
+            })
     ControlBoard.forceIntakeFullUp.whileTrue(
         superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_UP_ANGLE))
     ControlBoard.forceIntakeHalfUp.whileTrue(
@@ -220,8 +246,6 @@ object RobotContainer {
         superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFDOWN_ANGLE))
     ControlBoard.forceIntakeFullDown.whileTrue(
         superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_DOWN_ANGLE))
-
-    ControlBoard.eject.onTrue(superstructure.requestEjectCommand())
 
     ControlBoard.score.whileTrue(
         ConditionalCommand(
@@ -233,7 +257,7 @@ object RobotContainer {
                 driver = Jessika(),
             ),
             InstantCommand()) {
-              true
+              !superstructure.overrideShooterVelocity
               //              superstructure.currentState ==
               // Superstructure.Companion.SuperstructureStates.SCORE ||
               //                  superstructure.currentState ==
@@ -258,6 +282,8 @@ object RobotContainer {
             DrivePathOTF.alignClimbBottom(drivetrain), DrivePathOTF.alignClimbTop(drivetrain)) {
               FieldConstants.inClimbLowerHalf(drivetrain.pose)
             })
+
+    ControlBoard.eject.onTrue(superstructure.requestEjectCommand())
   }
 
   fun mapTestControls() {}

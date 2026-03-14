@@ -1,5 +1,5 @@
 {
- "name":"IntakeQuadrantL1",
+ "name":"Sweep",
  "version":2,
  "type":"Swerve",
  "variables":{
@@ -36,12 +36,12 @@
    "val":6.3
   },
   "gearing":{
-   "exp":"5.902777777",
-   "val":5.902777777
+   "exp":"5.90277",
+   "val":5.90277
   },
   "radius":{
-   "exp":"2.027 in",
-   "val":0.0514858
+   "exp":"2.039 in",
+   "val":0.0517906
   },
   "vmax":{
    "exp":"5800 RPM",
@@ -52,8 +52,8 @@
    "val":0.55
   },
   "cof":{
-   "exp":"1.2",
-   "val":1.2
+   "exp":"1.4",
+   "val":1.4
   },
   "bumper":{
    "front":{

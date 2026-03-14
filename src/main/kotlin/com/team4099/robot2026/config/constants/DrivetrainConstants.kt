@@ -3,6 +3,11 @@ package com.team4099.robot2026.config.constants
 import com.team4099.robot2026.subsystems.drivetrain.generated.AlphaBotTunerConstants
 import com.team4099.robot2026.subsystems.drivetrain.generated.CompBotTunerConstants
 import com.team4099.robot2026.subsystems.drivetrain.generated.TestBotTunerConstants
+import com.team4099.robot2026.util.AllianceFlipUtil
+import edu.wpi.first.math.Matrix
+import edu.wpi.first.math.VecBuilder
+import edu.wpi.first.math.numbers.N1
+import edu.wpi.first.math.numbers.N4
 import edu.wpi.first.wpilibj.RobotBase
 import java.util.function.Supplier
 import kotlin.math.sqrt
@@ -50,7 +55,7 @@ object DrivetrainConstants {
     get() =
         when (Constants.Universal.whoami) {
           Constants.WHOAMI.COMPBOT,
-          Constants.WHOAMI.ALPHABOT -> 2.039.inches
+          Constants.WHOAMI.ALPHABOT -> 2.027.inches
           Constants.WHOAMI.TESTBOT -> 1.96.inches
         }
 
@@ -105,17 +110,19 @@ object DrivetrainConstants {
   val CURRENT_COF =
       when (Constants.Universal.whoami) {
         Constants.WHOAMI.COMPBOT,
-        Constants.WHOAMI.ALPHABOT -> MOLDED_TPU_WHEEL_COF
+        Constants.WHOAMI.ALPHABOT -> NITRILE_WHEEL_COF
         Constants.WHOAMI.TESTBOT -> NITRILE_WHEEL_COF
       }
 
   val INITIAL_SIM_POSE = Pose3d(3.meters, 3.meters, 0.meters, Rotation3d()).pose3d
 
+  val STATE_STDEVS: Matrix<N4?, N1?> = VecBuilder.fill(0.003, 0.003, 0.003, 0.002)
+
   object PID {
     val AUTO_POS_KP: ProportionalGain<Meter, Velocity<Meter>>
       get() {
         if (RobotBase.isReal()) {
-          return 2.8.meters.perSecond / 1.0.meters // todo:3.15
+          return 2.5.meters.perSecond / 1.0.meters
         } else {
           return 20.meters.perSecond / 1.0.meters
         }
@@ -133,7 +140,7 @@ object DrivetrainConstants {
     val AUTO_POS_KD: DerivativeGain<Meter, Velocity<Meter>>
       get() {
         if (RobotBase.isReal()) {
-          return (0.6.meters.perSecond / (1.0.meters.perSecond)) // 0.6
+          return (0.5.meters.perSecond / (1.0.meters.perSecond)) // 0.6
               .metersPerSecondPerMetersPerSecond // todo: 0.25
         } else {
           return (0.5.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
@@ -145,10 +152,10 @@ object DrivetrainConstants {
     val LIMELIGHT_THETA_KD =
         (0.1.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
 
-    val AUTO_THETA_PID_KP = (2.5.degrees.perSecond / 1.degrees)
+    val AUTO_THETA_PID_KP = (3.degrees.perSecond / 1.degrees)
     val AUTO_THETA_PID_KI = (0.0.radians.perSecond / (1.radians * 1.seconds))
     val AUTO_THETA_PID_KD =
-        (0.3.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
+        (0.175.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
 
     val SIM_HUB_PID_KP = (6.7.radians.perSecond / 1.radians)
     val SIM_HUB_PID_KI = (0.0.radians.perSecond / (1.radians * 1.seconds))
@@ -160,10 +167,10 @@ object DrivetrainConstants {
     val AUTO_REEF_PID_KD =
         (0.4.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
 
-    val TELEOP_THETA_PID_KP = 8.degrees.perSecond / 1.degrees
+    val TELEOP_THETA_PID_KP = 2.2.degrees.perSecond / 1.degrees
     val TELEOP_THETA_PID_KI = 0.0.degrees.perSecond / (1.degrees * 1.seconds)
     val TELEOP_THETA_PID_KD =
-        (0.1.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
+        (0.2.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
 
     val TELEOP_X_PID_KP = 2.8.meters.perSecond / 1.meters
     val TELEOP_X_PID_KI = 0.0.meters.perSecond / (1.meters * 1.seconds)
@@ -206,7 +213,7 @@ object DrivetrainConstants {
     val DRIVE_KS
       get() =
           when (Constants.Universal.whoami) {
-            Constants.WHOAMI.COMPBOT -> 0.287.volts
+            Constants.WHOAMI.COMPBOT -> 0.29.volts
             Constants.WHOAMI.ALPHABOT -> 0.24069.volts
             Constants.WHOAMI.TESTBOT -> .141.volts
           }
@@ -214,7 +221,7 @@ object DrivetrainConstants {
     val DRIVE_KV: VelocityFeedforward<Meter, Volt>
       get() =
           when (Constants.Universal.whoami) {
-            Constants.WHOAMI.COMPBOT -> 0.784.volts / 1.0.meters.perSecond
+            Constants.WHOAMI.COMPBOT -> 0.76.volts / 1.0.meters.perSecond
             Constants.WHOAMI.ALPHABOT -> 0.74646.volts / 1.0.meters.perSecond
             Constants.WHOAMI.TESTBOT -> 0.718.volts / 1.0.meters.perSecond
           }
@@ -252,12 +259,12 @@ object DrivetrainConstants {
 
     val LEFT_TO_ALLIANCE_1 =
         listOf(
+            Supplier { Pose2d(6.5.meters, 7.4.meters, 180.degrees) },
             Supplier { Pose2d(6.0.meters, 7.4.meters, 180.degrees) },
-            Supplier { Pose2d(4.6.meters, 7.4.meters, 180.degrees) },
         )
     val LEFT_TO_ALLIANCE_2 =
         listOf(
-            Supplier { Pose2d(4.6.meters, 7.4.meters, 180.degrees) },
+            Supplier { Pose2d(6.0.meters, 7.4.meters, 180.degrees) },
             Supplier { Pose2d(3.0.meters, 7.4.meters, 180.degrees) },
         )
     val RIGHT_TO_NEUTRAL_1 =
@@ -272,21 +279,41 @@ object DrivetrainConstants {
         )
     val RIGHT_TO_ALLIANCE_1 =
         listOf(
-            Supplier { Pose2d(6.meters, .63.meters, 180.degrees) },
-            Supplier { Pose2d(4.6.meters, 0.631.meters, 180.degrees) },
+            Supplier { Pose2d(6.5.meters, .63.meters, 180.degrees) },
+            Supplier { Pose2d(6.0.meters, 0.631.meters, 180.degrees) },
         )
     val RIGHT_TO_ALLIANCE_2 =
         listOf(
-            Supplier { Pose2d(4.6.meters, 0.631.meters, 180.degrees) },
+            Supplier { Pose2d(6.0.meters, 0.631.meters, 180.degrees) },
             Supplier { Pose2d(3.0.meters, .63.meters, 180.degrees) },
         )
     val CLIMB_BOTTOM =
         Pair(
-            Supplier { Pose2d(1.195.meters, 2.5.meters, 90.degrees) },
-            Supplier { Pose2d(1.195.meters, 2.95.meters, 90.degrees) })
+            Supplier {
+              Pose2d(
+                  1.23.meters,
+                  2.5.meters,
+                  if (AllianceFlipUtil.shouldFlip()) -90.degrees else 90.degrees)
+            },
+            Supplier {
+              Pose2d(
+                  1.23.meters,
+                  3.02.meters,
+                  if (AllianceFlipUtil.shouldFlip()) -90.degrees else 90.degrees)
+            })
     val CLIMB_TOP =
         Pair(
-            Supplier { Pose2d(.96.meters, 5.meters, -90.degrees) },
-            Supplier { Pose2d(.96.meters, 4.515.meters, -90.degrees) })
+            Supplier {
+              Pose2d(
+                  .98.meters,
+                  5.meters,
+                  if (AllianceFlipUtil.shouldFlip()) 90.degrees else -90.degrees)
+            },
+            Supplier {
+              Pose2d(
+                  .98.meters,
+                  4.515.meters,
+                  if (AllianceFlipUtil.shouldFlip()) 90.degrees else -90.degrees)
+            })
   }
 }

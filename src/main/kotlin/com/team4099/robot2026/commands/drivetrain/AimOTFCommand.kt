@@ -31,12 +31,11 @@ import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inSeconds
-import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.Radian
+import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
-import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.inRotation2ds
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.inMetersPerSecond
@@ -111,14 +110,12 @@ class AimOTFCommand(
 
   private var startedInAuto = false
 
-  var hasAligned: Boolean = false
-
   init {
     thetaPID =
         PIDController(
-            DrivetrainConstants.PID.AUTO_THETA_PID_KP,
-            DrivetrainConstants.PID.AUTO_THETA_PID_KI,
-            DrivetrainConstants.PID.AUTO_THETA_PID_KD)
+            DrivetrainConstants.PID.TELEOP_THETA_PID_KP,
+            DrivetrainConstants.PID.TELEOP_THETA_PID_KI,
+            DrivetrainConstants.PID.TELEOP_THETA_PID_KD)
 
     thetaPID.enableContinuousInput(-PI.radians, PI.radians)
   }
@@ -147,9 +144,7 @@ class AimOTFCommand(
         "FaceHubCommand/wantedPose",
         Pose2d(drivetrain.pose.x, drivetrain.pose.y, wantedRotation).pose2d)
 
-    // Instead of using just angle to check if the robot is aligned, base
-    // error on if the arc length surpasses the inradius of the HUB opening
-    hasAligned = distanceToHub * thetaPID.error.absoluteValue.inRadians < 12.inches
+    hasAligned = thetaPID.error.absoluteValue < 3.degrees
 
     CustomLogger.recordOutput("FaceHubCommand/hasAligned", hasAligned)
 
@@ -179,10 +174,11 @@ class AimOTFCommand(
     }
 
     if (RobotBase.isSimulation() &&
-        hasAligned &&
-        Clock.timestamp.inSeconds % 1 < 0.04 &&
-        RobotContainer.superstructure.currentState ==
-            Superstructure.Companion.SuperstructureStates.SCORE || DriverStation.isAutonomous()) {
+        (hasAligned &&
+            Clock.timestamp.inSeconds % 1 < 0.04 &&
+            RobotContainer.superstructure.currentState ==
+                Superstructure.Companion.SuperstructureStates.SCORE ||
+            DriverStation.isAutonomous())) {
       SimulatedArena.getInstance()
           .addGamePieceProjectile(
               RebuiltFuelOnFly(
@@ -212,5 +208,9 @@ class AimOTFCommand(
     RobotContainer.isAligning = false
 
     CustomLogger.recordOutput("ActiveCommands/FaceHubCommand", false)
+  }
+
+  companion object {
+    var hasAligned: Boolean = false
   }
 }

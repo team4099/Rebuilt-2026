@@ -16,6 +16,7 @@ import com.ctre.phoenix6.BaseStatusSignal
 import com.ctre.phoenix6.CANBus
 import com.ctre.phoenix6.StatusCode
 import com.ctre.phoenix6.StatusSignal
+import com.ctre.phoenix6.configs.GyroTrimConfigs
 import com.ctre.phoenix6.hardware.Pigeon2
 import com.team4099.robot2026.config.constants.DrivetrainConstants
 import edu.wpi.first.units.measure.AngularVelocity
@@ -45,7 +46,8 @@ object GyroIOPigeon2 : GyroIO {
 
   init {
     pigeon.configurator.apply(
-        DrivetrainConstants.tunerConstants.CTREDrivetrainConstants.Pigeon2Configs)
+        DrivetrainConstants.tunerConstants.CTREDrivetrainConstants.Pigeon2Configs.withGyroTrim(
+            GyroTrimConfigs().withGyroScalarZ(-2.684)))
     pigeon.setYaw(0.0)
     roll.setUpdateFrequency(Drive.ODOMETRY_FREQUENCY)
     pitch.setUpdateFrequency(Drive.ODOMETRY_FREQUENCY)

@@ -25,7 +25,7 @@ object DriveCharacterizationCommands {
   private const val FF_START_DELAY = 2.0
   private const val FF_RAMP_RATE = 0.1
   private const val WHEEL_RADIUS_MAX_VELOCITY = 2.0
-  private const val WHEEL_RADIUS_RAMP_RATE = 0.25
+  private const val WHEEL_RADIUS_RAMP_RATE = 0.15
 
   fun feedforwardCharacterization(drive: Drive): Command {
     val velocitySamples = LinkedList<Double>()

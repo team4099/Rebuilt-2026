@@ -9,10 +9,12 @@ import com.team4099.robot2026.subsystems.superstructure.Request
 import com.team4099.robot2026.util.ControlledByStateMachine
 import com.team4099.robot2026.util.CustomLogger
 import com.team4099.robot2026.util.Velocity2d
+import edu.wpi.first.math.MathUtil
 import edu.wpi.first.math.Matrix
 import edu.wpi.first.math.Nat.N1
 import edu.wpi.first.math.Nat.N2
 import edu.wpi.first.math.Vector
+import edu.wpi.first.math.interpolation.InterpolatingTreeMap
 import edu.wpi.first.units.Units.Volts
 import edu.wpi.first.units.measure.Voltage as WPILibVoltage
 import edu.wpi.first.wpilibj.RobotBase
@@ -54,6 +56,8 @@ import org.team4099.lib.units.inMetersPerSecondPerSecond
 import org.team4099.lib.units.inRadiansPerSecond
 import org.team4099.lib.units.inRotationsPerMinute
 import org.team4099.lib.units.inRotationsPerSecond
+import org.team4099.lib.units.max
+import org.team4099.lib.units.min
 import org.team4099.lib.units.perSecond
 
 class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
@@ -225,7 +229,11 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
           if (FieldConstants.inAllianceZone(drivetrainPose)) {
             FieldConstants.HUB_POSE
           } else {
-            FieldConstants.ALLIANCE_ZONE_CENTER
+            if (FieldConstants.inLeft(drivetrainPose)) {
+              FieldConstants.PASSING_LEFT_TARGET
+            } else {
+              FieldConstants.PASSING_RIGHT_TARGET
+            }
           })
     }
 
@@ -423,47 +431,11 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
       // (the slope connecting the robot and the HUB) by the offset the
       // ball would travel in the air.
 
-      val robotTVirt =
-          Vector(
-              Matrix(
-                  N2(),
-                  N1(),
-                  doubleArrayOf(
-                      targetTranslation.x.inMeters -
-                          ballDistanceOffset.get(0) -
-                          drivetrainPose.x.inMeters,
-                      targetTranslation.y.inMeters -
-                          ballDistanceOffset.get(1) -
-                          drivetrainPose.y.inMeters)))
-
-      val robotTShooter =
-          Vector(
-              Matrix(
-                  N2(), N1(), doubleArrayOf(rotatedShooter.x.inMeters, rotatedShooter.y.inMeters)))
-
-      val virtTShooter = robotTVirt.minus(robotTShooter)
-
-      val shooterycos = ShooterConstants.SHOOTER_OFFSET.translation.y * drivetrainPose.rotation.cos
-      val shooterysin = ShooterConstants.SHOOTER_OFFSET.translation.y * drivetrainPose.rotation.sin
-      val shooterxcos = ShooterConstants.SHOOTER_OFFSET.translation.x * drivetrainPose.rotation.cos
-
-      //      val robotTVirtMag = robotTVirt.norm()
-      //      val calculatedAngle = atan2(ShooterConstants.SHOOTER_OFFSET.translation.y.inMeters,
-      // robotTVirtMag - shooterPosition.x.inMeters)
-      //      val angleBetweenVectors =
-      //        if (calculatedAngle.isInfinite()) 90.degrees
-      //        else if (calculatedAngle.isNaN()) 0.degrees
-      //        else calculatedAngle.radians
-      //
-      //      val wantedRot = angleBetweenVectors +
-      //          atan2(
-      //            shooterTTargetY.inMeters - ballDistanceOffset.get(1),
-      //            shooterTTargetX.inMeters - ballDistanceOffset.get(0)
-      //          ).radians
-
       val targetVirt =
           targetTranslation.toTranslation2d() -
               Translation2d(ballDistanceOffset.get(0).meters, ballDistanceOffset.get(1).meters)
+
+      CustomLogger.recordOutput("Shooter/targetVirt", targetVirt.translation2d)
 
       var theta = drivetrainPose.rotation
       for (i in 1..10) {
@@ -497,8 +469,40 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
           theta)
     }
 
+    private val launchVelToShooterMap: InterpolatingTreeMap<LinearVelocity, AngularVelocity> =
+        InterpolatingTreeMap(
+            { startValue, endValue, q ->
+              MathUtil.inverseInterpolate(startValue.value, endValue.value, q.value)
+            },
+            { startValue, endValue, t ->
+              AngularVelocity(MathUtil.interpolate(startValue.value, endValue.value, t))
+            })
+
+    init {
+      launchVelToShooterMap.put(7.06.meters.perSecond, 31.rotations.perSecond)
+      launchVelToShooterMap.put(7.47.meters.perSecond, 33.rotations.perSecond)
+      launchVelToShooterMap.put(7.82.meters.perSecond, 35.5.rotations.perSecond)
+      launchVelToShooterMap.put(7.994.meters.perSecond, 37.rotations.perSecond)
+      //      launchVelToShooterMap.put(8.57.meters.perSecond, 42.rotations.perSecond)
+      launchVelToShooterMap.put(9.3.meters.perSecond, 47.rotations.perSecond)
+      launchVelToShooterMap.put(10.12.meters.perSecond, 52.rotations.perSecond)
+      launchVelToShooterMap.put(11.17.meters.perSecond, 70.rotations.perSecond)
+      //      launchVelToShooterMap.put(8.65.meters.perSecond, 49.5.rotations.perSecond)
+      //      launchVelToShooterMap.put(9.34.meters.perSecond, 50.rotations.perSecond)
+      //      launchVelToShooterMap.put(9.47.meters.perSecond, 55.5.rotations.perSecond)
+      //      launchVelToShooterMap.put(9.80.meters.perSecond, 55.rotations.perSecond)
+      //      launchVelToShooterMap.put(10.44.meters.perSecond, 60.rotations.perSecond)
+    }
+
     fun launchVelToShooterRPM(desiredLaunchVel: LinearVelocity): AngularVelocity {
-      return (6.33884 * desiredLaunchVel.inMetersPerSecond - 13.5).rotations.perSecond
+      if (7.06.meters.perSecond <= desiredLaunchVel && desiredLaunchVel <= 11.17.meters.perSecond) {
+        return launchVelToShooterMap.get(desiredLaunchVel)
+      }
+      return max(
+          ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY,
+          min(
+              (8.93492 * desiredLaunchVel.inMetersPerSecond - 34.1343).rotations.perSecond,
+              ShooterConstants.VELOCITIES.MAXIMUM_LAUNCH_VELCOITY))
     }
   }
 }

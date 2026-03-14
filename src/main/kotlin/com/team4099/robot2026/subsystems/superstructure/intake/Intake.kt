@@ -7,7 +7,6 @@ import com.team4099.robot2026.util.CustomLogger
 import edu.wpi.first.wpilibj.RobotBase
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.ElectricalPotential
-import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.volts
@@ -15,10 +14,13 @@ import org.team4099.lib.units.derived.volts
 class Intake(private val io: IntakeIO) : ControlledByStateMachine() {
   val inputs = IntakeIO.IntakeIOInputs()
 
-  var pivotPositionTarget: Angle = 0.0.degrees
+  var pivotPositionTarget: Angle = IntakeConstants.ANGLES.STOW_ANGLE
     private set
 
   var pivotVoltageTarget: ElectricalPotential = 0.0.volts
+    private set
+
+  var pivotZero: Angle = IntakeConstants.ANGLES.STOW_ANGLE
     private set
 
   var currentState: IntakeState = IntakeState.UNINITIALIZED
@@ -32,7 +34,9 @@ class Intake(private val io: IntakeIO) : ControlledByStateMachine() {
         is Request.IntakeRequest.TargetingPosition -> {
           pivotPositionTarget = value.pivotPosition
         }
-        else -> {}
+        is Request.IntakeRequest.ZeroPivot -> {
+          pivotZero = value.zeroPosition
+        }
       }
       field = value
     }
@@ -85,7 +89,7 @@ class Intake(private val io: IntakeIO) : ControlledByStateMachine() {
         nextState = fromRequestToState(currentRequest)
       }
       IntakeState.ZEROING_PIVOT -> {
-        io.zeroPivot()
+        io.zeroPivot(pivotZero)
         currentRequest = Request.IntakeRequest.OpenLoop(0.volts)
         nextState = fromRequestToState(currentRequest)
       }

@@ -4,7 +4,6 @@ import choreo.trajectory.SwerveSample
 import choreo.trajectory.Trajectory
 import com.team4099.lib.hal.Clock
 import com.team4099.lib.logging.LoggedTunableValue
-import com.team4099.lib.math.asTransform2d
 import com.team4099.lib.trajectory.CustomHolonomicDriveController
 import com.team4099.robot2026.config.constants.DrivetrainConstants
 import com.team4099.robot2026.config.constants.FieldConstants
@@ -22,6 +21,7 @@ import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.kinematics.ChassisSpeeds
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Meter
+import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
@@ -47,7 +47,9 @@ class FollowChoreoPath(
     val drivetrain: Drive,
     val trajectory: Trajectory<SwerveSample>,
     val overrideRotationTrigger: Supplier<Boolean> = Supplier { false },
-    val flipVertically: Boolean = false
+    val flipVertically: Boolean = false,
+    val interruptAtTimeout: Boolean = false,
+    val extraTime: Time = 0.seconds
 ) : Command() {
 
   private val xPID: PIDController<Meter, Velocity<Meter>>
@@ -118,7 +120,7 @@ class FollowChoreoPath(
         CustomHolonomicDriveController(
             xPID.wpiPidController, yPID.wpiPidController, thetaPID.wpiPidController)
 
-    swerveDriveController.setTolerance(Pose2d(2.5.inches, 2.5.inches, 10.degrees).pose2d)
+    swerveDriveController.setTolerance(Pose2d(2.5.inches, 2.5.inches, 5.degrees).pose2d)
   }
 
   override fun initialize() {
@@ -162,13 +164,21 @@ class FollowChoreoPath(
   }
 
   private fun atSetpoint(): Boolean {
-    val posediff = drivetrain.pose.toPose2d().relativeTo(finalPose)
+    val posediff = drivetrain.pose.toPose2d().minus(finalPose)
 
-    CustomLogger.recordOutput("FollowChoreoPath/poseDiff", posediff.asTransform2d().transform2d)
+    CustomLogger.recordOutput("FollowChoreoPath/poseDiff", posediff.transform2d)
 
-    return posediff.x.absoluteValue < 2.inches &&
-        posediff.y.absoluteValue < 2.inches &&
-        posediff.rotation.absoluteValue < 4.degrees
+    CustomLogger.recordOutput(
+        "FollowChoreoPath/poseDiffX", posediff.translation.x.absoluteValue < 3.inches)
+    CustomLogger.recordOutput(
+        "FollowChoreoPath/poseDiffY", posediff.translation.y.absoluteValue < 3.inches)
+    CustomLogger.recordOutput(
+        "FollowChoreoPath/poseDiffRot", posediff.rotation.absoluteValue < 5.degrees)
+
+    return posediff.translation.x.absoluteValue < 3.inches &&
+        posediff.translation.y.absoluteValue < 3.inches &&
+        (posediff.rotation.absoluteValue < 5.degrees ||
+            posediff.rotation.absoluteValue > 355.degrees)
   }
 
   fun applyFlip(pose: Pose2d): Pose2d {
@@ -177,11 +187,12 @@ class FollowChoreoPath(
   }
 
   override fun isFinished(): Boolean {
-    return Clock.timestamp - trajStartTime > trajectory.totalTime.seconds && atSetpoint() ||
-        !DriverStation.isAutonomous()
+    val timedOut = Clock.timestamp - trajStartTime > trajectory.totalTime.seconds + extraTime
+    return timedOut && (interruptAtTimeout || atSetpoint()) || !DriverStation.isAutonomous()
   }
 
   override fun end(interrupted: Boolean) {
+    trajStartTime = 0.seconds
     CustomLogger.recordDebugOutput("ActiveCommands/FollowChoreoPath", false)
     drivetrain.runSpeeds(ChassisSpeeds())
   }

@@ -1,5 +1,5 @@
 {
- "name":"IntakeQuadrantL1",
+ "name":"tune_big_circle",
  "version":2,
  "type":"Swerve",
  "variables":{
@@ -28,16 +28,16 @@
    }
   },
   "mass":{
-   "exp":"120 lbs",
-   "val":54.4310844
+   "exp":"125 lbs",
+   "val":56.69904625
   },
   "inertia":{
    "exp":"6.3 kg m ^ 2",
    "val":6.3
   },
   "gearing":{
-   "exp":"5.902777777",
-   "val":5.902777777
+   "exp":"5.902777",
+   "val":5.902777
   },
   "radius":{
    "exp":"2.027 in",
@@ -57,16 +57,16 @@
   },
   "bumper":{
    "front":{
-    "exp":"17.25 in",
-    "val":0.43815
+    "exp":"17.75 in",
+    "val":0.45085
    },
    "side":{
-    "exp":"17 in",
-    "val":0.4318
+    "exp":"18 in",
+    "val":0.4572
    },
    "back":{
-    "exp":"17.25 in",
-    "val":0.43815
+    "exp":"17.75 in",
+    "val":0.45085
    }
   },
   "differentialTrackWidth":{
@@ -76,7 +76,7 @@
  },
  "generationFeatures":[],
  "codegen":{
-  "root":null,
+  "root":"..\\C:\\Users\\Dell\\IdeaProjects\\Rebuilt-2026\\src\\main\\deploy\\choreo\\Test",
   "genVars":true,
   "genTrajData":true,
   "useChoreoLib":true

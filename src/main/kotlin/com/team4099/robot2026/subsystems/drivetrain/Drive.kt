@@ -22,6 +22,8 @@ import com.pathplanner.lib.util.PathPlannerLogging
 import com.team4099.lib.hal.Clock
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.DrivetrainConstants
+import com.team4099.robot2026.config.constants.FieldConstants
+import com.team4099.robot2026.config.constants.VisionConstants
 import com.team4099.robot2026.util.AllianceFlipUtil
 import com.team4099.robot2026.util.CustomLogger
 import com.team4099.robot2026.util.Velocity2d
@@ -116,7 +118,9 @@ class Drive(
           kinematics,
           rawGyroRotation.rotation3d,
           lastModulePositions,
-          DrivetrainConstants.INITIAL_SIM_POSE)
+          DrivetrainConstants.INITIAL_SIM_POSE,
+          DrivetrainConstants.STATE_STDEVS,
+          VisionConstants.singleTagStdDevs)
 
   var targetSpeeds = ChassisSpeeds()
     private set
@@ -242,6 +246,10 @@ class Drive(
     CustomLogger.recordOutput("SwerveChassisSpeeds/Measured", chassisSpeeds.chassisSpeedsWPILIB)
 
     Logger.recordOutput("SwerveStates/Measured", *moduleStates)
+
+    CustomLogger.recordOutput("Odometry/inAllianceZone", FieldConstants.inAllianceZone(pose))
+    CustomLogger.recordOutput(
+        "Odometry/inTrenchAllianceZone", FieldConstants.inTrenchAllianceZone(pose))
 
     CustomLogger.recordOutput(
         "LoggedRobot/Subsystems/DriveLoopTimeMS", (Clock.epochTime - startTime).inMilliseconds)

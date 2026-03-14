@@ -1,6 +1,8 @@
 package com.team4099.robot2026.subsystems.superstructure
 
 import com.team4099.lib.hal.Clock
+import com.team4099.robot2026.RobotContainer
+import com.team4099.robot2026.commands.drivetrain.AimOTFCommand
 import com.team4099.robot2026.config.constants.ClimbConstants
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.FeederConstants
@@ -22,9 +24,8 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
-import org.team4099.lib.geometry.Rotation3d
-import org.team4099.lib.geometry.Transform3d
 import org.team4099.lib.units.AngularVelocity
+import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.derived.Angle
@@ -51,14 +52,21 @@ class Superstructure(
   val launchData: Shooter.Companion.CalculatedLaunchData
     get() = Shooter.calculateLaunchData(drivetrain.pose.toPose2d(), drivetrain.chassisSpeeds)
 
-  inline val shooterTargetRPM: AngularVelocity
+  var overrideShooterVelocity = false
+  var defenseMode = false
+
+  val shooterTargetRPM: AngularVelocity
     get() {
-      return max(
-          Shooter.launchVelToShooterRPM(launchData.launchVelocity),
-          ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY)
+      return if (overrideShooterVelocity) ShooterConstants.VELOCITIES.MANUAL_SHOOTING
+      else
+          max(
+              Shooter.launchVelToShooterRPM(launchData.launchVelocity),
+              ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY)
     }
 
   val field = Field2d()
+
+  var jigglingIntake = false
 
   init {
     SmartDashboard.putData("Field", field)
@@ -103,15 +111,13 @@ class Superstructure(
         (Clock.epochTime - shooterStartTime).inMilliseconds)
 
     field.robotPose = drivetrain.pose.toPose2d().pose2d
-    field.getObject("FUEL").poses =
-        vision.objectsDetected[0].map {
-          drivetrain.pose.transformBy(Transform3d(it, Rotation3d())).toPose2d().pose2d
-        }
 
     var nextState = currentState
 
     CustomLogger.recordOutput("Superstructure/currentState", currentState)
     CustomLogger.recordOutput("Superstructure/currentRequest", currentRequest.javaClass.simpleName)
+    CustomLogger.recordOutput("Superstructure/overrideShooterVelocity", overrideShooterVelocity)
+    CustomLogger.recordOutput("Superstructure/defenseMode", defenseMode)
 
     when (currentState) {
       SuperstructureStates.UNINITALIZED -> {
@@ -147,13 +153,17 @@ class Superstructure(
         feeder.currentRequest = Request.FeederRequest.Idle()
         hopper.currentRequest = Request.HopperRequest.Idle()
         intake.currentRequest =
-            Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.IDLE_ANGLE)
+            Request.IntakeRequest.TargetingPosition(
+                if (!defenseMode) IntakeConstants.ANGLES.IDLE_ANGLE
+                else IntakeConstants.ANGLES.STOW_ANGLE)
         intakeRollers.currentRequest =
             Request.RollersRequest.OpenLoop(RollersConstants.IDLE_VOLTAGE)
         shooter.currentRequest = Request.ShooterRequest.Idle()
 
         nextState =
             when (currentRequest) {
+              is SuperstructureRequest.ForceHome -> SuperstructureStates.FORCE_HOME
+              is SuperstructureRequest.Unjam -> SuperstructureStates.UNJAM
               is SuperstructureRequest.ExtendClimb -> SuperstructureStates.PREP_CLIMB
               is SuperstructureRequest.PrepScore -> SuperstructureStates.PREP_SCORE
               is SuperstructureRequest.Score -> SuperstructureStates.SCORE
@@ -162,11 +172,50 @@ class Superstructure(
               else -> currentState
             }
       }
-      SuperstructureStates.PREP_SCORE -> {
-        shooter.currentRequest = Request.ShooterRequest.TargetVelocity(shooterTargetRPM)
+      SuperstructureStates.UNJAM -> {
+        intake.currentRequest =
+            Request.IntakeRequest.TargetingPosition(IntakeConstants.PIVOT_MIN_ANGLE)
+        hopper.currentRequest = Request.HopperRequest.OpenLoop(HopperConstants.UNJAM_VOLTAGE)
+        feeder.currentRequest = Request.FeederRequest.OpenLoop(FeederConstants.UNJAM_VOLTAGE)
+
+        when (currentRequest) {
+          is SuperstructureRequest.Idle,
+          is SuperstructureRequest.PrepScore,
+          is SuperstructureRequest.Score,
+          is SuperstructureRequest.Intake -> nextState = SuperstructureStates.IDLE
+          else -> {}
+        }
+      }
+      SuperstructureStates.FORCE_HOME -> {
+        intake.currentRequest =
+            Request.IntakeRequest.OpenLoop(IntakeConstants.FORCE_HOME_INTAKE_VOLTAGE)
+
+        if (currentRequest is SuperstructureRequest.Idle ||
+            currentRequest is SuperstructureRequest.Intake ||
+            currentRequest is SuperstructureRequest.PrepScore ||
+            currentRequest is SuperstructureRequest.Score)
+            intake.currentRequest =
+                Request.IntakeRequest.ZeroPivot(IntakeConstants.ANGLES.RESET_INTAKE_ANGLE)
 
         when (currentRequest) {
           is SuperstructureRequest.Idle -> nextState = SuperstructureStates.IDLE
+          is SuperstructureRequest.Intake -> nextState = SuperstructureStates.INTAKE
+          is SuperstructureRequest.PrepScore -> nextState = SuperstructureStates.PREP_SCORE
+          is SuperstructureRequest.Score -> nextState = SuperstructureStates.SCORE
+          else -> {}
+        }
+      }
+      SuperstructureStates.PREP_SCORE -> {
+        shooter.currentRequest = Request.ShooterRequest.TargetVelocity(shooterTargetRPM)
+        hopper.currentRequest = Request.HopperRequest.Idle()
+        feeder.currentRequest = Request.FeederRequest.Idle()
+        intakeRollers.currentRequest =
+            Request.RollersRequest.OpenLoop(RollersConstants.IDLE_VOLTAGE)
+
+        when (currentRequest) {
+          is SuperstructureRequest.Idle -> nextState = SuperstructureStates.IDLE
+          is SuperstructureRequest.Intake -> nextState = SuperstructureStates.INTAKE
+          is SuperstructureRequest.ExtendClimb -> nextState = SuperstructureStates.PREP_CLIMB
           is SuperstructureRequest.Score -> {
             if (shooter.isAtTargetedVelocity) {
               nextState = SuperstructureStates.SCORE
@@ -178,31 +227,70 @@ class Superstructure(
       SuperstructureStates.SCORE -> {
         shooter.currentRequest = Request.ShooterRequest.TargetVelocity(shooterTargetRPM)
 
-        if (shooter.isAtTargetedVelocity) {
-          feeder.currentRequest =
-              Request.FeederRequest.TargetVelocity(FeederConstants.SCORE_VELOCITY)
-          hopper.currentRequest =
-              Request.HopperRequest.TargetVelocity(HopperConstants.VELOCITIES.SCORE_VELOCITY)
+        if (shooter.isAtTargetedVelocity &&
+            (AimOTFCommand.hasAligned || !RobotContainer.isAligning || overrideShooterVelocity)) {
+          feeder.currentRequest = Request.FeederRequest.OpenLoop(FeederConstants.SCORE_VOLTAGE)
+          hopper.currentRequest = Request.HopperRequest.OpenLoop(HopperConstants.SCORE_VOLTAGE)
           intakeRollers.currentRequest =
               Request.RollersRequest.OpenLoop(RollersConstants.SCORE_ASSISTING_VOLTAGE)
         }
 
         when (currentRequest) {
           is SuperstructureRequest.Idle -> nextState = SuperstructureStates.IDLE
+          is SuperstructureRequest.Intake -> nextState = SuperstructureStates.IDLE
+          is SuperstructureRequest.ExtendClimb -> nextState = SuperstructureStates.PREP_CLIMB
+          else -> {}
+        }
+      }
+      SuperstructureStates.SCORE_AND_INTAKE -> {
+        intake.currentRequest =
+            Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.INTAKE_ANGLE)
+        intakeRollers.currentRequest =
+            Request.RollersRequest.OpenLoop(RollersConstants.INTAKE_VOLTAGE)
+        shooter.currentRequest = Request.ShooterRequest.TargetVelocity(shooterTargetRPM)
+
+        if (shooter.isAtTargetedVelocity &&
+            (AimOTFCommand.hasAligned || !RobotContainer.isAligning || overrideShooterVelocity)) {
+          feeder.currentRequest = Request.FeederRequest.OpenLoop(FeederConstants.SCORE_VOLTAGE)
+          hopper.currentRequest = Request.HopperRequest.OpenLoop(HopperConstants.SCORE_VOLTAGE)
+        }
+
+        when (currentRequest) {
+          is SuperstructureRequest.Idle -> nextState = SuperstructureStates.IDLE
+          is SuperstructureRequest.ExtendClimb -> nextState = SuperstructureStates.PREP_CLIMB
           else -> {}
         }
       }
       SuperstructureStates.INTAKE -> {
+        shooter.currentRequest = Request.ShooterRequest.Idle()
+        hopper.currentRequest = Request.HopperRequest.Idle()
+        feeder.currentRequest = Request.FeederRequest.Idle()
         intakeRollers.currentRequest =
             Request.RollersRequest.OpenLoop(RollersConstants.INTAKE_VOLTAGE)
         intake.currentRequest =
-            Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.INTAKE_ANGLE)
+            Request.IntakeRequest.TargetingPosition(
+                if (jigglingIntake) IntakeConstants.ANGLES.INTAKING_JIGGLE_ANGLE
+                else IntakeConstants.ANGLES.INTAKE_ANGLE)
 
-        if (currentRequest is SuperstructureRequest.Idle) nextState = SuperstructureStates.IDLE
+        when (currentRequest) {
+          is SuperstructureRequest.Idle -> nextState = SuperstructureStates.IDLE
+          is SuperstructureRequest.PrepScore -> nextState = SuperstructureStates.PREP_SCORE
+          is SuperstructureRequest.Score -> nextState = SuperstructureStates.SCORE
+          is SuperstructureRequest.Eject -> nextState = SuperstructureStates.EJECT
+          is SuperstructureRequest.ExtendClimb -> nextState = SuperstructureStates.PREP_CLIMB
+          else -> {}
+        }
       }
       SuperstructureStates.PREP_CLIMB -> {
+        shooter.currentRequest = Request.ShooterRequest.Idle()
+        hopper.currentRequest = Request.HopperRequest.Idle()
+        feeder.currentRequest = Request.FeederRequest.Idle()
+        intakeRollers.currentRequest =
+            Request.RollersRequest.OpenLoop(RollersConstants.IDLE_VOLTAGE)
         climb.currentRequest =
-            Request.ClimbRequest.TargetingPosition(ClimbConstants.UPWARDS_EXTENSION_LIMIT)
+            Request.ClimbRequest.TargetingPosition(ClimbConstants.PREP_CLIMB_HEIGHT)
+        intake.currentRequest =
+            Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.CLIMB_ANGLE)
 
         when (currentRequest) {
           is SuperstructureRequest.Idle -> {
@@ -218,21 +306,26 @@ class Superstructure(
       }
       SuperstructureStates.CLIMB -> {
         climb.currentRequest = Request.ClimbRequest.TargetingPosition(ClimbConstants.CLIMB_HEIGHT)
+        intake.currentRequest =
+            Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.CLIMB_ANGLE)
+
         when (currentRequest) {
           is SuperstructureRequest.ExtendClimb -> nextState = SuperstructureStates.PREP_CLIMB
           else -> {}
         }
       }
       SuperstructureStates.EJECT -> {
-        // If intake pivot is above EJECT_ANGLE, we can consider it to be stowed enough to be unable
-        // to eject
-        if (intake.inputs.position > IntakeConstants.ANGLES.EJECT_ANGLE) {
-          intake.currentRequest =
-              Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.INTAKE_ANGLE)
-        }
-
+        intake.currentRequest =
+            Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.EJECT_ANGLE)
         intakeRollers.currentRequest =
             Request.RollersRequest.OpenLoop(RollersConstants.EJECT_VOLTAGE)
+
+        when (currentRequest) {
+          is SuperstructureRequest.Idle -> nextState = SuperstructureStates.IDLE
+          is SuperstructureRequest.Intake -> nextState = SuperstructureStates.INTAKE
+          is SuperstructureRequest.ExtendClimb -> nextState = SuperstructureStates.PREP_CLIMB
+          else -> {}
+        }
       }
     }
 
@@ -247,6 +340,18 @@ class Superstructure(
   fun requestIdleCommand(): Command {
     val returnCommand = runOnce { currentRequest = SuperstructureRequest.Idle() }
     returnCommand.name = "RequestIdleCommand"
+    return returnCommand
+  }
+
+  fun requestForceHomeCommand(): Command {
+    val returnCommand = runOnce { currentRequest = SuperstructureRequest.ForceHome() }
+    returnCommand.name = "RequestForceHomeCommand"
+    return returnCommand
+  }
+
+  fun requestUnjamCommand(): Command {
+    val returnCommand = runOnce { currentRequest = SuperstructureRequest.Unjam() }
+    returnCommand.name = "RequestUnjamCommand"
     return returnCommand
   }
 
@@ -289,6 +394,15 @@ class Superstructure(
     return returnCommand
   }
 
+  fun requestForceClimbCommand(wantedPosition: Length): Command {
+    val returnCommand = runOnce {
+      climb.currentRequest = Request.ClimbRequest.TargetingPosition(wantedPosition)
+    }
+
+    returnCommand.name = "RequestForceClimbCommand"
+    return returnCommand
+  }
+
   fun requestEjectCommand(): Command {
     val returnCommand = runOnce { currentRequest = SuperstructureRequest.Eject() }
     returnCommand.name = "RequestEjectCommand"
@@ -300,8 +414,11 @@ class Superstructure(
       UNINITALIZED,
       TUNING,
       IDLE,
+      UNJAM,
+      FORCE_HOME,
       PREP_SCORE,
       SCORE,
+      SCORE_AND_INTAKE,
       INTAKE,
       PREP_CLIMB,
       CLIMB,
