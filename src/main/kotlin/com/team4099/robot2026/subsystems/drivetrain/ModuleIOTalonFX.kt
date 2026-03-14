@@ -210,6 +210,7 @@ abstract class ModuleIOTalonFX(
     turnTalon.setControl(positionVoltageRequest.withPosition(rotation.rotations))
   }
 
+  @Deprecated("configurator call lowkey dont be working - nathan")
   override fun toggleBrakeMode(brake: NeutralModeValue) {
     driveTalon.configurator.apply(
         constants.DriveMotorInitialConfigs!!.MotorOutput.withNeutralMode(brake))
