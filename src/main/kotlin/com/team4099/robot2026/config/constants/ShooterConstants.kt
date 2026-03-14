@@ -39,14 +39,13 @@ object ShooterConstants {
   val MOMENT_OF_INERTIA = 0.0035914.kilo.grams.meterSquared
 
   val MAX_ACCELERATION: AngularAcceleration = 1000.rotations.perSecond.perSecond
-  val MAX_REVERSE_TORQUE_CURRENT = 0.amps
 
   val SHOOTER_TOLERANCE =
       if (Constants.Tuning.TUNING_MODE) 150.rotations.perMinute else 75.0.rotations.perMinute
 
   object VELOCITIES {
     val MINIMUM_LAUNCH_VELOCITY = 25.rotations.perSecond
-    val MAXIMUM_LAUNCH_VELCOITY = 85.rotations.perSecond
+    val MAXIMUM_LAUNCH_VELOCITY = 85.rotations.perSecond
     val IDLE_VELOCITY =
         if (Constants.Tuning.TUNING_MODE) 0.rotations.perSecond else .5.rotations.perSecond
     val MANUAL_SHOOTING = 2800.rotations.perMinute
@@ -57,7 +56,7 @@ object ShooterConstants {
     val REAL_KI: IntegralGain<Velocity<Radian>, Ampere> =
         0.0.amps / (1.0.radians.perSecond * 1.0.seconds)
     val REAL_KD: DerivativeGain<Velocity<Radian>, Ampere> =
-        0.01.amps / (1.0.radians.perSecond / 1.0.seconds)
+        0.0.amps / (1.0.radians.perSecond / 1.0.seconds)
 
     val REAL_KS: StaticFeedforward<Ampere> = 10.75.amps
     val REAL_KV: VelocityFeedforward<Radian, Ampere> = 0.088.amps / 1.radians.perSecond

@@ -1,7 +1,6 @@
 package com.team4099.robot2026
 
 import com.ctre.phoenix6.SignalLogger
-import com.ctre.phoenix6.signals.NeutralModeValue
 import com.pathplanner.lib.commands.FollowPathCommand
 import com.team4099.lib.hal.Clock
 import com.team4099.robot2026.auto.AutonomousSelector

@@ -98,7 +98,8 @@ object RobotContainer {
                         it.key,
                         it.value.second,
                         drivetrain::addVisionMeasurement,
-                        { drivetrain.rotation })
+                        { drivetrain.rotation },
+                        { drivetrain.chassisSpeeds })
                   }
                   .toTypedArray(),
               poseSupplier = { drivetrain.pose })
@@ -155,7 +156,8 @@ object RobotContainer {
                             it.key,
                             it.value.second,
                             drivetrain::addVisionMeasurement,
-                            { drivetrain.rotation })
+                            { drivetrain.rotation },
+                            { drivetrain.chassisSpeeds })
                       }
                       .toTypedArray(),
                   poseSupplier = { drivetrain.pose })

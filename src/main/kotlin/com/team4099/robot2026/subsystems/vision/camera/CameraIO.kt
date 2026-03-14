@@ -1,5 +1,6 @@
 package com.team4099.robot2026.subsystems.vision.camera
 
+import com.team4099.robot2026.config.constants.FieldConstants
 import com.team4099.robot2026.config.constants.VisionConstants
 import edu.wpi.first.math.Matrix
 import edu.wpi.first.math.VecBuilder
@@ -19,7 +20,10 @@ import org.photonvision.targeting.PhotonTrackedTarget
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Pose3dWPILIB
 import org.team4099.lib.geometry.Rotation3d
+import org.team4099.lib.kinematics.ChassisSpeeds
+import org.team4099.lib.math.hypot
 import org.team4099.lib.units.base.inSeconds
+import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.seconds
 
 interface CameraIO {
@@ -33,21 +37,47 @@ interface CameraIO {
   val transform: org.team4099.lib.geometry.Transform3d
   val poseMeasurementConsumer: (Pose3dWPILIB?, Double, Matrix<N4?, N1?>) -> Unit
   val drivetrainRotationSupplier: Supplier<Rotation3d>
+  val drivetrainChassisSpeedsSupplier: Supplier<ChassisSpeeds>
 
   val camera: PhotonCamera
   var cameraSim: PhotonCameraSim?
   var curStdDevs: Matrix<N4?, N1?>
   val photonEstimator: PhotonPoseEstimator
 
+  fun shouldAcceptPose(
+      chassisSpeeds: ChassisSpeeds,
+      visionPose: Pose3d,
+      ambiguityRating: Double
+  ): Boolean {
+    if (ambiguityRating > VisionConstants.AMBIGUITY_THESHOLD) return false
+    if (visionPose.z < VisionConstants.Z_MINIMUM || visionPose.z > VisionConstants.Z_MAXIMUM)
+        return false
+    val outOfFieldBounds =
+        visionPose.x < 0.meters ||
+            visionPose.y < 0.meters ||
+            visionPose.x > FieldConstants.fieldLength ||
+            visionPose.y > FieldConstants.fieldWidth
+
+    if (outOfFieldBounds) return false
+
+    val linearSpeed = hypot(chassisSpeeds.vx, chassisSpeeds.vy)
+    val angularSpeed = chassisSpeeds.omega.absoluteValue
+
+    return linearSpeed <= VisionConstants.POSE_ACCEPTANCE_MAX_LINEAR_SPEED &&
+        angularSpeed <= VisionConstants.POSE_ACCEPTANCE_MAX_ANGULAR_SPEED
+  }
+
   class CameraInputs : LoggableInputs {
     var timestamp = 0.0.seconds
     var frame: Pose3d = Pose3d()
+    var frameAccepted: Boolean = false
     var cameraTargets = mutableListOf<PhotonTrackedTarget>()
     var indices = 0
 
     override fun toLog(table: LogTable) {
       table.put("timestampSeconds", timestamp.inSeconds)
       table.put("frame", frame.pose3d)
+      table.put("frameAccepted", frameAccepted)
 
       table.put("cameraTargets/indices", cameraTargets.size)
 
@@ -78,6 +108,7 @@ interface CameraIO {
     override fun fromLog(table: LogTable) {
       table.get("timestampSeconds", 0.0).let { timestamp = it.seconds }
       table.get("frame", Pose3dWPILIB()).let { frame = Pose3d(it.get(0)) }
+      table.get("frameAccepted", false).let { frameAccepted = it }
 
       table.get("cameraTargets/indices", 0).let { indices = it }
 
@@ -131,9 +162,20 @@ interface CameraIO {
               val poseEst = visionEst.get().estimatedPose
               inputs.frame = Pose3d(poseEst)
 
-              updateEstimationStdDevs(visionEst, result.getTargets())
+              val avgAmbiguityAcrossTargets =
+                  visionEst.get().targetsUsed.map { it.poseAmbiguity }.toTypedArray().average()
 
-              poseMeasurementConsumer(poseEst, visionEst.get().timestampSeconds, curStdDevs)
+              inputs.frameAccepted =
+                  shouldAcceptPose(
+                      drivetrainChassisSpeedsSupplier.get(),
+                      inputs.frame,
+                      avgAmbiguityAcrossTargets)
+
+              if (inputs.frameAccepted) {
+                updateEstimationStdDevs(visionEst, result.getTargets())
+
+                poseMeasurementConsumer(poseEst, visionEst.get().timestampSeconds, curStdDevs)
+              }
             }
           }
         }
