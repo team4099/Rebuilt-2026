@@ -52,7 +52,7 @@ object ShooterConstants {
   }
 
   object PID {
-    val REAL_KP: ProportionalGain<Velocity<Radian>, Ampere> = 7.amps / 1.0.radians.perSecond
+    val REAL_KP: ProportionalGain<Velocity<Radian>, Ampere> = 9.amps / 1.0.radians.perSecond
     val REAL_KI: IntegralGain<Velocity<Radian>, Ampere> =
         0.0.amps / (1.0.radians.perSecond * 1.0.seconds)
     val REAL_KD: DerivativeGain<Velocity<Radian>, Ampere> =

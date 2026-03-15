@@ -5,6 +5,7 @@ import com.team4099.robot2026.auto.AutonomousSelector
 import com.team4099.robot2026.commands.drivetrain.AimOTFCommand
 import com.team4099.robot2026.commands.drivetrain.DrivePathOTF
 import com.team4099.robot2026.commands.drivetrain.ResetGyroYawCommand
+import com.team4099.robot2026.commands.drivetrain.TargetAngleCommand
 import com.team4099.robot2026.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2026.config.ControlBoard
 import com.team4099.robot2026.config.constants.Constants
@@ -47,11 +48,13 @@ import com.team4099.robot2026.subsystems.superstructure.shooter.ShooterIOTalon
 import com.team4099.robot2026.subsystems.vision.Vision
 import com.team4099.robot2026.subsystems.vision.camera.CameraIOPVSim
 import com.team4099.robot2026.subsystems.vision.camera.CameraIOPhotonvision
+import com.team4099.robot2026.util.AllianceFlipUtil
 import com.team4099.robot2026.util.driver.Jessika
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.ConditionalCommand
 import edu.wpi.first.wpilibj2.command.InstantCommand
+import edu.wpi.first.wpilibj2.command.RepeatCommand
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.WaitCommand
 import org.ironmaple.simulation.SimulatedArena
@@ -61,6 +64,11 @@ import org.littletonrobotics.junction.Logger
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.smoothDeadband
+import org.team4099.lib.units.base.inMeters
+import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.inDegrees
+import org.team4099.lib.units.max
+import org.team4099.lib.units.min
 
 object RobotContainer {
   private val drivetrain: Drive
@@ -76,6 +84,8 @@ object RobotContainer {
 
   var driveSimulation: SwerveDriveSimulation? = null
   var isAligning = false
+
+  var intakeOverridingAngle = IntakeConstants.ANGLES.IDLE_ANGLE
 
   init {
     SimulatedArena.overrideInstance(Arena2026Rebuilt(false))
@@ -239,13 +249,40 @@ object RobotContainer {
               superstructure.currentState == Superstructure.Companion.SuperstructureStates.INTAKE
             })
     ControlBoard.forceIntakeFullUp.whileTrue(
-        superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_UP_ANGLE))
-    ControlBoard.forceIntakeHalfUp.whileTrue(
-        superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE))
-    ControlBoard.forceIntakeHalfDown.whileTrue(
-        superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFDOWN_ANGLE))
+      RepeatCommand(
+        SequentialCommandGroup(
+          Commands.runOnce({ intakeOverridingAngle =
+            min(IntakeConstants.PIVOT_MAX_ANGLE, intakeOverridingAngle + 10.degrees)
+          }),
+          superstructure.requestForceIntakeCommand(intakeOverridingAngle),
+          WaitCommand(0.1)
+        )
+      ))
+//    ControlBoard.forceIntakeHalfUp.whileTrue(
+    ControlBoard.rotateTrench.whileTrue(TargetAngleCommand(Jessika(),{ ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+      { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) }, { ControlBoard.turn.smoothDeadband(
+        Constants.Joysticks.TURN_DEADBAND) },
+      { ControlBoard.slowMode },drivetrain,
+      { if (FieldConstants.inTrenchAllianceZone(drivetrain.pose) && !AllianceFlipUtil.shouldFlip() || !FieldConstants.inTrenchAllianceZone(drivetrain.pose) && AllianceFlipUtil.shouldFlip()) 0.degrees else 180.degrees}
+      ))
+    ControlBoard.rotateBump.whileTrue(TargetAngleCommand(Jessika(),{ ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+      { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) }, { ControlBoard.turn.smoothDeadband(
+        Constants.Joysticks.TURN_DEADBAND) },
+      { ControlBoard.slowMode },drivetrain,
+      { if (FieldConstants.inTrenchAllianceZone(drivetrain.pose) && !AllianceFlipUtil.shouldFlip() || !FieldConstants.inTrenchAllianceZone(drivetrain.pose) && AllianceFlipUtil.shouldFlip()) 45.degrees else 225.degrees}
+    )
+    )
+//        superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE))
+//    ControlBoard.forceIntakeHalfDown.whileTrue(
+//        superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFDOWN_ANGLE))
     ControlBoard.forceIntakeFullDown.whileTrue(
-        superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_DOWN_ANGLE))
+      RepeatCommand(
+        SequentialCommandGroup(
+          Commands.runOnce({ intakeOverridingAngle = max(IntakeConstants.PIVOT_MIN_ANGLE, intakeOverridingAngle - 10.degrees) }),
+          superstructure.requestForceIntakeCommand(intakeOverridingAngle),
+          WaitCommand(0.1)
+        )
+      ))
 
     ControlBoard.score.whileTrue(
         ConditionalCommand(
