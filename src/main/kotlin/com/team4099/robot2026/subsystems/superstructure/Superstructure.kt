@@ -389,7 +389,6 @@ class Superstructure(
   fun requestForceIntakeCommand(wantedAngle: Angle): Command {
     val returnCommand = runOnce {
       intake.currentRequest = Request.IntakeRequest.TargetingPosition(wantedAngle)
-      CustomLogger.recordOutput("Superstructure/intakeForcedWantedAngleDegs", wantedAngle.inDegrees)
     }
 
     returnCommand.name = "RequestForceIntakeCommand"

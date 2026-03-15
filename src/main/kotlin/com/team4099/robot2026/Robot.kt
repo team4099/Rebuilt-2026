@@ -193,8 +193,6 @@ object Robot : LoggedRobot() {
 
     Logger.recordOutput(
         "LoggedRobot/RemainingRamMB", Runtime.getRuntime().freeMemory() / 1024 / 1024)
-    Logger.recordOutput(
-        "RobotState/intakeOverrideAngleDegs", RobotContainer.intakeOverridingAngle.inDegrees)
 
     ControlBoard.driverRumbleConsumer.accept(false)
     ControlBoard.operatorRumbleConsumer.accept(false)
