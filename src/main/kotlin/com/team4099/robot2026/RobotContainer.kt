@@ -246,6 +246,7 @@ object RobotContainer {
             superstructure.requestIntakeCommand()) {
               superstructure.currentState == Superstructure.Companion.SuperstructureStates.INTAKE
             })
+
     ControlBoard.forceIntakeFullUp.whileTrue(
         RepeatCommand(
             SequentialCommandGroup(
@@ -253,9 +254,22 @@ object RobotContainer {
                   intakeOverridingAngle =
                       min(IntakeConstants.PIVOT_MAX_ANGLE, intakeOverridingAngle + 10.degrees)
                 }),
-                superstructure.requestForceIntakeCommand(intakeOverridingAngle),
+                Commands.defer(
+                    { superstructure.requestForceIntakeCommand(intakeOverridingAngle) },
+                    setOf(superstructure)),
                 WaitCommand(0.1))))
-    //    ControlBoard.forceIntakeHalfUp.whileTrue(
+    ControlBoard.forceIntakeFullDown.whileTrue(
+      RepeatCommand(
+        SequentialCommandGroup(
+          Commands.runOnce({
+            intakeOverridingAngle =
+              max(IntakeConstants.PIVOT_MIN_ANGLE, intakeOverridingAngle - 10.degrees)
+          }),
+          Commands.defer(
+            { superstructure.requestForceIntakeCommand(intakeOverridingAngle) },
+            setOf(superstructure)),
+          WaitCommand(0.1))))
+
     ControlBoard.rotateTrench.whileTrue(
         TargetAngleCommand(
             Jessika(),
@@ -288,18 +302,6 @@ object RobotContainer {
                   45.degrees
               else 225.degrees
             }))
-    //        superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE))
-    //    ControlBoard.forceIntakeHalfDown.whileTrue(
-    //        superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFDOWN_ANGLE))
-    ControlBoard.forceIntakeFullDown.whileTrue(
-        RepeatCommand(
-            SequentialCommandGroup(
-                Commands.runOnce({
-                  intakeOverridingAngle =
-                      max(IntakeConstants.PIVOT_MIN_ANGLE, intakeOverridingAngle - 10.degrees)
-                }),
-                superstructure.requestForceIntakeCommand(intakeOverridingAngle),
-                WaitCommand(0.1))))
 
     ControlBoard.score.whileTrue(
         ConditionalCommand(

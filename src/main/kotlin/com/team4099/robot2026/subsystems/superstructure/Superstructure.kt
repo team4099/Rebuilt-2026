@@ -29,6 +29,7 @@ import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.derived.Angle
+import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.max
 
@@ -388,6 +389,7 @@ class Superstructure(
   fun requestForceIntakeCommand(wantedAngle: Angle): Command {
     val returnCommand = runOnce {
       intake.currentRequest = Request.IntakeRequest.TargetingPosition(wantedAngle)
+      CustomLogger.recordOutput("Superstructure/intakeForcedWantedAngleDegs", wantedAngle.inDegrees)
     }
 
     returnCommand.name = "RequestForceIntakeCommand"

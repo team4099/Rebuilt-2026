@@ -43,6 +43,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.base.seconds
+import org.team4099.lib.units.derived.inDegrees
 
 object Robot : LoggedRobot() {
   val logFolderAlert =
@@ -192,6 +193,8 @@ object Robot : LoggedRobot() {
 
     Logger.recordOutput(
         "LoggedRobot/RemainingRamMB", Runtime.getRuntime().freeMemory() / 1024 / 1024)
+    Logger.recordOutput(
+        "RobotState/intakeOverrideAngleDegs", RobotContainer.intakeOverridingAngle.inDegrees)
 
     ControlBoard.driverRumbleConsumer.accept(false)
     ControlBoard.operatorRumbleConsumer.accept(false)
