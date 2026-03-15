@@ -64,9 +64,7 @@ import org.littletonrobotics.junction.Logger
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.smoothDeadband
-import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.derived.degrees
-import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.max
 import org.team4099.lib.units.min
 
@@ -249,40 +247,59 @@ object RobotContainer {
               superstructure.currentState == Superstructure.Companion.SuperstructureStates.INTAKE
             })
     ControlBoard.forceIntakeFullUp.whileTrue(
-      RepeatCommand(
-        SequentialCommandGroup(
-          Commands.runOnce({ intakeOverridingAngle =
-            min(IntakeConstants.PIVOT_MAX_ANGLE, intakeOverridingAngle + 10.degrees)
-          }),
-          superstructure.requestForceIntakeCommand(intakeOverridingAngle),
-          WaitCommand(0.1)
-        )
-      ))
-//    ControlBoard.forceIntakeHalfUp.whileTrue(
-    ControlBoard.rotateTrench.whileTrue(TargetAngleCommand(Jessika(),{ ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-      { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) }, { ControlBoard.turn.smoothDeadband(
-        Constants.Joysticks.TURN_DEADBAND) },
-      { ControlBoard.slowMode },drivetrain,
-      { if (FieldConstants.inTrenchAllianceZone(drivetrain.pose) && !AllianceFlipUtil.shouldFlip() || !FieldConstants.inTrenchAllianceZone(drivetrain.pose) && AllianceFlipUtil.shouldFlip()) 0.degrees else 180.degrees}
-      ))
-    ControlBoard.rotateBump.whileTrue(TargetAngleCommand(Jessika(),{ ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-      { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) }, { ControlBoard.turn.smoothDeadband(
-        Constants.Joysticks.TURN_DEADBAND) },
-      { ControlBoard.slowMode },drivetrain,
-      { if (FieldConstants.inTrenchAllianceZone(drivetrain.pose) && !AllianceFlipUtil.shouldFlip() || !FieldConstants.inTrenchAllianceZone(drivetrain.pose) && AllianceFlipUtil.shouldFlip()) 45.degrees else 225.degrees}
-    )
-    )
-//        superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE))
-//    ControlBoard.forceIntakeHalfDown.whileTrue(
-//        superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFDOWN_ANGLE))
+        RepeatCommand(
+            SequentialCommandGroup(
+                Commands.runOnce({
+                  intakeOverridingAngle =
+                      min(IntakeConstants.PIVOT_MAX_ANGLE, intakeOverridingAngle + 10.degrees)
+                }),
+                superstructure.requestForceIntakeCommand(intakeOverridingAngle),
+                WaitCommand(0.1))))
+    //    ControlBoard.forceIntakeHalfUp.whileTrue(
+    ControlBoard.rotateTrench.whileTrue(
+        TargetAngleCommand(
+            Jessika(),
+            { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+            { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+            { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+            { ControlBoard.slowMode },
+            drivetrain,
+            {
+              if (FieldConstants.inTrenchAllianceZone(drivetrain.pose) &&
+                  !AllianceFlipUtil.shouldFlip() ||
+                  !FieldConstants.inTrenchAllianceZone(drivetrain.pose) &&
+                      AllianceFlipUtil.shouldFlip())
+                  0.degrees
+              else 180.degrees
+            }))
+    ControlBoard.rotateBump.whileTrue(
+        TargetAngleCommand(
+            Jessika(),
+            { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+            { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+            { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+            { ControlBoard.slowMode },
+            drivetrain,
+            {
+              if (FieldConstants.inTrenchAllianceZone(drivetrain.pose) &&
+                  !AllianceFlipUtil.shouldFlip() ||
+                  !FieldConstants.inTrenchAllianceZone(drivetrain.pose) &&
+                      AllianceFlipUtil.shouldFlip())
+                  45.degrees
+              else 225.degrees
+            }))
+    //        superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE))
+    //    ControlBoard.forceIntakeHalfDown.whileTrue(
+    //        superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFDOWN_ANGLE))
     ControlBoard.forceIntakeFullDown.whileTrue(
-      RepeatCommand(
-        SequentialCommandGroup(
-          Commands.runOnce({ intakeOverridingAngle = max(IntakeConstants.PIVOT_MIN_ANGLE, intakeOverridingAngle - 10.degrees) }),
-          superstructure.requestForceIntakeCommand(intakeOverridingAngle),
-          WaitCommand(0.1)
-        )
-      ))
+        RepeatCommand(
+            SequentialCommandGroup(
+                Commands.runOnce({
+                  intakeOverridingAngle =
+                      max(IntakeConstants.PIVOT_MIN_ANGLE, intakeOverridingAngle - 10.degrees)
+                }),
+                superstructure.requestForceIntakeCommand(intakeOverridingAngle),
+                WaitCommand(0.1))))
 
     ControlBoard.score.whileTrue(
         ConditionalCommand(
