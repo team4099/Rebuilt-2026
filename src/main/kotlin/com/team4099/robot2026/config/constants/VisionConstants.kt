@@ -11,7 +11,9 @@ import org.team4099.lib.geometry.Transform3d
 import org.team4099.lib.geometry.Translation3d
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
+import org.team4099.lib.units.centi
 import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.perSecond
 
 object VisionConstants {
   val CONTROLLER_RUMBLE_DIST = 2.25.meters
@@ -19,8 +21,15 @@ object VisionConstants {
   val BLUE_TARGET_TAGS = arrayOf<Int>()
   val RED_TARGET_TAGS = arrayOf<Int>()
 
-  val AMBIGUITY_THESHOLD = 1.0
+  val AMBIGUITY_THESHOLD = .4
   val CONFIDENCE_THRESHOLD = 0.75
+  val TAG_TRUST_THRESHOLD = 0.85
+
+  // Pose acceptance thresholds
+  val Z_MINIMUM = -10.centi.meters
+  val Z_MAXIMUM = 8.inches + 10.centi.meters
+  val POSE_ACCEPTANCE_MAX_LINEAR_SPEED = 3.meters.perSecond
+  val POSE_ACCEPTANCE_MAX_ANGULAR_SPEED = 225.degrees.perSecond
 
   val CAMERAS: Map<String, Pair<CameraIO.DetectionPipeline, Transform3d>>
     get() =
@@ -69,8 +78,8 @@ object VisionConstants {
         }
 
   // x, y, θ
-  val singleTagStdDevs: Matrix<N4?, N1?> = VecBuilder.fill(8.0, 8.0, 50.0, 9_999.0)
-  val multiTagStdDevs: Matrix<N4?, N1?> = VecBuilder.fill(2.0, 2.0, 10.0, 50.0)
+  val singleTagStdDevs: Matrix<N4?, N1?> = VecBuilder.fill(0.05, 0.05, 1.5, 9_999.0)
+  val multiTagStdDevs: Matrix<N4?, N1?> = VecBuilder.fill(0.01, 0.01, 0.25, 0.1)
 
   enum class OBJECT_CLASS(val id: Int, val mapleSimType: String?) {
     FUEL(0, "Fuel")

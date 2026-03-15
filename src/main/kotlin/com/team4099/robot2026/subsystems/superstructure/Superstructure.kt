@@ -176,6 +176,7 @@ class Superstructure(
         intake.currentRequest =
             Request.IntakeRequest.TargetingPosition(IntakeConstants.PIVOT_MIN_ANGLE)
         hopper.currentRequest = Request.HopperRequest.OpenLoop(HopperConstants.UNJAM_VOLTAGE)
+        feeder.currentRequest = Request.FeederRequest.OpenLoop(FeederConstants.UNJAM_VOLTAGE)
 
         when (currentRequest) {
           is SuperstructureRequest.Idle,
@@ -228,10 +229,8 @@ class Superstructure(
 
         if (shooter.isAtTargetedVelocity &&
             (AimOTFCommand.hasAligned || !RobotContainer.isAligning || overrideShooterVelocity)) {
-          feeder.currentRequest =
-              Request.FeederRequest.TargetVelocity(FeederConstants.SCORE_VELOCITY)
-          hopper.currentRequest =
-              Request.HopperRequest.TargetVelocity(HopperConstants.VELOCITIES.SCORE_VELOCITY)
+          feeder.currentRequest = Request.FeederRequest.OpenLoop(FeederConstants.SCORE_VOLTAGE)
+          hopper.currentRequest = Request.HopperRequest.OpenLoop(HopperConstants.SCORE_VOLTAGE)
           intakeRollers.currentRequest =
               Request.RollersRequest.OpenLoop(RollersConstants.SCORE_ASSISTING_VOLTAGE)
         }
@@ -252,10 +251,8 @@ class Superstructure(
 
         if (shooter.isAtTargetedVelocity &&
             (AimOTFCommand.hasAligned || !RobotContainer.isAligning || overrideShooterVelocity)) {
-          feeder.currentRequest =
-              Request.FeederRequest.TargetVelocity(FeederConstants.SCORE_VELOCITY)
-          hopper.currentRequest =
-              Request.HopperRequest.TargetVelocity(HopperConstants.VELOCITIES.SCORE_VELOCITY)
+          feeder.currentRequest = Request.FeederRequest.OpenLoop(FeederConstants.SCORE_VOLTAGE)
+          hopper.currentRequest = Request.HopperRequest.OpenLoop(HopperConstants.SCORE_VOLTAGE)
         }
 
         when (currentRequest) {
@@ -291,7 +288,7 @@ class Superstructure(
         intakeRollers.currentRequest =
             Request.RollersRequest.OpenLoop(RollersConstants.IDLE_VOLTAGE)
         climb.currentRequest =
-            Request.ClimbRequest.TargetingPosition(ClimbConstants.UPWARDS_EXTENSION_LIMIT)
+            Request.ClimbRequest.TargetingPosition(ClimbConstants.PREP_CLIMB_HEIGHT)
         intake.currentRequest =
             Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.CLIMB_ANGLE)
 

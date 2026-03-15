@@ -12,13 +12,15 @@ import org.photonvision.PhotonPoseEstimator
 import org.photonvision.simulation.PhotonCameraSim
 import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.geometry.Transform3d
+import org.team4099.lib.kinematics.ChassisSpeeds
 
 class CameraIOPhotonvision(
     override val pipeline: CameraIO.DetectionPipeline,
     override val identifier: String,
     override val transform: Transform3d,
     override val poseMeasurementConsumer: (Pose3d?, Double, Matrix<N4?, N1?>) -> Unit,
-    override val drivetrainRotationSupplier: Supplier<Rotation3d>
+    override val drivetrainRotationSupplier: Supplier<Rotation3d>,
+    override val drivetrainChassisSpeedsSupplier: Supplier<ChassisSpeeds>
 ) : CameraIO {
   override val photonEstimator: PhotonPoseEstimator =
       PhotonPoseEstimator(FieldConstants.fieldLayout, transform.transform3d)

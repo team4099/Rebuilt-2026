@@ -4,6 +4,10 @@ import com.team4099.robot2026.subsystems.drivetrain.generated.AlphaBotTunerConst
 import com.team4099.robot2026.subsystems.drivetrain.generated.CompBotTunerConstants
 import com.team4099.robot2026.subsystems.drivetrain.generated.TestBotTunerConstants
 import com.team4099.robot2026.util.AllianceFlipUtil
+import edu.wpi.first.math.Matrix
+import edu.wpi.first.math.VecBuilder
+import edu.wpi.first.math.numbers.N1
+import edu.wpi.first.math.numbers.N4
 import edu.wpi.first.wpilibj.RobotBase
 import java.util.function.Supplier
 import kotlin.math.sqrt
@@ -51,7 +55,7 @@ object DrivetrainConstants {
     get() =
         when (Constants.Universal.whoami) {
           Constants.WHOAMI.COMPBOT,
-          Constants.WHOAMI.ALPHABOT -> 2.039.inches
+          Constants.WHOAMI.ALPHABOT -> 2.027.inches
           Constants.WHOAMI.TESTBOT -> 1.96.inches
         }
 
@@ -106,17 +110,19 @@ object DrivetrainConstants {
   val CURRENT_COF =
       when (Constants.Universal.whoami) {
         Constants.WHOAMI.COMPBOT,
-        Constants.WHOAMI.ALPHABOT -> MOLDED_TPU_WHEEL_COF
+        Constants.WHOAMI.ALPHABOT -> NITRILE_WHEEL_COF
         Constants.WHOAMI.TESTBOT -> NITRILE_WHEEL_COF
       }
 
   val INITIAL_SIM_POSE = Pose3d(3.meters, 3.meters, 0.meters, Rotation3d()).pose3d
 
+  val STATE_STDEVS: Matrix<N4?, N1?> = VecBuilder.fill(0.003, 0.003, 0.003, 0.002)
+
   object PID {
     val AUTO_POS_KP: ProportionalGain<Meter, Velocity<Meter>>
       get() {
         if (RobotBase.isReal()) {
-          return 2.5.meters.perSecond / 1.0.meters // todo:3.15
+          return 2.5.meters.perSecond / 1.0.meters
         } else {
           return 20.meters.perSecond / 1.0.meters
         }
@@ -146,10 +152,10 @@ object DrivetrainConstants {
     val LIMELIGHT_THETA_KD =
         (0.1.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
 
-    val AUTO_THETA_PID_KP = (2.7.degrees.perSecond / 1.degrees)
+    val AUTO_THETA_PID_KP = (3.degrees.perSecond / 1.degrees)
     val AUTO_THETA_PID_KI = (0.0.radians.perSecond / (1.radians * 1.seconds))
     val AUTO_THETA_PID_KD =
-        (0.3.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
+        (0.175.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
 
     val SIM_HUB_PID_KP = (6.7.radians.perSecond / 1.radians)
     val SIM_HUB_PID_KI = (0.0.radians.perSecond / (1.radians * 1.seconds))
@@ -207,7 +213,7 @@ object DrivetrainConstants {
     val DRIVE_KS
       get() =
           when (Constants.Universal.whoami) {
-            Constants.WHOAMI.COMPBOT -> 0.287.volts
+            Constants.WHOAMI.COMPBOT -> 0.29.volts
             Constants.WHOAMI.ALPHABOT -> 0.24069.volts
             Constants.WHOAMI.TESTBOT -> .141.volts
           }
@@ -215,7 +221,7 @@ object DrivetrainConstants {
     val DRIVE_KV: VelocityFeedforward<Meter, Volt>
       get() =
           when (Constants.Universal.whoami) {
-            Constants.WHOAMI.COMPBOT -> 0.784.volts / 1.0.meters.perSecond
+            Constants.WHOAMI.COMPBOT -> 0.76.volts / 1.0.meters.perSecond
             Constants.WHOAMI.ALPHABOT -> 0.74646.volts / 1.0.meters.perSecond
             Constants.WHOAMI.TESTBOT -> 0.718.volts / 1.0.meters.perSecond
           }

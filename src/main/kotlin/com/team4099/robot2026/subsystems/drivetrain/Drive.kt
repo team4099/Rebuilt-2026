@@ -23,6 +23,7 @@ import com.team4099.lib.hal.Clock
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.DrivetrainConstants
 import com.team4099.robot2026.config.constants.FieldConstants
+import com.team4099.robot2026.config.constants.VisionConstants
 import com.team4099.robot2026.util.AllianceFlipUtil
 import com.team4099.robot2026.util.CustomLogger
 import com.team4099.robot2026.util.Velocity2d
@@ -117,7 +118,9 @@ class Drive(
           kinematics,
           rawGyroRotation.rotation3d,
           lastModulePositions,
-          DrivetrainConstants.INITIAL_SIM_POSE)
+          DrivetrainConstants.INITIAL_SIM_POSE,
+          DrivetrainConstants.STATE_STDEVS,
+          VisionConstants.singleTagStdDevs)
 
   var targetSpeeds = ChassisSpeeds()
     private set

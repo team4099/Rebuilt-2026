@@ -7,6 +7,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage
 import com.ctre.phoenix6.controls.VoltageOut
 import com.ctre.phoenix6.hardware.TalonFX
+import com.ctre.phoenix6.signals.InvertedValue
 import com.ctre.phoenix6.signals.NeutralModeValue
 import com.team4099.lib.math.clamp
 import com.team4099.robot2026.config.constants.Constants
@@ -57,7 +58,7 @@ object HopperIOTalon : HopperIO {
   var accelSignal: StatusSignal<WPIAngularAcceleration>
   var velocitySignal: StatusSignal<WPIAngularVelocity>
 
-  val voltageOut = VoltageOut(0.volts.inVolts).withEnableFOC(true)
+  val voltageOut = VoltageOut(0.volts.inVolts) // .withEnableFOC(true)
   val velocityControl = MotionMagicVelocityVoltage(0.rotations.perSecond.inRotationsPerSecond)
 
   init {
@@ -68,6 +69,7 @@ object HopperIOTalon : HopperIO {
     configs.CurrentLimits.SupplyCurrentLimitEnable = true
     configs.CurrentLimits.StatorCurrentLimitEnable = true
     configs.MotorOutput.NeutralMode = NeutralModeValue.Coast
+    configs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive
 
     hopperTalon.configurator.apply(configs)
 

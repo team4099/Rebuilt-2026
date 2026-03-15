@@ -502,7 +502,7 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
           ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY,
           min(
               (8.93492 * desiredLaunchVel.inMetersPerSecond - 34.1343).rotations.perSecond,
-              ShooterConstants.VELOCITIES.MAXIMUM_LAUNCH_VELCOITY))
+              ShooterConstants.VELOCITIES.MAXIMUM_LAUNCH_VELOCITY))
     }
   }
 }
