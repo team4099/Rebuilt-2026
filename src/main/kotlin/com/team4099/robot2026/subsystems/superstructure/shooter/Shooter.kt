@@ -479,19 +479,6 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
             })
 
     init {
-      //      launchVelToShooterMap.put(7.06.meters.perSecond, 31.rotations.perSecond)
-      //      launchVelToShooterMap.put(7.47.meters.perSecond, 33.rotations.perSecond)
-      //      launchVelToShooterMap.put(7.82.meters.perSecond, 35.5.rotations.perSecond)
-      //      launchVelToShooterMap.put(7.994.meters.perSecond, 37.rotations.perSecond)
-      //      //      launchVelToShooterMap.put(8.57.meters.perSecond, 42.rotations.perSecond)
-      //      launchVelToShooterMap.put(9.3.meters.perSecond, 47.rotations.perSecond)
-      //      launchVelToShooterMap.put(10.12.meters.perSecond, 52.rotations.perSecond)
-      //      launchVelToShooterMap.put(11.17.meters.perSecond, 70.rotations.perSecond)
-      //      //      launchVelToShooterMap.put(8.65.meters.perSecond, 49.5.rotations.perSecond)
-      //      //      launchVelToShooterMap.put(9.34.meters.perSecond, 50.rotations.perSecond)
-      //      //      launchVelToShooterMap.put(9.47.meters.perSecond, 55.5.rotations.perSecond)
-      //      //      launchVelToShooterMap.put(9.80.meters.perSecond, 55.rotations.perSecond)
-      //      //      launchVelToShooterMap.put(10.44.meters.perSecond, 60.rotations.perSecond)
       distanceToShooterMap.put(0.meters, 0.rotations.perSecond)
     }
 
