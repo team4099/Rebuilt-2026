@@ -43,7 +43,6 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.base.seconds
-import org.team4099.lib.units.derived.inDegrees
 
 object Robot : LoggedRobot() {
   val logFolderAlert =
