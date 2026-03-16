@@ -259,16 +259,16 @@ object RobotContainer {
                     setOf(superstructure)),
                 WaitCommand(0.1))))
     ControlBoard.forceIntakeFullDown.whileTrue(
-      RepeatCommand(
-        SequentialCommandGroup(
-          Commands.runOnce({
-            intakeOverridingAngle =
-              max(IntakeConstants.PIVOT_MIN_ANGLE, intakeOverridingAngle - 10.degrees)
-          }),
-          Commands.defer(
-            { superstructure.requestForceIntakeCommand(intakeOverridingAngle) },
-            setOf(superstructure)),
-          WaitCommand(0.1))))
+        RepeatCommand(
+            SequentialCommandGroup(
+                Commands.runOnce({
+                  intakeOverridingAngle =
+                      max(IntakeConstants.PIVOT_MIN_ANGLE, intakeOverridingAngle - 10.degrees)
+                }),
+                Commands.defer(
+                    { superstructure.requestForceIntakeCommand(intakeOverridingAngle) },
+                    setOf(superstructure)),
+                WaitCommand(0.1))))
 
     ControlBoard.rotateTrench.whileTrue(
         TargetAngleCommand(

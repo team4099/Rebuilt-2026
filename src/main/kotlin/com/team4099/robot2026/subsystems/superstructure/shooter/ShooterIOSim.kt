@@ -55,6 +55,7 @@ object ShooterIOSim : ShooterIO {
     inputs.shooterLeaderVoltage = shooterSim.inputVoltage.volts
     inputs.shooterLeaderSupplyCurrent = 0.0.amps
     inputs.shooterLeaderStatorCurrent = shooterSim.currentDrawAmps.amps
+    inputs.shooterLeaderTorqueCurrent = shooterSim.currentDrawAmps.amps.absoluteValue
     inputs.shooterLeaderTemperature = 0.0.celsius
 
     inputs.shooterFollowerVelocity = shooterSim.angularVelocityRadPerSec.radians.perSecond
@@ -63,6 +64,7 @@ object ShooterIOSim : ShooterIO {
     inputs.shooterFollowerVoltage = shooterSim.inputVoltage.volts
     inputs.shooterFollowerSupplyCurrent = 0.0.amps
     inputs.shooterFollowerStatorCurrent = shooterSim.currentDrawAmps.amps
+    inputs.shooterFollowerTorqueCurrent = shooterSim.currentDrawAmps.amps.absoluteValue
     inputs.shooterFollowerTemperature = 0.0.celsius
   }
 
