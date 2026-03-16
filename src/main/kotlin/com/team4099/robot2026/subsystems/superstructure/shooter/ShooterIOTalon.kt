@@ -60,6 +60,7 @@ object ShooterIOTalon : ShooterIO {
           followerTalon, ShooterConstants.GEAR_RATIO, ShooterConstants.VOLTAGE_COMPENSATION)
 
   private var leaderStatorCurrentSignal: StatusSignal<WPILibCurrent>
+  private var leaderTorqueCurrentSignal: StatusSignal<WPILibCurrent>
   private var leaderSupplyCurrentSignal: StatusSignal<WPILibCurrent>
   private var leaderTempSignal: StatusSignal<WPILibTemperature>
   private var leaderVoltageSignal: StatusSignal<WPILibVoltage>
@@ -67,6 +68,7 @@ object ShooterIOTalon : ShooterIO {
   private var leaderVelocitySignal: StatusSignal<WPILibAngularVelocity>
 
   private var followerStatorCurrentSignal: StatusSignal<WPILibCurrent>
+  private var followerTorqueCurrentSignal: StatusSignal<WPILibCurrent>
   private var followerSupplyCurrentSignal: StatusSignal<WPILibCurrent>
   private var followerTempSignal: StatusSignal<WPILibTemperature>
   private var followerVoltageSignal: StatusSignal<WPILibVoltage>
@@ -88,6 +90,7 @@ object ShooterIOTalon : ShooterIO {
     followerTalon.configurator.apply(configs)
 
     leaderSupplyCurrentSignal = leaderTalon.supplyCurrent
+    leaderTorqueCurrentSignal = leaderTalon.torqueCurrent
     leaderStatorCurrentSignal = leaderTalon.statorCurrent
     leaderVelocitySignal = leaderTalon.velocity
     leaderTempSignal = leaderTalon.deviceTemp
@@ -95,6 +98,7 @@ object ShooterIOTalon : ShooterIO {
     leaderAccelSignal = leaderTalon.acceleration
 
     followerSupplyCurrentSignal = followerTalon.supplyCurrent
+    followerTorqueCurrentSignal = followerTalon.torqueCurrent
     followerStatorCurrentSignal = followerTalon.statorCurrent
     followerVelocitySignal = followerTalon.velocity
     followerTempSignal = followerTalon.deviceTemp
@@ -109,11 +113,13 @@ object ShooterIOTalon : ShooterIO {
     BaseStatusSignal.refreshAll(
         leaderSupplyCurrentSignal,
         leaderStatorCurrentSignal,
+        leaderTorqueCurrentSignal,
         leaderVelocitySignal,
         leaderTempSignal,
         leaderVoltageSignal,
         leaderAccelSignal,
         followerStatorCurrentSignal,
+        followerTorqueCurrentSignal,
         followerSupplyCurrentSignal,
         followerVelocitySignal,
         followerTempSignal,
@@ -141,11 +147,13 @@ object ShooterIOTalon : ShooterIO {
     inputs.shooterLeaderTemperature = leaderTempSignal.valueAsDouble.celsius
     inputs.shooterLeaderSupplyCurrent = leaderSupplyCurrentSignal.valueAsDouble.amps
     inputs.shooterLeaderStatorCurrent = leaderStatorCurrentSignal.valueAsDouble.amps
+    inputs.shooterLeaderTorqueCurrent = leaderTorqueCurrentSignal.valueAsDouble.amps
     inputs.shooterLeaderVoltage = leaderVoltageSignal.valueAsDouble.volts
 
     inputs.shooterFollowerTemperature = followerTempSignal.valueAsDouble.celsius
     inputs.shooterFollowerSupplyCurrent = followerSupplyCurrentSignal.valueAsDouble.amps
     inputs.shooterFollowerStatorCurrent = followerStatorCurrentSignal.valueAsDouble.amps
+    inputs.shooterFollowerStatorCurrent = followerTorqueCurrentSignal.valueAsDouble.amps
     inputs.shooterFollowerVoltage = followerVoltageSignal.valueAsDouble.volts
   }
 

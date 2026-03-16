@@ -29,7 +29,6 @@ import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.derived.Angle
-import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.max
 
