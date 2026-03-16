@@ -25,6 +25,8 @@ sealed interface Request {
     class Intake() : SuperstructureRequest
 
     class Eject() : SuperstructureRequest
+
+    class IntakeAndScore(): SuperstructureRequest
   }
 
   sealed interface ClimbRequest : Request {

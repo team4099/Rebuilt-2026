@@ -239,6 +239,7 @@ class Superstructure(
           is SuperstructureRequest.Idle -> nextState = SuperstructureStates.IDLE
           is SuperstructureRequest.Intake -> nextState = SuperstructureStates.IDLE
           is SuperstructureRequest.ExtendClimb -> nextState = SuperstructureStates.PREP_CLIMB
+          is SuperstructureRequest.IntakeAndScore -> nextState = SuperstructureStates.SCORE_AND_INTAKE
           else -> {}
         }
       }
@@ -401,6 +402,11 @@ class Superstructure(
 
     returnCommand.name = "RequestForceClimbCommand"
     return returnCommand
+  }
+  fun requestIntakeAndScoreCommand(): Command{
+    val returnCommand = runOnce { currentRequest = SuperstructureRequest.IntakeAndScore() }
+    returnCommand.name = "requestIntakeAndScoreCommand"
+      return returnCommand
   }
 
   fun requestEjectCommand(): Command {

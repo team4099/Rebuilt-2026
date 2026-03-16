@@ -28,7 +28,7 @@ class IntakeQuadrantL1(
                     mainTraj,
                     flipVertically = flipVeritcally,
                     interruptAtTimeout = true,
-                    extraTime = 2.seconds),
+                    extraTime = 0.seconds),
                 SequentialCommandGroup(
                     WaitCommand(1.0),
                     superstructure.requestIntakeCommand(),
@@ -36,40 +36,17 @@ class IntakeQuadrantL1(
                     superstructure.requestIdleCommand(),
                     WaitCommand(4.5),
                     superstructure.requestPrepScoreCommand())),
-            AimOTFCommand(drivetrain, 1.seconds).until { AimOTFCommand.hasAligned },
+            AimOTFCommand(drivetrain, 6.seconds),
             superstructure.requestScoreCommand(),
-            RepeatCommand(
-                    SequentialCommandGroup(
-                        superstructure.requestForceIntakeCommand(
-                            IntakeConstants.ANGLES.FORCE_HALFDOWN_ANGLE),
-                        WaitCommand(0.1),
-                        superstructure.requestForceIntakeCommand(
-                            IntakeConstants.ANGLES.FORCE_DOWN_ANGLE),
-                        WaitCommand(0.1)))
-                .withTimeout(4.5),
-            RepeatCommand(
-                SequentialCommandGroup(
-                    superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_UP_ANGLE),
-                    WaitCommand(0.1),
-                    superstructure.requestForceIntakeCommand(
-                        IntakeConstants.ANGLES.FORCE_HALFDOWN_ANGLE),
-                    WaitCommand(0.1)))))
-    //            .withTimeout(12.0),
-    //        superstructure.requestIdleCommand(),
-    //        superstructure.requestPrepClimbCommand(),
-    //        WaitCommand(1.5),
-    //        ConditionalCommand(FollowChoreoPath(drivetrain, climbFlippedTraj), InstantCommand()) {
-    //          flipVeritcally
-    //        },
-    //        superstructure.requestClimbCommand())
+            WaitCommand(1.5),
+            superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE),
+            WaitCommand(4.0),
+            superstructure.requestIntakeAndScoreCommand()))
   }
 
   companion object {
     val mainTraj =
         Choreo.loadTrajectory<SwerveSample>("IntakeQuadrantL1/IntakeQuadrantClimb.traj").get()
-
-    val climbFlippedTraj =
-        Choreo.loadTrajectory<SwerveSample>("IntakeQuadrantL1/ClimbFlipped.traj").get()
 
     val startingPose = Pose2d(mainTraj.getInitialPose(false).get())
   }
