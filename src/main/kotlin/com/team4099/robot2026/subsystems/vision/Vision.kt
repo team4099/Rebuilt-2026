@@ -4,7 +4,6 @@ import com.team4099.lib.hal.Clock
 import com.team4099.lib.vision.TimestampedObjectVisionUpdate
 import com.team4099.lib.vision.TimestampedTrigVisionUpdate
 import com.team4099.lib.vision.TimestampedVisionUpdate
-import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.FieldConstants
 import com.team4099.robot2026.config.constants.VisionConstants
 import com.team4099.robot2026.subsystems.vision.camera.CameraIO
@@ -61,7 +60,7 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
   private var visionSim: VisionSystemSim? = null
 
   init {
-    if (RobotBase.isSimulation() && Constants.Universal.SIMULATE_VISION) {
+    if (RobotBase.isSimulation()) {
       visionSim = VisionSystemSim("main")
       visionSim!!.addAprilTags(FieldConstants.fieldLayout)
 

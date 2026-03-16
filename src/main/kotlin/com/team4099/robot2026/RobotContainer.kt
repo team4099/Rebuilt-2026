@@ -156,20 +156,18 @@ object RobotContainer {
               driveSimulation!!::setSimulationWorldPose)
 
       vision =
-          if (Constants.Universal.SIMULATE_VISION)
-              Vision(
-                  *VisionConstants.CAMERAS.map {
-                        CameraIOPVSim(
-                            it.value.first,
-                            it.key,
-                            it.value.second,
-                            drivetrain::addVisionMeasurement,
-                            { drivetrain.rotation },
-                            { drivetrain.chassisSpeeds })
-                      }
-                      .toTypedArray(),
-                  poseSupplier = { drivetrain.pose })
-          else Vision(poseSupplier = { Pose3d() })
+          Vision(
+              *VisionConstants.CAMERAS.map {
+                    CameraIOPVSim(
+                        it.value.first,
+                        it.key,
+                        it.value.second,
+                        drivetrain::addVisionMeasurement,
+                        { drivetrain.rotation },
+                        { drivetrain.chassisSpeeds })
+                  }
+                  .toTypedArray(),
+              poseSupplier = { drivetrain.pose })
 
       climb = Climb(ClimbIOSim)
       feeder = Feeder(FeederIOSim)

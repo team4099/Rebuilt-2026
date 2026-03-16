@@ -157,8 +157,6 @@ object Robot : LoggedRobot() {
 
     CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand())
 
-    Logger.recordOutput("RobotSimulation/simulateVision", Constants.Universal.SIMULATE_VISION)
-
     if (isSimulation()) {
       DriverStation.silenceJoystickConnectionWarning(true)
     }
