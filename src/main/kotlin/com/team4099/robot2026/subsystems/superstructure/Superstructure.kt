@@ -60,7 +60,7 @@ class Superstructure(
       return if (overrideShooterVelocity) ShooterConstants.VELOCITIES.MANUAL_SHOOTING
       else
           max(
-              Shooter.launchVelToShooterRPM(launchData.launchVelocity),
+              Shooter.distanceToShooterRPM(launchData.distanceToTarget),
               ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY)
     }
 
