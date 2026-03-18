@@ -147,6 +147,7 @@ class AimOTFCommand(
     hasAligned = thetaPID.error.absoluteValue < 3.degrees
 
     CustomLogger.recordOutput("FaceHubCommand/hasAligned", hasAligned)
+    CustomLogger.recordOutput("FaceHubCommand/distanceTHubMeters", distanceToHub.inMeters)
 
     if (DriverStation.isAutonomous()) {
       // Use planned path velocities, dont adjust

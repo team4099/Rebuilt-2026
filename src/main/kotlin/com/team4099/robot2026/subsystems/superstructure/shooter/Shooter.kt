@@ -461,7 +461,7 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
       CustomLogger.recordOutput("Shooter/wantedRotDegs", theta.inDegrees)
 
       return CalculatedLaunchData(
-          targetVirt.magnitude.meters,
+          targetVirt.minus(drivetrainPose.translation).magnitude.meters,
           sqrt(launchSpeedField.inMetersPerSecond.pow(2) + launchSpeedZ.inMetersPerSecond.pow(2))
               .meters
               .perSecond,
