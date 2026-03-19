@@ -461,7 +461,7 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
       CustomLogger.recordOutput("Shooter/wantedRotDegs", theta.inDegrees)
 
       return CalculatedLaunchData(
-          targetVirt.magnitude.meters,
+          targetVirt.minus(drivetrainPose.translation).magnitude.meters,
           sqrt(launchSpeedField.inMetersPerSecond.pow(2) + launchSpeedZ.inMetersPerSecond.pow(2))
               .meters
               .perSecond,
@@ -479,19 +479,32 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
             })
 
     init {
-      distanceToShooterMap.put(0.meters, 0.rotations.perSecond)
+      distanceToShooterMap.put(1.95.meters, 29.rotations.perSecond)
+      distanceToShooterMap.put(2.11.meters, 29.rotations.perSecond)
+      distanceToShooterMap.put(2.35.meters, 29.rotations.perSecond)
+      distanceToShooterMap.put(2.45.meters, 30.5.rotations.perSecond)
+      distanceToShooterMap.put(2.7.meters, 31.5.rotations.perSecond)
+      distanceToShooterMap.put(2.9.meters, 33.rotations.perSecond)
+      distanceToShooterMap.put(3.meters, 44.rotations.perSecond)
+      distanceToShooterMap.put(3.2.meters, 46.rotations.perSecond)
+      distanceToShooterMap.put(3.5.meters, 50.rotations.perSecond)
+      distanceToShooterMap.put(3.75.meters, 52.rotations.perSecond)
+      distanceToShooterMap.put(3.95.meters, 53.5.rotations.perSecond)
+      distanceToShooterMap.put(4.23.meters, 56.rotations.perSecond)
+      distanceToShooterMap.put(4.45.meters, 58.rotations.perSecond)
+      distanceToShooterMap.put(4.79.meters, 59.rotations.perSecond)
+      distanceToShooterMap.put(5.meters, 61.rotations.perSecond)
+      distanceToShooterMap.put(5.41.meters, 64.rotations.perSecond)
     }
 
     fun distanceToShooterRPM(distanceToTarget: Length): AngularVelocity {
-      if (
-      /* MINIMUM DATA POINT */ 0.meters <= distanceToTarget &&
-          distanceToTarget <= /* MAXIMUM DATA POINT */ 0.meters) {
+      if (1.95.meters <= distanceToTarget && distanceToTarget <= 5.41.meters) {
         return distanceToShooterMap.get(distanceToTarget)
       }
       return max(
           ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY,
           min(
-              (/* REGRESSION EQUATION */ 0).rotations.perSecond,
+              (11.70986 * distanceToTarget.inMeters + 4.54954).rotations.perSecond,
               ShooterConstants.VELOCITIES.MAXIMUM_LAUNCH_VELOCITY))
     }
   }
