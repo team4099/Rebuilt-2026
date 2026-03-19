@@ -2,6 +2,7 @@ package com.team4099.robot2026.subsystems.superstructure
 
 import com.team4099.lib.hal.Clock
 import com.team4099.robot2026.RobotContainer
+import com.team4099.robot2026.RobotContainer.intakeOverridingAngle
 import com.team4099.robot2026.commands.drivetrain.AimOTFCommand
 import com.team4099.robot2026.config.constants.ClimbConstants
 import com.team4099.robot2026.config.constants.Constants
@@ -29,6 +30,8 @@ import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.derived.Angle
+import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.max
 
@@ -74,6 +77,7 @@ class Superstructure(
 
   override fun periodic() {
     val startTime = Clock.epochTime
+    CustomLogger.recordOutput("idk", (intakeOverridingAngle + 10.degrees).inDegrees)
 
     val climbStartTime = Clock.epochTime
     climb.onLoop()
