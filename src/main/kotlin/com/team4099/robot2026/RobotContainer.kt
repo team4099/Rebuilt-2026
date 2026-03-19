@@ -234,8 +234,8 @@ object RobotContainer {
     ControlBoard.defenseMode.onTrue(
         Commands.runOnce({ superstructure.defenseMode = !superstructure.defenseMode }))
 
-    ControlBoard.prepClimb.onTrue(superstructure.requestPrepClimbCommand())
-    ControlBoard.climb.onTrue(superstructure.requestClimbCommand())
+    //    ControlBoard.prepClimb.onTrue(superstructure.requestPrepClimbCommand())
+    //    ControlBoard.climb.onTrue(superstructure.requestClimbCommand())
 
     ControlBoard.intake.onTrue(
         ConditionalCommand(
