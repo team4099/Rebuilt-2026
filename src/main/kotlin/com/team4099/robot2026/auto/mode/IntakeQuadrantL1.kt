@@ -8,7 +8,6 @@ import com.team4099.robot2026.config.constants.IntakeConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
-import edu.wpi.first.wpilibj2.command.RepeatCommand
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.WaitCommand
 import org.team4099.lib.geometry.Pose2d
@@ -40,22 +39,23 @@ class IntakeQuadrantL1(
             superstructure.requestScoreCommand(),
             WaitCommand(1.25),
             superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE)))
-//            RepeatCommand(
-//                    SequentialCommandGroup(
-//                        superstructure.requestForceIntakeCommand(
-//                            IntakeConstants.ANGLES.FORCE_HALFDOWN_ANGLE),
-//                        WaitCommand(0.1),
-//                        superstructure.requestForceIntakeCommand(
-//                            IntakeConstants.ANGLES.FORCE_DOWN_ANGLE),
-//                        WaitCommand(0.1)))
-//                .withTimeout(4.5),
-//            RepeatCommand(
-//                SequentialCommandGroup(
-//                    superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_UP_ANGLE),
-//                    WaitCommand(0.1),
-//                    superstructure.requestForceIntakeCommand(
-//                        IntakeConstants.ANGLES.FORCE_HALFDOWN_ANGLE),
-//                    WaitCommand(0.1)))))
+    //            RepeatCommand(
+    //                    SequentialCommandGroup(
+    //                        superstructure.requestForceIntakeCommand(
+    //                            IntakeConstants.ANGLES.FORCE_HALFDOWN_ANGLE),
+    //                        WaitCommand(0.1),
+    //                        superstructure.requestForceIntakeCommand(
+    //                            IntakeConstants.ANGLES.FORCE_DOWN_ANGLE),
+    //                        WaitCommand(0.1)))
+    //                .withTimeout(4.5),
+    //            RepeatCommand(
+    //                SequentialCommandGroup(
+    //
+    // superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_UP_ANGLE),
+    //                    WaitCommand(0.1),
+    //                    superstructure.requestForceIntakeCommand(
+    //                        IntakeConstants.ANGLES.FORCE_HALFDOWN_ANGLE),
+    //                    WaitCommand(0.1)))))
     //            .withTimeout(12.0),
     //        superstructure.requestIdleCommand(),
     //        superstructure.requestPrepClimbCommand(),

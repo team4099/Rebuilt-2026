@@ -49,7 +49,6 @@ import com.team4099.robot2026.subsystems.vision.Vision
 import com.team4099.robot2026.subsystems.vision.camera.CameraIOPVSim
 import com.team4099.robot2026.subsystems.vision.camera.CameraIOPhotonvision
 import com.team4099.robot2026.util.AllianceFlipUtil
-import com.team4099.robot2026.util.CustomLogger
 import com.team4099.robot2026.util.driver.Jessika
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.Commands
@@ -65,9 +64,7 @@ import org.littletonrobotics.junction.Logger
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.smoothDeadband
-import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.derived.degrees
-import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.max
 import org.team4099.lib.units.min
 

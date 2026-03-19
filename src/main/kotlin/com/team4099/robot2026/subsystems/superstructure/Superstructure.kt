@@ -77,7 +77,7 @@ class Superstructure(
 
   override fun periodic() {
     val startTime = Clock.epochTime
-    CustomLogger.recordOutput("idk", (intakeOverridingAngle+10.degrees).inDegrees)
+    CustomLogger.recordOutput("idk", (intakeOverridingAngle + 10.degrees).inDegrees)
 
     val climbStartTime = Clock.epochTime
     climb.onLoop()
