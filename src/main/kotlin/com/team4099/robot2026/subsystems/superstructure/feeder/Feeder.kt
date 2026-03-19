@@ -41,7 +41,8 @@ class Feeder(private val io: FeederIO) : ControlledByStateMachine() {
     private set
 
   val isAtTargetedVelocity: Boolean
-    get() = return (inputs.feederVelocity - feederVelocityTarget) <= FeederConstants.VELOCITY_TOLERANCE
+    get() =
+        return (inputs.feederVelocity - feederVelocityTarget) <= FeederConstants.VELOCITY_TOLERANCE
 
   private val m_sysIdRoutine =
       SysIdRoutine(

@@ -35,7 +35,6 @@ import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.Radian
-import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.inRotation2ds
@@ -147,7 +146,7 @@ class AimOTFCommand(
         "FaceHubCommand/wantedPose",
         Pose2d(drivetrain.pose.x, drivetrain.pose.y, wantedRotation).pose2d)
 
-    hasAligned = distanceToHub * thetaPID.error.absoluteValue.inRadians  < 18.inches
+    hasAligned = distanceToHub * thetaPID.error.absoluteValue.inRadians < 18.inches
 
     if (hasAligned) lastAligned = Clock.timestamp
 
@@ -164,7 +163,8 @@ class AimOTFCommand(
       val speedMagnitude =
           sqrt(speedX.inMetersPerSecond.pow(2) + speedY.inMetersPerSecond.pow(2)).meters.perSecond
 
-      if (speedMagnitude > 0.1.meters.perSecond && (Clock.timestamp - lastAligned < 1.seconds) || !hasAligned) {
+      if (speedMagnitude > 0.1.meters.perSecond && (Clock.timestamp - lastAligned < 1.seconds) ||
+          !hasAligned) {
         if (speedMagnitude > MAX_VELOCITY_RADIUS) {
           // Convert to unit vector and then * MAX_VELOCITY_RADIUS
           speedX = speedX / speedMagnitude.inMetersPerSecond * MAX_VELOCITY_RADIUS.inMetersPerSecond
