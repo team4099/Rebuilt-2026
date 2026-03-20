@@ -105,10 +105,10 @@ class AimOTFCommand(
 
   private val thetaPID: PIDController<Radian, Velocity<Radian>>
 
-  private val MAX_VELOCITY_RADIUS = 1.meters.perSecond
+  private val MAX_VELOCITY_RADIUS = .75.meters.perSecond
   private var timeout = -1.seconds
   private var startTime = -1.seconds
-  private var lastAligned = -1.seconds
+  private var lastTimeNotStopped = -1.seconds
 
   private var startedInAuto = false
 
@@ -146,9 +146,7 @@ class AimOTFCommand(
         "FaceHubCommand/wantedPose",
         Pose2d(drivetrain.pose.x, drivetrain.pose.y, wantedRotation).pose2d)
 
-    hasAligned = distanceToHub * thetaPID.error.absoluteValue.inRadians < 18.inches
-
-    if (hasAligned) lastAligned = Clock.timestamp
+    hasAligned = distanceToHub * thetaPID.error.absoluteValue.inRadians < 8.inches
 
     CustomLogger.recordOutput("FaceHubCommand/hasAligned", hasAligned)
     CustomLogger.recordOutput("FaceHubCommand/distanceTHubMeters", distanceToHub.inMeters)
@@ -163,8 +161,9 @@ class AimOTFCommand(
       val speedMagnitude =
           sqrt(speedX.inMetersPerSecond.pow(2) + speedY.inMetersPerSecond.pow(2)).meters.perSecond
 
-      if (speedMagnitude > 0.1.meters.perSecond && (Clock.timestamp - lastAligned < 1.seconds) ||
-          !hasAligned) {
+      if (speedMagnitude > 0.1.meters.perSecond || !hasAligned) {
+        // Reset x-lock timer when moving
+        lastTimeNotStopped = Clock.timestamp
         if (speedMagnitude > MAX_VELOCITY_RADIUS) {
           // Convert to unit vector and then * MAX_VELOCITY_RADIUS
           speedX = speedX / speedMagnitude.inMetersPerSecond * MAX_VELOCITY_RADIUS.inMetersPerSecond
@@ -175,7 +174,7 @@ class AimOTFCommand(
             ChassisSpeeds.fromFieldRelativeSpeeds(
                 speedX, speedY, thetaVel, drivetrain.pose.rotation.z))
       } else {
-        drivetrain.stopWithX()
+        if (Clock.timestamp - lastTimeNotStopped > 1.seconds) drivetrain.stopWithX()
       }
     }
 
