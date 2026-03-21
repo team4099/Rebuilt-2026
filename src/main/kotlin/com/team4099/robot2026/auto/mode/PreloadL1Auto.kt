@@ -22,20 +22,20 @@ class PreloadL1Auto(val drivetrain: Drive, val superstructure: Superstructure) :
             FollowChoreoPath(drivetrain, firstTrajectory),
             superstructure.requestPrepScoreCommand()),
         WaitCommand(1.5),
-      AimOTFCommand(drivetrain, 2.seconds).until { AimOTFCommand.hasAligned },
-      superstructure.requestScoreCommand(),
+        AimOTFCommand(drivetrain, 2.seconds).until { AimOTFCommand.hasAligned },
+        superstructure.requestScoreCommand(),
         WaitCommand(10.0),
         superstructure.requestIdleCommand(),
         // superstructure.requestPrepClimbCommand(),
         // WaitCommand(2.0),
         // FollowChoreoPath(drivetrain, secondTrajectory)
         //  superstructure.requestClimbCommand())
-        )
+    )
   }
 
   companion object {
     val firstTrajectory = Choreo.loadTrajectory<SwerveSample>("preload/preloadShoot.traj").get()
-    //val secondTrajectory = Choreo.loadTrajectory<SwerveSample>("preload/climb.traj").get()
+    // val secondTrajectory = Choreo.loadTrajectory<SwerveSample>("preload/climb.traj").get()
 
     val startingPose = Pose2d(firstTrajectory.getInitialPose(false).get())
   }
