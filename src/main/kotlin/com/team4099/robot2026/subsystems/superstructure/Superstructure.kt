@@ -164,6 +164,8 @@ class Superstructure(
             Request.RollersRequest.OpenLoop(RollersConstants.IDLE_VOLTAGE)
         shooter.currentRequest = Request.ShooterRequest.Idle()
 
+        intakeOverridingAngle = IntakeConstants.ANGLES.INTAKE_ANGLE
+
         nextState =
             when (currentRequest) {
               is SuperstructureRequest.ForceHome -> SuperstructureStates.FORCE_HOME
