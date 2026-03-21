@@ -483,7 +483,7 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
       distanceToShooterMap.put(2.11.meters, 29.rotations.perSecond)
       distanceToShooterMap.put(2.35.meters, 29.rotations.perSecond)
       distanceToShooterMap.put(2.45.meters, 30.5.rotations.perSecond)
-      distanceToShooterMap.put(2.7.meters, 31.5.rotations.perSecond)
+      distanceToShooterMap.put(2.7.meters, 32.rotations.perSecond)
       distanceToShooterMap.put(2.9.meters, 33.rotations.perSecond)
       distanceToShooterMap.put(3.meters, 44.rotations.perSecond)
       distanceToShooterMap.put(3.2.meters, 46.rotations.perSecond)
