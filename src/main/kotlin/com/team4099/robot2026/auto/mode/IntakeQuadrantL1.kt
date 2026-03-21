@@ -70,7 +70,6 @@ class IntakeQuadrantL1(
     val mainTraj =
         Choreo.loadTrajectory<SwerveSample>("IntakeQuadrantL1/IntakeQuadrantClimb.traj").get()
 
-
     val startingPose = Pose2d(mainTraj.getInitialPose(false).get())
   }
 }
