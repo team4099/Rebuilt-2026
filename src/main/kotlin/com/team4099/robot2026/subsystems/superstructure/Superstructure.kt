@@ -168,7 +168,7 @@ class Superstructure(
             when (currentRequest) {
               is SuperstructureRequest.ForceHome -> SuperstructureStates.FORCE_HOME
               is SuperstructureRequest.Unjam -> SuperstructureStates.UNJAM
-              is SuperstructureRequest.ExtendClimb -> SuperstructureStates.PREP_CLIMB
+              // is SuperstructureRequest.ExtendClimb -> SuperstructureStates.PREP_CLIMB
               is SuperstructureRequest.PrepScore -> SuperstructureStates.PREP_SCORE
               is SuperstructureRequest.Score -> SuperstructureStates.SCORE
               is SuperstructureRequest.Intake -> SuperstructureStates.INTAKE
@@ -219,7 +219,7 @@ class Superstructure(
         when (currentRequest) {
           is SuperstructureRequest.Idle -> nextState = SuperstructureStates.IDLE
           is SuperstructureRequest.Intake -> nextState = SuperstructureStates.INTAKE
-          is SuperstructureRequest.ExtendClimb -> nextState = SuperstructureStates.PREP_CLIMB
+          // is SuperstructureRequest.ExtendClimb -> nextState = SuperstructureStates.PREP_CLIMB
           is SuperstructureRequest.Score -> {
             if (shooter.isAtTargetedVelocity) {
               nextState = SuperstructureStates.SCORE
@@ -243,7 +243,7 @@ class Superstructure(
         when (currentRequest) {
           is SuperstructureRequest.Idle -> nextState = SuperstructureStates.IDLE
           is SuperstructureRequest.Intake -> nextState = SuperstructureStates.IDLE
-          is SuperstructureRequest.ExtendClimb -> nextState = SuperstructureStates.PREP_CLIMB
+          // is SuperstructureRequest.ExtendClimb -> nextState = SuperstructureStates.PREP_CLIMB
           else -> {}
         }
       }
@@ -262,7 +262,7 @@ class Superstructure(
 
         when (currentRequest) {
           is SuperstructureRequest.Idle -> nextState = SuperstructureStates.IDLE
-          is SuperstructureRequest.ExtendClimb -> nextState = SuperstructureStates.PREP_CLIMB
+          // is SuperstructureRequest.ExtendClimb -> nextState = SuperstructureStates.PREP_CLIMB
           else -> {}
         }
       }
@@ -282,7 +282,7 @@ class Superstructure(
           is SuperstructureRequest.PrepScore -> nextState = SuperstructureStates.PREP_SCORE
           is SuperstructureRequest.Score -> nextState = SuperstructureStates.SCORE
           is SuperstructureRequest.Eject -> nextState = SuperstructureStates.EJECT
-          is SuperstructureRequest.ExtendClimb -> nextState = SuperstructureStates.PREP_CLIMB
+          // is SuperstructureRequest.ExtendClimb -> nextState = SuperstructureStates.PREP_CLIMB
           else -> {}
         }
       }
@@ -301,11 +301,11 @@ class Superstructure(
           is SuperstructureRequest.Idle -> {
             nextState = SuperstructureStates.IDLE
           }
-          is SuperstructureRequest.RetractClimb -> {
-            if (climb.isAtTargetedPosition) {
-              nextState = SuperstructureStates.CLIMB
-            }
-          }
+          //          is SuperstructureRequest.RetractClimb -> {
+          //            if (climb.isAtTargetedPosition) {
+          //              nextState = SuperstructureStates.CLIMB
+          //            }
+          //          }
           else -> {}
         }
       }
@@ -315,7 +315,7 @@ class Superstructure(
             Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.CLIMB_ANGLE)
 
         when (currentRequest) {
-          is SuperstructureRequest.ExtendClimb -> nextState = SuperstructureStates.PREP_CLIMB
+          // is SuperstructureRequest.ExtendClimb -> nextState = SuperstructureStates.PREP_CLIMB
           else -> {}
         }
       }
@@ -328,7 +328,7 @@ class Superstructure(
         when (currentRequest) {
           is SuperstructureRequest.Idle -> nextState = SuperstructureStates.IDLE
           is SuperstructureRequest.Intake -> nextState = SuperstructureStates.INTAKE
-          is SuperstructureRequest.ExtendClimb -> nextState = SuperstructureStates.PREP_CLIMB
+          // is SuperstructureRequest.ExtendClimb -> nextState = SuperstructureStates.PREP_CLIMB
           else -> {}
         }
       }
@@ -378,17 +378,17 @@ class Superstructure(
     return returnCommand
   }
 
-  fun requestPrepClimbCommand(): Command {
-    val returnCommand = runOnce { currentRequest = SuperstructureRequest.ExtendClimb() }
-    returnCommand.name = "RequestPrepClimbCommand"
-    return returnCommand
-  }
-
-  fun requestClimbCommand(): Command {
-    val returnCommand = runOnce { currentRequest = SuperstructureRequest.RetractClimb() }
-    returnCommand.name = "RequestClimbCommand"
-    return returnCommand
-  }
+  //  fun requestPrepClimbCommand(): Command {
+  //    val returnCommand = runOnce { currentRequest = SuperstructureRequest.ExtendClimb() }
+  //    returnCommand.name = "RequestPrepClimbCommand"
+  //    return returnCommand
+  //  }
+  //
+  //  fun requestClimbCommand(): Command {
+  //    val returnCommand = runOnce { currentRequest = SuperstructureRequest.RetractClimb() }
+  //    returnCommand.name = "RequestClimbCommand"
+  //    return returnCommand
+  //  }
 
   fun requestForceIntakeCommand(wantedAngle: Angle): Command {
     val returnCommand = runOnce {

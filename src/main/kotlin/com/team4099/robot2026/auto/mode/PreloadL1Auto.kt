@@ -23,10 +23,11 @@ class PreloadL1Auto(val drivetrain: Drive, val superstructure: Superstructure) :
         superstructure.requestScoreCommand(),
         WaitCommand(4.0),
         superstructure.requestIdleCommand(),
-        superstructure.requestPrepClimbCommand(),
+        // superstructure.requestPrepClimbCommand(),
         WaitCommand(2.0),
-        FollowChoreoPath(drivetrain, secondTrajectory),
-        superstructure.requestClimbCommand())
+        FollowChoreoPath(drivetrain, secondTrajectory)
+        //  superstructure.requestClimbCommand())
+        )
   }
 
   companion object {

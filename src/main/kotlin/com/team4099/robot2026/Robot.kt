@@ -8,7 +8,6 @@ import com.team4099.robot2026.commands.drivetrain.DrivePathOTF
 import com.team4099.robot2026.config.ControlBoard
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.subsystems.superstructure.Request
-import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import com.team4099.robot2026.util.Alert
 import com.team4099.robot2026.util.Alert.AlertType
 import com.team4099.robot2026.util.CustomLogger
@@ -213,12 +212,13 @@ object Robot : LoggedRobot() {
             (DriverStation.getGameSpecificMessage() == "B" &&
                 (DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) ==
                     DriverStation.Alliance.Red))
-    if (RobotContainer.superstructure.currentState ==
-        Superstructure.Companion.SuperstructureStates.CLIMB) {
-      RobotContainer.superstructure.currentRequest = Request.SuperstructureRequest.ExtendClimb()
-    } else {
-      RobotContainer.superstructure.currentRequest = Request.SuperstructureRequest.Idle()
-    }
+    //    if (RobotContainer.superstructure.currentState ==
+    //        Superstructure.Companion.SuperstructureStates.CLIMB) {
+    //     // RobotContainer.superstructure.currentRequest =
+    // Request.SuperstructureRequest.ExtendClimb()
+    //    } else {
+    RobotContainer.superstructure.currentRequest = Request.SuperstructureRequest.Idle()
+    //   }
     RobotContainer.intake.setBrakeMode(true)
   }
 
