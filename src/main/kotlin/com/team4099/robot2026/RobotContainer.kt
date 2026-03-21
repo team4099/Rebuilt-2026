@@ -83,7 +83,7 @@ object RobotContainer {
   var driveSimulation: SwerveDriveSimulation? = null
   var isAligning = false
 
-  var intakeOverridingAngle = IntakeConstants.ANGLES.IDLE_ANGLE
+  var intakeOverridingAngle = IntakeConstants.ANGLES.INTAKE_ANGLE
 
   init {
     SimulatedArena.overrideInstance(Arena2026Rebuilt(false))
@@ -246,7 +246,6 @@ object RobotContainer {
             superstructure.requestIntakeCommand()) {
               superstructure.currentState == Superstructure.Companion.SuperstructureStates.INTAKE
             })
-
     ControlBoard.forceIntakeFullUp.whileTrue(
         RepeatCommand(
             SequentialCommandGroup(

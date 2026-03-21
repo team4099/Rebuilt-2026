@@ -29,7 +29,7 @@ object IntakeConstants {
   val PIVOT_LENGTH = 1.0.inches
   val PIVOT_MAX_ANGLE = 120.degrees
   val PIVOT_MIN_ANGLE = (-50).degrees
-
+  val PIVOT_MAX_FORCE_ANLGE = 110.0.degrees
   val STATOR_CURRENT_LIMIT = 120.amps
   val SUPPLY_CURRENT_LIMIT = 40.amps
 
