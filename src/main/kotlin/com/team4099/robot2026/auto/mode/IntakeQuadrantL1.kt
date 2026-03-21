@@ -37,7 +37,7 @@ class IntakeQuadrantL1(
                     superstructure.requestPrepScoreCommand())),
             AimOTFCommand(drivetrain, 1.seconds).until { AimOTFCommand.hasAligned },
             superstructure.requestScoreCommand(),
-            WaitCommand(1.25),
+            WaitCommand(2.25),
             superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE)))
     //            RepeatCommand(
     //                    SequentialCommandGroup(
