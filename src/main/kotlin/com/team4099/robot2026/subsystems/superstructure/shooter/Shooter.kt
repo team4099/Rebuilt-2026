@@ -494,13 +494,13 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
     }
 
     fun distanceToShooterRPM(distanceToTarget: Length): AngularVelocity {
-      if (1.95.meters <= distanceToTarget && distanceToTarget <= 5.41.meters) {
+      if (1.95.meters <= distanceToTarget && distanceToTarget <= 4.9.meters) {
         return distanceToShooterMap.get(distanceToTarget)
       }
       return max(
           ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY,
           min(
-              (11.70986 * distanceToTarget.inMeters + 4.54954).rotations.perSecond,
+              (10.1634 * distanceToTarget.inMeters + 9.20232).rotations.perSecond,
               ShooterConstants.VELOCITIES.MAXIMUM_LAUNCH_VELOCITY))
     }
   }
