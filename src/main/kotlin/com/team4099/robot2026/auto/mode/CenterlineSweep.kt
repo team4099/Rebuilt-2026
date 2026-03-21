@@ -60,13 +60,13 @@ class CenterlineSweep(
             )
             .withTimeout(12.0),
         superstructure.requestIdleCommand(),
-        superstructure.requestPrepClimbCommand(),
+        // superstructure.requestPrepClimbCommand(),
         ConditionalCommand(
             FollowChoreoPath(drivetrain, climbFlippedTraj),
             FollowChoreoPath(drivetrain, climbUnflippedTraj)) {
               flipVeritcally
-            },
-        superstructure.requestClimbCommand())
+            })
+    //  superstructure.requestClimbCommand())
   }
 
   companion object {

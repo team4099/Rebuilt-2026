@@ -14,9 +14,9 @@ sealed interface Request {
 
     class Unjam : SuperstructureRequest
 
-    class ExtendClimb() : SuperstructureRequest
+    // class ExtendClimb() : SuperstructureRequest
 
-    class RetractClimb() : SuperstructureRequest
+    // class RetractClimb() : SuperstructureRequest
 
     class PrepScore() : SuperstructureRequest
 
