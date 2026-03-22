@@ -237,15 +237,7 @@ object RobotContainer {
     //    ControlBoard.prepClimb.onTrue(superstructure.requestPrepClimbCommand())
     //    ControlBoard.climb.onTrue(superstructure.requestClimbCommand())
 
-    ControlBoard.intake.onTrue(
-        ConditionalCommand(
-            SequentialCommandGroup(
-                superstructure.runOnce { superstructure.jigglingIntake = true },
-                WaitCommand(0.5),
-                superstructure.runOnce { superstructure.jigglingIntake = false }),
-            superstructure.requestIntakeCommand()) {
-              superstructure.currentState == Superstructure.Companion.SuperstructureStates.INTAKE
-            })
+    ControlBoard.intake.onTrue(superstructure.requestIntakeCommand())
     ControlBoard.forceIntakeFullUp.whileTrue(
         RepeatCommand(
             SequentialCommandGroup(
