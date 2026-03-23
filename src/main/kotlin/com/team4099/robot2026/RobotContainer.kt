@@ -228,11 +228,17 @@ object RobotContainer {
                   Superstructure.Companion.SuperstructureStates.SCORE_AND_INTAKE
         })
     ControlBoard.manualScore.onTrue(
-        Commands.defer({Commands.runOnce({
-          superstructure.overrideShooterVelocity = !superstructure.overrideShooterVelocity
-        })}, setOf(superstructure)))
+        Commands.defer(
+            {
+              Commands.runOnce({
+                superstructure.overrideShooterVelocity = !superstructure.overrideShooterVelocity
+              })
+            },
+            setOf(superstructure)))
     ControlBoard.defenseMode.onTrue(
-        Commands.defer({Commands.runOnce({ superstructure.defenseMode = !superstructure.defenseMode })}, setOf(superstructure)))
+        Commands.defer(
+            { Commands.runOnce({ superstructure.defenseMode = !superstructure.defenseMode }) },
+            setOf(superstructure)))
 
     //    ControlBoard.prepClimb.onTrue(superstructure.requestPrepClimbCommand())
     //    ControlBoard.climb.onTrue(superstructure.requestClimbCommand())
