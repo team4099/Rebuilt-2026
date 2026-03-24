@@ -461,7 +461,7 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
       CustomLogger.recordOutput("Shooter/wantedRotDegs", theta.inDegrees)
 
       return CalculatedLaunchData(
-          (targetVirt - ShooterConstants.SHOOTER_OFFSET.translation).magnitude.meters,
+          targetVirt.minus(drivetrainPose.translation).magnitude.meters,
           sqrt(launchSpeedField.inMetersPerSecond.pow(2) + launchSpeedZ.inMetersPerSecond.pow(2))
               .meters
               .perSecond,
@@ -469,7 +469,7 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
           theta)
     }
 
-    private val launchVelToShooterMap: InterpolatingTreeMap<LinearVelocity, AngularVelocity> =
+    private val distanceToShooterMap: InterpolatingTreeMap<Length, AngularVelocity> =
         InterpolatingTreeMap(
             { startValue, endValue, q ->
               MathUtil.inverseInterpolate(startValue.value, endValue.value, q.value)
@@ -479,30 +479,33 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
             })
 
     init {
-      launchVelToShooterMap.put(7.06.meters.perSecond, 31.rotations.perSecond)
-      launchVelToShooterMap.put(7.47.meters.perSecond, 33.rotations.perSecond)
-      launchVelToShooterMap.put(7.82.meters.perSecond, 35.5.rotations.perSecond)
-      launchVelToShooterMap.put(7.994.meters.perSecond, 37.rotations.perSecond)
-      //      launchVelToShooterMap.put(8.57.meters.perSecond, 42.rotations.perSecond)
-      launchVelToShooterMap.put(9.3.meters.perSecond, 47.rotations.perSecond)
-      launchVelToShooterMap.put(10.12.meters.perSecond, 52.rotations.perSecond)
-      launchVelToShooterMap.put(11.17.meters.perSecond, 70.rotations.perSecond)
-      //      launchVelToShooterMap.put(8.65.meters.perSecond, 49.5.rotations.perSecond)
-      //      launchVelToShooterMap.put(9.34.meters.perSecond, 50.rotations.perSecond)
-      //      launchVelToShooterMap.put(9.47.meters.perSecond, 55.5.rotations.perSecond)
-      //      launchVelToShooterMap.put(9.80.meters.perSecond, 55.rotations.perSecond)
-      //      launchVelToShooterMap.put(10.44.meters.perSecond, 60.rotations.perSecond)
+      distanceToShooterMap.put(1.95.meters, 29.rotations.perSecond)
+      distanceToShooterMap.put(2.11.meters, 29.rotations.perSecond)
+      distanceToShooterMap.put(2.35.meters, 29.rotations.perSecond)
+      distanceToShooterMap.put(2.45.meters, 30.5.rotations.perSecond)
+      distanceToShooterMap.put(2.7.meters, 31.5.rotations.perSecond)
+      distanceToShooterMap.put(2.9.meters, 33.rotations.perSecond)
+      distanceToShooterMap.put(3.meters, 44.rotations.perSecond)
+      distanceToShooterMap.put(3.2.meters, 46.rotations.perSecond)
+      distanceToShooterMap.put(3.5.meters, 50.rotations.perSecond)
+      distanceToShooterMap.put(3.75.meters, 52.rotations.perSecond)
+      distanceToShooterMap.put(3.95.meters, 53.5.rotations.perSecond)
+      distanceToShooterMap.put(4.23.meters, 56.rotations.perSecond)
+      distanceToShooterMap.put(4.45.meters, 58.rotations.perSecond)
+      distanceToShooterMap.put(4.79.meters, 59.rotations.perSecond)
+      distanceToShooterMap.put(5.meters, 61.rotations.perSecond)
+      distanceToShooterMap.put(5.41.meters, 64.rotations.perSecond)
     }
 
-    fun launchVelToShooterRPM(desiredLaunchVel: LinearVelocity): AngularVelocity {
-      if (7.06.meters.perSecond <= desiredLaunchVel && desiredLaunchVel <= 11.17.meters.perSecond) {
-        return launchVelToShooterMap.get(desiredLaunchVel)
+    fun distanceToShooterRPM(distanceToTarget: Length): AngularVelocity {
+      if (1.95.meters <= distanceToTarget && distanceToTarget <= 5.41.meters) {
+        return distanceToShooterMap.get(distanceToTarget)
       }
       return max(
           ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY,
           min(
-              (8.93492 * desiredLaunchVel.inMetersPerSecond - 34.1343).rotations.perSecond,
-              ShooterConstants.VELOCITIES.MAXIMUM_LAUNCH_VELCOITY))
+              (11.70986 * distanceToTarget.inMeters + 4.54954).rotations.perSecond,
+              ShooterConstants.VELOCITIES.MAXIMUM_LAUNCH_VELOCITY))
     }
   }
 }

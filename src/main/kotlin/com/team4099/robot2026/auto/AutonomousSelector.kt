@@ -1,7 +1,6 @@
 package com.team4099.robot2026.auto
 
 import com.team4099.robot2026.auto.mode.BigCircle
-import com.team4099.robot2026.auto.mode.CenterlineSweep
 import com.team4099.robot2026.auto.mode.ExamplePathAuto
 import com.team4099.robot2026.auto.mode.IntakeQuadrantL1
 import com.team4099.robot2026.auto.mode.PreloadL1Auto
@@ -48,8 +47,10 @@ object AutonomousSelector {
         "Miscellaneous Testing Auto DO NOT RUN AT COMPETITION", AutonomousMode.TESTING)
     autonomousModeChooser.addOption("Intake Right Quadrant L1", AutonomousMode.INTAKE_RIGHT_QUAD_L1)
     autonomousModeChooser.addOption("Intake Left Quadrant L1", AutonomousMode.INTAKE_LEFT_QUAD_L1)
-    autonomousModeChooser.addOption("Centerline Sweep Left", AutonomousMode.CENTERLINE_SWEEP_LEFT)
-    autonomousModeChooser.addOption("Centerline Sweep Right", AutonomousMode.CENTERLINE_SWEEP_RIGHT)
+    //  autonomousModeChooser.addOption("Centerline Sweep Left",
+    // AutonomousMode.CENTERLINE_SWEEP_LEFT)
+    // autonomousModeChooser.addOption("Centerline Sweep Right",
+    // AutonomousMode.CENTERLINE_SWEEP_RIGHT)
     autonomousModeChooser.addOption("Preload L1 Auto", AutonomousMode.PRELOAD_L1_AUTO)
     autonomousModeChooser.addOption("Do nothing", AutonomousMode.DO_NOTHING)
 
@@ -110,21 +111,22 @@ object AutonomousSelector {
                             AllianceFlipUtil.apply(IntakeQuadrantL1.startingPose)))
               })
               .andThen(IntakeQuadrantL1(drivetrain, superstructure, flipVeritcally = true))
-      AutonomousMode.CENTERLINE_SWEEP_RIGHT ->
-          WaitCommand(waitTime.inSeconds)
-              .andThen({
-                drivetrain.pose = Pose3d(AllianceFlipUtil.apply(CenterlineSweep.startingPose))
-              })
-              .andThen(CenterlineSweep(drivetrain, superstructure, flipVeritcally = true))
-      AutonomousMode.CENTERLINE_SWEEP_LEFT ->
-          WaitCommand(waitTime.inSeconds)
-              .andThen({
-                drivetrain.pose =
-                    Pose3d(
-                        FollowChoreoPath.flipVertically(
-                            AllianceFlipUtil.apply(CenterlineSweep.startingPose)))
-              })
-              .andThen(CenterlineSweep(drivetrain, superstructure, flipVeritcally = false))
+      //      AutonomousMode.CENTERLINE_SWEEP_RIGHT ->
+      //          WaitCommand(waitTime.inSeconds)
+      //              .andThen({
+      //                drivetrain.pose =
+      // Pose3d(AllianceFlipUtil.apply(CenterlineSweep.startingPose))
+      //              })
+      //              .andThen(CenterlineSweep(drivetrain, superstructure, flipVeritcally = true))
+      //      AutonomousMode.CENTERLINE_SWEEP_LEFT ->
+      //          WaitCommand(waitTime.inSeconds)
+      //              .andThen({
+      //                drivetrain.pose =
+      //                    Pose3d(
+      //                        FollowChoreoPath.flipVertically(
+      //                            AllianceFlipUtil.apply(CenterlineSweep.startingPose)))
+      //              })
+      //              .andThen(CenterlineSweep(drivetrain, superstructure, flipVeritcally = false))
       AutonomousMode.PRELOAD_L1_AUTO ->
           WaitCommand(waitTime.inSeconds)
               .andThen({

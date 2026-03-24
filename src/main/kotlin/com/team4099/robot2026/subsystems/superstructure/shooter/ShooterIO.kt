@@ -32,6 +32,7 @@ interface ShooterIO {
     var shooterLeaderVoltage = 0.0.volts
     var shooterLeaderSupplyCurrent = 0.0.amps
     var shooterLeaderStatorCurrent = 0.0.amps
+    var shooterLeaderTorqueCurrent = 0.0.amps
     var shooterLeaderTemperature = 0.0.celsius
     var shooterLeaderVelocity = 0.0.rotations.perMinute
     var shooterLeaderAcceleration = 0.0.rotations.perMinute.perMinute
@@ -40,33 +41,34 @@ interface ShooterIO {
     var shooterFollowerVoltage = 0.0.volts
     var shooterFollowerSupplyCurrent = 0.0.amps
     var shooterFollowerStatorCurrent = 0.0.amps
+    var shooterFollowerTorqueCurrent = 0.0.amps
     var shooterFollowerTemperature = 0.0.celsius
     var shooterFollowerVelocity = 0.0.rotations.perMinute
     var shooterFollowerAcceleration = 0.0.rotations.perMinute.perMinute
 
-    override fun toLog(table: LogTable?) {
-
+    override fun toLog(table: LogTable) {
       // leader
-      table?.put("ShooterLeaderVoltage", shooterLeaderVoltage.inVolts)
-      table?.put("ShooterLeaderSupplyCurrent", shooterLeaderSupplyCurrent.inAmperes)
-      table?.put("ShooterLeaderStatorCurrent", shooterLeaderStatorCurrent.inAmperes)
-      table?.put("ShooterLeaderTemperature", shooterLeaderTemperature.inCelsius)
-      table?.put("ShooterLeaderVelocityRPM", shooterLeaderVelocity.inRotationsPerMinute)
-      table?.put(
+      table.put("ShooterLeaderVoltage", shooterLeaderVoltage.inVolts)
+      table.put("ShooterLeaderSupplyCurrent", shooterLeaderSupplyCurrent.inAmperes)
+      table.put("ShooterLeaderStatorCurrent", shooterLeaderStatorCurrent.inAmperes)
+      table.put("ShooterLeaderTorqueCurrent", shooterLeaderTorqueCurrent.inAmperes)
+      table.put("ShooterLeaderTemperature", shooterLeaderTemperature.inCelsius)
+      table.put("ShooterLeaderVelocityRPM", shooterLeaderVelocity.inRotationsPerMinute)
+      table.put(
           "ShooterLeaderAccelerationRPMPM", shooterLeaderAcceleration.inRotationsPerMinutePerMinute)
       // follower
-      table?.put("ShooterFollowerVoltage", shooterFollowerVoltage.inVolts)
-      table?.put("ShooterFollowerSupplyCurrent", shooterFollowerSupplyCurrent.inAmperes)
-      table?.put("ShooterFollowerStatorCurrent", shooterFollowerStatorCurrent.inAmperes)
-      table?.put("ShooterFollowerTemperature", shooterFollowerTemperature.inCelsius)
-      table?.put("ShooterFollowerVelocityRPM", shooterFollowerVelocity.inRotationsPerMinute)
-      table?.put(
+      table.put("ShooterFollowerVoltage", shooterFollowerVoltage.inVolts)
+      table.put("ShooterFollowerSupplyCurrent", shooterFollowerSupplyCurrent.inAmperes)
+      table.put("ShooterFollowerStatorCurrent", shooterFollowerStatorCurrent.inAmperes)
+      table.put("ShooterFollowerTorqueCurrent", shooterFollowerTorqueCurrent.inAmperes)
+      table.put("ShooterFollowerTemperature", shooterFollowerTemperature.inCelsius)
+      table.put("ShooterFollowerVelocityRPM", shooterFollowerVelocity.inRotationsPerMinute)
+      table.put(
           "ShooterFollowerAccelerationRPMPM",
           shooterFollowerAcceleration.inRotationsPerMinutePerMinute)
     }
 
     override fun fromLog(table: LogTable) {
-
       // leader
       table.get("ShooterLeaderVoltage", shooterLeaderVoltage.inVolts).let {
         shooterLeaderVoltage = it.volts
@@ -76,6 +78,9 @@ interface ShooterIO {
       }
       table.get("ShooterLeaderStatorCurrent", shooterLeaderStatorCurrent.inAmperes).let {
         shooterLeaderStatorCurrent = it.amps
+      }
+      table.get("ShooterLeaderTorqueCurrent", shooterLeaderTorqueCurrent.inAmperes).let {
+        shooterLeaderTorqueCurrent = it.amps
       }
       table.get("ShooterLeaderTemperature", shooterLeaderTemperature.inCelsius).let {
         shooterLeaderTemperature = it.celsius
@@ -97,6 +102,9 @@ interface ShooterIO {
       }
       table.get("ShooterFollowerStatorCurrent", shooterFollowerStatorCurrent.inAmperes).let {
         shooterFollowerStatorCurrent = it.amps
+      }
+      table.get("ShooterFollowerTorqueCurrent", shooterFollowerTorqueCurrent.inAmperes).let {
+        shooterFollowerTorqueCurrent = it.amps
       }
       table.get("ShooterFollowerTemperature", shooterFollowerTemperature.inCelsius).let {
         shooterFollowerTemperature = it.celsius

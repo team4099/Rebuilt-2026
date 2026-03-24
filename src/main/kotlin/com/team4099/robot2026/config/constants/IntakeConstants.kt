@@ -28,8 +28,8 @@ object IntakeConstants {
   val PIVOT_INERTIA = 1.0.grams.meterSquared
   val PIVOT_LENGTH = 1.0.inches
   val PIVOT_MAX_ANGLE = 120.degrees
-  val PIVOT_MIN_ANGLE = (-45).degrees
-
+  val PIVOT_MIN_ANGLE = (-50).degrees
+  val PIVOT_MAX_FORCE_ANLGE = 110.0.degrees
   val STATOR_CURRENT_LIMIT = 120.amps
   val SUPPLY_CURRENT_LIMIT = 40.amps
 
@@ -62,7 +62,7 @@ object IntakeConstants {
 
     val CLIMB_ANGLE = PIVOT_MAX_ANGLE
 
-    val FORCE_UP_ANGLE = 105.degrees
+    val FORCE_UP_ANGLE = 80.degrees
     val FORCE_HALFUP_ANGLE = 50.degrees
     val FORCE_HALFDOWN_ANGLE = 20.degrees
     val FORCE_DOWN_ANGLE = -30.degrees
@@ -73,7 +73,7 @@ object IntakeConstants {
 
   object PID {
     // PID Constants
-    val REAL_PIVOT_KP: ProportionalGain<Radian, Volt> = 40.volts / 1.0.radians
+    val REAL_PIVOT_KP: ProportionalGain<Radian, Volt> = 55.volts / 1.0.radians
     val REAL_PIVOT_KI: IntegralGain<Radian, Volt> = 0.0.volts / (1.0.radians * 1.0.seconds)
     val REAL_PIVOT_KD: DerivativeGain<Radian, Volt> = 0.0.volts / 1.0.radians.perSecond
 
@@ -83,8 +83,8 @@ object IntakeConstants {
 
     val PIVOT_KA = 0.0.volts / 1.0.radians.perSecond.perSecond
     val PIVOT_KV = 0.0.volts / 1.0.radians.perSecond
-    val PIVOT_KG = 0.2.volts
-    val PIVOT_KS = 0.23.volts
+    val PIVOT_KG = 0.35.volts
+    val PIVOT_KS = 0.3.volts
 
     val SIM_PIVOT_KA = 0.0.volts / 1.0.radians.perSecond.perSecond
     val SIM_PIVOT_KV = 0.0.volts / 1.0.radians.perSecond

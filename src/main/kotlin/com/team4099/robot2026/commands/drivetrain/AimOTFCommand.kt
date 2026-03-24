@@ -31,11 +31,12 @@ import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inSeconds
+import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.Radian
-import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
+import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.inRotation2ds
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.inMetersPerSecond
@@ -104,9 +105,10 @@ class AimOTFCommand(
 
   private val thetaPID: PIDController<Radian, Velocity<Radian>>
 
-  private val MAX_VELOCITY_RADIUS = 1.5.meters.perSecond
+  private val MAX_VELOCITY_RADIUS = .75.meters.perSecond
   private var timeout = -1.seconds
   private var startTime = -1.seconds
+  private var lastTimeNotStopped = -1.seconds
 
   private var startedInAuto = false
 
@@ -144,9 +146,10 @@ class AimOTFCommand(
         "FaceHubCommand/wantedPose",
         Pose2d(drivetrain.pose.x, drivetrain.pose.y, wantedRotation).pose2d)
 
-    hasAligned = thetaPID.error.absoluteValue < 3.degrees
+    hasAligned = distanceToHub * thetaPID.error.absoluteValue.inRadians < 8.inches
 
     CustomLogger.recordOutput("FaceHubCommand/hasAligned", hasAligned)
+    CustomLogger.recordOutput("FaceHubCommand/distanceTHubMeters", distanceToHub.inMeters)
 
     if (DriverStation.isAutonomous()) {
       // Use planned path velocities, dont adjust
@@ -159,6 +162,8 @@ class AimOTFCommand(
           sqrt(speedX.inMetersPerSecond.pow(2) + speedY.inMetersPerSecond.pow(2)).meters.perSecond
 
       if (speedMagnitude > 0.1.meters.perSecond || !hasAligned) {
+        // Reset x-lock timer when moving
+        lastTimeNotStopped = Clock.timestamp
         if (speedMagnitude > MAX_VELOCITY_RADIUS) {
           // Convert to unit vector and then * MAX_VELOCITY_RADIUS
           speedX = speedX / speedMagnitude.inMetersPerSecond * MAX_VELOCITY_RADIUS.inMetersPerSecond
@@ -169,7 +174,7 @@ class AimOTFCommand(
             ChassisSpeeds.fromFieldRelativeSpeeds(
                 speedX, speedY, thetaVel, drivetrain.pose.rotation.z))
       } else {
-        drivetrain.stopWithX()
+        if (Clock.timestamp - lastTimeNotStopped > 1.seconds) drivetrain.stopWithX()
       }
     }
 
