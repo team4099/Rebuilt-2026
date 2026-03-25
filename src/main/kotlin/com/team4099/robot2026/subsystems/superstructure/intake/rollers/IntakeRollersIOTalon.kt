@@ -11,15 +11,11 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue
 import com.team4099.lib.math.clamp
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.RollersConstants
-import org.team4099.lib.units.AngularAcceleration
-import org.team4099.lib.units.AngularVelocity
 import edu.wpi.first.units.measure.AngularAcceleration as WPILibAngularAcceleration
 import edu.wpi.first.units.measure.AngularVelocity as WPILibAngularVelocity
 import edu.wpi.first.units.measure.Current as WPILibCurrent
 import edu.wpi.first.units.measure.Temperature as WPILibTemperature
 import edu.wpi.first.units.measure.Voltage as WPILibVoltage
-import org.team4099.lib.units.base.Current
-import org.team4099.lib.units.base.Temperature
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.inAmperes
@@ -40,13 +36,11 @@ object IntakeRollersIOTalon : IntakeRollersIO {
   val voltageControl = VoltageOut(0.0.volts.inVolts).withEnableFOC(true)
 
   private var leaderSensor =
-    ctreAngularMechanismSensor(
-      leaderTalon, RollersConstants.GEAR_RATIO, RollersConstants.VOLTAGE_COMPENSATION
-    )
+      ctreAngularMechanismSensor(
+          leaderTalon, RollersConstants.GEAR_RATIO, RollersConstants.VOLTAGE_COMPENSATION)
   private var followerSensor =
-    ctreAngularMechanismSensor(
-      followerTalon, RollersConstants.GEAR_RATIO, RollersConstants.VOLTAGE_COMPENSATION
-    )
+      ctreAngularMechanismSensor(
+          followerTalon, RollersConstants.GEAR_RATIO, RollersConstants.VOLTAGE_COMPENSATION)
 
   var leaderStatorCurrentSignal: StatusSignal<WPILibCurrent>
   var leaderSupplyCurrentSignal: StatusSignal<WPILibCurrent>
@@ -72,8 +66,6 @@ object IntakeRollersIOTalon : IntakeRollersIO {
     rollerConfig.CurrentLimits.StatorCurrentLimitEnable = true
     rollerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive
 
-
-
     leaderSupplyCurrentSignal = leaderTalon.supplyCurrent
     leaderStatorCurrentSignal = leaderTalon.statorCurrent
     leaderVelocitySignal = leaderTalon.velocity
@@ -92,9 +84,9 @@ object IntakeRollersIOTalon : IntakeRollersIO {
     followerTalon.configurator.apply(rollerConfig)
 
     followerTalon.setControl(
-      (Follower(Constants.Intake.LEADER_ROLLERS_MOTOR_ID, MotorAlignmentValue.Opposed))
-    )
+        (Follower(Constants.Intake.LEADER_ROLLERS_MOTOR_ID, MotorAlignmentValue.Opposed)))
   }
+
   override fun updateInputs(inputs: IntakeRollersIO.RollerInputs) {
     refreshStatusSignals()
 

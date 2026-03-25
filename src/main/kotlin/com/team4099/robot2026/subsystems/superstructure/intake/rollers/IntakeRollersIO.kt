@@ -43,7 +43,6 @@ interface IntakeRollersIO {
       table?.put("followerStatorCurrentAmps", followerStatorCurrent.inAmperes)
       table?.put("followerSupplyCurrentAmps", followerSupplyCurrent.inAmperes)
       table?.put("followerAccelerationRPMPM", followerAcceleration.inRotationsPerMinutePerMinute)
-
     }
 
     override fun fromLog(table: LogTable?) {
@@ -80,9 +79,9 @@ interface IntakeRollersIO {
       table?.get("followerSupplyCurrentAmps", followerSupplyCurrent.inAmperes)?.let {
         followerSupplyCurrent = it.amps
       }
-      table?.get("followerAccelerationRPMPM", followerAcceleration.inRotationsPerMinutePerMinute)?.let {
-        followerAcceleration = it.rotations.perMinute.perMinute
-      }
+      table
+          ?.get("followerAccelerationRPMPM", followerAcceleration.inRotationsPerMinutePerMinute)
+          ?.let { followerAcceleration = it.rotations.perMinute.perMinute }
     }
 
     fun updateInputs(inputs: RollerInputs) {}
