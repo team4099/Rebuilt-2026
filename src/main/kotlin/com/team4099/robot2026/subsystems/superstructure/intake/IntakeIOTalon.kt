@@ -148,9 +148,9 @@ object IntakeIOTalon : IntakeIO {
 
   override fun updateInputs(inputs: IntakeIO.IntakeIOInputs) {
     updateSignals()
-    inputs.velocity = intakeTalon.velocity.valueAsDouble.rotations.perSecond
-    inputs.intakeAppliedVoltage = voltageSignal.valueAsDouble.volts
-    inputs.intakeStatorCurrent = statorCurrentSignal.valueAsDouble.amps
+    inputs.leaderVelocity = intakeTalon.velocity.valueAsDouble.rotations.perSecond
+    inputs.leaderAppliedVoltage = voltageSignal.valueAsDouble.volts
+    inputs.leaderStatorCurrent = statorCurrentSignal.valueAsDouble.amps
     inputs.intakeSupplyCurrent = supplyCurrentSignal.valueAsDouble.amps
     inputs.intakeTemperature = temperatureSignal.valueAsDouble.celsius
     inputs.position = positionSignal.valueAsDouble.rotations

@@ -30,12 +30,12 @@ object IntakeRollersIOSim : IntakeRollersIO {
 
   override fun updateInputs(inputs: IntakeRollersIO.RollerInputs) {
     rollerSim.update(Constants.Universal.LOOP_PERIOD_TIME.inSeconds)
-    inputs.rollerVelocity = rollerSim.angularVelocityRPM.rotations.perMinute
-    inputs.rollerAcceleration = rollerSim.angularVelocityRPM.rotations.perSecond.perSecond
-    inputs.rollerAppliedVoltage = appliedVoltage
-    inputs.rollerStatorCurrent = rollerSim.currentDrawAmps.amps
+    inputs.leaderVelocity = rollerSim.angularVelocityRPM.rotations.perMinute
+    inputs.leaderAcceleration = rollerSim.angularVelocityRPM.rotations.perSecond.perSecond
+    inputs.leaderAppliedVoltage = appliedVoltage
+    inputs.leaderStatorCurrent = rollerSim.currentDrawAmps.amps
     inputs.rollerSupplyCurrent = 0.amps
-    inputs.rollerTemperature = 25.celsius
+    inputs.leaderTemperature = 25.celsius
   }
 
   override fun setVoltage(voltage: ElectricalPotential) {

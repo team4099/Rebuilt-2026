@@ -16,40 +16,47 @@ import org.team4099.lib.units.perMinute
 
 interface IntakeRollersIO {
   class RollerInputs : LoggableInputs {
-    var rollerVelocity = 0.rotations.perMinute
-    var rollerAcceleration = 0.rotations.perMinute.perMinute
-    var rollerAppliedVoltage = 0.volts
-    var rollerStatorCurrent = 0.amps
-    var rollerSupplyCurrent = 0.amps
-    var rollerTemperature = 0.celsius
+    var leaderVelocity = 0.rotations.perMinute
+    var leaderAcceleration = 0.rotations.perMinute.perMinute
+    var leaderAppliedVoltage = 0.volts
+    var leaderStatorCurrent = 0.amps
+    var leaderSupplyCurrent = 0.amps
+    var leaderTemperature = 0.celsius
+
+    var followerVelocity = 0.rotations.perMinute
+    var followerAcceleration = 0.rotations.perMinute.perMinute
+    var followerAppliedVoltage = 0.volts
+    var followerStatorCurrent = 0.amps
+    var followerSupplyCurrent = 0.amps
+    var followerTemperature = 0.celsius
 
     override fun toLog(table: LogTable?) {
-      table?.put("rollerTemperatureCelsius", rollerTemperature.inCelsius)
-      table?.put("rollerAppliedVolts", rollerAppliedVoltage.inVolts)
-      table?.put("rollerVelocityRPM", rollerVelocity.inRotationsPerMinute)
-      table?.put("rollerStatorCurrentAmps", rollerStatorCurrent.inAmperes)
-      table?.put("rollerSupplyCurrentAmps", rollerSupplyCurrent.inAmperes)
-      table?.put("rollerAccelerationRPMPM", rollerAcceleration.inRotationsPerMinutePerMinute)
+      table?.put("rollerTemperatureCelsius", leaderTemperature.inCelsius)
+      table?.put("rollerAppliedVolts", leaderAppliedVoltage.inVolts)
+      table?.put("rollerVelocityRPM", leaderVelocity.inRotationsPerMinute)
+      table?.put("rollerStatorCurrentAmps", leaderStatorCurrent.inAmperes)
+      table?.put("rollerSupplyCurrentAmps", leaderSupplyCurrent.inAmperes)
+      table?.put("rollerAccelerationRPMPM", leaderAcceleration.inRotationsPerMinutePerMinute)
     }
 
     override fun fromLog(table: LogTable?) {
-      table?.get("rollerTemperatureCelsius", rollerTemperature.inCelsius)?.let {
-        rollerTemperature = it.celsius
+      table?.get("rollerTemperatureCelsius", leaderTemperature.inCelsius)?.let {
+        leaderTemperature = it.celsius
       }
-      table?.get("rollerAppliedVolts", rollerAppliedVoltage.inVolts)?.let {
-        rollerAppliedVoltage = it.volts
+      table?.get("rollerAppliedVolts", leaderAppliedVoltage.inVolts)?.let {
+        leaderAppliedVoltage = it.volts
       }
-      table?.get("rollerVelocityRPM", rollerVelocity.inRotationsPerMinute)?.let {
-        rollerVelocity = it.rotations.perMinute
+      table?.get("rollerVelocityRPM", leaderVelocity.inRotationsPerMinute)?.let {
+        leaderVelocity = it.rotations.perMinute
       }
-      table?.get("rollerStatorCurrentAmps", rollerStatorCurrent.inAmperes)?.let {
-        rollerStatorCurrent = it.amps
+      table?.get("rollerStatorCurrentAmps", leaderStatorCurrent.inAmperes)?.let {
+        leaderStatorCurrent = it.amps
       }
-      table?.get("rollerSupplyCurrentAmps", rollerSupplyCurrent.inAmperes)?.let {
-        rollerSupplyCurrent = it.amps
+      table?.get("rollerSupplyCurrentAmps", leaderSupplyCurrent.inAmperes)?.let {
+        leaderSupplyCurrent = it.amps
       }
-      table?.get("rollerAccelerationRPMPM", rollerAcceleration.inRotationsPerMinutePerMinute)?.let {
-        rollerAcceleration = it.rotations.perMinute.perMinute
+      table?.get("rollerAccelerationRPMPM", leaderAcceleration.inRotationsPerMinutePerMinute)?.let {
+        leaderAcceleration = it.rotations.perMinute.perMinute
       }
     }
   }
