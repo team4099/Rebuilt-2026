@@ -31,12 +31,19 @@ interface IntakeRollersIO {
     var followerTemperature = 0.celsius
 
     override fun toLog(table: LogTable?) {
-      table?.put("rollerTemperatureCelsius", leaderTemperature.inCelsius)
-      table?.put("rollerAppliedVolts", leaderAppliedVoltage.inVolts)
-      table?.put("rollerVelocityRPM", leaderVelocity.inRotationsPerMinute)
-      table?.put("rollerStatorCurrentAmps", leaderStatorCurrent.inAmperes)
-      table?.put("rollerSupplyCurrentAmps", leaderSupplyCurrent.inAmperes)
-      table?.put("rollerAccelerationRPMPM", leaderAcceleration.inRotationsPerMinutePerMinute)
+      table?.put("leaderTemperatureCelsius", leaderTemperature.inCelsius)
+      table?.put("leaderAppliedVolts", leaderAppliedVoltage.inVolts)
+      table?.put("leaderVelocityRPM", leaderVelocity.inRotationsPerMinute)
+      table?.put("leaderStatorCurrentAmps", leaderStatorCurrent.inAmperes)
+      table?.put("leaderSupplyCurrentAmps", leaderSupplyCurrent.inAmperes)
+      table?.put("leaderAccelerationRPMPM", leaderAcceleration.inRotationsPerMinutePerMinute)
+      table?.put("followerTemperatureCelsius", followerTemperature.inCelsius)
+      table?.put("followerAppliedVolts", followerAppliedVoltage.inVolts)
+      table?.put("followerVelocityRPM", followerVelocity.inRotationsPerMinute)
+      table?.put("followerStatorCurrentAmps", followerStatorCurrent.inAmperes)
+      table?.put("followerSupplyCurrentAmps", followerSupplyCurrent.inAmperes)
+      table?.put("followerAccelerationRPMPM", followerAcceleration.inRotationsPerMinutePerMinute)
+
     }
 
     override fun fromLog(table: LogTable?) {
@@ -58,10 +65,28 @@ interface IntakeRollersIO {
       table?.get("rollerAccelerationRPMPM", leaderAcceleration.inRotationsPerMinutePerMinute)?.let {
         leaderAcceleration = it.rotations.perMinute.perMinute
       }
+      table?.get("followerTemperatureCelsius", followerTemperature.inCelsius)?.let {
+        followerTemperature = it.celsius
+      }
+      table?.get("followerAppliedVolts", followerAppliedVoltage.inVolts)?.let {
+        followerAppliedVoltage = it.volts
+      }
+      table?.get("followerVelocityRPM", followerVelocity.inRotationsPerMinute)?.let {
+        followerVelocity = it.rotations.perMinute
+      }
+      table?.get("followerStatorCurrentAmps", followerStatorCurrent.inAmperes)?.let {
+        followerStatorCurrent = it.amps
+      }
+      table?.get("followerSupplyCurrentAmps", followerSupplyCurrent.inAmperes)?.let {
+        followerSupplyCurrent = it.amps
+      }
+      table?.get("followerAccelerationRPMPM", followerAcceleration.inRotationsPerMinutePerMinute)?.let {
+        followerAcceleration = it.rotations.perMinute.perMinute
+      }
     }
+
+    fun updateInputs(inputs: RollerInputs) {}
+
+    fun setVoltage(voltage: ElectricalPotential) {}
   }
-
-  fun updateInputs(inputs: RollerInputs) {}
-
-  fun setVoltage(voltage: ElectricalPotential) {}
 }

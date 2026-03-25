@@ -11,9 +11,13 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue
 import com.team4099.lib.math.clamp
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.RollersConstants
-import edu.wpi.first.units.measure.Voltage
 import org.team4099.lib.units.AngularAcceleration
 import org.team4099.lib.units.AngularVelocity
+import edu.wpi.first.units.measure.AngularAcceleration as WPILibAngularAcceleration
+import edu.wpi.first.units.measure.AngularVelocity as WPILibAngularVelocity
+import edu.wpi.first.units.measure.Current as WPILibCurrent
+import edu.wpi.first.units.measure.Temperature as WPILibTemperature
+import edu.wpi.first.units.measure.Voltage as WPILibVoltage
 import org.team4099.lib.units.base.Current
 import org.team4099.lib.units.base.Temperature
 import org.team4099.lib.units.base.amps
@@ -31,49 +35,44 @@ object IntakeRollersIOTalon : IntakeRollersIO {
   private val leaderTalon: TalonFX = TalonFX(Constants.Intake.LEADER_ROLLERS_MOTOR_ID)
   private val followerTalon: TalonFX = TalonFX(Constants.Intake.LEADER_ROLLERS_MOTOR_ID)
 
-  private val leaderConfig: TalonFXConfiguration = TalonFXConfiguration()
-  private val followerConfig: TalonFXConfiguration = TalonFXConfiguration()
+  private val rollerConfig: TalonFXConfiguration = TalonFXConfiguration()
 
   val voltageControl = VoltageOut(0.0.volts.inVolts).withEnableFOC(true)
 
   private var leaderSensor =
-      ctreAngularMechanismSensor(
-          leaderTalon, RollersConstants.GEAR_RATIO, RollersConstants.VOLTAGE_COMPENSATION)
+    ctreAngularMechanismSensor(
+      leaderTalon, RollersConstants.GEAR_RATIO, RollersConstants.VOLTAGE_COMPENSATION
+    )
   private var followerSensor =
-      ctreAngularMechanismSensor(
-          followerTalon, RollersConstants.GEAR_RATIO, RollersConstants.VOLTAGE_COMPENSATION)
+    ctreAngularMechanismSensor(
+      followerTalon, RollersConstants.GEAR_RATIO, RollersConstants.VOLTAGE_COMPENSATION
+    )
 
-  var leaderStatorCurrentSignal: StatusSignal<Current>
-  var leaderSupplyCurrentSignal: StatusSignal<Current>
-  var leaderTempSignal: StatusSignal<Temperature>
-  var leaderVoltageSignal: StatusSignal<Voltage>
-  var leaderAccelSignal: StatusSignal<AngularAcceleration>
-  var leaderVelocitySignal: StatusSignal<AngularVelocity>
+  var leaderStatorCurrentSignal: StatusSignal<WPILibCurrent>
+  var leaderSupplyCurrentSignal: StatusSignal<WPILibCurrent>
+  var leaderTempSignal: StatusSignal<WPILibTemperature>
+  var leaderVoltageSignal: StatusSignal<WPILibVoltage>
+  var leaderAccelSignal: StatusSignal<WPILibAngularAcceleration>
+  var leaderVelocitySignal: StatusSignal<WPILibAngularVelocity>
 
-  var followerStatorCurrentSignal: StatusSignal<Current>
-  var followerSupplyCurrentSignal: StatusSignal<Current>
-  var followerTempSignal: StatusSignal<Temperature>
-  var followerVoltageSignal: StatusSignal<Voltage>
-  var followerAccelSignal: StatusSignal<AngularAcceleration>
-  var followerVelocitySignal: StatusSignal<AngularVelocity>
+  var followerStatorCurrentSignal: StatusSignal<WPILibCurrent>
+  var followerSupplyCurrentSignal: StatusSignal<WPILibCurrent>
+  var followerTempSignal: StatusSignal<WPILibTemperature>
+  var followerVoltageSignal: StatusSignal<WPILibVoltage>
+  var followerAccelSignal: StatusSignal<WPILibAngularAcceleration>
+  var followerVelocitySignal: StatusSignal<WPILibAngularVelocity>
 
   init {
     leaderTalon.clearStickyFaults()
     followerTalon.clearStickyFaults()
 
-    leaderConfig.CurrentLimits.SupplyCurrentLimit = RollersConstants.SUPPLY_CURRENT_LIMIT.inAmperes
-    leaderConfig.CurrentLimits.StatorCurrentLimit = RollersConstants.STATOR_CURRENT_LIMIT.inAmperes
-    leaderConfig.CurrentLimits.SupplyCurrentLimitEnable = true
-    leaderConfig.CurrentLimits.StatorCurrentLimitEnable = true
-    leaderConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive
+    rollerConfig.CurrentLimits.SupplyCurrentLimit = RollersConstants.SUPPLY_CURRENT_LIMIT.inAmperes
+    rollerConfig.CurrentLimits.StatorCurrentLimit = RollersConstants.STATOR_CURRENT_LIMIT.inAmperes
+    rollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true
+    rollerConfig.CurrentLimits.StatorCurrentLimitEnable = true
+    rollerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive
 
-    followerConfig.CurrentLimits.SupplyCurrentLimit =
-        RollersConstants.SUPPLY_CURRENT_LIMIT.inAmperes
-    followerConfig.CurrentLimits.StatorCurrentLimit =
-        RollersConstants.STATOR_CURRENT_LIMIT.inAmperes
-    followerConfig.CurrentLimits.SupplyCurrentLimitEnable = true
-    followerConfig.CurrentLimits.StatorCurrentLimitEnable = true
-    followerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive
+
 
     leaderSupplyCurrentSignal = leaderTalon.supplyCurrent
     leaderStatorCurrentSignal = leaderTalon.statorCurrent
@@ -89,13 +88,13 @@ object IntakeRollersIOTalon : IntakeRollersIO {
     followerVoltageSignal = followerTalon.motorVoltage
     followerAccelSignal = followerTalon.acceleration
 
-    leaderTalon.configurator.apply(leaderConfig)
-    followerTalon.configurator.apply(followerConfig)
+    leaderTalon.configurator.apply(rollerConfig)
+    followerTalon.configurator.apply(rollerConfig)
 
     followerTalon.setControl(
-        (Follower(Constants.Intake.LEADER_ROLLERS_MOTOR_ID, MotorAlignmentValue.Aligned)))
+      (Follower(Constants.Intake.LEADER_ROLLERS_MOTOR_ID, MotorAlignmentValue.Opposed))
+    )
   }
-
   override fun updateInputs(inputs: IntakeRollersIO.RollerInputs) {
     refreshStatusSignals()
 

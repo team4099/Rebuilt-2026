@@ -56,10 +56,9 @@ object IntakeIOSim : IntakeIO {
     armSim.update(Constants.Universal.LOOP_PERIOD_TIME.inSeconds)
 
     inputs.position = armSim.angleRads.radians
-    inputs.leaderVelocity = armSim.velocityRadPerSec.radians.perSecond
-
-    inputs.leaderAppliedVoltage = pivotAppliedVoltage
-    inputs.leaderStatorCurrent = armSim.currentDrawAmps.amps
+    inputs.velocity = armSim.velocityRadPerSec.radians.perSecond
+    inputs.intakeAppliedVoltage = pivotAppliedVoltage
+    inputs.intakeStatorCurrent = armSim.currentDrawAmps.amps
     inputs.intakeSupplyCurrent = 0.amps
     inputs.intakeTemperature = 0.0.celsius
 

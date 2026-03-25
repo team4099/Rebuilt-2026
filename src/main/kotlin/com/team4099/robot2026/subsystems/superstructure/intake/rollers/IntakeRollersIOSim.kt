@@ -34,7 +34,7 @@ object IntakeRollersIOSim : IntakeRollersIO {
     inputs.leaderAcceleration = rollerSim.angularVelocityRPM.rotations.perSecond.perSecond
     inputs.leaderAppliedVoltage = appliedVoltage
     inputs.leaderStatorCurrent = rollerSim.currentDrawAmps.amps
-    inputs.rollerSupplyCurrent = 0.amps
+    inputs.leaderSupplyCurrent = 0.amps
     inputs.leaderTemperature = 25.celsius
   }
 
