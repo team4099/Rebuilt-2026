@@ -16,16 +16,17 @@ class DoubleSwipe(
     val superstructure: Superstructure,
 ) : SequentialCommandGroup() {
   init {
-    addRequirements(drivetrain)
-
+    addRequirements(drivetrain,superstructure)
     addCommands(
         SequentialCommandGroup(
+            superstructure.requestIdleCommand(),
             ParallelCommandGroup(
                 FollowChoreoPath(drivetrain, path2),
                 SequentialCommandGroup(
                     WaitCommand(1.0),
                     superstructure.requestIntakeCommand(),
                     WaitCommand(3.0),
+                    superstructure.requestIdleCommand()
                 ),
             ),
             superstructure.requestScoreCommand(),
@@ -40,7 +41,7 @@ class DoubleSwipe(
 
   companion object {
     val path1 = Choreo.loadTrajectory<SwerveSample>("DoubleSwipe/Path1.traj").get()
-    val path2 = Choreo.loadTrajectory<SwerveSample>("DoubleSwipe/Path2.traj").get()
+    val path2 = Choreo.loadTrajectory<SwerveSample>("DoubleSwipe/NewPath_copy1.traj").get()
       val startingPose = Pose2d(path2.getInitialPose(false).get())
   }
 }
