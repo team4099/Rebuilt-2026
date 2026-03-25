@@ -31,6 +31,7 @@ class DoubleSwipe(
             ),
             superstructure.requestScoreCommand(),
             WaitCommand(8.0),
+            superstructure.requestIdleCommand(),
             ParallelCommandGroup(
                 FollowChoreoPath(drivetrain, path1),
                 SequentialCommandGroup(

@@ -141,7 +141,7 @@ object AutonomousSelector {
               .andThen(BigCircle(drivetrain))
       AutonomousMode.DOUBLE_SWIPE ->
           WaitCommand(waitTime.inSeconds)
-              .andThen({ drivetrain.pose = Pose3d(AllianceFlipUtil.apply(BigCircle.startingPose)) })
+              .andThen({ drivetrain.pose = Pose3d(AllianceFlipUtil.apply(DoubleSwipe.startingPose)) })
               .andThen(DoubleSwipe(drivetrain, superstructure))
       AutonomousMode.DO_NOTHING -> InstantCommand()
       else -> InstantCommand()
