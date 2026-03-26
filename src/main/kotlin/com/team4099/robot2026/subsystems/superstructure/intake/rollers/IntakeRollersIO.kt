@@ -47,22 +47,22 @@ interface IntakeRollersIO {
     }
 
     override fun fromLog(table: LogTable?) {
-      table?.get("rollerTemperatureCelsius", leaderTemperature.inCelsius)?.let {
+      table?.get("leaderTemperatureCelsius", leaderTemperature.inCelsius)?.let {
         leaderTemperature = it.celsius
       }
-      table?.get("rollerAppliedVolts", leaderAppliedVoltage.inVolts)?.let {
+      table?.get("leaderAppliedVolts", leaderAppliedVoltage.inVolts)?.let {
         leaderAppliedVoltage = it.volts
       }
-      table?.get("rollerVelocityRPM", leaderVelocity.inRotationsPerMinute)?.let {
+      table?.get("leaderVelocityRPM", leaderVelocity.inRotationsPerMinute)?.let {
         leaderVelocity = it.rotations.perMinute
       }
-      table?.get("rollerStatorCurrentAmps", leaderStatorCurrent.inAmperes)?.let {
+      table?.get("leaderStatorCurrentAmps", leaderStatorCurrent.inAmperes)?.let {
         leaderStatorCurrent = it.amps
       }
-      table?.get("rollerSupplyCurrentAmps", leaderSupplyCurrent.inAmperes)?.let {
+      table?.get("leaderSupplyCurrentAmps", leaderSupplyCurrent.inAmperes)?.let {
         leaderSupplyCurrent = it.amps
       }
-      table?.get("rollerAccelerationRPMPM", leaderAcceleration.inRotationsPerMinutePerMinute)?.let {
+      table?.get("leaderAccelerationRPMPM", leaderAcceleration.inRotationsPerMinutePerMinute)?.let {
         leaderAcceleration = it.rotations.perMinute.perMinute
       }
       table?.get("followerTemperatureCelsius", followerTemperature.inCelsius)?.let {
@@ -84,9 +84,9 @@ interface IntakeRollersIO {
         followerAcceleration = it.rotations.perMinute.perMinute
       }
     }
-
+  }
     fun updateInputs(inputs: RollerInputs) {}
 
     fun setVoltage(voltage: ElectricalPotential) {}
   }
-}
+
