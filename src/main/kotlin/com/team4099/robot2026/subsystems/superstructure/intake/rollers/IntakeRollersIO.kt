@@ -84,8 +84,8 @@ interface IntakeRollersIO {
           ?.let { followerAcceleration = it.rotations.perMinute.perMinute }
     }
   }
-    fun updateInputs(inputs: RollerInputs) {}
 
-    fun setVoltage(voltage: ElectricalPotential) {}
-  }
+  fun updateInputs(inputs: RollerInputs) {}
 
+  fun setVoltage(voltage: ElectricalPotential) {}
+}

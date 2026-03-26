@@ -96,42 +96,39 @@ object IntakeRollersIOTalon : IntakeRollersIO {
     inputs.leaderSupplyCurrent = leaderSupplyCurrentSignal.valueAsDouble.amps
     inputs.leaderTemperature = leaderTempSignal.valueAsDouble.celsius
     inputs.leaderAcceleration =
-      leaderAccelSignal.valueAsDouble.rotations.perSecond.perSecond * RollersConstants.GEAR_RATIO
+        leaderAccelSignal.valueAsDouble.rotations.perSecond.perSecond * RollersConstants.GEAR_RATIO
     inputs.followerVelocity = followerSensor.velocity
     inputs.followerAppliedVoltage = followerVoltageSignal.valueAsDouble.volts
     inputs.followerStatorCurrent = followerSupplyCurrentSignal.valueAsDouble.amps
     inputs.followerSupplyCurrent = followerSupplyCurrentSignal.valueAsDouble.amps
     inputs.followerTemperature = followerTempSignal.valueAsDouble.celsius
     inputs.followerAcceleration =
-      followerAccelSignal.valueAsDouble.rotations.perSecond.perSecond *
-          RollersConstants.GEAR_RATIO
+        followerAccelSignal.valueAsDouble.rotations.perSecond.perSecond *
+            RollersConstants.GEAR_RATIO
   }
 
   fun refreshStatusSignals() {
     BaseStatusSignal.refreshAll(
-      leaderSupplyCurrentSignal,
-      leaderStatorCurrentSignal,
-      leaderVelocitySignal,
-      leaderTempSignal,
-      leaderVoltageSignal,
-      leaderAccelSignal,
-      followerStatorCurrentSignal,
-      followerSupplyCurrentSignal,
-      followerVelocitySignal,
-      followerTempSignal,
-      followerVoltageSignal,
-      followerAccelSignal
-    )
+        leaderSupplyCurrentSignal,
+        leaderStatorCurrentSignal,
+        leaderVelocitySignal,
+        leaderTempSignal,
+        leaderVoltageSignal,
+        leaderAccelSignal,
+        followerStatorCurrentSignal,
+        followerSupplyCurrentSignal,
+        followerVelocitySignal,
+        followerTempSignal,
+        followerVoltageSignal,
+        followerAccelSignal)
   }
 
   override fun setVoltage(voltage: ElectricalPotential) {
     val clampedVoltage =
-      clamp(
-        voltage,
-        (-RollersConstants.VOLTAGE_COMPENSATION),
-        RollersConstants.VOLTAGE_COMPENSATION
-      )
+        clamp(
+            voltage,
+            (-RollersConstants.VOLTAGE_COMPENSATION),
+            RollersConstants.VOLTAGE_COMPENSATION)
     leaderTalon.setVoltage(clampedVoltage.inVolts)
   }
 }
-
