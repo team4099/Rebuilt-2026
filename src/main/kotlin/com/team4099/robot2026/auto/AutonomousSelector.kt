@@ -53,7 +53,7 @@ object AutonomousSelector {
     // autonomousModeChooser.addOption("Centerline Sweep Right",
     // AutonomousMode.CENTERLINE_SWEEP_RIGHT)
     autonomousModeChooser.addOption("Preload L1 Auto", AutonomousMode.PRELOAD_L1_AUTO)
-      autonomousModeChooser.addOption("Double Swipe", AutonomousMode.DOUBLE_SWIPE)
+    autonomousModeChooser.addOption("Double Swipe", AutonomousMode.DOUBLE_SWIPE)
     autonomousModeChooser.addOption("Do nothing", AutonomousMode.DO_NOTHING)
 
     autoTab.add("Mode", autonomousModeChooser.sendableChooser).withSize(4, 2).withPosition(2, 0)
@@ -141,7 +141,9 @@ object AutonomousSelector {
               .andThen(BigCircle(drivetrain))
       AutonomousMode.DOUBLE_SWIPE ->
           WaitCommand(waitTime.inSeconds)
-              .andThen({ drivetrain.pose = Pose3d(AllianceFlipUtil.apply(DoubleSwipe.startingPose)) })
+              .andThen({
+                drivetrain.pose = Pose3d(AllianceFlipUtil.apply(DoubleSwipe.startingPose))
+              })
               .andThen(DoubleSwipe(drivetrain, superstructure))
       AutonomousMode.DO_NOTHING -> InstantCommand()
       else -> InstantCommand()
