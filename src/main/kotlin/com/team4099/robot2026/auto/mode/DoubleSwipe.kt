@@ -2,7 +2,6 @@ package com.team4099.robot2026.auto.mode
 
 import choreo.Choreo
 import choreo.trajectory.SwerveSample
-import com.team4099.robot2026.auto.mode.CenterlineSweep.Companion.mainTraj
 import com.team4099.robot2026.commands.drivetrain.FollowChoreoPath
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.subsystems.superstructure.Superstructure
@@ -16,7 +15,7 @@ class DoubleSwipe(
     val superstructure: Superstructure,
 ) : SequentialCommandGroup() {
   init {
-    addRequirements(drivetrain,superstructure)
+    addRequirements(drivetrain, superstructure)
     addCommands(
         SequentialCommandGroup(
             superstructure.requestIdleCommand(),
@@ -26,8 +25,7 @@ class DoubleSwipe(
                     WaitCommand(1.0),
                     superstructure.requestIntakeCommand(),
                     WaitCommand(3.0),
-                    superstructure.requestIdleCommand()
-                ),
+                    superstructure.requestIdleCommand()),
             ),
             superstructure.requestScoreCommand(),
             WaitCommand(7.0),
@@ -43,6 +41,6 @@ class DoubleSwipe(
   companion object {
     val path1 = Choreo.loadTrajectory<SwerveSample>("DoubleSwipe/Path1.traj").get()
     val path2 = Choreo.loadTrajectory<SwerveSample>("DoubleSwipe/NewPath_copy1.traj").get()
-      val startingPose = Pose2d(path2.getInitialPose(false).get())
+    val startingPose = Pose2d(path2.getInitialPose(false).get())
   }
 }
