@@ -118,7 +118,7 @@ object RobotContainer {
           climb = Climb(object : ClimbIO {})
           feeder = Feeder(FeederIOTalonFX)
           hopper = Hopper(HopperIOTalon)
-          intake = Intake(IntakeIOTalon)
+          intake = Intake(object : IntakeIO {})
           intakeRollers = IntakeRollers(IntakeRollersIOTalon)
           shooter = Shooter(ShooterIOTalon)
           leds =
