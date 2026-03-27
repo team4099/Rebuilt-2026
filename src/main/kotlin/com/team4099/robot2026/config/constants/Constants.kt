@@ -72,7 +72,8 @@ object Constants {
 
   object Intake {
     const val INTAKE_PIVOT_MOTOR_ID = 41
-    const val INTAKE_ROLLERS_MOTOR_ID = 42
+    const val LEADER_ROLLERS_MOTOR_ID = 42
+    const val FOLLOWER_ROLLERS_MOTOR_ID = 43
   }
 
   object Hopper {

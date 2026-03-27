@@ -57,7 +57,6 @@ object IntakeIOSim : IntakeIO {
 
     inputs.position = armSim.angleRads.radians
     inputs.velocity = armSim.velocityRadPerSec.radians.perSecond
-
     inputs.intakeAppliedVoltage = pivotAppliedVoltage
     inputs.intakeStatorCurrent = armSim.currentDrawAmps.amps
     inputs.intakeSupplyCurrent = 0.amps
