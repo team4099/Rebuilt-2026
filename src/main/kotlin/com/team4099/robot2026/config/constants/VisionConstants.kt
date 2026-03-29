@@ -5,7 +5,7 @@ import com.team4099.robot2026.subsystems.vision.camera.CameraIO
 import edu.wpi.first.math.Matrix
 import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.math.numbers.N1
-import edu.wpi.first.math.numbers.N4
+import edu.wpi.first.math.numbers.N3
 import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.geometry.Transform3d
 import org.team4099.lib.geometry.Translation3d
@@ -78,8 +78,8 @@ object VisionConstants {
         }
 
   // x, y, θ
-  val singleTagStdDevs: Matrix<N4?, N1?> = VecBuilder.fill(0.05, 0.05, 1.5, 9_999.0)
-  val multiTagStdDevs: Matrix<N4?, N1?> = VecBuilder.fill(0.01, 0.01, 0.05, 0.1)
+  val singleTagStdDevs: Matrix<N3?, N1?> = VecBuilder.fill(0.05, 0.05, 9_999.0)
+  val multiTagStdDevs: Matrix<N3?, N1?> = VecBuilder.fill(0.01, 0.01, 0.1)
 
   enum class OBJECT_CLASS(val id: Int, val mapleSimType: String?) {
     FUEL(0, "Fuel")

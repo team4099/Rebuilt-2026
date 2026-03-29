@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.Command
 import kotlin.math.PI
 import org.team4099.lib.controller.PIDController
+import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.kinematics.ChassisSpeeds
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Length
@@ -141,11 +142,12 @@ class CoolerTargetTagCommand(
 
     CustomLogger.recordOutput("CoolerTargetTagCommand/odomTTag", odomTTag.toPose3d().pose3d)
     CustomLogger.recordOutput(
-        "CoolerTargetTagCommand/expectedTagPose", drivetrain.pose.transformBy(odomTTag).pose3d)
+        "CoolerTargetTagCommand/expectedTagPose",
+        Pose3d(drivetrain.pose).transformBy(odomTTag).pose3d)
     CustomLogger.recordOutput(
         "CoolerTargetTagCommand/setpointTranslation", setpointTranslation.translation3d)
     CustomLogger.recordOutput(
-        "CoolerTargetTagCommand/currentRotation", drivetrain.rotation.z.inDegrees)
+        "CoolerTargetTagCommand/currentRotation", drivetrain.rotation.inDegrees)
     CustomLogger.recordOutput(
         "CoolerTargetTagCommand/setpointRotation",
         (setpointRotation.z + thetaTargetOffset).inDegrees)
@@ -156,7 +158,7 @@ class CoolerTargetTagCommand(
             setpointTranslation.x.sign
     var yvel = -yPID.calculate(setpointTranslation.y, yTargetOffset)
     var thetavel =
-        thetaPID.calculate(drivetrain.rotation.z, setpointRotation.z + thetaTargetOffset) *
+        thetaPID.calculate(drivetrain.rotation, setpointRotation.z + thetaTargetOffset) *
             if (RobotBase.isReal()) -1.0 else 1.0
 
     CustomLogger.recordOutput("CoolerTargetTagCommand/xvelmps", xvel.inMetersPerSecond)
