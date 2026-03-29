@@ -29,7 +29,7 @@ import org.team4099.lib.units.perSecond
 object IntakeRollersIOTalon : IntakeRollersIO {
 
   private val leaderTalon: TalonFX = TalonFX(Constants.Intake.LEADER_ROLLERS_MOTOR_ID)
-  private val followerTalon: TalonFX = TalonFX(Constants.Intake.LEADER_ROLLERS_MOTOR_ID)
+  private val followerTalon: TalonFX = TalonFX(Constants.Intake.FOLLOWER_ROLLERS_MOTOR_ID)
 
   private val rollerConfig: TalonFXConfiguration = TalonFXConfiguration()
 

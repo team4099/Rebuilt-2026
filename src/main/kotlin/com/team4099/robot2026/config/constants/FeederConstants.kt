@@ -3,6 +3,7 @@ package com.team4099.robot2026.config.constants
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.grams
+import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.AccelerationFeedforward
 import org.team4099.lib.units.derived.DerivativeGain
@@ -29,23 +30,23 @@ object FeederConstants {
   val VOLTAGE_COMPENSATION = 12.0.volts
 
   val IDLE_VOLTAGE = if (Constants.Tuning.TUNING_MODE) 0.volts else -1.volts
-  val SCORE_VELOCITY = 25.rotations.perSecond
+  val SCORE_VELOCITY =
+      HopperConstants.VELOCITIES.SCORE_VELOCITY * (11.inches / 4.inches) // matches with hopper
   val SCORE_VOLTAGE = 12.volts
   val UNJAM_VOLTAGE = -12.volts
 
   val VELOCITY_TOLERANCE = 2.rotations.perSecond
 
   object PID {
-    val REAL_KP: ProportionalGain<Velocity<Radian>, Volt> = 0.4.volts / 1.0.radians.perSecond
+    val REAL_KP: ProportionalGain<Velocity<Radian>, Volt> = 0.425.volts / 1.0.radians.perSecond
     val REAL_KI: IntegralGain<Velocity<Radian>, Volt> =
         0.0.volts / (1.0.radians.perSecond * 1.0.seconds)
     val REAL_KD: DerivativeGain<Velocity<Radian>, Volt> =
         0.0.volts / (1.0.radians.perSecond / 1.0.seconds)
 
-    val REAL_KS: StaticFeedforward<Volt> = 0.37152.volts
-    val REAL_KV: VelocityFeedforward<Radian, Volt> = 0.094.volts / 1.radians.perSecond
-    val REAL_KA: AccelerationFeedforward<Radian, Volt> =
-        0.0020456.volts / 1.radians.perSecond.perSecond
+    val REAL_KS: StaticFeedforward<Volt> = 0.45.volts
+    val REAL_KV: VelocityFeedforward<Radian, Volt> = 0.123.volts / 1.radians.perSecond
+    val REAL_KA: AccelerationFeedforward<Radian, Volt> = 0.005.volts / 1.radians.perSecond.perSecond
 
     val SIM_KP: ProportionalGain<Velocity<Radian>, Volt> = 0.0.volts / 1.0.degrees.perSecond
     val SIM_KI: IntegralGain<Velocity<Radian>, Volt> =

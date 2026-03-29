@@ -237,7 +237,8 @@ class Superstructure(
         if (shooter.isAtTargetedVelocity &&
             feeder.isAtTargetedVelocity &&
             (AimOTFCommand.hasAligned || !RobotContainer.isAligning || overrideShooterVelocity)) {
-          hopper.currentRequest = Request.HopperRequest.OpenLoop(HopperConstants.SCORE_VOLTAGE)
+          hopper.currentRequest =
+              Request.HopperRequest.TargetVelocity(HopperConstants.VELOCITIES.SCORE_VELOCITY)
           intakeRollers.currentRequest =
               Request.RollersRequest.OpenLoop(RollersConstants.SCORE_ASSISTING_VOLTAGE)
         }
