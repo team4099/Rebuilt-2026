@@ -1,5 +1,6 @@
 package com.team4099.robot2026.subsystems.superstructure.intake.rollers
 
+import org.ironmaple.simulation.IntakeSimulation
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
 import org.team4099.lib.units.base.amps
@@ -15,6 +16,9 @@ import org.team4099.lib.units.inRotationsPerMinutePerMinute
 import org.team4099.lib.units.perMinute
 
 interface IntakeRollersIO {
+  val intakeSimulation: IntakeSimulation?
+    get() = null
+
   class RollerInputs : LoggableInputs {
     var leaderVelocity = 0.rotations.perMinute
     var leaderAcceleration = 0.rotations.perMinute.perMinute

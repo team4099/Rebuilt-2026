@@ -1,12 +1,18 @@
 package com.team4099.robot2026.subsystems.superstructure.intake.rollers
 
 import com.team4099.robot2026.config.constants.Constants
+import com.team4099.robot2026.config.constants.DrivetrainConstants
+import com.team4099.robot2026.config.constants.IntakeConstants
 import com.team4099.robot2026.config.constants.RollersConstants
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.math.system.plant.LinearSystemId
+import edu.wpi.first.units.Units.Meters
 import edu.wpi.first.wpilibj.simulation.FlywheelSim
+import org.ironmaple.simulation.IntakeSimulation
+import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
+import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.inKilogramsMeterSquared
@@ -16,7 +22,7 @@ import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perMinute
 import org.team4099.lib.units.perSecond
 
-object IntakeRollersIOSim : IntakeRollersIO {
+class IntakeRollersIOSim(drivetrainSimulation: AbstractDriveTrainSimulation) : IntakeRollersIO {
   private val rollerSim: FlywheelSim =
       FlywheelSim(
           LinearSystemId.createFlywheelSystem(
@@ -27,6 +33,15 @@ object IntakeRollersIOSim : IntakeRollersIO {
           1 / RollersConstants.GEAR_RATIO)
 
   private var appliedVoltage = 0.volts
+
+  override val intakeSimulation: IntakeSimulation? =
+      IntakeSimulation.OverTheBumperIntake(
+          "Fuel",
+          drivetrainSimulation,
+          Meters.of(DrivetrainConstants.DRIVETRAIN_WIDTH.inMeters),
+          Meters.of(IntakeConstants.LENGTH_EXTENDED.inMeters),
+          IntakeSimulation.IntakeSide.BACK,
+          80)
 
   override fun updateInputs(inputs: IntakeRollersIO.RollerInputs) {
     rollerSim.update(Constants.Universal.LOOP_PERIOD_TIME.inSeconds)

@@ -174,7 +174,7 @@ object RobotContainer {
       feeder = Feeder(FeederIOSim)
       hopper = Hopper(HopperIOSim)
       intake = Intake(IntakeIOSim)
-      intakeRollers = IntakeRollers(IntakeRollersIOSim)
+      intakeRollers = IntakeRollers(IntakeRollersIOSim(driveSimulation!!))
       shooter = Shooter(ShooterIOSim)
 
       leds =

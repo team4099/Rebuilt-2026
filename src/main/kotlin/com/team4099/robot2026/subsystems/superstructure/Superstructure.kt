@@ -21,17 +21,31 @@ import com.team4099.robot2026.subsystems.superstructure.intake.rollers.IntakeRol
 import com.team4099.robot2026.subsystems.superstructure.shooter.Shooter
 import com.team4099.robot2026.subsystems.vision.Vision
 import com.team4099.robot2026.util.CustomLogger
+import edu.wpi.first.units.LinearVelocityUnit
+import edu.wpi.first.units.Units.Degrees
+import edu.wpi.first.units.Units.Meters
+import edu.wpi.first.units.Units.Seconds
+import edu.wpi.first.units.measure.LinearVelocity as WPILinearVelocity
+import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
+import org.ironmaple.simulation.SimulatedArena
+import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly
+import org.team4099.lib.geometry.Rotation3d
+import org.team4099.lib.geometry.Transform3d
+import org.team4099.lib.geometry.Translation3d
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Time
+import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inMilliseconds
+import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
+import org.team4099.lib.units.derived.inRotation2ds
 import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.max
 
@@ -70,6 +84,8 @@ class Superstructure(
   val field = Field2d()
 
   var jigglingIntake = false
+
+  var lastSimProjectileShootTime = 0.seconds
 
   init {
     SmartDashboard.putData("Field", field)
@@ -122,6 +138,25 @@ class Superstructure(
     CustomLogger.recordOutput("Superstructure/currentRequest", currentRequest.javaClass.simpleName)
     CustomLogger.recordOutput("Superstructure/overrideShooterVelocity", overrideShooterVelocity)
     CustomLogger.recordOutput("Superstructure/defenseMode", defenseMode)
+
+    if (RobotBase.isSimulation()) {
+      val hopperGridStart = drivetrain.pose.plus(HopperConstants.originTBottomRight)
+
+      CustomLogger.recordOutput(
+          "RobotSimulation/Fuel",
+          *Array(intakeRollers.intakeSimulation?.gamePiecesAmount ?: 0) { i ->
+            val xPos = HopperConstants.FUEL_DIAMETER * (i % HopperConstants.SIM_X_CAPACITY)
+            val yPos =
+                HopperConstants.FUEL_DIAMETER *
+                    ((i / HopperConstants.SIM_X_CAPACITY) % HopperConstants.SIM_Y_CAPACITY)
+            val zPos =
+                HopperConstants.FUEL_DIAMETER *
+                    (i / (HopperConstants.SIM_X_CAPACITY * HopperConstants.SIM_Y_CAPACITY)) +
+                    HopperConstants.HOPPER_FLOOR_START
+
+            (hopperGridStart + Transform3d(Translation3d(xPos, yPos, zPos), Rotation3d())).pose3d
+          })
+    }
 
     when (currentState) {
       SuperstructureStates.UNINITALIZED -> {
@@ -240,6 +275,28 @@ class Superstructure(
           hopper.currentRequest = Request.HopperRequest.OpenLoop(HopperConstants.SCORE_VOLTAGE)
           intakeRollers.currentRequest =
               Request.RollersRequest.OpenLoop(RollersConstants.SCORE_ASSISTING_VOLTAGE)
+
+          if (RobotBase.isSimulation() &&
+              Clock.timestamp - lastSimProjectileShootTime > .2.seconds &&
+              intakeRollers.intakeSimulation!!.gamePiecesAmount > 0) {
+            lastSimProjectileShootTime = Clock.timestamp
+            intakeRollers.intakeSimulation!!.obtainGamePieceFromIntake()
+            SimulatedArena.getInstance()
+                .addGamePieceProjectile(
+                    RebuiltFuelOnFly(
+                        drivetrain.pose.translation.toTranslation2d().translation2d,
+                        ShooterConstants.SHOOTER_OFFSET.translation.translation2d,
+                        edu.wpi.first.math.kinematics.ChassisSpeeds.fromRobotRelativeSpeeds(
+                            drivetrain.chassisSpeeds.chassisSpeedsWPILIB,
+                            drivetrain.rotation.z.inRotation2ds),
+                        (drivetrain.pose.rotation.z + ShooterConstants.SHOOTER_OFFSET.rotation)
+                            .inRotation2ds,
+                        Meters.of(ShooterConstants.SHOOTER_HEIGHT.inMeters),
+                        WPILinearVelocity.ofBaseUnits(
+                            launchData.launchVelocity.inMetersPerSecond,
+                            LinearVelocityUnit.combine(Meters, Seconds)),
+                        Degrees.of(ShooterConstants.SHOOTER_ANGLE.inDegrees)))
+          }
         }
 
         when (currentRequest) {

@@ -1,9 +1,13 @@
 package com.team4099.robot2026.config.constants
 
+import org.team4099.lib.geometry.Rotation3d
+import org.team4099.lib.geometry.Transform3d
+import org.team4099.lib.geometry.Translation3d
 import org.team4099.lib.units.AngularAcceleration
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.grams
+import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.AccelerationFeedforward
 import org.team4099.lib.units.derived.DerivativeGain
@@ -35,6 +39,14 @@ object HopperConstants {
 
   val SCORE_VOLTAGE = 12.volts
   val UNJAM_VOLTAGE = -12.volts
+
+  const val SIM_X_CAPACITY = 5
+  const val SIM_Y_CAPACITY = 4
+  val FUEL_DIAMETER = 5.9.inches
+
+  val originTBottomRight =
+      Transform3d(Translation3d(-10.inches - 12.inches, -9.5.inches, 0.inches), Rotation3d())
+  val HOPPER_FLOOR_START = 4.417879.inches + FUEL_DIAMETER / 2.0
 
   object VELOCITIES {
     val IDLE_VELOCITY = 0.rotations.perSecond
