@@ -277,7 +277,8 @@ class Superstructure(
               Request.RollersRequest.OpenLoop(RollersConstants.SCORE_ASSISTING_VOLTAGE)
 
           if (RobotBase.isSimulation() &&
-              Clock.timestamp - lastSimProjectileShootTime > .2.seconds &&
+              Clock.timestamp - lastSimProjectileShootTime >
+                  (1.0 / ShooterConstants.SIM_BPS).seconds &&
               intakeRollers.intakeSimulation!!.gamePiecesAmount > 0) {
             lastSimProjectileShootTime = Clock.timestamp
             intakeRollers.intakeSimulation!!.obtainGamePieceFromIntake()
