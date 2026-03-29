@@ -39,7 +39,7 @@ object HopperConstants {
 
   object VELOCITIES {
     val IDLE_VELOCITY = 0.rotations.perSecond
-    val SCORE_VELOCITY = (5800.0 / 60.0 / (1.0 / GEAR_RATIO)).rotations.perSecond // max
+    val SCORE_VELOCITY = 10.5.rotations.perSecond
   }
 
   object PID {

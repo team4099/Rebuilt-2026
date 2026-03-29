@@ -244,11 +244,14 @@ object RobotContainer {
     //    ControlBoard.climb.onTrue(superstructure.requestClimbCommand())
 
     ControlBoard.intake.onTrue(superstructure.requestIntakeCommand())
+    ControlBoard.intake.onFalse(superstructure.requestIdleCommand())
+
     ControlBoard.forceIntakeFullUp.whileTrue(
         RepeatCommand(
             SequentialCommandGroup(
                 Commands.runOnce({
                   intakeOverridingAngle =
+
                       min(IntakeConstants.PIVOT_MAX_ANGLE, intakeOverridingAngle + 20.degrees)
                 }),
                 Commands.defer(
