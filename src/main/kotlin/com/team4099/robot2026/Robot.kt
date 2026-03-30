@@ -241,9 +241,11 @@ object Robot : LoggedRobot() {
     } else {
       CustomLogger.recordOutput("MatchData/ScoringNow", shiftIndex % 2 != 0)
     }
-    if (time > 25) {
+    if (125>time && time> 25) {
       CustomLogger.recordOutput("MatchData/ShiftTimeLeft", time % 25)
-    } else {
+    }else if
+        (time>125){CustomLogger.recordOutput("MatchData/ShiftTimeLeft", time % 10)}
+    else {
       CustomLogger.recordOutput("MatchData/ShiftTimeLeft", time % 30)
     }
   }

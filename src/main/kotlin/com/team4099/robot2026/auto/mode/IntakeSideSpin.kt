@@ -49,14 +49,14 @@ class IntakeSideSpin(
                         superstructure.requestForceIntakeCommand(
                             IntakeConstants.ANGLES.FORCE_DOWN_ANGLE),
                         WaitCommand(0.1)))
-                .withTimeout(5.5),
+                .withTimeout(6.5),
             RepeatCommand(
                 SequentialCommandGroup(
-                    superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_UP_ANGLE),
-                    WaitCommand(0.1),
+                    superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE),
+                    WaitCommand(0.2),
                     superstructure.requestForceIntakeCommand(
                         IntakeConstants.ANGLES.FORCE_HALFDOWN_ANGLE),
-                    WaitCommand(0.1)))))
+                    WaitCommand(0.2)))))
   }
 
   companion object {

@@ -274,13 +274,14 @@ class Superstructure(
         shooter.currentRequest = Request.ShooterRequest.Idle()
         hopper.currentRequest = Request.HopperRequest.Idle()
         feeder.currentRequest = Request.FeederRequest.Idle()
-
-        if (DriverStation.isAutonomous()) { // Run intake faster in teleop
-          intakeRollers.currentRequest =
+        if(intake.inputs.position < 0.degrees) {
+          if (DriverStation.isAutonomous()) { // Run intake faster in teleop
+            intakeRollers.currentRequest =
               Request.RollersRequest.OpenLoop(RollersConstants.AUTO_INTAKE_VOLTAGE)
-        } else {
-          intakeRollers.currentRequest =
+          } else {
+            intakeRollers.currentRequest =
               Request.RollersRequest.OpenLoop(RollersConstants.TELEOP_INTAKE_VOLTAGE)
+          }
         }
 
         intake.currentRequest =

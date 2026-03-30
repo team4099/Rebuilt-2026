@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.WaitCommand
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser
+import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.seconds
@@ -107,16 +108,16 @@ object AutonomousSelector {
       AutonomousMode.INTAKE_RIGHT_SPIN ->
           WaitCommand(waitTime.inSeconds)
               .andThen({
-                drivetrain.pose = Pose3d(AllianceFlipUtil.apply(IntakeSideSpin.startingPose))
+                drivetrain.pose = Pose2d(AllianceFlipUtil.apply(IntakeSideSpin.startingPose).pose2d)
               })
               .andThen(IntakeSideSpin(drivetrain, superstructure, flipVeritcally = false))
       AutonomousMode.INTAKE_LEFT_SPIN ->
           WaitCommand(waitTime.inSeconds)
               .andThen({
                 drivetrain.pose =
-                    Pose3d(
+                    Pose2d(
                         FollowChoreoPath.flipVertically(
-                            AllianceFlipUtil.apply(IntakeSideSpin.startingPose)))
+                            AllianceFlipUtil.apply(IntakeSideSpin.startingPose)).pose2d)
               })
               .andThen(IntakeSideSpin(drivetrain, superstructure, flipVeritcally = true))
       //      AutonomousMode.CENTERLINE_SWEEP_RIGHT ->
