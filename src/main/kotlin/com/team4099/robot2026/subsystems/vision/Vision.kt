@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import java.util.function.Supplier
 import org.ironmaple.simulation.SimulatedArena
 import org.photonvision.simulation.VisionSystemSim
+import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.geometry.Transform3d
@@ -30,7 +31,7 @@ import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.sin
 
-class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : SubsystemBase() {
+class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose2d>) : SubsystemBase() {
   val io: List<CameraIO> = cameras.toList()
   val inputs = List(io.size) { CameraIO.CameraInputs() }
 
@@ -73,7 +74,7 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
 
   override fun periodic() {
     val startTime = Clock.epochTime
-    visionSim?.update(poseSupplier.get().pose3d)
+    visionSim?.update(poseSupplier.get().pose2d)
 
     tagIDFilter =
         if (DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) ==
@@ -220,7 +221,9 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
                   SimulatedArena.getInstance()
                       .getGamePiecesByType(
                           VisionConstants.OBJECT_CLASS.entries[objIdx].mapleSimType!!)
-                      .map { Transform3d(poseSupplier.get(), Pose3d(it.pose3d)).translation })
+                      .map {
+                        Transform3d(Pose3d(poseSupplier.get()), Pose3d(it.pose3d)).translation
+                      })
             }
           }
 
@@ -235,7 +238,7 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
             CustomLogger.recordOutput(
                 "Vision/${io[instance].identifier}/${objects.name}/objectsDetectedPoses",
                 *(objectsDetected[objects.id]
-                    .map { poseSupplier.get().plus(Transform3d(it, Rotation3d())).pose3d }
+                    .map { Pose3d(poseSupplier.get()).plus(Transform3d(it, Rotation3d())).pose3d }
                     .toTypedArray()))
 
             CustomLogger.recordOutput(
@@ -248,8 +251,7 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose3d>) : Sub
 
             CustomLogger.recordDebugOutput(
                 "Vision/Last${objects.name}VisionUpdate/closestObjectPose",
-                poseSupplier
-                    .get()
+                Pose3d(poseSupplier.get())
                     .plus(
                         Transform3d(lastObjectVisionUpdate[objects.id].robotTObject, Rotation3d()))
                     .pose3d)

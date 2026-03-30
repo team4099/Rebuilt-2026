@@ -54,7 +54,7 @@ class Superstructure(
     private set
 
   val launchData: Shooter.Companion.CalculatedLaunchData
-    get() = Shooter.calculateLaunchData(drivetrain.pose.toPose2d(), drivetrain.chassisSpeeds)
+    get() = Shooter.calculateLaunchData(drivetrain.pose, drivetrain.chassisSpeeds)
 
   var overrideShooterVelocity = false
   var defenseMode = false
@@ -115,7 +115,7 @@ class Superstructure(
         "LoggedRobot/Subsystems/ShooterLoopTimeMS",
         (Clock.epochTime - shooterStartTime).inMilliseconds)
 
-    field.robotPose = drivetrain.pose.toPose2d().pose2d
+    field.robotPose = drivetrain.pose.pose2d
 
     var nextState = currentState
 

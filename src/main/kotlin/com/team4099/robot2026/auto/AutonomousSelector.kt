@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.WaitCommand
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser
-import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.seconds
@@ -77,9 +76,7 @@ object AutonomousSelector {
     return when (mode) {
       AutonomousMode.EXAMPLE_AUTO ->
           return WaitCommand(waitTime.inSeconds)
-              .andThen({
-                drivetrain.pose = Pose3d(AllianceFlipUtil.apply(ExamplePathAuto.startingPose))
-              })
+              .andThen({ drivetrain.pose = AllianceFlipUtil.apply(ExamplePathAuto.startingPose) })
               .andThen(ExamplePathAuto(drivetrain))
       AutonomousMode.WHEEL_RADIUS ->
           DriveCharacterizationCommands.wheelRadiusCharacterization(drivetrain)
@@ -87,31 +84,24 @@ object AutonomousSelector {
           DriveCharacterizationCommands.feedforwardCharacterization(drivetrain)
       AutonomousMode.TEST_OTF ->
           WaitCommand(waitTime.inSeconds)
-              .andThen({
-                drivetrain.pose = Pose3d(AllianceFlipUtil.apply(TestOTFAuto.startingPose))
-              })
+              .andThen({ drivetrain.pose = AllianceFlipUtil.apply(TestOTFAuto.startingPose) })
               .andThen(TestOTFAuto(drivetrain))
       AutonomousMode.AUTOPOS ->
           WaitCommand(waitTime.inSeconds)
-              .andThen({
-                drivetrain.pose = Pose3d(AllianceFlipUtil.apply(TuningAutoPos.startingPose))
-              })
+              .andThen({ drivetrain.pose = AllianceFlipUtil.apply(TuningAutoPos.startingPose) })
               .andThen(TuningAutoPos(drivetrain))
       AutonomousMode.TESTING ->
           WaitCommand(waitTime.inSeconds).andThen(TestingAuto(drivetrain, superstructure))
       AutonomousMode.INTAKE_RIGHT_QUAD_L1 ->
           WaitCommand(waitTime.inSeconds)
-              .andThen({
-                drivetrain.pose = Pose3d(AllianceFlipUtil.apply(IntakeQuadrantL1.startingPose))
-              })
+              .andThen({ drivetrain.pose = AllianceFlipUtil.apply(IntakeQuadrantL1.startingPose) })
               .andThen(IntakeQuadrantL1(drivetrain, superstructure, flipVeritcally = false))
       AutonomousMode.INTAKE_LEFT_QUAD_L1 ->
           WaitCommand(waitTime.inSeconds)
               .andThen({
                 drivetrain.pose =
-                    Pose3d(
-                        FollowChoreoPath.flipVertically(
-                            AllianceFlipUtil.apply(IntakeQuadrantL1.startingPose)))
+                    FollowChoreoPath.flipVertically(
+                        AllianceFlipUtil.apply(IntakeQuadrantL1.startingPose))
               })
               .andThen(IntakeQuadrantL1(drivetrain, superstructure, flipVeritcally = true))
       AutonomousMode.INTAKE_RIGHT_SPIN ->
@@ -147,13 +137,11 @@ object AutonomousSelector {
       //              .andThen(CenterlineSweep(drivetrain, superstructure, flipVeritcally = false))
       AutonomousMode.PRELOAD_L1_AUTO ->
           WaitCommand(waitTime.inSeconds)
-              .andThen({
-                drivetrain.pose = Pose3d(AllianceFlipUtil.apply(PreloadL1Auto.startingPose))
-              })
+              .andThen({ drivetrain.pose = AllianceFlipUtil.apply(PreloadL1Auto.startingPose) })
               .andThen(PreloadL1Auto(drivetrain, superstructure))
       AutonomousMode.BIG_CIRCLE ->
           WaitCommand(waitTime.inSeconds)
-              .andThen({ drivetrain.pose = Pose3d(AllianceFlipUtil.apply(BigCircle.startingPose)) })
+              .andThen({ drivetrain.pose = AllianceFlipUtil.apply(BigCircle.startingPose) })
               .andThen(BigCircle(drivetrain))
       AutonomousMode.DO_NOTHING -> InstantCommand()
       else -> InstantCommand()

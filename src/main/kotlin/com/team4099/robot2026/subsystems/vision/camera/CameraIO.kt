@@ -8,7 +8,7 @@ import edu.wpi.first.math.Matrix
 import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.math.geometry.Transform3d
 import edu.wpi.first.math.numbers.N1
-import edu.wpi.first.math.numbers.N4
+import edu.wpi.first.math.numbers.N3
 import java.util.Optional
 import java.util.function.Supplier
 import org.littletonrobotics.junction.LogTable
@@ -19,15 +19,16 @@ import org.photonvision.PhotonCamera
 import org.photonvision.PhotonPoseEstimator
 import org.photonvision.simulation.PhotonCameraSim
 import org.photonvision.targeting.PhotonTrackedTarget
+import org.team4099.lib.geometry.Pose2dWPILIB
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Pose3dWPILIB
-import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.kinematics.ChassisSpeeds
 import org.team4099.lib.math.hypot
 import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.seconds
+import org.team4099.lib.units.derived.Angle
 
 interface CameraIO {
   enum class DetectionPipeline {
@@ -38,13 +39,13 @@ interface CameraIO {
   val pipeline: DetectionPipeline
   val identifier: String
   val transform: org.team4099.lib.geometry.Transform3d
-  val poseMeasurementConsumer: (Pose3dWPILIB?, Double, Matrix<N4?, N1?>) -> Unit
-  val drivetrainRotationSupplier: Supplier<Rotation3d>
+  val poseMeasurementConsumer: (Pose2dWPILIB?, Double, Matrix<N3?, N1?>) -> Unit
+  val drivetrainRotationSupplier: Supplier<Angle>
   val drivetrainChassisSpeedsSupplier: Supplier<ChassisSpeeds>
 
   val camera: PhotonCamera
   var cameraSim: PhotonCameraSim?
-  var curStdDevs: Matrix<N4?, N1?>
+  var curStdDevs: Matrix<N3?, N1?>
   val photonEstimator: PhotonPoseEstimator
 
   fun shouldAcceptPose(
@@ -177,7 +178,8 @@ interface CameraIO {
               if (inputs.frameAccepted) {
                 updateEstimationStdDevs(visionEst, result.getTargets())
 
-                poseMeasurementConsumer(poseEst, visionEst.get().timestampSeconds, curStdDevs)
+                poseMeasurementConsumer(
+                    poseEst.toPose2d(), visionEst.get().timestampSeconds, curStdDevs)
               }
             }
           }
@@ -222,9 +224,7 @@ interface CameraIO {
       if (numTags > 1) estStdDevs = VisionConstants.multiTagStdDevs
       // Increase std devs based on (average) distance
       if (numTags == 1 && avgDist > 4)
-          estStdDevs =
-              VecBuilder.fill(
-                  Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE)
+          estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE)
       else estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30))
       curStdDevs = estStdDevs
     }

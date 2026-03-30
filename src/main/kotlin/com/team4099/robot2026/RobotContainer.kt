@@ -61,10 +61,10 @@ import org.ironmaple.simulation.SimulatedArena
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.Arena2026Rebuilt
 import org.littletonrobotics.junction.Logger
-import org.team4099.lib.geometry.Pose3d
-import org.team4099.lib.geometry.Rotation3d
+import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.smoothDeadband
 import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.max
 import org.team4099.lib.units.min
 
@@ -144,8 +144,7 @@ object RobotContainer {
       }
     } else {
       driveSimulation =
-          SwerveDriveSimulation(
-              Drive.mapleSimConfig, DrivetrainConstants.INITIAL_SIM_POSE.toPose2d())
+          SwerveDriveSimulation(Drive.mapleSimConfig, DrivetrainConstants.INITIAL_SIM_POSE)
       SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation)
 
       drivetrain =
@@ -169,7 +168,7 @@ object RobotContainer {
                       }
                       .toTypedArray(),
                   poseSupplier = { drivetrain.pose })
-          else Vision(poseSupplier = { Pose3d() })
+          else Vision(poseSupplier = { Pose2d() })
 
       climb = Climb(ClimbIOSim)
       feeder = Feeder(FeederIOSim)
@@ -203,7 +202,7 @@ object RobotContainer {
   }
 
   fun zeroSensors(isInAutonomous: Boolean = false) {
-    drivetrain.pose = Pose3d(drivetrain.pose.x, drivetrain.pose.y, drivetrain.pose.z, Rotation3d())
+    drivetrain.pose = Pose2d(drivetrain.pose.x, drivetrain.pose.y, 0.radians)
   }
 
   fun setDriveBrakeMode(neutralModeValue: NeutralModeValue = NeutralModeValue.Brake) {
@@ -350,7 +349,7 @@ object RobotContainer {
   fun resetSimulationField() {
     if (!RobotBase.isSimulation()) return
 
-    driveSimulation!!.setSimulationWorldPose(DrivetrainConstants.INITIAL_SIM_POSE.toPose2d())
+    driveSimulation!!.setSimulationWorldPose(DrivetrainConstants.INITIAL_SIM_POSE)
     SimulatedArena.getInstance().resetFieldForAuto()
   }
 

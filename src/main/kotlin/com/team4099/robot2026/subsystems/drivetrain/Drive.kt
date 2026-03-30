@@ -30,15 +30,14 @@ import com.team4099.robot2026.util.Velocity2d
 import edu.wpi.first.hal.FRCNetComm
 import edu.wpi.first.hal.HAL
 import edu.wpi.first.math.Matrix
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator3d
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
 import edu.wpi.first.math.geometry.Pose2d as WPIPose2d
-import edu.wpi.first.math.geometry.Pose3d as WPIPose3d
 import edu.wpi.first.math.kinematics.ChassisSpeeds as WPIChassisSpeeds
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics
 import edu.wpi.first.math.kinematics.SwerveModulePosition
 import edu.wpi.first.math.kinematics.SwerveModuleState
 import edu.wpi.first.math.numbers.N1
-import edu.wpi.first.math.numbers.N4
+import edu.wpi.first.math.numbers.N3
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.units.Units
 import edu.wpi.first.units.Units.KilogramSquareMeters
@@ -67,8 +66,6 @@ import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig
 import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.geometry.Pose2d
-import org.team4099.lib.geometry.Pose3d
-import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.geometry.Translation2d
 import org.team4099.lib.geometry.Twist2d
 import org.team4099.lib.kinematics.ChassisSpeeds
@@ -106,17 +103,17 @@ class Drive(
           *(moduleTranslations
               .map { translation: Translation2d -> translation.translation2d }
               .toTypedArray()))
-  private var rawGyroRotation: Rotation3d = Rotation3d()
+  private var rawGyroRotation: Angle = 0.radians
   private val lastModulePositions: Array<SwerveModulePosition?> = // For delta tracking
       arrayOf(
           SwerveModulePosition(),
           SwerveModulePosition(),
           SwerveModulePosition(),
           SwerveModulePosition())
-  private val poseEstimator: SwerveDrivePoseEstimator3d =
-      SwerveDrivePoseEstimator3d(
+  private val poseEstimator: SwerveDrivePoseEstimator =
+      SwerveDrivePoseEstimator(
           kinematics,
-          rawGyroRotation.rotation3d,
+          rawGyroRotation.inRotation2ds,
           lastModulePositions,
           DrivetrainConstants.INITIAL_SIM_POSE,
           DrivetrainConstants.STATE_STDEVS,
@@ -142,8 +139,8 @@ class Drive(
     // Configure AutoBuilder for PathPlanner
     // WARNING! takes in pose as pose2d and does not account for z
     AutoBuilder.configure(
-        { this.pose.pose3d.toPose2d() },
-        { pose: WPIPose2d -> this.pose = Pose3d(Pose2d(pose)) },
+        { this.pose.pose2d },
+        { pose: WPIPose2d -> this.pose = Pose2d(pose) },
         { this.chassisSpeeds.chassisSpeedsWPILIB },
         { speeds: WPIChassisSpeeds -> this.runSpeeds(ChassisSpeeds(speeds)) },
         PPHolonomicDriveController(
@@ -224,25 +221,22 @@ class Drive(
       // Update gyro angle
       if (gyroInputs.connected) {
         // Use the real gyro angle
-        rawGyroRotation =
-            Rotation3d(
-                gyroInputs.odometryRollPositions[i],
-                gyroInputs.odometryPitchPositions[i],
-                gyroInputs.odometryYawPositions[i])
+        rawGyroRotation = gyroInputs.odometryYawPositions[i]
       } else {
         // Use the angle delta from the kinematics and module deltas
         val twist = Twist2d(kinematics.toTwist2d(*moduleDeltas))
-        rawGyroRotation += Rotation3d(0.radians, 0.radians, twist.dtheta)
+        rawGyroRotation += twist.dtheta
       }
 
       // Apply update
-      poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation.rotation3d, modulePositions)
+      poseEstimator.updateWithTime(
+          sampleTimestamps[i], rawGyroRotation.inRotation2ds, modulePositions)
     }
 
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && RobotBase.isReal())
 
-    CustomLogger.recordOutput("Odometry/pose", pose.pose3d)
+    CustomLogger.recordOutput("Odometry/pose", pose.pose2d)
     CustomLogger.recordOutput("SwerveChassisSpeeds/Measured", chassisSpeeds.chassisSpeedsWPILIB)
 
     Logger.recordOutput("SwerveStates/Measured", *moduleStates)
@@ -384,26 +378,26 @@ class Drive(
       return output
     }
 
-  var pose: Pose3d
+  var pose: Pose2d
     /** Returns the current odometry pose. */
     get() =
-        if (RobotBase.isReal()) Pose3d(poseEstimator.estimatedPosition)
-        else Pose3d(Pose2d(getSimulationPoseCallback.get()))
+        if (RobotBase.isReal()) Pose2d(poseEstimator.estimatedPosition)
+        else Pose2d(getSimulationPoseCallback.get())
     /** Resets the current odometry pose. */
     set(pose) {
-      resetSimulationPoseCallback.accept(pose.toPose2d().pose2d)
-      poseEstimator.resetPosition(rawGyroRotation.rotation3d, modulePositions, pose.pose3d)
+      resetSimulationPoseCallback.accept(pose.pose2d)
+      poseEstimator.resetPosition(rawGyroRotation.inRotation2ds, modulePositions, pose.pose2d)
     }
 
-  val rotation: Rotation3d
+  val rotation: Angle
     /** Returns the current odometry pitch rotation. */
     get() = pose.rotation
 
   /** Adds a new timestamped vision measurement. */
   fun addVisionMeasurement(
-      visionRobotPose: WPIPose3d?,
+      visionRobotPose: WPIPose2d?,
       timestampSeconds: Double,
-      visionMeasurementStdDevs: Matrix<N4?, N1?>?
+      visionMeasurementStdDevs: Matrix<N3?, N1?>?
   ) {
     poseEstimator.addVisionMeasurement(visionRobotPose, timestampSeconds, visionMeasurementStdDevs)
   }

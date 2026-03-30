@@ -7,13 +7,11 @@ import com.team4099.robot2026.util.AllianceFlipUtil
 import edu.wpi.first.math.Matrix
 import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.math.numbers.N1
-import edu.wpi.first.math.numbers.N4
+import edu.wpi.first.math.numbers.N3
 import edu.wpi.first.wpilibj.RobotBase
 import java.util.function.Supplier
 import kotlin.math.sqrt
 import org.team4099.lib.geometry.Pose2d
-import org.team4099.lib.geometry.Pose3d
-import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
@@ -114,9 +112,9 @@ object DrivetrainConstants {
         Constants.WHOAMI.TESTBOT -> NITRILE_WHEEL_COF
       }
 
-  val INITIAL_SIM_POSE = Pose3d(3.meters, 3.meters, 0.meters, Rotation3d()).pose3d
+  val INITIAL_SIM_POSE = Pose2d(3.meters, 3.meters, 0.radians).pose2d
 
-  val STATE_STDEVS: Matrix<N4?, N1?> = VecBuilder.fill(0.003, 0.003, 0.003, 0.002)
+  val STATE_STDEVS: Matrix<N3?, N1?> = VecBuilder.fill(0.003, 0.003, 0.002)
 
   object PID {
     val AUTO_POS_KP: ProportionalGain<Meter, Velocity<Meter>>

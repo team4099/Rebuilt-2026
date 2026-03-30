@@ -110,9 +110,9 @@ class TargetAngleCommand(
 
     drivetrain.defaultCommand.end(true)
     CustomLogger.recordDebugOutput("ActiveCommands/TargetAngleCommand", true)
-    Logger.recordOutput("Testing/CurrentDrivetrainRotation", drivetrain.pose.rotation.z.inDegrees)
+    Logger.recordOutput("Testing/CurrentDrivetrainRotation", drivetrain.pose.rotation.inDegrees)
 
-    val thetaFeedback = thetaPID.calculate(drivetrain.pose.rotation.z, targetAngle())
+    val thetaFeedback = thetaPID.calculate(drivetrain.pose.rotation, targetAngle())
     CustomLogger.recordDebugOutput("Testing/error", thetaPID.error.inDegrees)
     CustomLogger.recordDebugOutput("Testing/thetaFeedback", thetaFeedback.inDegreesPerSecond)
 
@@ -120,7 +120,7 @@ class TargetAngleCommand(
 
     drivetrain.runSpeeds(
         ChassisSpeeds.fromFieldRelativeSpeeds(
-            speed.first, speed.second, thetaFeedback, drivetrain.rotation.z))
+            speed.first, speed.second, thetaFeedback, drivetrain.rotation))
   }
 
   override fun isFinished(): Boolean {
@@ -133,6 +133,6 @@ class TargetAngleCommand(
     val rotation = driver.rotationSpeedClampedSupplier(turn, slowMode)
     drivetrain.runSpeeds(
         ChassisSpeeds.fromFieldRelativeSpeeds(
-            speed.first, speed.second, rotation, drivetrain.pose.rotation.z))
+            speed.first, speed.second, rotation, drivetrain.pose.rotation))
   }
 }

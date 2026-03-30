@@ -74,7 +74,7 @@ class TargetObjectCommand(
 
     if (RobotBase.isSimulation()) {
       val arena = SimulatedArena.getInstance()
-      val robotPose = drivetrain.pose.toPose2d()
+      val robotPose = drivetrain.pose
       val rng = java.util.Random()
 
       val fuelRadius = 0.15
@@ -143,9 +143,9 @@ class TargetObjectCommand(
       if (fuelTranslations.isEmpty()) return
       val target =
           ClusterScore.calculateClusterScores(
-              drivetrain.pose.toPose2d().pose2d, fuelTranslations.map { it.translation3d })
+              drivetrain.pose.pose2d, fuelTranslations.map { it.translation3d })
       CustomLogger.recordOutput("TargetObjectCommand/Target", target)
-      robotTObject = Transform2d(drivetrain.pose.toPose2d(), Pose2d(target)).translation
+      robotTObject = Transform2d(drivetrain.pose, Pose2d(target)).translation
     } else {
       robotTObject = lastUpdate.robotTObject.toTranslation2d()
     }
@@ -161,13 +161,13 @@ class TargetObjectCommand(
     CustomLogger.recordOutput("TargetObjectCommand/odomTObjecty", robotTObject.y.inMeters)
 
     val setpointRotation: Value<Radian> =
-        robotTObject.translation2d.angle.radians.radians + drivetrain.pose.rotation.z
+        robotTObject.translation2d.angle.radians.radians + drivetrain.pose.rotation
 
     CustomLogger.recordOutput("TargetObjectCommand/setPointRotation", setpointRotation.inDegrees)
-    CustomLogger.recordOutput("TargetObjectCommand/driverot", drivetrain.rotation.z.inDegrees)
+    CustomLogger.recordOutput("TargetObjectCommand/driverot", drivetrain.rotation.inDegrees)
 
     val thetavel =
-        thetaPID.calculate(drivetrain.pose.rotation.z, setpointRotation) *
+        thetaPID.calculate(drivetrain.pose.rotation, setpointRotation) *
             if (RobotBase.isReal()) -1.0 else 1.0
 
     CustomLogger.recordOutput("TargetObjectCommand/thetaveldps", thetavel.inDegreesPerSecond)
