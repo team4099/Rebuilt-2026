@@ -21,6 +21,7 @@ import com.team4099.robot2026.subsystems.superstructure.intake.rollers.IntakeRol
 import com.team4099.robot2026.subsystems.superstructure.shooter.Shooter
 import com.team4099.robot2026.subsystems.vision.Vision
 import com.team4099.robot2026.util.CustomLogger
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
@@ -254,7 +255,7 @@ class Superstructure(
         intake.currentRequest =
             Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.INTAKE_ANGLE)
         intakeRollers.currentRequest =
-            Request.RollersRequest.OpenLoop(RollersConstants.INTAKE_VOLTAGE)
+            Request.RollersRequest.OpenLoop(RollersConstants.TELEOP_INTAKE_VOLTAGE)
         shooter.currentRequest = Request.ShooterRequest.TargetVelocity(shooterTargetRPM)
 
         if (shooter.isAtTargetedVelocity &&
@@ -273,8 +274,15 @@ class Superstructure(
         shooter.currentRequest = Request.ShooterRequest.Idle()
         hopper.currentRequest = Request.HopperRequest.Idle()
         feeder.currentRequest = Request.FeederRequest.Idle()
-        intakeRollers.currentRequest =
-            Request.RollersRequest.OpenLoop(RollersConstants.INTAKE_VOLTAGE)
+
+        if (DriverStation.isAutonomous()) { // Run intake faster in teleop
+          intakeRollers.currentRequest =
+              Request.RollersRequest.OpenLoop(RollersConstants.AUTO_INTAKE_VOLTAGE)
+        } else {
+          intakeRollers.currentRequest =
+              Request.RollersRequest.OpenLoop(RollersConstants.TELEOP_INTAKE_VOLTAGE)
+        }
+
         intake.currentRequest =
             Request.IntakeRequest.TargetingPosition(
                 if (jigglingIntake) IntakeConstants.ANGLES.INTAKING_JIGGLE_ANGLE

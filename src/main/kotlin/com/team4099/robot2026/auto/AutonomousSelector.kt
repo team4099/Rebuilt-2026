@@ -3,6 +3,7 @@ package com.team4099.robot2026.auto
 import com.team4099.robot2026.auto.mode.BigCircle
 import com.team4099.robot2026.auto.mode.ExamplePathAuto
 import com.team4099.robot2026.auto.mode.IntakeQuadrantL1
+import com.team4099.robot2026.auto.mode.IntakeSideSpin
 import com.team4099.robot2026.auto.mode.PreloadL1Auto
 import com.team4099.robot2026.auto.mode.TestOTFAuto
 import com.team4099.robot2026.auto.mode.TestingAuto
@@ -47,6 +48,8 @@ object AutonomousSelector {
         "Miscellaneous Testing Auto DO NOT RUN AT COMPETITION", AutonomousMode.TESTING)
     autonomousModeChooser.addOption("Intake Right Quadrant L1", AutonomousMode.INTAKE_RIGHT_QUAD_L1)
     autonomousModeChooser.addOption("Intake Left Quadrant L1", AutonomousMode.INTAKE_LEFT_QUAD_L1)
+    autonomousModeChooser.addOption("Intake Right Spin", AutonomousMode.INTAKE_RIGHT_SPIN)
+    autonomousModeChooser.addOption("Intake Left Spin", AutonomousMode.INTAKE_LEFT_SPIN)
     //  autonomousModeChooser.addOption("Centerline Sweep Left",
     // AutonomousMode.CENTERLINE_SWEEP_LEFT)
     // autonomousModeChooser.addOption("Centerline Sweep Right",
@@ -111,6 +114,21 @@ object AutonomousSelector {
                             AllianceFlipUtil.apply(IntakeQuadrantL1.startingPose)))
               })
               .andThen(IntakeQuadrantL1(drivetrain, superstructure, flipVeritcally = true))
+      AutonomousMode.INTAKE_RIGHT_SPIN ->
+          WaitCommand(waitTime.inSeconds)
+              .andThen({
+                drivetrain.pose = Pose3d(AllianceFlipUtil.apply(IntakeSideSpin.startingPose))
+              })
+              .andThen(IntakeSideSpin(drivetrain, superstructure, flipVeritcally = false))
+      AutonomousMode.INTAKE_LEFT_SPIN ->
+          WaitCommand(waitTime.inSeconds)
+              .andThen({
+                drivetrain.pose =
+                    Pose3d(
+                        FollowChoreoPath.flipVertically(
+                            AllianceFlipUtil.apply(IntakeSideSpin.startingPose)))
+              })
+              .andThen(IntakeSideSpin(drivetrain, superstructure, flipVeritcally = true))
       //      AutonomousMode.CENTERLINE_SWEEP_RIGHT ->
       //          WaitCommand(waitTime.inSeconds)
       //              .andThen({
@@ -153,6 +171,8 @@ private enum class AutonomousMode {
   BIG_CIRCLE,
   INTAKE_RIGHT_QUAD_L1,
   INTAKE_LEFT_QUAD_L1,
+  INTAKE_RIGHT_SPIN,
+  INTAKE_LEFT_SPIN,
   CENTERLINE_SWEEP_RIGHT,
   CENTERLINE_SWEEP_LEFT,
   PRELOAD_L1_AUTO,

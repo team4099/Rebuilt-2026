@@ -29,13 +29,14 @@ class IntakeQuadrantL1(
                     interruptAtTimeout = false,
                     extraTime = .25.seconds),
                 SequentialCommandGroup(
-                    WaitCommand(1.0),
+                    WaitCommand(0.75),
                     superstructure.requestIntakeCommand(),
-                    WaitCommand(3.5),
-                    superstructure.requestIdleCommand(),
-                    WaitCommand(4.5),
-                    superstructure.requestPrepScoreCommand())),
-            AimOTFCommand(drivetrain, 1.seconds).until { AimOTFCommand.hasAligned },
+                    WaitCommand(5.0),
+                    superstructure.requestPrepScoreCommand(),
+                    AimOTFCommand(drivetrain, timeout = 4.0.seconds).until {
+                      AimOTFCommand.hasAligned
+                    },
+                )),
             superstructure.requestScoreCommand(),
             WaitCommand(2.25),
             superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE)))
@@ -68,7 +69,7 @@ class IntakeQuadrantL1(
 
   companion object {
     val mainTraj =
-        Choreo.loadTrajectory<SwerveSample>("IntakeQuadrantL1/IntakeQuadrantClimb.traj").get()
+        Choreo.loadTrajectory<SwerveSample>("IntakeQuadrantL1/IntakeQuadrantClimbQuick.traj").get()
 
     val startingPose = Pose2d(mainTraj.getInitialPose(false).get())
   }

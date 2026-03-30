@@ -251,7 +251,6 @@ object RobotContainer {
             SequentialCommandGroup(
                 Commands.runOnce({
                   intakeOverridingAngle =
-
                       min(IntakeConstants.PIVOT_MAX_ANGLE, intakeOverridingAngle + 20.degrees)
                 }),
                 Commands.defer(
