@@ -136,9 +136,9 @@ class AimOTFCommand(
     CustomLogger.recordOutput("ActiveCommands/FaceHubCommand", true)
 
     val (distanceToHub, launchSpeed, timeOfFlight, wantedRotation) =
-        Shooter.calculateLaunchData(drivetrain.pose.toPose2d(), drivetrain.chassisSpeeds)
+        Shooter.calculateLaunchData(drivetrain.pose, drivetrain.chassisSpeeds)
 
-    val thetaVel = thetaPID.calculate(drivetrain.rotation.z, wantedRotation)
+    val thetaVel = thetaPID.calculate(drivetrain.rotation, wantedRotation)
 
     CustomLogger.recordOutput("FaceHubCommand/thetaError", thetaPID.error.inDegrees)
 
@@ -172,7 +172,7 @@ class AimOTFCommand(
 
         drivetrain.runSpeeds(
             ChassisSpeeds.fromFieldRelativeSpeeds(
-                speedX, speedY, thetaVel, drivetrain.pose.rotation.z))
+                speedX, speedY, thetaVel, drivetrain.pose.rotation))
       } else {
         if (Clock.timestamp - lastTimeNotStopped > 1.seconds) drivetrain.stopWithX()
       }
@@ -187,12 +187,12 @@ class AimOTFCommand(
       SimulatedArena.getInstance()
           .addGamePieceProjectile(
               RebuiltFuelOnFly(
-                  drivetrain.pose.translation.toTranslation2d().translation2d,
+                  drivetrain.pose.translation.translation2d,
                   ShooterConstants.SHOOTER_OFFSET.translation.translation2d,
                   edu.wpi.first.math.kinematics.ChassisSpeeds.fromRobotRelativeSpeeds(
                       drivetrain.chassisSpeeds.chassisSpeedsWPILIB,
-                      drivetrain.rotation.z.inRotation2ds),
-                  (drivetrain.pose.rotation.z + ShooterConstants.SHOOTER_OFFSET.rotation)
+                      drivetrain.rotation.inRotation2ds),
+                  (drivetrain.pose.rotation + ShooterConstants.SHOOTER_OFFSET.rotation)
                       .inRotation2ds,
                   Meters.of(ShooterConstants.SHOOTER_HEIGHT.inMeters),
                   WPILinearVelocity.ofBaseUnits(

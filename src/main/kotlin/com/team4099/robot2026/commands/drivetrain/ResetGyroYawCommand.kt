@@ -5,8 +5,7 @@ import com.team4099.robot2026.util.AllianceFlipUtil
 import com.team4099.robot2026.util.CustomLogger
 import edu.wpi.first.wpilibj2.command.Command
 import kotlin.math.PI
-import org.team4099.lib.geometry.Pose3d
-import org.team4099.lib.geometry.Rotation3d
+import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.units.derived.radians
 
 class ResetGyroYawCommand(val drivetrain: Drive, private val flipIfRed: Boolean = true) :
@@ -17,7 +16,7 @@ class ResetGyroYawCommand(val drivetrain: Drive, private val flipIfRed: Boolean 
 
   override fun initialize() {
     val angle = if (flipIfRed && AllianceFlipUtil.shouldFlip()) -PI.radians else 0.radians
-    drivetrain.pose = Pose3d(drivetrain.pose.translation, Rotation3d(0.radians, 0.radians, angle))
+    drivetrain.pose = Pose2d(drivetrain.pose.translation, angle)
     //    drivetrain.pointWheelsAt(angle)
   }
 

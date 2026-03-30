@@ -143,7 +143,7 @@ class FollowChoreoPath(
     CustomLogger.recordOutput("FollowChoreoPath/desiredPose", wantedPose.pose2d)
 
     val nextDriveState =
-        swerveDriveController.calculate(applyFlip(drivetrain.pose.toPose2d()).pose2d, desiredState)
+        swerveDriveController.calculate(applyFlip(drivetrain.pose).pose2d, desiredState)
 
     if (overrideRotationTrigger.get())
         drivetrain.runTranslationWhileKeepingRotation(
@@ -164,7 +164,7 @@ class FollowChoreoPath(
   }
 
   private fun atSetpoint(): Boolean {
-    val posediff = drivetrain.pose.toPose2d().minus(finalPose)
+    val posediff = drivetrain.pose.minus(finalPose)
 
     CustomLogger.recordOutput("FollowChoreoPath/poseDiff", posediff.transform2d)
 
