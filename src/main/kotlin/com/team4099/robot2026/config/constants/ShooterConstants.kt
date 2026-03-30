@@ -43,6 +43,8 @@ object ShooterConstants {
   val SHOOTER_TOLERANCE =
       if (Constants.Tuning.TUNING_MODE) 150.rotations.perMinute else 75.0.rotations.perMinute
 
+  val SIM_BPS = 5.5
+
   object VELOCITIES {
     val MINIMUM_LAUNCH_VELOCITY = 25.rotations.perSecond
     val MAXIMUM_LAUNCH_VELOCITY = 85.rotations.perSecond

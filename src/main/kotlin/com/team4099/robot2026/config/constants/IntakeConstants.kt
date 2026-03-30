@@ -42,7 +42,7 @@ object IntakeConstants {
   val SIM_VELOCITY = 400.degrees.perSecond
   val SIM_ACCELERATION = 400.degrees.perSecond.perSecond
 
-  val LENGTH_EXTENDED = 0.0.inches
+  val LENGTH_EXTENDED = 10.75.inches
 
   val FORCE_HOME_INTAKE_VOLTAGE = -2.5.volts
 
