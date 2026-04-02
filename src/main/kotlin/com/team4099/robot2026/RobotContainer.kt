@@ -52,6 +52,8 @@ import com.team4099.robot2026.util.AllianceFlipUtil
 import com.team4099.robot2026.util.driver.Jessika
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.Commands
+import edu.wpi.first.wpilibj2.command.Commands.defer
+import edu.wpi.first.wpilibj2.command.Commands.runOnce
 import edu.wpi.first.wpilibj2.command.ConditionalCommand
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.RepeatCommand
@@ -267,6 +269,17 @@ object RobotContainer {
                     { superstructure.requestForceIntakeCommand(intakeOverridingAngle) },
                     setOf(superstructure)),
                 WaitCommand(0.1))))
+
+    ControlBoard.jiggle.onTrue(
+      RepeatCommand(
+        SequentialCommandGroup(
+          defer({superstructure.requestForceIntakeCommand(intakeOverridingAngle - 5.degrees)}, setOf()),
+          WaitCommand(0.15),
+          defer({superstructure.requestForceIntakeCommand(intakeOverridingAngle + 5.degrees)}, setOf()),
+          WaitCommand(0.15),
+          )
+      )
+    )
 
     ControlBoard.rotateTrench.whileTrue(
         TargetAngleCommand(

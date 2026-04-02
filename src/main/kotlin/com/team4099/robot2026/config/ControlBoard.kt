@@ -57,6 +57,7 @@ object ControlBoard {
   val rotateTrench = Trigger { operator.rightShoulderButton }
   val forceIntakeFullDown = Trigger { operator.leftTriggerAxis > .5 }
   val rotateBump = Trigger { operator.leftShoulderButton }
+  val jiggle = Trigger{operator.aButton}
 
   // val prepClimb = Trigger { operator.aButton }
 
