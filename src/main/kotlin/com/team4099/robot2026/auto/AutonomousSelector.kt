@@ -117,7 +117,8 @@ object AutonomousSelector {
                 drivetrain.pose =
                     Pose2d(
                         FollowChoreoPath.flipVertically(
-                            AllianceFlipUtil.apply(IntakeSideSpin.startingPose)).pose2d)
+                                AllianceFlipUtil.apply(IntakeSideSpin.startingPose))
+                            .pose2d)
               })
               .andThen(IntakeSideSpin(drivetrain, superstructure, flipVeritcally = true))
       //      AutonomousMode.CENTERLINE_SWEEP_RIGHT ->

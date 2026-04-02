@@ -270,16 +270,24 @@ object RobotContainer {
                     setOf(superstructure)),
                 WaitCommand(0.1))))
 
-    ControlBoard.jiggle.onTrue(
-      RepeatCommand(
-        SequentialCommandGroup(
-          defer({superstructure.requestForceIntakeCommand(intakeOverridingAngle - 5.degrees)}, setOf()),
-          WaitCommand(0.15),
-          defer({superstructure.requestForceIntakeCommand(intakeOverridingAngle + 5.degrees)}, setOf()),
-          WaitCommand(0.15),
-          )
-      )
-    )
+    ControlBoard.jiggle.whileTrue(
+        RepeatCommand(
+            SequentialCommandGroup(
+                defer(
+                    {
+                      superstructure.requestForceIntakeCommand(
+                          max(IntakeConstants.PIVOT_MIN_ANGLE, intakeOverridingAngle - 5.degrees))
+                    },
+                    setOf()),
+                WaitCommand(0.2),
+                defer(
+                    {
+                      superstructure.requestForceIntakeCommand(
+                          min(IntakeConstants.PIVOT_MAX_ANGLE, intakeOverridingAngle + 5.degrees))
+                    },
+                    setOf()),
+                WaitCommand(0.2),
+            )))
 
     ControlBoard.rotateTrench.whileTrue(
         TargetAngleCommand(

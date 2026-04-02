@@ -52,7 +52,8 @@ class IntakeSideSpin(
                 .withTimeout(6.5),
             RepeatCommand(
                 SequentialCommandGroup(
-                    superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE),
+                    superstructure.requestForceIntakeCommand(
+                        IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE),
                     WaitCommand(0.2),
                     superstructure.requestForceIntakeCommand(
                         IntakeConstants.ANGLES.FORCE_HALFDOWN_ANGLE),
