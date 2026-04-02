@@ -54,9 +54,9 @@ object ControlBoard {
 
   val prepScore = Trigger { operator.yButton }
   val forceIntakeFullUp = Trigger { operator.rightTriggerAxis > .5 }
-  val rotateTrench = Trigger { operator.rightShoulderButton }
+  val forceIntakeHalfUp = Trigger { operator.rightShoulderButton }
   val forceIntakeFullDown = Trigger { operator.leftTriggerAxis > .5 }
-  val rotateBump = Trigger { operator.leftShoulderButton }
+  val forceIntakeHalfDown = Trigger { operator.leftShoulderButton }
   val jiggle = Trigger { operator.aButton }
 
   // val prepClimb = Trigger { operator.aButton }

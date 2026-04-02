@@ -83,33 +83,33 @@ class DrivePathOTF(
 
   private val thetakP =
       LoggedTunableValue(
-          "Pathfollow/thetakP",
+          "DrivePathOTF/thetakP",
           Pair({ it.inRadiansPerSecondPerRadian }, { it.radians.perSecond.perRadian }))
   private val thetakI =
       LoggedTunableValue(
-          "Pathfollow/thetakI",
+          "DrivePathOTF/thetakI",
           Pair(
               { it.inRadiansPerSecondPerRadianSeconds }, { it.radians.perSecond.perRadianSeconds }))
   private val thetakD =
       LoggedTunableValue(
-          "Pathfollow/thetakD",
+          "DrivePathOTF/thetakD",
           Pair(
               { it.inRadiansPerSecondPerRadianPerSecond },
               { it.radians.perSecond.perRadianPerSecond }))
 
   private val poskP =
       LoggedTunableValue(
-          "Pathfollow/posKP",
+          "DrivePathOTF/posKP",
           DrivetrainConstants.PID.AUTO_POS_KP,
           Pair({ it.inMetersPerSecondPerMeter }, { it.meters.perSecond.perMeter }))
   private val poskI =
       LoggedTunableValue(
-          "Pathfollow/posKI",
+          "DrivePathOTF/posKI",
           DrivetrainConstants.PID.AUTO_POS_KI,
           Pair({ it.inMetersPerSecondPerMeterSeconds }, { it.meters.perSecond.perMeterSeconds }))
   private val poskD =
       LoggedTunableValue(
-          "Pathfollow/posKD",
+          "DrivePathOTF/posKD",
           DrivetrainConstants.PID.AUTO_POS_KD,
           Pair(
               { it.inMetersPerSecondPerMetersPerSecond }, { it.metersPerSecondPerMetersPerSecond }))

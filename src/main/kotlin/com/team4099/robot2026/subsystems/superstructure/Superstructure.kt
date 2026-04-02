@@ -30,6 +30,7 @@ import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMilliseconds
+import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
@@ -70,6 +71,7 @@ class Superstructure(
 
   val field = Field2d()
 
+  var lastJammed = Clock.timestamp
   var jigglingIntake = false
 
   init {
@@ -233,20 +235,38 @@ class Superstructure(
       }
       SuperstructureStates.SCORE -> {
         shooter.currentRequest = Request.ShooterRequest.TargetVelocity(shooterTargetRPM)
-        feeder.currentRequest = Request.FeederRequest.TargetVelocity(FeederConstants.SCORE_VELOCITY)
+        if (Clock.timestamp - lastJammed < 1.5.seconds) {
+          hopper.currentRequest = Request.HopperRequest.OpenLoop(HopperConstants.UNJAM_VOLTAGE)
+          feeder.currentRequest = Request.FeederRequest.OpenLoop(FeederConstants.UNJAM_VOLTAGE)
+        } else {
+          feeder.currentRequest = Request.FeederRequest.TargetVelocity(FeederConstants.SCORE_VELOCITY)
 
-        if (shooter.isAtTargetedVelocity &&
+          if (shooter.isAtTargetedVelocity &&
             feeder.isAtTargetedVelocity &&
-            (AimOTFCommand.hasAligned || !RobotContainer.isAligning || overrideShooterVelocity)) {
-          hopper.currentRequest =
+            (AimOTFCommand.hasAligned || !RobotContainer.isAligning || overrideShooterVelocity)
+          ) {
+            hopper.currentRequest =
               Request.HopperRequest.TargetVelocity(HopperConstants.VELOCITIES.SCORE_VELOCITY)
-          intakeRollers.currentRequest =
+            intakeRollers.currentRequest =
               Request.RollersRequest.OpenLoop(RollersConstants.SCORE_ASSISTING_VOLTAGE)
+          }
+
+          if (Clock.timestamp - lastTransitionTime > 1.seconds &&
+            (
+                hopper.inputs.hopperStatorCurrent > HopperConstants.JAM_STALL_CURRENT ||
+                    feeder.inputs.feederStatorCurrent > FeederConstants.JAM_STALL_CURRENT ||
+                    hopper.inputs.hopperAngularVelocity < HopperConstants.JAM_STALL_VELOCITY ||
+                    feeder.inputs.feederVelocity < FeederConstants.JAM_STALL_VELOCITY
+                )
+          ) {
+//            lastJammed = Clock.timestamp
+          }
         }
 
         when (currentRequest) {
           is SuperstructureRequest.Idle -> nextState = SuperstructureStates.IDLE
           is SuperstructureRequest.Intake -> nextState = SuperstructureStates.IDLE
+          is SuperstructureRequest.Unjam -> nextState = SuperstructureStates.UNJAM
           // is SuperstructureRequest.ExtendClimb -> nextState = SuperstructureStates.PREP_CLIMB
           else -> {}
         }

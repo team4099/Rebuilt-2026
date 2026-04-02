@@ -37,6 +37,9 @@ object HopperConstants {
   val SCORE_VOLTAGE = 12.volts
   val UNJAM_VOLTAGE = -12.volts
 
+  val JAM_STALL_CURRENT = 55.amps
+  val JAM_STALL_VELOCITY = .1.rotations.perSecond
+
   object VELOCITIES {
     val IDLE_VELOCITY = 0.rotations.perSecond
     val SCORE_VELOCITY = 10.5.rotations.perSecond

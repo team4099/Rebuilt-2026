@@ -61,33 +61,33 @@ class FollowChoreoPath(
 
   val thetakP =
       LoggedTunableValue(
-          "Pathfollow/thetakP",
+          "FollowChoreoPath/thetakP",
           Pair({ it.inRadiansPerSecondPerRadian }, { it.radians.perSecond.perRadian }))
   val thetakI =
       LoggedTunableValue(
-          "Pathfollow/thetakI",
+          "FollowChoreoPath/thetakI",
           Pair(
               { it.inRadiansPerSecondPerRadianSeconds }, { it.radians.perSecond.perRadianSeconds }))
   val thetakD =
       LoggedTunableValue(
-          "Pathfollow/thetakD",
+          "FollowChoreoPath/thetakD",
           Pair(
               { it.inRadiansPerSecondPerRadianPerSecond },
               { it.radians.perSecond.perRadianPerSecond }))
 
   val poskP =
       LoggedTunableValue(
-          "Pathfollow/posKP",
+          "FollowChoreoPath/posKP",
           DrivetrainConstants.PID.AUTO_POS_KP,
           Pair({ it.inMetersPerSecondPerMeter }, { it.meters.perSecond.perMeter }))
   val poskI =
       LoggedTunableValue(
-          "Pathfollow/posKI",
+          "FollowChoreoPath/posKI",
           DrivetrainConstants.PID.AUTO_POS_KI,
           Pair({ it.inMetersPerSecondPerMeterSeconds }, { it.meters.perSecond.perMeterSeconds }))
   val poskD =
       LoggedTunableValue(
-          "Pathfollow/posKD",
+          "FollowChoreoPath/posKD",
           DrivetrainConstants.PID.AUTO_POS_KD,
           Pair(
               { it.inMetersPerSecondPerMetersPerSecond }, { it.metersPerSecondPerMetersPerSecond }))

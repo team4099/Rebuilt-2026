@@ -2,12 +2,14 @@ package com.team4099.robot2026.auto.mode
 
 import choreo.Choreo
 import choreo.trajectory.SwerveSample
+import com.team4099.robot2026.commands.AgitateIntakeCommand
 import com.team4099.robot2026.commands.drivetrain.AimOTFCommand
 import com.team4099.robot2026.commands.drivetrain.FollowChoreoPath
 import com.team4099.robot2026.config.constants.IntakeConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
+import edu.wpi.first.wpilibj2.command.RepeatCommand
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.WaitCommand
 import org.team4099.lib.geometry.Pose2d
@@ -31,45 +33,34 @@ class IntakeQuadrantL1(
                 SequentialCommandGroup(
                     WaitCommand(0.75),
                     superstructure.requestIntakeCommand(),
-                    WaitCommand(5.0),
+                    WaitCommand(5.75),
                     superstructure.requestPrepScoreCommand(),
-                    AimOTFCommand(drivetrain, timeout = 4.0.seconds).until {
-                      AimOTFCommand.hasAligned
-                    },
-                )),
-            superstructure.requestScoreCommand(),
-            WaitCommand(2.25),
-            superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE)))
-    //            RepeatCommand(
-    //                    SequentialCommandGroup(
-    //                        superstructure.requestForceIntakeCommand(
-    //                            IntakeConstants.ANGLES.FORCE_HALFDOWN_ANGLE),
-    //                        WaitCommand(0.1),
-    //                        superstructure.requestForceIntakeCommand(
-    //                            IntakeConstants.ANGLES.FORCE_DOWN_ANGLE),
-    //                        WaitCommand(0.1)))
-    //                .withTimeout(4.5),
-    //            RepeatCommand(
-    //                SequentialCommandGroup(
-    //
-    // superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_UP_ANGLE),
-    //                    WaitCommand(0.1),
-    //                    superstructure.requestForceIntakeCommand(
-    //                        IntakeConstants.ANGLES.FORCE_HALFDOWN_ANGLE),
-    //                    WaitCommand(0.1)))))
-    //            .withTimeout(12.0),
-    //        superstructure.requestIdleCommand(),
-    //        superstructure.requestPrepClimbCommand(),
-    //        WaitCommand(1.5),
-    //        ConditionalCommand(FollowChoreoPath(drivetrain, climbFlippedTraj), InstantCommand()) {
-    //          flipVeritcally
-    //        },
-    //        superstructure.requestClimbCommand())
+                    AimOTFCommand(drivetrain, timeout = 2.0.seconds),
+                    superstructure.requestScoreCommand(),
+                    WaitCommand(2.0),
+                    superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE),
+                    AgitateIntakeCommand(superstructure)
+                      .withTimeout(6.5)
+                )
+            )
+        ),
+      superstructure.requestIdleCommand(),
+      ParallelCommandGroup(
+        FollowChoreoPath(
+          drivetrain,
+          secondSwipeTraj,
+          flipVertically = flipVeritcally,
+          interruptAtTimeout = false
+        ),
+        WaitCommand(2.0).andThen(superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_DOWN_ANGLE))
+      )
+    )
   }
 
   companion object {
     val mainTraj =
         Choreo.loadTrajectory<SwerveSample>("IntakeQuadrantL1/IntakeQuadrantClimbQuick.traj").get()
+    val secondSwipeTraj = Choreo.loadTrajectory<SwerveSample>("IntakeQuadrantL1/BackToQuadrant.traj").get()
 
     val startingPose = Pose2d(mainTraj.getInitialPose(false).get())
   }

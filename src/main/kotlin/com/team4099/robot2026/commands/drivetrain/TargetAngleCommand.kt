@@ -41,16 +41,16 @@ class TargetAngleCommand(
   private var thetaPID: PIDController<Radian, Velocity<Radian>>
   val thetakP =
       LoggedTunableValue(
-          "Pathfollow/thetaAmpkP",
+          "TargetAngle/thetaAmpkP",
           Pair({ it.inDegreesPerSecondPerDegree }, { it.degrees.perSecond.perDegree }))
   val thetakI =
       LoggedTunableValue(
-          "Pathfollow/thetaAmpkI",
+          "TargetAngle/thetaAmpkI",
           Pair(
               { it.inDegreesPerSecondPerDegreeSeconds }, { it.degrees.perSecond.perDegreeSeconds }))
   val thetakD =
       LoggedTunableValue(
-          "Pathfollow/thetakD",
+          "TargetAngle/thetakD",
           Pair(
               { it.inDegreesPerSecondPerDegreePerSecond },
               { it.degrees.perSecond.perDegreePerSecond }))

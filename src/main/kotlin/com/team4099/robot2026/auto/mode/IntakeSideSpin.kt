@@ -2,6 +2,7 @@ package com.team4099.robot2026.auto.mode
 
 import choreo.Choreo
 import choreo.trajectory.SwerveSample
+import com.team4099.robot2026.commands.AgitateIntakeCommand
 import com.team4099.robot2026.commands.drivetrain.AimOTFCommand
 import com.team4099.robot2026.commands.drivetrain.FollowChoreoPath
 import com.team4099.robot2026.config.constants.IntakeConstants
@@ -32,32 +33,18 @@ class IntakeSideSpin(
                 SequentialCommandGroup(
                     WaitCommand(0.75),
                     superstructure.requestIntakeCommand(),
-                    WaitCommand(8.5),
+                    WaitCommand(7.75),
                     superstructure.requestPrepScoreCommand(),
                     AimOTFCommand(drivetrain, timeout = 1.0.seconds).until {
                       AimOTFCommand.hasAligned
                     },
                 )),
             superstructure.requestScoreCommand(),
-            WaitCommand(2.5),
+            WaitCommand(2.0),
             superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE),
-            RepeatCommand(
-                    SequentialCommandGroup(
-                        superstructure.requestForceIntakeCommand(
-                            IntakeConstants.ANGLES.FORCE_HALFDOWN_ANGLE),
-                        WaitCommand(0.1),
-                        superstructure.requestForceIntakeCommand(
-                            IntakeConstants.ANGLES.FORCE_DOWN_ANGLE),
-                        WaitCommand(0.1)))
-                .withTimeout(6.5),
-            RepeatCommand(
-                SequentialCommandGroup(
-                    superstructure.requestForceIntakeCommand(
-                        IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE),
-                    WaitCommand(0.2),
-                    superstructure.requestForceIntakeCommand(
-                        IntakeConstants.ANGLES.FORCE_HALFDOWN_ANGLE),
-                    WaitCommand(0.2)))))
+            AgitateIntakeCommand(superstructure)
+        )
+    )
   }
 
   companion object {
