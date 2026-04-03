@@ -3,6 +3,8 @@ package com.team4099.robot2026.config.constants
 import com.team4099.lib.hal.Clock
 import com.team4099.robot2026.Robot
 import edu.wpi.first.wpilibj.DriverStation
+import org.team4099.lib.units.base.Ampere
+import org.team4099.lib.units.base.Current
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.grams
 import org.team4099.lib.units.base.inches
@@ -69,7 +71,7 @@ object IntakeConstants {
     val FORCE_HALFDOWN_ANGLE = 20.degrees
     val FORCE_DOWN_ANGLE = -30.degrees
 
-    val RESET_INTAKE_ANGLE = INTAKE_ANGLE - 6.degrees
+    val RESET_INTAKE_ANGLE = INTAKE_ANGLE - 4.degrees
     val INTAKING_JIGGLE_ANGLE = INTAKE_ANGLE + 40.degrees
   }
 

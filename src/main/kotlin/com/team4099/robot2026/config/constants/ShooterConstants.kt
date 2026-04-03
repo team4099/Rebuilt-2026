@@ -52,18 +52,30 @@ object ShooterConstants {
   }
 
   object PID {
-    val REAL_KP: ProportionalGain<Velocity<Radian>, Ampere> = 10.1.amps / 1.0.radians.perSecond
-    val REAL_KI: IntegralGain<Velocity<Radian>, Ampere> =
+    val REAL_KP0: ProportionalGain<Velocity<Radian>, Ampere> = 10.1.amps / 1.0.radians.perSecond
+    val REAL_KI0: IntegralGain<Velocity<Radian>, Ampere> =
         0.0.amps / (1.0.radians.perSecond * 1.0.seconds)
-    val REAL_KD: DerivativeGain<Velocity<Radian>, Ampere> =
+    val REAL_KD0: DerivativeGain<Velocity<Radian>, Ampere> =
         0.01.amps / (1.0.radians.perSecond / 1.0.seconds)
 
-    val REAL_KS: StaticFeedforward<Ampere> = 10.75.amps
-    val REAL_KV: VelocityFeedforward<Radian, Ampere> = 0.088.amps / 1.radians.perSecond
-    val REAL_KA: AccelerationFeedforward<Radian, Ampere> =
+    val REAL_KP1: ProportionalGain<Velocity<Radian>, Ampere> = 10.1.amps / 1.0.radians.perSecond
+    val REAL_KI1: IntegralGain<Velocity<Radian>, Ampere> =
+      0.0.amps / (1.0.radians.perSecond * 1.0.seconds)
+    val REAL_KD1: DerivativeGain<Velocity<Radian>, Ampere> =
+      0.01.amps / (1.0.radians.perSecond / 1.0.seconds)
+
+    val REAL_KS0: StaticFeedforward<Ampere> = 10.75.amps
+    val REAL_KV0: VelocityFeedforward<Radian, Ampere> = 0.088.amps / 1.radians.perSecond
+    val REAL_KA0: AccelerationFeedforward<Radian, Ampere> =
         (MOMENT_OF_INERTIA.inKilogramsMeterSquared /
                 (Constants.MOTOR_CONSTANTS.KRAKENX60FOC_kT / GEAR_RATIO))
             .amps / 1.radians.perSecond.perSecond
+    val REAL_KS1: StaticFeedforward<Ampere> = 10.75.amps
+    val REAL_KV1: VelocityFeedforward<Radian, Ampere> = 0.088.amps / 1.radians.perSecond
+    val REAL_KA1: AccelerationFeedforward<Radian, Ampere> =
+      (MOMENT_OF_INERTIA.inKilogramsMeterSquared /
+          (Constants.MOTOR_CONSTANTS.KRAKENX60FOC_kT / GEAR_RATIO))
+        .amps / 1.radians.perSecond.perSecond
 
     val SIM_KP: ProportionalGain<Velocity<Radian>, Volt> = 0.02.volts / 1.0.degrees.perSecond
     val SIM_KI: IntegralGain<Velocity<Radian>, Volt> =
