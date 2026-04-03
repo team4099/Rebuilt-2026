@@ -41,7 +41,7 @@ object ControlBoard {
 
   val manualScore = Trigger { operator.bButton && operator.dPadLeft }
   val defenseMode = Trigger { operator.bButton && operator.dPadRight }
-  val unjam = Trigger { operator.bButton && operator.dPadUp }
+  val unjam = Trigger { operator.xButton }
 
   // val climb = Trigger { driver.aButton }
   val forceIdle = Trigger { driver.dPadDown || operator.dPadDown }

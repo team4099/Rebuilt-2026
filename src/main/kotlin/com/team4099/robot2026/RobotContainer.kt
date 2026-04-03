@@ -120,7 +120,8 @@ object RobotContainer {
           climb = Climb(object : ClimbIO {})
           feeder = Feeder(FeederIOTalonFX)
           hopper = Hopper(HopperIOTalon)
-          intake = Intake(IntakeIOTalon)
+          intake = Intake(IntakeIOTalon
+          )
           intakeRollers = IntakeRollers(IntakeRollersIOTalon)
           shooter = Shooter(ShooterIOTalon)
           leds =
@@ -267,7 +268,7 @@ object RobotContainer {
             SequentialCommandGroup(
                 Commands.runOnce({
                   intakeOverridingAngle =
-                      min(IntakeConstants.PIVOT_MAX_ANGLE, intakeOverridingAngle + 30.degrees)
+                      min(IntakeConstants.PIVOT_MAX_ANGLE-20.degrees, intakeOverridingAngle + 30.degrees)
                 }),
                 Commands.defer(
                     { superstructure.requestForceIntakeCommand(intakeOverridingAngle) },
@@ -288,7 +289,7 @@ object RobotContainer {
         RepeatCommand(
             SequentialCommandGroup(
                 Commands.runOnce({
-                  intakeOverridingAngle = max(IntakeConstants.PIVOT_MIN_ANGLE, intakeOverridingAngle - 30.degrees)
+                  intakeOverridingAngle = max(IntakeConstants.PIVOT_MIN_ANGLE+15.degrees, intakeOverridingAngle - 30.degrees)
                 }),
                 Commands.defer(
                     { superstructure.requestForceIntakeCommand(intakeOverridingAngle) },
