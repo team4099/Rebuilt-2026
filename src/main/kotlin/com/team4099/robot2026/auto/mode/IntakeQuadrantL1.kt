@@ -9,7 +9,6 @@ import com.team4099.robot2026.config.constants.IntakeConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
-import edu.wpi.first.wpilibj2.command.RepeatCommand
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.WaitCommand
 import org.team4099.lib.geometry.Pose2d
@@ -38,29 +37,27 @@ class IntakeQuadrantL1(
                     AimOTFCommand(drivetrain, timeout = 2.0.seconds),
                     superstructure.requestScoreCommand(),
                     WaitCommand(2.0),
-                    superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE),
-                    AgitateIntakeCommand(superstructure)
-                      .withTimeout(6.5)
-                )
-            )
-        ),
-      superstructure.requestIdleCommand(),
-      ParallelCommandGroup(
-        FollowChoreoPath(
-          drivetrain,
-          secondSwipeTraj,
-          flipVertically = flipVeritcally,
-          interruptAtTimeout = false
-        ),
-        WaitCommand(2.0).andThen(superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_DOWN_ANGLE))
-      )
-    )
+                    superstructure.requestForceIntakeCommand(
+                        IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE),
+                    AgitateIntakeCommand(superstructure).withTimeout(6.5)))),
+        superstructure.requestIdleCommand(),
+        ParallelCommandGroup(
+            FollowChoreoPath(
+                drivetrain,
+                secondSwipeTraj,
+                flipVertically = flipVeritcally,
+                interruptAtTimeout = false),
+            WaitCommand(2.0)
+                .andThen(
+                    superstructure.requestForceIntakeCommand(
+                        IntakeConstants.ANGLES.FORCE_DOWN_ANGLE))))
   }
 
   companion object {
     val mainTraj =
         Choreo.loadTrajectory<SwerveSample>("IntakeQuadrantL1/IntakeQuadrantClimbQuick.traj").get()
-    val secondSwipeTraj = Choreo.loadTrajectory<SwerveSample>("IntakeQuadrantL1/BackToQuadrant.traj").get()
+    val secondSwipeTraj =
+        Choreo.loadTrajectory<SwerveSample>("IntakeQuadrantL1/BackToQuadrant.traj").get()
 
     val startingPose = Pose2d(mainTraj.getInitialPose(false).get())
   }

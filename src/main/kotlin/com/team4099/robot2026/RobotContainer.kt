@@ -5,7 +5,6 @@ import com.team4099.robot2026.auto.AutonomousSelector
 import com.team4099.robot2026.commands.drivetrain.AimOTFCommand
 import com.team4099.robot2026.commands.drivetrain.DrivePathOTF
 import com.team4099.robot2026.commands.drivetrain.ResetGyroYawCommand
-import com.team4099.robot2026.commands.drivetrain.TargetAngleCommand
 import com.team4099.robot2026.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2026.config.ControlBoard
 import com.team4099.robot2026.config.constants.Constants
@@ -48,7 +47,6 @@ import com.team4099.robot2026.subsystems.superstructure.shooter.ShooterIOTalon
 import com.team4099.robot2026.subsystems.vision.Vision
 import com.team4099.robot2026.subsystems.vision.camera.CameraIOPVSim
 import com.team4099.robot2026.subsystems.vision.camera.CameraIOPhotonvision
-import com.team4099.robot2026.util.AllianceFlipUtil
 import com.team4099.robot2026.util.driver.Jessika
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.Commands
@@ -59,6 +57,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.RepeatCommand
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.WaitCommand
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine
 import org.ironmaple.simulation.SimulatedArena
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.Arena2026Rebuilt
@@ -120,8 +119,7 @@ object RobotContainer {
           climb = Climb(object : ClimbIO {})
           feeder = Feeder(FeederIOTalonFX)
           hopper = Hopper(HopperIOTalon)
-          intake = Intake(IntakeIOTalon
-          )
+          intake = Intake(IntakeIOTalon)
           intakeRollers = IntakeRollers(IntakeRollersIOTalon)
           shooter = Shooter(ShooterIOTalon)
           leds =
@@ -214,23 +212,31 @@ object RobotContainer {
 
   fun mapTeleopControls() {
     ControlBoard.resetGyro.whileTrue(ResetGyroYawCommand(drivetrain))
+
     ControlBoard.forceHome.onTrue(superstructure.requestForceHomeCommand())
+    ControlBoard.forceHome.onFalse(
+        ConditionalCommand(
+            superstructure.requestIntakeCommand(),
+            superstructure.requestIdleCommand(),
+        ) {
+          ControlBoard.intake.asBoolean
+        })
+
     ControlBoard.unjam.onTrue(
-      ConditionalCommand(
-        superstructure.requestUnjamCommand(),
-        InstantCommand()
-      ) {
-        superstructure.currentState == Superstructure.Companion.SuperstructureStates.PREP_SCORE ||
-            superstructure.currentState == Superstructure.Companion.SuperstructureStates.SCORE_AND_INTAKE ||
-            superstructure.currentState == Superstructure.Companion.SuperstructureStates.SCORE
-      })
+        ConditionalCommand(superstructure.requestUnjamCommand(), InstantCommand()) {
+          superstructure.currentState == Superstructure.Companion.SuperstructureStates.PREP_SCORE ||
+              superstructure.currentState ==
+                  Superstructure.Companion.SuperstructureStates.SCORE_AND_INTAKE ||
+              superstructure.currentState == Superstructure.Companion.SuperstructureStates.SCORE
+        })
 
     ControlBoard.unjam.onFalse(
-      ConditionalCommand(
-        superstructure.requestScoreCommand(),
-        InstantCommand(),
-      ) { superstructure.currentState == Superstructure.Companion.SuperstructureStates.UNJAM }
-    )
+        ConditionalCommand(
+            superstructure.requestScoreCommand(),
+            InstantCommand(),
+        ) {
+          superstructure.currentState == Superstructure.Companion.SuperstructureStates.UNJAM
+        })
 
     ControlBoard.forceIdle.onTrue(superstructure.requestIdleCommand())
 
@@ -268,28 +274,33 @@ object RobotContainer {
             SequentialCommandGroup(
                 Commands.runOnce({
                   intakeOverridingAngle =
-                      min(IntakeConstants.PIVOT_MAX_ANGLE-20.degrees, intakeOverridingAngle + 30.degrees)
+                      min(
+                          IntakeConstants.PIVOT_MAX_ANGLE - 20.degrees,
+                          intakeOverridingAngle + 30.degrees)
                 }),
                 Commands.defer(
                     { superstructure.requestForceIntakeCommand(intakeOverridingAngle) },
                     setOf(superstructure)),
                 WaitCommand(0.1))))
     ControlBoard.forceIntakeHalfUp.whileTrue(
-      RepeatCommand(
-        SequentialCommandGroup(
-          Commands.runOnce({
-            intakeOverridingAngle = IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE
-          }),
-          Commands.defer(
-            { superstructure.requestForceIntakeCommand(intakeOverridingAngle) },
-            setOf(superstructure)),
-          WaitCommand(0.1))))
+        RepeatCommand(
+            SequentialCommandGroup(
+                Commands.runOnce({
+                  intakeOverridingAngle = IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE
+                }),
+                Commands.defer(
+                    { superstructure.requestForceIntakeCommand(intakeOverridingAngle) },
+                    setOf(superstructure)),
+                WaitCommand(0.1))))
 
     ControlBoard.forceIntakeFullDown.whileTrue(
         RepeatCommand(
             SequentialCommandGroup(
                 Commands.runOnce({
-                  intakeOverridingAngle = max(IntakeConstants.PIVOT_MIN_ANGLE+15.degrees, intakeOverridingAngle - 30.degrees)
+                  intakeOverridingAngle =
+                      max(
+                          IntakeConstants.PIVOT_MIN_ANGLE + 15.degrees,
+                          intakeOverridingAngle - 30.degrees)
                 }),
                 Commands.defer(
                     { superstructure.requestForceIntakeCommand(intakeOverridingAngle) },
@@ -298,14 +309,14 @@ object RobotContainer {
 
     ControlBoard.forceIntakeHalfDown.whileTrue(
         RepeatCommand(
-          SequentialCommandGroup(
-            Commands.runOnce({
-              intakeOverridingAngle = IntakeConstants.ANGLES.FORCE_DOWN_ANGLE
-            }),
-            Commands.defer(
-              { superstructure.requestForceIntakeCommand(intakeOverridingAngle) },
-              setOf(superstructure)),
-            WaitCommand(0.1))))
+            SequentialCommandGroup(
+                Commands.runOnce({
+                  intakeOverridingAngle = IntakeConstants.ANGLES.FORCE_DOWN_ANGLE
+                }),
+                Commands.defer(
+                    { superstructure.requestForceIntakeCommand(intakeOverridingAngle) },
+                    setOf(superstructure)),
+                WaitCommand(0.1))))
 
     ControlBoard.jiggle.whileTrue(
         RepeatCommand(
@@ -326,38 +337,38 @@ object RobotContainer {
                 WaitCommand(0.2),
             )))
 
-//    ControlBoard.rotateTrench.whileTrue(
-//        TargetAngleCommand(
-//            Jessika(),
-//            { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-//            { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-//            { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
-//            { ControlBoard.slowMode },
-//            drivetrain,
-//            {
-//              if (FieldConstants.inTrenchAllianceZone(drivetrain.pose) &&
-//                  !AllianceFlipUtil.shouldFlip() ||
-//                  !FieldConstants.inTrenchAllianceZone(drivetrain.pose) &&
-//                      AllianceFlipUtil.shouldFlip())
-//                  0.degrees
-//              else 180.degrees
-//            }))
-//    ControlBoard.rotateBump.whileTrue(
-//        TargetAngleCommand(
-//            Jessika(),
-//            { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-//            { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-//            { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
-//            { ControlBoard.slowMode },
-//            drivetrain,
-//            {
-//              if (FieldConstants.inTrenchAllianceZone(drivetrain.pose) &&
-//                  !AllianceFlipUtil.shouldFlip() ||
-//                  !FieldConstants.inTrenchAllianceZone(drivetrain.pose) &&
-//                      AllianceFlipUtil.shouldFlip())
-//                  45.degrees
-//              else 225.degrees
-//            }))
+    //    ControlBoard.rotateTrench.whileTrue(
+    //        TargetAngleCommand(
+    //            Jessika(),
+    //            { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+    //            { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+    //            { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+    //            { ControlBoard.slowMode },
+    //            drivetrain,
+    //            {
+    //              if (FieldConstants.inTrenchAllianceZone(drivetrain.pose) &&
+    //                  !AllianceFlipUtil.shouldFlip() ||
+    //                  !FieldConstants.inTrenchAllianceZone(drivetrain.pose) &&
+    //                      AllianceFlipUtil.shouldFlip())
+    //                  0.degrees
+    //              else 180.degrees
+    //            }))
+    //    ControlBoard.rotateBump.whileTrue(
+    //        TargetAngleCommand(
+    //            Jessika(),
+    //            { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+    //            { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+    //            { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+    //            { ControlBoard.slowMode },
+    //            drivetrain,
+    //            {
+    //              if (FieldConstants.inTrenchAllianceZone(drivetrain.pose) &&
+    //                  !AllianceFlipUtil.shouldFlip() ||
+    //                  !FieldConstants.inTrenchAllianceZone(drivetrain.pose) &&
+    //                      AllianceFlipUtil.shouldFlip())
+    //                  45.degrees
+    //              else 225.degrees
+    //            }))
 
     ControlBoard.score.whileTrue(
         ConditionalCommand(
@@ -389,11 +400,19 @@ object RobotContainer {
               FieldConstants.inTrenchAllianceZone(drivetrain.pose)
             })
 
-    ControlBoard.climbOTF.whileTrue(
-        ConditionalCommand(
-            DrivePathOTF.alignClimbBottom(drivetrain), DrivePathOTF.alignClimbTop(drivetrain)) {
-              FieldConstants.inClimbLowerHalf(drivetrain.pose)
-            })
+    //    ControlBoard.climbOTF.whileTrue(
+    //        ConditionalCommand(
+    //            DrivePathOTF.alignClimbBottom(drivetrain), DrivePathOTF.alignClimbTop(drivetrain))
+    // {
+    //              FieldConstants.inClimbLowerHalf(drivetrain.pose)
+    //            })
+
+    ControlBoard.quasiForward.whileTrue(
+        drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kForward))
+    ControlBoard.quasiBackward.whileTrue(
+        drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kReverse))
+    ControlBoard.dynamicForward.whileTrue(drivetrain.sysIdDynamic(SysIdRoutine.Direction.kForward))
+    ControlBoard.dynamicBackward.whileTrue(drivetrain.sysIdDynamic(SysIdRoutine.Direction.kReverse))
 
     ControlBoard.eject.onTrue(superstructure.requestEjectCommand())
   }

@@ -9,7 +9,6 @@ import com.team4099.robot2026.config.constants.IntakeConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
-import edu.wpi.first.wpilibj2.command.RepeatCommand
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.WaitCommand
 import org.team4099.lib.geometry.Pose2d
@@ -35,16 +34,13 @@ class IntakeSideSpin(
                     superstructure.requestIntakeCommand(),
                     WaitCommand(7.75),
                     superstructure.requestPrepScoreCommand(),
-                    AimOTFCommand(drivetrain, timeout = 1.0.seconds).until {
+                    AimOTFCommand(drivetrain, timeout = 1.5.seconds).until {
                       AimOTFCommand.hasAligned
                     },
-                )),
-            superstructure.requestScoreCommand(),
-            WaitCommand(2.0),
-            superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE),
-            AgitateIntakeCommand(superstructure)
-        )
-    )
+                  superstructure.requestScoreCommand(),
+                  )),
+            WaitCommand(.5),
+            AgitateIntakeCommand(superstructure)))
   }
 
   companion object {

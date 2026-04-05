@@ -239,27 +239,24 @@ class Superstructure(
           hopper.currentRequest = Request.HopperRequest.OpenLoop(HopperConstants.UNJAM_VOLTAGE)
           feeder.currentRequest = Request.FeederRequest.OpenLoop(FeederConstants.UNJAM_VOLTAGE)
         } else {
-          feeder.currentRequest = Request.FeederRequest.TargetVelocity(FeederConstants.SCORE_VELOCITY)
+          feeder.currentRequest =
+              Request.FeederRequest.TargetVelocity(FeederConstants.SCORE_VELOCITY)
 
           if (shooter.isAtTargetedVelocity &&
-            feeder.isAtTargetedVelocity &&
-            (AimOTFCommand.hasAligned || !RobotContainer.isAligning || overrideShooterVelocity)
-          ) {
+              feeder.isAtTargetedVelocity &&
+              (AimOTFCommand.hasAligned || !RobotContainer.isAligning || overrideShooterVelocity)) {
             hopper.currentRequest =
-              Request.HopperRequest.TargetVelocity(HopperConstants.VELOCITIES.SCORE_VELOCITY)
+                Request.HopperRequest.TargetVelocity(HopperConstants.VELOCITIES.SCORE_VELOCITY)
             intakeRollers.currentRequest =
-              Request.RollersRequest.OpenLoop(RollersConstants.SCORE_ASSISTING_VOLTAGE)
+                Request.RollersRequest.OpenLoop(RollersConstants.SCORE_ASSISTING_VOLTAGE)
           }
 
           if (Clock.timestamp - lastTransitionTime > 1.seconds &&
-            (
-                hopper.inputs.hopperStatorCurrent > HopperConstants.JAM_STALL_CURRENT ||
-                    feeder.inputs.feederStatorCurrent > FeederConstants.JAM_STALL_CURRENT ||
-                    hopper.inputs.hopperAngularVelocity < HopperConstants.JAM_STALL_VELOCITY ||
-                    feeder.inputs.feederVelocity < FeederConstants.JAM_STALL_VELOCITY
-                )
-          ) {
-//            lastJammed = Clock.timestamp
+              (hopper.inputs.hopperStatorCurrent > HopperConstants.JAM_STALL_CURRENT ||
+                  feeder.inputs.feederStatorCurrent > FeederConstants.JAM_STALL_CURRENT ||
+                  hopper.inputs.hopperAngularVelocity < HopperConstants.JAM_STALL_VELOCITY ||
+                  feeder.inputs.feederVelocity < FeederConstants.JAM_STALL_VELOCITY)) {
+            //            lastJammed = Clock.timestamp
           }
         }
 
@@ -311,6 +308,7 @@ class Superstructure(
 
         when (currentRequest) {
           is SuperstructureRequest.Idle -> nextState = SuperstructureStates.IDLE
+          is SuperstructureRequest.ForceHome -> nextState = SuperstructureStates.FORCE_HOME
           is SuperstructureRequest.PrepScore -> nextState = SuperstructureStates.PREP_SCORE
           is SuperstructureRequest.Score -> nextState = SuperstructureStates.SCORE
           is SuperstructureRequest.Eject -> nextState = SuperstructureStates.EJECT

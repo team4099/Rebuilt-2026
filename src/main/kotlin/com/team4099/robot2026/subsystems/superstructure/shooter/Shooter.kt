@@ -118,9 +118,19 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
   init {
     if (RobotBase.isReal()) {
       io.configurePIDCurrent(
-          ShooterConstants.PID.REAL_KP0, ShooterConstants.PID.REAL_KI0, ShooterConstants.PID.REAL_KD0,ShooterConstants.PID.REAL_KP1, ShooterConstants.PID.REAL_KI1, ShooterConstants.PID.REAL_KD1)
+          ShooterConstants.PID.REAL_KP0,
+          ShooterConstants.PID.REAL_KI0,
+          ShooterConstants.PID.REAL_KD0,
+          ShooterConstants.PID.REAL_KP1,
+          ShooterConstants.PID.REAL_KI1,
+          ShooterConstants.PID.REAL_KD1)
       io.configureFFCurrent(
-          ShooterConstants.PID.REAL_KS0, ShooterConstants.PID.REAL_KV0, ShooterConstants.PID.REAL_KA0,ShooterConstants.PID.REAL_KS1, ShooterConstants.PID.REAL_KV1, ShooterConstants.PID.REAL_KA1)
+          ShooterConstants.PID.REAL_KS0,
+          ShooterConstants.PID.REAL_KV0,
+          ShooterConstants.PID.REAL_KA0,
+          ShooterConstants.PID.REAL_KS1,
+          ShooterConstants.PID.REAL_KV1,
+          ShooterConstants.PID.REAL_KA1)
     } else {
       io.configurePIDVoltage(
           ShooterConstants.PID.SIM_KP, ShooterConstants.PID.SIM_KI, ShooterConstants.PID.SIM_KD)

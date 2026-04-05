@@ -17,9 +17,11 @@ import org.photonvision.PhotonCamera
 import org.photonvision.PhotonPoseEstimator
 import org.photonvision.simulation.PhotonCameraSim
 import org.photonvision.targeting.PhotonTrackedTarget
+import org.photonvision.targeting.TargetCorner
 import org.team4099.lib.geometry.Pose2dWPILIB
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Pose3dWPILIB
+import org.team4099.lib.geometry.Transform3dWPILIB
 import org.team4099.lib.kinematics.ChassisSpeeds
 import org.team4099.lib.math.hypot
 import org.team4099.lib.units.base.inSeconds
@@ -74,6 +76,8 @@ interface CameraIO {
     var frameAccepted: Boolean = false
     var cameraTargets = mutableListOf<PhotonTrackedTarget>()
     var indices = 0
+
+    var warmedUp: Boolean = false
 
     override fun toLog(table: LogTable) {
       table.put("timestampSeconds", timestamp.inSeconds)
@@ -140,12 +144,34 @@ interface CameraIO {
 
     if (unreadResults.isEmpty()) return
 
-    val mostRecentPipelineResult = unreadResults[unreadResults.size - 1]
+    val mostRecentPipelineResult = unreadResults.last()
 
     inputs.timestamp = mostRecentPipelineResult.timestampSeconds.seconds
     Logger.recordOutput("Vision/$identifier/timestampIG", mostRecentPipelineResult.timestampSeconds)
 
     inputs.cameraTargets = mutableListOf()
+
+    if (!inputs.warmedUp) {
+      inputs.cameraTargets.addAll(
+          FieldConstants.fieldLayout.tags.map {
+            PhotonTrackedTarget(
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                it.ID,
+                0,
+                0.0f,
+                Transform3dWPILIB(),
+                Transform3dWPILIB(),
+                0.0,
+                mutableListOf(TargetCorner()),
+                mutableListOf(TargetCorner()))
+          })
+
+      inputs.warmedUp = true
+      return
+    }
 
     when (pipeline) {
       DetectionPipeline.APRIL_TAG -> {
@@ -155,8 +181,6 @@ interface CameraIO {
           if (result.hasTargets()) {
             var visionEst: Optional<EstimatedRobotPose> =
                 photonEstimator.estimateCoprocMultiTagPose(result)
-            if (visionEst.isEmpty)
-                visionEst = photonEstimator.estimatePnpDistanceTrigSolvePose(result)
             if (visionEst.isEmpty) visionEst = photonEstimator.estimateLowestAmbiguityPose(result)
 
             if (visionEst.isPresent) {

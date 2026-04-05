@@ -137,12 +137,12 @@ interface ShooterIO {
   ) {}
 
   fun configurePIDCurrent(
-    kP0: ProportionalGain<Fraction<Radian, Second>, Ampere>,
-    kI0: IntegralGain<Fraction<Radian, Second>, Ampere>,
-    kD0: DerivativeGain<Fraction<Radian, Second>, Ampere>,
-    kP1: ProportionalGain<Fraction<Radian, Second>, Ampere>,
-    kI1: IntegralGain<Fraction<Radian, Second>, Ampere>,
-    kD1: DerivativeGain<Fraction<Radian, Second>, Ampere>
+      kP0: ProportionalGain<Fraction<Radian, Second>, Ampere>,
+      kI0: IntegralGain<Fraction<Radian, Second>, Ampere>,
+      kD0: DerivativeGain<Fraction<Radian, Second>, Ampere>,
+      kP1: ProportionalGain<Fraction<Radian, Second>, Ampere>,
+      kI1: IntegralGain<Fraction<Radian, Second>, Ampere>,
+      kD1: DerivativeGain<Fraction<Radian, Second>, Ampere>
   ) {}
 
   fun configureFFCurrent(

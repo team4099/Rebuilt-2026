@@ -120,7 +120,7 @@ object DrivetrainConstants {
     val AUTO_POS_KP: ProportionalGain<Meter, Velocity<Meter>>
       get() {
         if (RobotBase.isReal()) {
-          return 2.5.meters.perSecond / 1.0.meters
+          return 2.52.meters.perSecond / 1.0.meters
         } else {
           return 20.meters.perSecond / 1.0.meters
         }
@@ -138,7 +138,7 @@ object DrivetrainConstants {
     val AUTO_POS_KD: DerivativeGain<Meter, Velocity<Meter>>
       get() {
         if (RobotBase.isReal()) {
-          return (0.5.meters.perSecond / (1.0.meters.perSecond)) // 0.6
+          return (0.475.meters.perSecond / (1.0.meters.perSecond)) // 0.6
               .metersPerSecondPerMetersPerSecond // todo: 0.25
         } else {
           return (0.5.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
@@ -219,7 +219,7 @@ object DrivetrainConstants {
     val DRIVE_KV: VelocityFeedforward<Meter, Volt>
       get() =
           when (Constants.Universal.whoami) {
-            Constants.WHOAMI.COMPBOT -> 0.76.volts / 1.0.meters.perSecond
+            Constants.WHOAMI.COMPBOT -> 0.734832.volts / 1.0.meters.perSecond
             Constants.WHOAMI.ALPHABOT -> 0.74646.volts / 1.0.meters.perSecond
             Constants.WHOAMI.TESTBOT -> 0.718.volts / 1.0.meters.perSecond
           }
@@ -227,6 +227,7 @@ object DrivetrainConstants {
     val DRIVE_KA: AccelerationFeedforward<Meter, Volt>
       get() =
           when (Constants.Universal.whoami) {
+            Constants.WHOAMI.COMPBOT -> 0.084474.volts / 1.0.meters.perSecond.perSecond
             else -> 0.0.volts / 1.0.meters.perSecond.perSecond
           }
 
