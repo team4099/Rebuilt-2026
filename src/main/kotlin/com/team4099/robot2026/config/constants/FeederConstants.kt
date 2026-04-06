@@ -30,8 +30,7 @@ object FeederConstants {
   val VOLTAGE_COMPENSATION = 12.0.volts
 
   val IDLE_VOLTAGE = if (Constants.Tuning.TUNING_MODE) 0.volts else -1.volts
-  val SCORE_VELOCITY =
-      HopperConstants.VELOCITIES.SCORE_VELOCITY * (11.inches / 4.inches) // matches with hopper
+  val SCORE_VELOCITY = 25.rotations.perSecond
   val SCORE_VOLTAGE = 12.volts
   val UNJAM_VOLTAGE = -12.volts
 

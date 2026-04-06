@@ -39,7 +39,8 @@ class AgitateIntakeCommand(val superstructure: Superstructure, val intake: Intak
     addCommands(
         RepeatCommand(
             SequentialCommandGroup(
-                superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.AUTO_AGITATE_FULL_UP),
+                superstructure.requestForceIntakeCommand(
+                    IntakeConstants.ANGLES.AUTO_AGITATE_FULL_UP),
                 WaitUntilCommand {
                       intake.inputs.intakeStatorCurrent.absoluteValue >=
                           IntakeConstants.AGITATION_STUCK_STATOR_THRESHOLD

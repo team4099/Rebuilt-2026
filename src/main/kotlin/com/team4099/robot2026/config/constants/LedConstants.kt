@@ -3,7 +3,6 @@ package com.team4099.robot2026.config.constants
 import com.ctre.phoenix6.controls.ControlRequest
 import com.ctre.phoenix6.controls.RainbowAnimation
 import com.ctre.phoenix6.controls.SolidColor
-import com.ctre.phoenix6.controls.TwinkleAnimation
 import com.ctre.phoenix6.signals.AnimationDirectionValue
 import com.ctre.phoenix6.signals.RGBWColor
 import edu.wpi.first.wpilibj.util.Color

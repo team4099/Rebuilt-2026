@@ -57,7 +57,7 @@ class Superstructure(
   val launchData: Shooter.Companion.CalculatedLaunchData
     get() = Shooter.calculateLaunchData(drivetrain.pose, drivetrain.chassisSpeeds)
 
-  var overrideShooterVelocity = true
+  var overrideShooterVelocity = false
   var defenseMode = false
 
   val shooterTargetRPM: AngularVelocity
