@@ -24,7 +24,6 @@ import org.team4099.lib.geometry.Transform3dWPILIB
 import org.team4099.lib.geometry.Translation3d
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inMilliseconds
-import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.degrees
@@ -73,12 +72,13 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose2d>) : Sub
 
     for (identifier in cameras.map { it.identifier }) {
       for (tag in FieldConstants.fieldLayout.tags) {
-        CustomLogger.recordOutput("Vision/$identifier/${tag.ID}/robotDistanceToTarget", -1)
-        CustomLogger.recordOutput("Vision/$identifier/${tag.ID}/robotTTag", Transform3dWPILIB())
+        CustomLogger.recordDebugOutput("Vision/$identifier/${tag.ID}/robotDistanceToTarget", -1)
+        CustomLogger.recordDebugOutput(
+            "Vision/$identifier/${tag.ID}/robotTTag", Transform3dWPILIB())
       }
-      CustomLogger.recordOutput("Vision/$identifier/cornerDetections", DoubleArray(0))
-      CustomLogger.recordOutput("Vision/$identifier/closestTargetTagID", -1)
-      CustomLogger.recordOutput("Vision/$identifier/closestTargetTagPose", Transform3dWPILIB())
+      CustomLogger.recordDebugOutput("Vision/$identifier/cornerDetections", DoubleArray(0))
+      CustomLogger.recordDebugOutput("Vision/$identifier/closestTargetTagID", -1)
+      CustomLogger.recordDebugOutput("Vision/$identifier/closestTargetTagPose", Transform3dWPILIB())
     }
   }
 
@@ -127,7 +127,7 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose2d>) : Sub
                   "Vision/${io[instance].identifier}/${tag.fiducialId}/robotDistanceToTarget",
                   distanceToTarget.inMeters)
 
-              CustomLogger.recordOutput(
+              CustomLogger.recordDebugOutput(
                   "Vision/${io[instance].identifier}/${tag.fiducialId}/robotTTag",
                   robotTTag.transform3d)
 
@@ -141,10 +141,10 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose2d>) : Sub
 
           closestTargetingTags[instance] = closestTargetTag
 
-          CustomLogger.recordOutput(
+          CustomLogger.recordDebugOutput(
               "Vision/${io[instance].identifier}/closestTargetTagID", closestTargetTag?.first ?: -1)
 
-          CustomLogger.recordOutput(
+          CustomLogger.recordDebugOutput(
               "Vision/${io[instance].identifier}/closestTargetTagPose",
               closestTargetTag?.second?.transform3d ?: Transform3dWPILIB())
 
@@ -159,7 +159,7 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose2d>) : Sub
                 }
               }
 
-          CustomLogger.recordOutput(
+          CustomLogger.recordDebugOutput(
               "Vision/ClosestTargetTagAcrossAllCams/TagID",
               closestTargetTagAcrossCams?.value?.first ?: -1)
 
@@ -234,33 +234,32 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose2d>) : Sub
                   TimestampedObjectVisionUpdate(inputs[instance].timestamp, objects, closestObject)
             }
 
-            CustomLogger.recordOutput(
-                "Vision/${io[instance].identifier}/${objects.name}/objectsDetectedPoses",
-                *(objectsDetected[objects.id]
-                    .map { Pose3d(poseSupplier.get()).plus(Transform3d(it, Rotation3d())).pose3d }
-                    .toTypedArray()))
-
-            CustomLogger.recordOutput(
-                "Vision/Last${objects.name}VisionUpdate/timestampSeconds",
-                lastObjectVisionUpdate[objects.id].timestamp.inSeconds)
-
-            CustomLogger.recordDebugOutput(
-                "Vision/Last${objects.name}VisionUpdate/robotTObject",
-                lastObjectVisionUpdate[objects.id].robotTObject.translation3d)
-
-            CustomLogger.recordDebugOutput(
-                "Vision/Last${objects.name}VisionUpdate/closestObjectPose",
-                Pose3d(poseSupplier.get())
-                    .plus(
-                        Transform3d(lastObjectVisionUpdate[objects.id].robotTObject, Rotation3d()))
-                    .pose3d)
+            //            CustomLogger.recordOutput(
+            //
+            // "Vision/${io[instance].identifier}/${objects.name}/objectsDetectedPoses",
+            //                *(objectsDetected[objects.id]
+            //                    .map { Pose3d(poseSupplier.get()).plus(Transform3d(it,
+            // Rotation3d())).pose3d }
+            //                    .toTypedArray()))
+            //
+            //            CustomLogger.recordOutput(
+            //                "Vision/Last${objects.name}VisionUpdate/timestampSeconds",
+            //                lastObjectVisionUpdate[objects.id].timestamp.inSeconds)
+            //
+            //            CustomLogger.recordDebugOutput(
+            //                "Vision/Last${objects.name}VisionUpdate/robotTObject",
+            //                lastObjectVisionUpdate[objects.id].robotTObject.translation3d)
+            //
+            //            CustomLogger.recordDebugOutput(
+            //                "Vision/Last${objects.name}VisionUpdate/closestObjectPose",
+            //                Pose3d(poseSupplier.get())
+            //                    .plus(
+            //                        Transform3d(lastObjectVisionUpdate[objects.id].robotTObject,
+            // Rotation3d()))
+            //                    .pose3d)
           }
         }
       }
-
-      CustomLogger.recordOutput(
-          "Vision/instance${instance}LoopTimeMS",
-          (Clock.epochTime - instanceStartTime).inMilliseconds)
     }
 
     val now = Clock.timestamp

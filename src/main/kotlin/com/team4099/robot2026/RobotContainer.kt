@@ -2,6 +2,7 @@ package com.team4099.robot2026
 
 import com.ctre.phoenix6.signals.NeutralModeValue
 import com.team4099.robot2026.auto.AutonomousSelector
+import com.team4099.robot2026.commands.AgitateIntakeCommand
 import com.team4099.robot2026.commands.drivetrain.AimOTFCommand
 import com.team4099.robot2026.commands.drivetrain.DrivePathOTF
 import com.team4099.robot2026.commands.drivetrain.ResetGyroYawCommand
@@ -57,7 +58,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.RepeatCommand
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.WaitCommand
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine
 import org.ironmaple.simulation.SimulatedArena
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.Arena2026Rebuilt
@@ -126,6 +126,7 @@ object RobotContainer {
               Leds(
                   { isAligning },
                   { Superstructure.Companion.SuperstructureStates.UNINITALIZED },
+                  { false },
                   LedIOCandle(Constants.LEDS.CANDLE_ID))
         }
         Constants.WHOAMI.TESTBOT -> {
@@ -140,6 +141,7 @@ object RobotContainer {
               Leds(
                   { isAligning },
                   { Superstructure.Companion.SuperstructureStates.UNINITALIZED },
+                  { false },
                   object : LedIO {})
         }
       }
@@ -182,6 +184,7 @@ object RobotContainer {
           Leds(
               { isAligning },
               { Superstructure.Companion.SuperstructureStates.UNINITALIZED },
+              { false },
               object : LedIO {})
     }
 
@@ -189,6 +192,7 @@ object RobotContainer {
         Superstructure(drivetrain, vision, climb, feeder, hopper, intake, intakeRollers, shooter)
 
     leds.stateSupplier = { superstructure.currentState }
+    leds.manualScoringSupplier = { superstructure.overrideShooterVelocity }
   }
 
   fun mapDefaultCommands() {
@@ -268,7 +272,7 @@ object RobotContainer {
 
     ControlBoard.intake.onTrue(superstructure.requestIntakeCommand())
     ControlBoard.intake.onFalse(superstructure.requestIdleCommand())
-
+    ControlBoard.agitate.whileTrue(AgitateIntakeCommand(superstructure, intake))
     ControlBoard.forceIntakeFullUp.whileTrue(
         RepeatCommand(
             SequentialCommandGroup(
@@ -405,14 +409,16 @@ object RobotContainer {
     //            DrivePathOTF.alignClimbBottom(drivetrain), DrivePathOTF.alignClimbTop(drivetrain))
     // {
     //              FieldConstants.inClimbLowerHalf(drivetrain.pose)
-    //            })
+    //            })\][
 
-    ControlBoard.quasiForward.whileTrue(
-        drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kForward))
-    ControlBoard.quasiBackward.whileTrue(
-        drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kReverse))
-    ControlBoard.dynamicForward.whileTrue(drivetrain.sysIdDynamic(SysIdRoutine.Direction.kForward))
-    ControlBoard.dynamicBackward.whileTrue(drivetrain.sysIdDynamic(SysIdRoutine.Direction.kReverse))
+    //    ControlBoard.quasiForward.whileTrue(
+    //        drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kForward))
+    //    ControlBoard.quasiBackward.whileTrue(
+    //        drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kReverse))
+    //
+    // ControlBoard.dynamicForward.whileTrue(drivetrain.sysIdDynamic(SysIdRoutine.Direction.kForward))
+    //
+    // ControlBoard.dynamicBackward.whileTrue(drivetrain.sysIdDynamic(SysIdRoutine.Direction.kReverse))
 
     ControlBoard.eject.onTrue(superstructure.requestEjectCommand())
   }
@@ -421,7 +427,8 @@ object RobotContainer {
 
   fun mapTunableCommands() {}
 
-  fun getAutonomousCommand() = AutonomousSelector.getCommand(drivetrain, vision, superstructure)
+  fun getAutonomousCommand() =
+      AutonomousSelector.getCommand(drivetrain, vision, superstructure, intake)
 
   fun resetSimulationField() {
     if (!RobotBase.isSimulation()) return

@@ -5,9 +5,9 @@ import choreo.trajectory.SwerveSample
 import com.team4099.robot2026.commands.AgitateIntakeCommand
 import com.team4099.robot2026.commands.drivetrain.AimOTFCommand
 import com.team4099.robot2026.commands.drivetrain.FollowChoreoPath
-import com.team4099.robot2026.config.constants.IntakeConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.subsystems.superstructure.Superstructure
+import com.team4099.robot2026.subsystems.superstructure.intake.Intake
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.WaitCommand
@@ -17,6 +17,7 @@ import org.team4099.lib.units.base.seconds
 class IntakeSideSpin(
     val drivetrain: Drive,
     val superstructure: Superstructure,
+    val intake: Intake,
     flipVeritcally: Boolean
 ) : SequentialCommandGroup() {
   init {
@@ -37,10 +38,10 @@ class IntakeSideSpin(
                     AimOTFCommand(drivetrain, timeout = 1.5.seconds).until {
                       AimOTFCommand.hasAligned
                     },
-                  superstructure.requestScoreCommand(),
-                  )),
+                    superstructure.requestScoreCommand(),
+                )),
             WaitCommand(.5),
-            AgitateIntakeCommand(superstructure)))
+            AgitateIntakeCommand(superstructure, intake)))
   }
 
   companion object {

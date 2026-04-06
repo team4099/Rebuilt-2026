@@ -8,6 +8,7 @@ import com.team4099.robot2026.commands.drivetrain.FollowChoreoPath
 import com.team4099.robot2026.config.constants.IntakeConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.subsystems.superstructure.Superstructure
+import com.team4099.robot2026.subsystems.superstructure.intake.Intake
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.WaitCommand
@@ -17,6 +18,7 @@ import org.team4099.lib.units.base.seconds
 class IntakeQuadrantL1(
     val drivetrain: Drive,
     val superstructure: Superstructure,
+    val intake: Intake,
     flipVeritcally: Boolean
 ) : SequentialCommandGroup() {
   init {
@@ -32,14 +34,14 @@ class IntakeQuadrantL1(
                 SequentialCommandGroup(
                     WaitCommand(0.75),
                     superstructure.requestIntakeCommand(),
-                    WaitCommand(5.75),
+                    WaitCommand(5.25),
                     superstructure.requestPrepScoreCommand(),
                     AimOTFCommand(drivetrain, timeout = 2.0.seconds),
                     superstructure.requestScoreCommand(),
-                    WaitCommand(2.0),
+                    WaitCommand(1.5),
                     superstructure.requestForceIntakeCommand(
                         IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE),
-                    AgitateIntakeCommand(superstructure).withTimeout(6.5)))),
+                    AgitateIntakeCommand(superstructure, intake).withTimeout(6.5)))),
         superstructure.requestIdleCommand(),
         ParallelCommandGroup(
             FollowChoreoPath(

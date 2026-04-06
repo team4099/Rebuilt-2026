@@ -12,6 +12,7 @@ import com.team4099.robot2026.commands.characterization.DriveCharacterizationCom
 import com.team4099.robot2026.commands.drivetrain.FollowChoreoPath
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.subsystems.superstructure.Superstructure
+import com.team4099.robot2026.subsystems.superstructure.intake.Intake
 import com.team4099.robot2026.subsystems.vision.Vision
 import com.team4099.robot2026.util.AllianceFlipUtil
 import edu.wpi.first.networktables.GenericEntry
@@ -71,7 +72,12 @@ object AutonomousSelector {
   val waitTime: Time
     get() = waitBeforeCommandSlider.getDouble(0.0).seconds
 
-  fun getCommand(drivetrain: Drive, vision: Vision, superstructure: Superstructure): Command {
+  fun getCommand(
+      drivetrain: Drive,
+      vision: Vision,
+      superstructure: Superstructure,
+      intake: Intake
+  ): Command {
     val mode = autonomousModeChooser.get()
 
     return when (mode) {
@@ -96,7 +102,7 @@ object AutonomousSelector {
       AutonomousMode.INTAKE_RIGHT_QUAD_L1 ->
           WaitCommand(waitTime.inSeconds)
               .andThen({ drivetrain.pose = AllianceFlipUtil.apply(IntakeQuadrantL1.startingPose) })
-              .andThen(IntakeQuadrantL1(drivetrain, superstructure, flipVeritcally = false))
+              .andThen(IntakeQuadrantL1(drivetrain, superstructure, intake, flipVeritcally = false))
       AutonomousMode.INTAKE_LEFT_QUAD_L1 ->
           WaitCommand(waitTime.inSeconds)
               .andThen({
@@ -104,13 +110,13 @@ object AutonomousSelector {
                     FollowChoreoPath.flipVertically(
                         AllianceFlipUtil.apply(IntakeQuadrantL1.startingPose))
               })
-              .andThen(IntakeQuadrantL1(drivetrain, superstructure, flipVeritcally = true))
+              .andThen(IntakeQuadrantL1(drivetrain, superstructure, intake, flipVeritcally = true))
       AutonomousMode.INTAKE_RIGHT_SPIN ->
           WaitCommand(waitTime.inSeconds)
               .andThen({
                 drivetrain.pose = Pose2d(AllianceFlipUtil.apply(IntakeSideSpin.startingPose).pose2d)
               })
-              .andThen(IntakeSideSpin(drivetrain, superstructure, flipVeritcally = false))
+              .andThen(IntakeSideSpin(drivetrain, superstructure, intake, flipVeritcally = false))
       AutonomousMode.INTAKE_LEFT_SPIN ->
           WaitCommand(waitTime.inSeconds)
               .andThen({
@@ -120,7 +126,7 @@ object AutonomousSelector {
                                 AllianceFlipUtil.apply(IntakeSideSpin.startingPose))
                             .pose2d)
               })
-              .andThen(IntakeSideSpin(drivetrain, superstructure, flipVeritcally = true))
+              .andThen(IntakeSideSpin(drivetrain, superstructure, intake, flipVeritcally = true))
       //      AutonomousMode.CENTERLINE_SWEEP_RIGHT ->
       //          WaitCommand(waitTime.inSeconds)
       //              .andThen({

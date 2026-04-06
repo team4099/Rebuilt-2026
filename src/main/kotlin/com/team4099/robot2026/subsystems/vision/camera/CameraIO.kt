@@ -87,13 +87,13 @@ interface CameraIO {
       table.put("cameraTargets/indices", cameraTargets.size)
 
       for (targetIndex in cameraTargets.indices) {
-        table.put("cameraTargets/$targetIndex/yaw", cameraTargets[targetIndex].yaw)
-        table.put("cameraTargets/$targetIndex/pitch", cameraTargets[targetIndex].pitch)
-        table.put("cameraTargets/$targetIndex/area", cameraTargets[targetIndex].area)
-        table.put("cameraTargets/$targetIndex/skew", cameraTargets[targetIndex].skew)
-        table.put(
-            "cameraTargets/$targetIndex/cameraToTarget",
-            cameraTargets[targetIndex].bestCameraToTarget)
+        //        table.put("cameraTargets/$targetIndex/yaw", cameraTargets[targetIndex].yaw)
+        //        table.put("cameraTargets/$targetIndex/pitch", cameraTargets[targetIndex].pitch)
+        //        table.put("cameraTargets/$targetIndex/area", cameraTargets[targetIndex].area)
+        //        table.put("cameraTargets/$targetIndex/skew", cameraTargets[targetIndex].skew)
+        //        table.put(
+        //            "cameraTargets/$targetIndex/cameraToTarget",
+        //            cameraTargets[targetIndex].bestCameraToTarget)
 
         if (cameraTargets[targetIndex].fiducialId != -1) {
           table.put("cameraTargets/$targetIndex/id", cameraTargets[targetIndex].fiducialId)
@@ -123,14 +123,14 @@ interface CameraIO {
         val target = PhotonTrackedTarget()
 
         target.fiducialId = table.get("cameraTargets/$targetID/id", 0)
-        target.yaw = table.get("cameraTarget/$targetID/yaw", 0.0)
-        target.pitch = table.get("cameraTarget/$targetID/pitch", 0.0)
-        target.area = table.get("cameraTarget/$targetID/area", 0.0)
-        target.pitch = table.get("cameraTarget/$targetID/skew", 0.0)
-
-        target.bestCameraToTarget =
-            table.get("cameraTarget/$targetID/cameraToTarget", Transform3d())?.get(0)
-                ?: Transform3d()
+        //        target.yaw = table.get("cameraTarget/$targetID/yaw", 0.0)
+        //        target.pitch = table.get("cameraTarget/$targetID/pitch", 0.0)
+        //        target.area = table.get("cameraTarget/$targetID/area", 0.0)
+        //        target.pitch = table.get("cameraTarget/$targetID/skew", 0.0)
+        //
+        //        target.bestCameraToTarget =
+        //            table.get("cameraTarget/$targetID/cameraToTarget", Transform3d())?.get(0)
+        //                ?: Transform3d()
         target.poseAmbiguity = table.get("cameraTarget/$targetID/ambiguity", 0.0)
 
         cameraTargets.add(target)

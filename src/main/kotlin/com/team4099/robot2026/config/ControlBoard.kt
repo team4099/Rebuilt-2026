@@ -57,6 +57,7 @@ object ControlBoard {
   val forceIntakeHalfUp = Trigger { operator.rightShoulderButton }
   val forceIntakeFullDown = Trigger { operator.leftTriggerAxis > .5 }
   val forceIntakeHalfDown = Trigger { operator.leftShoulderButton }
+  val agitate = Trigger { driver.dPadLeft }
   val jiggle = Trigger { operator.aButton }
 
   // val prepClimb = Trigger { operator.aButton }
