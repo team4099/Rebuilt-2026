@@ -30,7 +30,7 @@ object IntakeConstants {
   val PIVOT_MAX_ANGLE = 120.degrees
   val PIVOT_MIN_ANGLE = (-50).degrees
   val PIVOT_MAX_FORCE_ANLGE = 110.0.degrees
-  val STATOR_CURRENT_LIMIT = 120.amps
+  val STATOR_CURRENT_LIMIT = 67.amps
   val SUPPLY_CURRENT_LIMIT = 40.amps
 
   val VOLTAGE_COMPENSATION = 12.0.volts
@@ -46,6 +46,8 @@ object IntakeConstants {
 
   val FORCE_HOME_INTAKE_VOLTAGE = -2.5.volts
 
+  val AGITATION_STUCK_STATOR_THRESHOLD = 55.amps
+
   object ANGLES {
     val INTAKE_ANGLE = PIVOT_MIN_ANGLE
     val STOW_ANGLE = PIVOT_MAX_ANGLE
@@ -54,37 +56,41 @@ object IntakeConstants {
           if (DriverStation.isDisabled() ||
               DriverStation.isAutonomous() &&
                   (Robot.autoStartTime < 0.seconds ||
-                      Clock.timestamp - Robot.autoStartTime < 1.25.seconds))
-              STOW_ANGLE
-          else INTAKE_ANGLE
+                      Clock.timestamp - Robot.autoStartTime < 1.25.seconds)) {
+            STOW_ANGLE
+          } else {
+            INTAKE_ANGLE
+          }
 
     val EJECT_ANGLE = INTAKE_ANGLE
 
     val CLIMB_ANGLE = PIVOT_MAX_ANGLE
 
     val FORCE_UP_ANGLE = 80.degrees
-    val FORCE_HALFUP_ANGLE = 50.degrees
+    val FORCE_HALFUP_ANGLE = 40.degrees
     val FORCE_HALFDOWN_ANGLE = 20.degrees
-    val FORCE_DOWN_ANGLE = -30.degrees
+    val FORCE_DOWN_ANGLE = -20.degrees
 
-    val RESET_INTAKE_ANGLE = INTAKE_ANGLE - 6.degrees
+    val AUTO_AGITATE_FULL_UP = 60.degrees
+
+    val RESET_INTAKE_ANGLE = INTAKE_ANGLE - 4.degrees
     val INTAKING_JIGGLE_ANGLE = INTAKE_ANGLE + 40.degrees
   }
 
   object PID {
     // PID Constants
-    val REAL_PIVOT_KP: ProportionalGain<Radian, Volt> = 55.volts / 1.0.radians
+    val REAL_PIVOT_KP: ProportionalGain<Radian, Volt> = 85.volts / 1.0.radians
     val REAL_PIVOT_KI: IntegralGain<Radian, Volt> = 0.0.volts / (1.0.radians * 1.0.seconds)
     val REAL_PIVOT_KD: DerivativeGain<Radian, Volt> = 0.0.volts / 1.0.radians.perSecond
 
-    val SIM_PIVOT_KP: ProportionalGain<Radian, Volt> = 5.volts / 1.0.radians
+    val SIM_PIVOT_KP: ProportionalGain<Radian, Volt> = 20.volts / 1.0.radians
     val SIM_PIVOT_KI: IntegralGain<Radian, Volt> = 0.0.volts / (1.0.radians * 1.0.seconds)
     val SIM_PIVOT_KD: DerivativeGain<Radian, Volt> = 0.0.volts / 1.0.radians.perSecond
 
     val PIVOT_KA = 0.0.volts / 1.0.radians.perSecond.perSecond
     val PIVOT_KV = 0.0.volts / 1.0.radians.perSecond
-    val PIVOT_KG = 0.35.volts
-    val PIVOT_KS = 0.3.volts
+    val PIVOT_KG = 0.47.volts
+    val PIVOT_KS = 0.29.volts
 
     val SIM_PIVOT_KA = 0.0.volts / 1.0.radians.perSecond.perSecond
     val SIM_PIVOT_KV = 0.0.volts / 1.0.radians.perSecond

@@ -137,15 +137,21 @@ interface ShooterIO {
   ) {}
 
   fun configurePIDCurrent(
-      kP: ProportionalGain<Fraction<Radian, Second>, Ampere>,
-      kI: IntegralGain<Fraction<Radian, Second>, Ampere>,
-      kD: DerivativeGain<Fraction<Radian, Second>, Ampere>
+      kP0: ProportionalGain<Fraction<Radian, Second>, Ampere>,
+      kI0: IntegralGain<Fraction<Radian, Second>, Ampere>,
+      kD0: DerivativeGain<Fraction<Radian, Second>, Ampere>,
+      kP1: ProportionalGain<Fraction<Radian, Second>, Ampere>,
+      kI1: IntegralGain<Fraction<Radian, Second>, Ampere>,
+      kD1: DerivativeGain<Fraction<Radian, Second>, Ampere>
   ) {}
 
   fun configureFFCurrent(
-      kS: StaticFeedforward<Ampere>,
-      kV: VelocityFeedforward<Radian, Ampere>,
-      kA: AccelerationFeedforward<Radian, Ampere>,
+      kS0: StaticFeedforward<Ampere>,
+      kV0: VelocityFeedforward<Radian, Ampere>,
+      kA0: AccelerationFeedforward<Radian, Ampere>,
+      kS1: StaticFeedforward<Ampere>,
+      kV1: VelocityFeedforward<Radian, Ampere>,
+      kA1: AccelerationFeedforward<Radian, Ampere>,
   ) {}
 
   fun setVelocity(velocity: AngularVelocity) {}

@@ -4,6 +4,7 @@ import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.Fraction
+import org.team4099.lib.units.base.Ampere
 import org.team4099.lib.units.base.Second
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
@@ -33,6 +34,7 @@ interface HopperIO {
     var hopperAppliedVoltage = 0.0.volts
     var hopperStatorCurrent = 0.0.amps
     var hopperSupplyCurrent = 0.0.amps
+    var hopperTorqueCurrent = 0.0.amps
     var hopperTemp = 0.0.celsius
 
     override fun toLog(table: LogTable) {
@@ -40,6 +42,7 @@ interface HopperIO {
       table.put("hopperAccelerationRPMPM", hopperAngularAcceleration.inRotationsPerMinutePerMinute)
       table.put("hopperAppliedVoltage", hopperAppliedVoltage.inVolts)
       table.put("hopperStatorCurrent", hopperStatorCurrent.inAmperes)
+      table.put("hopperTorqueCurrent", hopperTorqueCurrent.inAmperes)
       table.put("hopperSupplyCurrent", hopperSupplyCurrent.inAmperes)
       table.put("hopperTemp", hopperTemp.inCelsius)
     }
@@ -60,6 +63,9 @@ interface HopperIO {
       table.get("hopperSupplyCurrent", hopperSupplyCurrent.inAmperes).let {
         hopperSupplyCurrent = it.amps
       }
+      table.get("hopperTorqueCurrent", hopperTorqueCurrent.inAmperes).let {
+        hopperTorqueCurrent = it.amps
+      }
       table.get("hopperTemp", hopperTemp.inCelsius).let { hopperTemp = it.celsius }
     }
   }
@@ -70,16 +76,28 @@ interface HopperIO {
 
   fun setVelocity(velocity: AngularVelocity) {}
 
-  fun configurePID(
+  fun configurePIDVoltage(
       kP: ProportionalGain<Fraction<Radian, Second>, Volt>,
       kI: IntegralGain<Fraction<Radian, Second>, Volt>,
       kD: DerivativeGain<Fraction<Radian, Second>, Volt>
   ) {}
 
-  fun configureFF(
+  fun configureFFVoltage(
       kS: StaticFeedforward<Volt>,
       kV: VelocityFeedforward<Radian, Volt>,
       kA: AccelerationFeedforward<Radian, Volt>,
+  ) {}
+
+  fun configurePIDCurrent(
+      kP: ProportionalGain<Fraction<Radian, Second>, Ampere>,
+      kI: IntegralGain<Fraction<Radian, Second>, Ampere>,
+      kD: DerivativeGain<Fraction<Radian, Second>, Ampere>
+  ) {}
+
+  fun configureFFCurrent(
+      kS: StaticFeedforward<Ampere>,
+      kV: VelocityFeedforward<Radian, Ampere>,
+      kA: AccelerationFeedforward<Radian, Ampere>,
   ) {}
 
   fun setBrakeMode(brake: Boolean) {}

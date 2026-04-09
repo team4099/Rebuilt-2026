@@ -29,7 +29,7 @@ import org.team4099.lib.units.perSecond
 object IntakeRollersIOTalon : IntakeRollersIO {
 
   private val leaderTalon: TalonFX = TalonFX(Constants.Intake.LEADER_ROLLERS_MOTOR_ID)
-  private val followerTalon: TalonFX = TalonFX(Constants.Intake.LEADER_ROLLERS_MOTOR_ID)
+  private val followerTalon: TalonFX = TalonFX(Constants.Intake.FOLLOWER_ROLLERS_MOTOR_ID)
 
   private val rollerConfig: TalonFXConfiguration = TalonFXConfiguration()
 
@@ -92,14 +92,14 @@ object IntakeRollersIOTalon : IntakeRollersIO {
 
     inputs.leaderVelocity = leaderSensor.velocity
     inputs.leaderAppliedVoltage = leaderVoltageSignal.valueAsDouble.volts
-    inputs.leaderStatorCurrent = leaderSupplyCurrentSignal.valueAsDouble.amps
+    inputs.leaderStatorCurrent = leaderStatorCurrentSignal.valueAsDouble.amps
     inputs.leaderSupplyCurrent = leaderSupplyCurrentSignal.valueAsDouble.amps
     inputs.leaderTemperature = leaderTempSignal.valueAsDouble.celsius
     inputs.leaderAcceleration =
         leaderAccelSignal.valueAsDouble.rotations.perSecond.perSecond * RollersConstants.GEAR_RATIO
     inputs.followerVelocity = followerSensor.velocity
     inputs.followerAppliedVoltage = followerVoltageSignal.valueAsDouble.volts
-    inputs.followerStatorCurrent = followerSupplyCurrentSignal.valueAsDouble.amps
+    inputs.followerStatorCurrent = followerStatorCurrentSignal.valueAsDouble.amps
     inputs.followerSupplyCurrent = followerSupplyCurrentSignal.valueAsDouble.amps
     inputs.followerTemperature = followerTempSignal.valueAsDouble.celsius
     inputs.followerAcceleration =

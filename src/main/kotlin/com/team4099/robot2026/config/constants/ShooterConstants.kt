@@ -40,27 +40,38 @@ object ShooterConstants {
 
   val MAX_ACCELERATION: AngularAcceleration = 1000.rotations.perSecond.perSecond
 
-  val SHOOTER_TOLERANCE =
-      if (Constants.Tuning.TUNING_MODE) 150.rotations.perMinute else 75.0.rotations.perMinute
+  val SHOOTER_TOLERANCE = 75.rotations.perMinute
 
   object VELOCITIES {
     val MINIMUM_LAUNCH_VELOCITY = 25.rotations.perSecond
     val MAXIMUM_LAUNCH_VELOCITY = 85.rotations.perSecond
     val IDLE_VELOCITY =
-        if (Constants.Tuning.TUNING_MODE) 0.rotations.perSecond else .5.rotations.perSecond
-    val MANUAL_SHOOTING = 2800.rotations.perMinute
+        if (Constants.Tuning.TUNING_MODE) 0.rotations.perSecond else 0.rotations.perSecond
+    val MANUAL_SHOOTING = 1800.rotations.perMinute
   }
 
   object PID {
-    val REAL_KP: ProportionalGain<Velocity<Radian>, Ampere> = 8.9.amps / 1.0.radians.perSecond
-    val REAL_KI: IntegralGain<Velocity<Radian>, Ampere> =
+    val REAL_KP0: ProportionalGain<Velocity<Radian>, Ampere> = 8.amps / 1.0.radians.perSecond
+    val REAL_KI0: IntegralGain<Velocity<Radian>, Ampere> =
         0.0.amps / (1.0.radians.perSecond * 1.0.seconds)
-    val REAL_KD: DerivativeGain<Velocity<Radian>, Ampere> =
+    val REAL_KD0: DerivativeGain<Velocity<Radian>, Ampere> =
         0.0.amps / (1.0.radians.perSecond / 1.0.seconds)
 
-    val REAL_KS: StaticFeedforward<Ampere> = 10.75.amps
-    val REAL_KV: VelocityFeedforward<Radian, Ampere> = 0.088.amps / 1.radians.perSecond
-    val REAL_KA: AccelerationFeedforward<Radian, Ampere> =
+    val REAL_KP1: ProportionalGain<Velocity<Radian>, Ampere> = 11.amps / 1.0.radians.perSecond
+    val REAL_KI1: IntegralGain<Velocity<Radian>, Ampere> =
+        0.0.amps / (1.0.radians.perSecond * 1.0.seconds)
+    val REAL_KD1: DerivativeGain<Velocity<Radian>, Ampere> =
+        0.0.amps / (1.0.radians.perSecond / 1.0.seconds)
+
+    val REAL_KS0: StaticFeedforward<Ampere> = 10.75.amps
+    val REAL_KV0: VelocityFeedforward<Radian, Ampere> = 0.088.amps / 1.radians.perSecond
+    val REAL_KA0: AccelerationFeedforward<Radian, Ampere> =
+        (MOMENT_OF_INERTIA.inKilogramsMeterSquared /
+                (Constants.MOTOR_CONSTANTS.KRAKENX60FOC_kT / GEAR_RATIO))
+            .amps / 1.radians.perSecond.perSecond
+    val REAL_KS1: StaticFeedforward<Ampere> = 10.75.amps
+    val REAL_KV1: VelocityFeedforward<Radian, Ampere> = 0.088.amps / 1.radians.perSecond
+    val REAL_KA1: AccelerationFeedforward<Radian, Ampere> =
         (MOMENT_OF_INERTIA.inKilogramsMeterSquared /
                 (Constants.MOTOR_CONSTANTS.KRAKENX60FOC_kT / GEAR_RATIO))
             .amps / 1.radians.perSecond.perSecond

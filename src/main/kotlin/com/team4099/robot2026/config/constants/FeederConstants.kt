@@ -35,17 +35,19 @@ object FeederConstants {
 
   val VELOCITY_TOLERANCE = 2.rotations.perSecond
 
+  val JAM_STALL_CURRENT = 75.amps
+  val JAM_STALL_VELOCITY = 0.1.rotations.perSecond
+
   object PID {
-    val REAL_KP: ProportionalGain<Velocity<Radian>, Volt> = 0.4.volts / 1.0.radians.perSecond
+    val REAL_KP: ProportionalGain<Velocity<Radian>, Volt> = 0.425.volts / 1.0.radians.perSecond
     val REAL_KI: IntegralGain<Velocity<Radian>, Volt> =
         0.0.volts / (1.0.radians.perSecond * 1.0.seconds)
     val REAL_KD: DerivativeGain<Velocity<Radian>, Volt> =
         0.0.volts / (1.0.radians.perSecond / 1.0.seconds)
 
-    val REAL_KS: StaticFeedforward<Volt> = 0.37152.volts
-    val REAL_KV: VelocityFeedforward<Radian, Volt> = 0.094.volts / 1.radians.perSecond
-    val REAL_KA: AccelerationFeedforward<Radian, Volt> =
-        0.0020456.volts / 1.radians.perSecond.perSecond
+    val REAL_KS: StaticFeedforward<Volt> = 0.45.volts
+    val REAL_KV: VelocityFeedforward<Radian, Volt> = 0.123.volts / 1.radians.perSecond
+    val REAL_KA: AccelerationFeedforward<Radian, Volt> = 0.005.volts / 1.radians.perSecond.perSecond
 
     val SIM_KP: ProportionalGain<Velocity<Radian>, Volt> = 0.0.volts / 1.0.degrees.perSecond
     val SIM_KI: IntegralGain<Velocity<Radian>, Volt> =

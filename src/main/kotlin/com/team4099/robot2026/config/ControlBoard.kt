@@ -41,24 +41,30 @@ object ControlBoard {
 
   val manualScore = Trigger { operator.bButton && operator.dPadLeft }
   val defenseMode = Trigger { operator.bButton && operator.dPadRight }
-  val unjam = Trigger { operator.bButton && operator.dPadUp }
+  val unjam = Trigger { operator.xButton }
 
   // val climb = Trigger { driver.aButton }
   val forceIdle = Trigger { driver.dPadDown || operator.dPadDown }
   val leftTrenchOTF = Trigger { driver.leftShoulderButton }
   val rightTrenchOTF = Trigger { driver.rightShoulderButton }
 
-  val climbOTF = Trigger { driver.yButton }
+  //  val climbOTF = Trigger { driver.yButton }
 
-  val eject = Trigger { driver.dPadUp }
+  val eject = Trigger { driver.dPadUp || operator.dPadUp }
 
   val prepScore = Trigger { operator.yButton }
-  val forceIntakeFullUp = Trigger { operator.rightTriggerAxis > .5 }
-  val rotateTrench = Trigger { operator.rightShoulderButton }
-  val forceIntakeFullDown = Trigger { operator.leftTriggerAxis > .5 }
-  val rotateBump = Trigger { operator.leftShoulderButton }
+  val forceIntakeUpTrigger = Trigger { operator.rightTriggerAxis > .5 }
+  val forceIntakeUpShoulder = Trigger { operator.rightShoulderButton }
+  val forceIntakeDownTrigger = Trigger { operator.leftTriggerAxis > .5 }
+  val forceIntakeDownShoulder = Trigger { operator.leftShoulderButton }
+  val jiggle = Trigger { operator.aButton }
 
   // val prepClimb = Trigger { operator.aButton }
 
   val forceHome = Trigger { operator.startButton && operator.selectButton }
+
+  val quasiForward = Trigger { driver.xButton }
+  val quasiBackward = Trigger { driver.yButton }
+  val dynamicForward = Trigger { driver.aButton }
+  val dynamicBackward = Trigger { driver.bButton }
 }

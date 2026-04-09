@@ -118,9 +118,19 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
   init {
     if (RobotBase.isReal()) {
       io.configurePIDCurrent(
-          ShooterConstants.PID.REAL_KP, ShooterConstants.PID.REAL_KI, ShooterConstants.PID.REAL_KD)
+          ShooterConstants.PID.REAL_KP0,
+          ShooterConstants.PID.REAL_KI0,
+          ShooterConstants.PID.REAL_KD0,
+          ShooterConstants.PID.REAL_KP1,
+          ShooterConstants.PID.REAL_KI1,
+          ShooterConstants.PID.REAL_KD1)
       io.configureFFCurrent(
-          ShooterConstants.PID.REAL_KS, ShooterConstants.PID.REAL_KV, ShooterConstants.PID.REAL_KA)
+          ShooterConstants.PID.REAL_KS0,
+          ShooterConstants.PID.REAL_KV0,
+          ShooterConstants.PID.REAL_KA0,
+          ShooterConstants.PID.REAL_KS1,
+          ShooterConstants.PID.REAL_KV1,
+          ShooterConstants.PID.REAL_KA1)
     } else {
       io.configurePIDVoltage(
           ShooterConstants.PID.SIM_KP, ShooterConstants.PID.SIM_KI, ShooterConstants.PID.SIM_KD)
@@ -226,7 +236,7 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
       return calculateLaunchData(
           drivetrainPose,
           chassisSpeeds,
-          if (FieldConstants.inAllianceZone(drivetrainPose)) {
+          if (FieldConstants.inTrenchAllianceZone(drivetrainPose)) {
             FieldConstants.HUB_POSE
           } else {
             if (FieldConstants.inLeft(drivetrainPose)) {
@@ -478,19 +488,32 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
               AngularVelocity(MathUtil.interpolate(startValue.value, endValue.value, t))
             })
 
+    private val passingShooterMap: InterpolatingTreeMap<Length, AngularVelocity> =
+        InterpolatingTreeMap(
+            { startValue, endValue, q ->
+              MathUtil.inverseInterpolate(startValue.value, endValue.value, q.value)
+            },
+            { startValue, endValue, t ->
+              AngularVelocity(MathUtil.interpolate(startValue.value, endValue.value, t))
+            })
+
     init {
-      distanceToShooterMap.put(1.95.meters, 29.rotations.perSecond)
-      distanceToShooterMap.put(2.17.meters, 29.rotations.perSecond)
-      distanceToShooterMap.put(2.42.meters, 32.rotations.perSecond)
-      distanceToShooterMap.put(2.71.meters, 37.rotations.perSecond)
-      distanceToShooterMap.put(2.95.meters, 40.rotations.perSecond)
-      distanceToShooterMap.put(3.09.meters, 41.rotations.perSecond)
-      distanceToShooterMap.put(3.33.meters, 46.rotations.perSecond)
-      distanceToShooterMap.put(3.61.meters, 47.5.rotations.perSecond)
-      distanceToShooterMap.put(3.92.meters, 50.rotations.perSecond)
-      distanceToShooterMap.put(4.16.meters, 52.rotations.perSecond)
-      distanceToShooterMap.put(4.4.meters, 53.5.rotations.perSecond)
-      distanceToShooterMap.put(4.9.meters, 56.rotations.perSecond)
+      distanceToShooterMap.put(2.03.meters, 29.rotations.perSecond)
+      distanceToShooterMap.put(2.36.meters, 30.rotations.perSecond)
+      distanceToShooterMap.put(2.67.meters, 33.rotations.perSecond)
+      distanceToShooterMap.put(2.90.meters, 37.rotations.perSecond)
+      distanceToShooterMap.put(3.21.meters, 46.rotations.perSecond)
+      distanceToShooterMap.put(3.47.meters, 49.rotations.perSecond)
+      distanceToShooterMap.put(3.97.meters, 55.5.rotations.perSecond)
+      distanceToShooterMap.put(4.35.meters, 57.rotations.perSecond)
+      distanceToShooterMap.put(4.71.meters, 59.5.rotations.perSecond)
+      distanceToShooterMap.put(5.34.meters, 64.rotations.perSecond)
+
+      passingShooterMap.put(2.meters, 27.75.rotations.perSecond)
+      passingShooterMap.put(2.5.meters, 32.5.rotations.perSecond)
+      passingShooterMap.put(3.meters, 37.rotations.perSecond)
+      passingShooterMap.put(3.5.meters, 41.6.rotations.perSecond)
+      passingShooterMap.put(4.meters, 46.3.rotations.perSecond)
     }
 
     fun distanceToShooterRPM(distanceToTarget: Length): AngularVelocity {
@@ -500,7 +523,18 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
       return max(
           ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY,
           min(
-              (10.1634 * distanceToTarget.inMeters + 9.20232).rotations.perSecond,
+              (11.31313 * distanceToTarget.inMeters + 6.89274).rotations.perSecond,
+              ShooterConstants.VELOCITIES.MAXIMUM_LAUNCH_VELOCITY))
+    }
+
+    fun passingDistanceToShooterRPM(distanceToTarget: Length): AngularVelocity {
+      if (2.meters <= distanceToTarget && distanceToTarget <= 4.meters) {
+        return passingShooterMap.get(distanceToTarget)
+      }
+      return max(
+          ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY,
+          min(
+              (9.25752 * distanceToTarget.inMeters + 9.25).rotations.perSecond,
               ShooterConstants.VELOCITIES.MAXIMUM_LAUNCH_VELOCITY))
     }
   }

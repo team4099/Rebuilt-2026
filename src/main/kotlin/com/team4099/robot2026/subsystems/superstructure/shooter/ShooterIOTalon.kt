@@ -3,6 +3,7 @@ package com.team4099.robot2026.subsystems.superstructure.shooter
 import com.ctre.phoenix6.BaseStatusSignal
 import com.ctre.phoenix6.StatusSignal
 import com.ctre.phoenix6.configs.Slot0Configs
+import com.ctre.phoenix6.configs.Slot1Configs
 import com.ctre.phoenix6.configs.TalonFXConfiguration
 import com.ctre.phoenix6.controls.Follower
 import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC
@@ -14,6 +15,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue
 import com.team4099.lib.math.clamp
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.ShooterConstants
+import com.team4099.robot2026.util.CustomLogger
 import edu.wpi.first.units.measure.AngularAcceleration as WPILibAngularAcceleration
 import edu.wpi.first.units.measure.AngularVelocity as WPILibAngularVelocity
 import edu.wpi.first.units.measure.Current as WPILibCurrent
@@ -52,6 +54,7 @@ object ShooterIOTalon : ShooterIO {
   private val voltReq = VoltageOut(0.0).withEnableFOC(true)
   private val configs: TalonFXConfiguration = TalonFXConfiguration()
   private val slot0Configs: Slot0Configs = configs.Slot0
+  private val slot1Configs: Slot1Configs = configs.Slot1
   private val leaderSensor =
       ctreAngularMechanismSensor(
           leaderTalon, ShooterConstants.GEAR_RATIO, ShooterConstants.VOLTAGE_COMPENSATION)
@@ -158,27 +161,43 @@ object ShooterIOTalon : ShooterIO {
   }
 
   override fun configurePIDCurrent(
-      kP: ProportionalGain<Fraction<Radian, Second>, Ampere>,
-      kI: IntegralGain<Fraction<Radian, Second>, Ampere>,
-      kD: DerivativeGain<Fraction<Radian, Second>, Ampere>
+      kP0: ProportionalGain<Fraction<Radian, Second>, Ampere>,
+      kI0: IntegralGain<Fraction<Radian, Second>, Ampere>,
+      kD0: DerivativeGain<Fraction<Radian, Second>, Ampere>,
+      kP1: ProportionalGain<Fraction<Radian, Second>, Ampere>,
+      kI1: IntegralGain<Fraction<Radian, Second>, Ampere>,
+      kD1: DerivativeGain<Fraction<Radian, Second>, Ampere>
   ) {
-    slot0Configs.kP = kP.inAmpsPerRadianPerSecond
-    slot0Configs.kI = kI.inAmpsPerRadians
-    slot0Configs.kD = kD.inAmpsPerRadiansPerSecondPerSecond
+    slot0Configs.kP = kP0.inAmpsPerRadianPerSecond
+    slot0Configs.kI = kI0.inAmpsPerRadians
+    slot0Configs.kD = kD0.inAmpsPerRadiansPerSecondPerSecond
+    slot1Configs.kP = kP1.inAmpsPerRadianPerSecond
+    slot1Configs.kI = kI1.inAmpsPerRadians
+    slot1Configs.kD = kD1.inAmpsPerRadiansPerSecondPerSecond
     leaderTalon.configurator.apply(slot0Configs)
+    leaderTalon.configurator.apply(slot1Configs)
     followerTalon.configurator.apply(slot0Configs)
+    followerTalon.configurator.apply(slot1Configs)
   }
 
   override fun configureFFCurrent(
-      kS: StaticFeedforward<Ampere>,
-      kV: VelocityFeedforward<Radian, Ampere>,
-      kA: AccelerationFeedforward<Radian, Ampere>
+      kS0: StaticFeedforward<Ampere>,
+      kV0: VelocityFeedforward<Radian, Ampere>,
+      kA0: AccelerationFeedforward<Radian, Ampere>,
+      kS1: StaticFeedforward<Ampere>,
+      kV1: VelocityFeedforward<Radian, Ampere>,
+      kA1: AccelerationFeedforward<Radian, Ampere>,
   ) {
-    slot0Configs.kS = kS.inAmperes
-    slot0Configs.kV = kV.inAmpsPerRadiansPerSecond
-    slot0Configs.kA = kA.inAmpsPerRadiansPerSecondPerSecond
+    slot0Configs.kS = kS0.inAmperes
+    slot0Configs.kV = kV0.inAmpsPerRadiansPerSecond
+    slot0Configs.kA = kA0.inAmpsPerRadiansPerSecondPerSecond
+    slot1Configs.kS = kS1.inAmperes
+    slot1Configs.kV = kV1.inAmpsPerRadiansPerSecond
+    slot1Configs.kA = kA1.inAmpsPerRadiansPerSecondPerSecond
     leaderTalon.configurator.apply(slot0Configs)
+    leaderTalon.configurator.apply(slot1Configs)
     followerTalon.configurator.apply(slot0Configs)
+    followerTalon.configurator.apply(slot1Configs)
   }
 
   override fun setVoltage(voltage: ElectricalPotential) {
@@ -191,8 +210,13 @@ object ShooterIOTalon : ShooterIO {
   }
 
   override fun setVelocity(velocity: AngularVelocity) {
+    val slotUsed = 0
+    //        if (leaderSensor.velocity < velocity - ShooterConstants.SHOOTER_TOLERANCE) 1 else 0
+    CustomLogger.recordOutput("Shooter/slotUsed", slotUsed)
+
     leaderTalon.setControl(
         motionMagicControl
+            .withSlot(slotUsed)
             .withVelocity(leaderSensor.velocityToRawUnits(velocity))
             .withAcceleration(
                 leaderSensor.accelerationToRawUnits(ShooterConstants.MAX_ACCELERATION)),

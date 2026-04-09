@@ -10,7 +10,11 @@ import java.util.function.Supplier
 import org.photonvision.PhotonCamera
 import org.photonvision.PhotonPoseEstimator
 import org.photonvision.simulation.PhotonCameraSim
+import org.photonvision.targeting.PhotonPipelineResult
+import org.photonvision.targeting.PhotonTrackedTarget
+import org.photonvision.targeting.TargetCorner
 import org.team4099.lib.geometry.Transform3d
+import org.team4099.lib.geometry.Transform3dWPILIB
 import org.team4099.lib.kinematics.ChassisSpeeds
 import org.team4099.lib.units.derived.Angle
 
@@ -28,5 +32,26 @@ class CameraIOPhotonvision(
   override var cameraSim: PhotonCameraSim? = null
   override var curStdDevs: Matrix<N3?, N1?> = VisionConstants.singleTagStdDevs
 
-  init {}
+  init {
+    photonEstimator.estimateLowestAmbiguityPose(
+        PhotonPipelineResult(
+            0,
+            0,
+            0,
+            0,
+            listOf(
+                PhotonTrackedTarget(
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    1,
+                    0,
+                    0.0f,
+                    Transform3dWPILIB(),
+                    Transform3dWPILIB(),
+                    0.0,
+                    mutableListOf(TargetCorner()),
+                    mutableListOf(TargetCorner())))))
+  }
 }

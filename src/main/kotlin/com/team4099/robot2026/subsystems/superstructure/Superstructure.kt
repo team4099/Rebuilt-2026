@@ -7,6 +7,7 @@ import com.team4099.robot2026.commands.drivetrain.AimOTFCommand
 import com.team4099.robot2026.config.constants.ClimbConstants
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.FeederConstants
+import com.team4099.robot2026.config.constants.FieldConstants
 import com.team4099.robot2026.config.constants.HopperConstants
 import com.team4099.robot2026.config.constants.IntakeConstants
 import com.team4099.robot2026.config.constants.RollersConstants
@@ -21,6 +22,7 @@ import com.team4099.robot2026.subsystems.superstructure.intake.rollers.IntakeRol
 import com.team4099.robot2026.subsystems.superstructure.shooter.Shooter
 import com.team4099.robot2026.subsystems.vision.Vision
 import com.team4099.robot2026.util.CustomLogger
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
@@ -29,6 +31,7 @@ import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMilliseconds
+import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
@@ -63,12 +66,15 @@ class Superstructure(
       return if (overrideShooterVelocity) ShooterConstants.VELOCITIES.MANUAL_SHOOTING
       else
           max(
-              Shooter.distanceToShooterRPM(launchData.distanceToTarget),
+              if (FieldConstants.inTrenchAllianceZone(drivetrain.pose))
+                  Shooter.distanceToShooterRPM(launchData.distanceToTarget)
+              else Shooter.passingDistanceToShooterRPM(launchData.distanceToTarget),
               ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY)
     }
 
   val field = Field2d()
 
+  var lastJammed = Clock.timestamp
   var jigglingIntake = false
 
   init {
@@ -232,19 +238,35 @@ class Superstructure(
       }
       SuperstructureStates.SCORE -> {
         shooter.currentRequest = Request.ShooterRequest.TargetVelocity(shooterTargetRPM)
-        feeder.currentRequest = Request.FeederRequest.TargetVelocity(FeederConstants.SCORE_VELOCITY)
+        if (Clock.timestamp - lastJammed < 1.5.seconds) {
+          hopper.currentRequest = Request.HopperRequest.OpenLoop(HopperConstants.UNJAM_VOLTAGE)
+          feeder.currentRequest = Request.FeederRequest.OpenLoop(FeederConstants.UNJAM_VOLTAGE)
+        } else {
+          feeder.currentRequest =
+              Request.FeederRequest.TargetVelocity(FeederConstants.SCORE_VELOCITY)
 
-        if (shooter.isAtTargetedVelocity &&
-            feeder.isAtTargetedVelocity &&
-            (AimOTFCommand.hasAligned || !RobotContainer.isAligning || overrideShooterVelocity)) {
-          hopper.currentRequest = Request.HopperRequest.OpenLoop(HopperConstants.SCORE_VOLTAGE)
-          intakeRollers.currentRequest =
-              Request.RollersRequest.OpenLoop(RollersConstants.SCORE_ASSISTING_VOLTAGE)
+          if (shooter.isAtTargetedVelocity &&
+              feeder.isAtTargetedVelocity &&
+              (AimOTFCommand.hasAligned || !RobotContainer.isAligning || overrideShooterVelocity)) {
+            hopper.currentRequest =
+                Request.HopperRequest.TargetVelocity(HopperConstants.VELOCITIES.SCORE_VELOCITY)
+            intakeRollers.currentRequest =
+                Request.RollersRequest.OpenLoop(RollersConstants.SCORE_ASSISTING_VOLTAGE)
+          }
+
+          if (Clock.timestamp - lastTransitionTime > 1.seconds &&
+              (hopper.inputs.hopperStatorCurrent > HopperConstants.JAM_STALL_CURRENT ||
+                  feeder.inputs.feederStatorCurrent > FeederConstants.JAM_STALL_CURRENT ||
+                  hopper.inputs.hopperAngularVelocity < HopperConstants.JAM_STALL_VELOCITY ||
+                  feeder.inputs.feederVelocity < FeederConstants.JAM_STALL_VELOCITY)) {
+            //            lastJammed = Clock.timestamp
+          }
         }
 
         when (currentRequest) {
           is SuperstructureRequest.Idle -> nextState = SuperstructureStates.IDLE
           is SuperstructureRequest.Intake -> nextState = SuperstructureStates.IDLE
+          is SuperstructureRequest.Unjam -> nextState = SuperstructureStates.UNJAM
           // is SuperstructureRequest.ExtendClimb -> nextState = SuperstructureStates.PREP_CLIMB
           else -> {}
         }
@@ -253,7 +275,7 @@ class Superstructure(
         intake.currentRequest =
             Request.IntakeRequest.TargetingPosition(IntakeConstants.ANGLES.INTAKE_ANGLE)
         intakeRollers.currentRequest =
-            Request.RollersRequest.OpenLoop(RollersConstants.INTAKE_VOLTAGE)
+            Request.RollersRequest.OpenLoop(RollersConstants.TELEOP_INTAKE_VOLTAGE)
         shooter.currentRequest = Request.ShooterRequest.TargetVelocity(shooterTargetRPM)
 
         if (shooter.isAtTargetedVelocity &&
@@ -272,8 +294,16 @@ class Superstructure(
         shooter.currentRequest = Request.ShooterRequest.Idle()
         hopper.currentRequest = Request.HopperRequest.Idle()
         feeder.currentRequest = Request.FeederRequest.Idle()
-        intakeRollers.currentRequest =
-            Request.RollersRequest.OpenLoop(RollersConstants.INTAKE_VOLTAGE)
+        if (intake.inputs.position < 0.degrees) {
+          if (DriverStation.isAutonomous()) { // Run intake faster in teleop
+            intakeRollers.currentRequest =
+                Request.RollersRequest.OpenLoop(RollersConstants.AUTO_INTAKE_VOLTAGE)
+          } else {
+            intakeRollers.currentRequest =
+                Request.RollersRequest.OpenLoop(RollersConstants.TELEOP_INTAKE_VOLTAGE)
+          }
+        }
+
         intake.currentRequest =
             Request.IntakeRequest.TargetingPosition(
                 if (jigglingIntake) IntakeConstants.ANGLES.INTAKING_JIGGLE_ANGLE
@@ -281,6 +311,7 @@ class Superstructure(
 
         when (currentRequest) {
           is SuperstructureRequest.Idle -> nextState = SuperstructureStates.IDLE
+          is SuperstructureRequest.ForceHome -> nextState = SuperstructureStates.FORCE_HOME
           is SuperstructureRequest.PrepScore -> nextState = SuperstructureStates.PREP_SCORE
           is SuperstructureRequest.Score -> nextState = SuperstructureStates.SCORE
           is SuperstructureRequest.Eject -> nextState = SuperstructureStates.EJECT
