@@ -50,14 +50,13 @@ object ControlBoard {
 
   //  val climbOTF = Trigger { driver.yButton }
 
-  val eject = Trigger { driver.dPadUp }
+  val eject = Trigger { driver.dPadUp || operator.dPadUp }
 
   val prepScore = Trigger { operator.yButton }
-  val forceIntakeFullUp = Trigger { operator.rightTriggerAxis > .5 }
-  val forceIntakeHalfUp = Trigger { operator.rightShoulderButton }
-  val forceIntakeFullDown = Trigger { operator.leftTriggerAxis > .5 }
-  val forceIntakeHalfDown = Trigger { operator.leftShoulderButton }
-  val agitate = Trigger { driver.dPadLeft }
+  val forceIntakeUpTrigger = Trigger { operator.rightTriggerAxis > .5 }
+  val forceIntakeUpShoulder = Trigger { operator.rightShoulderButton }
+  val forceIntakeDownTrigger = Trigger { operator.leftTriggerAxis > .5 }
+  val forceIntakeDownShoulder = Trigger { operator.leftShoulderButton }
   val jiggle = Trigger { operator.aButton }
 
   // val prepClimb = Trigger { operator.aButton }

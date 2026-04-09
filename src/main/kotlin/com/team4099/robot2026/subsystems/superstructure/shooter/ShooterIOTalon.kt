@@ -211,7 +211,7 @@ object ShooterIOTalon : ShooterIO {
 
   override fun setVelocity(velocity: AngularVelocity) {
     val slotUsed = 0
-//        if (leaderSensor.velocity < velocity - ShooterConstants.SHOOTER_TOLERANCE) 1 else 0
+    //        if (leaderSensor.velocity < velocity - ShooterConstants.SHOOTER_TOLERANCE) 1 else 0
     CustomLogger.recordOutput("Shooter/slotUsed", slotUsed)
 
     leaderTalon.setControl(

@@ -53,8 +53,8 @@ object VisionConstants {
                       Pair(
                           CameraIO.DetectionPipeline.APRIL_TAG,
                           Transform3d(
-                              Translation3d(13.426.inches, -3.675.inches, 10.353.inches),
-                              Rotation3d(0.degrees, 0.degrees, -15.degrees))))
+                              Translation3d(13.147531.inches, -3.75.inches, 14.507814.inches),
+                              Rotation3d(0.degrees, -40.degrees, 0.degrees))))
           WHOAMI.TESTBOT ->
               mapOf(
                   //                  "raven_1" to

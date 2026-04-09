@@ -45,7 +45,7 @@ class AgitateIntakeCommand(val superstructure: Superstructure, val intake: Intak
                       intake.inputs.intakeStatorCurrent.absoluteValue >=
                           IntakeConstants.AGITATION_STUCK_STATOR_THRESHOLD
                     }
-                    .withTimeout(.25),
+                    .withTimeout(.2),
                 Commands.runOnce({ lastStuckPosition = intake.inputs.position }),
                 Commands.defer(
                     {
@@ -53,6 +53,6 @@ class AgitateIntakeCommand(val superstructure: Superstructure, val intake: Intak
                           max(IntakeConstants.PIVOT_MIN_ANGLE, lastStuckPosition - 40.degrees))
                     },
                     setOf()),
-                WaitCommand(.4))))
+                WaitCommand(.3))))
   }
 }

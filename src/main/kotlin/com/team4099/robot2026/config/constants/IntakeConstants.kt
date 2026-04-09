@@ -46,7 +46,7 @@ object IntakeConstants {
 
   val FORCE_HOME_INTAKE_VOLTAGE = -2.5.volts
 
-  val AGITATION_STUCK_STATOR_THRESHOLD = 45.amps
+  val AGITATION_STUCK_STATOR_THRESHOLD = 55.amps
 
   object ANGLES {
     val INTAKE_ANGLE = PIVOT_MIN_ANGLE
@@ -71,7 +71,7 @@ object IntakeConstants {
     val FORCE_HALFDOWN_ANGLE = 20.degrees
     val FORCE_DOWN_ANGLE = -20.degrees
 
-    val AUTO_AGITATE_FULL_UP = 85.degrees
+    val AUTO_AGITATE_FULL_UP = 60.degrees
 
     val RESET_INTAKE_ANGLE = INTAKE_ANGLE - 4.degrees
     val INTAKING_JIGGLE_ANGLE = INTAKE_ANGLE + 40.degrees

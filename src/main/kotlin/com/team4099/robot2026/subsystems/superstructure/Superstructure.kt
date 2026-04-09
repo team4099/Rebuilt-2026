@@ -7,6 +7,7 @@ import com.team4099.robot2026.commands.drivetrain.AimOTFCommand
 import com.team4099.robot2026.config.constants.ClimbConstants
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.FeederConstants
+import com.team4099.robot2026.config.constants.FieldConstants
 import com.team4099.robot2026.config.constants.HopperConstants
 import com.team4099.robot2026.config.constants.IntakeConstants
 import com.team4099.robot2026.config.constants.RollersConstants
@@ -65,7 +66,9 @@ class Superstructure(
       return if (overrideShooterVelocity) ShooterConstants.VELOCITIES.MANUAL_SHOOTING
       else
           max(
-              Shooter.distanceToShooterRPM(launchData.distanceToTarget),
+              if (FieldConstants.inTrenchAllianceZone(drivetrain.pose))
+                  Shooter.distanceToShooterRPM(launchData.distanceToTarget)
+              else Shooter.passingDistanceToShooterRPM(launchData.distanceToTarget),
               ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY)
     }
 

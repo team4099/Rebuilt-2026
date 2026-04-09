@@ -51,8 +51,6 @@ import com.team4099.robot2026.subsystems.vision.camera.CameraIOPhotonvision
 import com.team4099.robot2026.util.driver.Jessika
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.Commands
-import edu.wpi.first.wpilibj2.command.Commands.defer
-import edu.wpi.first.wpilibj2.command.Commands.runOnce
 import edu.wpi.first.wpilibj2.command.ConditionalCommand
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.RepeatCommand
@@ -272,74 +270,56 @@ object RobotContainer {
 
     ControlBoard.intake.onTrue(superstructure.requestIntakeCommand())
     ControlBoard.intake.onFalse(superstructure.requestIdleCommand())
-    ControlBoard.agitate.whileTrue(AgitateIntakeCommand(superstructure, intake))
-    ControlBoard.forceIntakeFullUp.whileTrue(
+    ControlBoard.forceIntakeUpTrigger.whileTrue(
         RepeatCommand(
             SequentialCommandGroup(
                 Commands.runOnce({
                   intakeOverridingAngle =
                       min(
                           IntakeConstants.PIVOT_MAX_ANGLE - 20.degrees,
-                          intakeOverridingAngle + 30.degrees)
+                          intakeOverridingAngle + 40.degrees)
                 }),
                 Commands.defer(
                     { superstructure.requestForceIntakeCommand(intakeOverridingAngle) },
                     setOf(superstructure)),
                 WaitCommand(0.1))))
-    ControlBoard.forceIntakeHalfUp.whileTrue(
+    ControlBoard.forceIntakeUpShoulder.whileTrue(
         RepeatCommand(
             SequentialCommandGroup(
                 Commands.runOnce({
-                  intakeOverridingAngle = IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE
+                  intakeOverridingAngle = IntakeConstants.PIVOT_MAX_ANGLE - 15.degrees
                 }),
                 Commands.defer(
                     { superstructure.requestForceIntakeCommand(intakeOverridingAngle) },
                     setOf(superstructure)),
                 WaitCommand(0.1))))
 
-    ControlBoard.forceIntakeFullDown.whileTrue(
+    ControlBoard.forceIntakeDownTrigger.whileTrue(
         RepeatCommand(
             SequentialCommandGroup(
                 Commands.runOnce({
                   intakeOverridingAngle =
                       max(
                           IntakeConstants.PIVOT_MIN_ANGLE + 15.degrees,
-                          intakeOverridingAngle - 30.degrees)
+                          intakeOverridingAngle - 40.degrees)
                 }),
                 Commands.defer(
                     { superstructure.requestForceIntakeCommand(intakeOverridingAngle) },
                     setOf(superstructure)),
                 WaitCommand(0.1))))
 
-    ControlBoard.forceIntakeHalfDown.whileTrue(
+    ControlBoard.forceIntakeDownShoulder.whileTrue(
         RepeatCommand(
             SequentialCommandGroup(
                 Commands.runOnce({
-                  intakeOverridingAngle = IntakeConstants.ANGLES.FORCE_DOWN_ANGLE
+                  intakeOverridingAngle = IntakeConstants.PIVOT_MIN_ANGLE + 5.degrees
                 }),
                 Commands.defer(
                     { superstructure.requestForceIntakeCommand(intakeOverridingAngle) },
                     setOf(superstructure)),
                 WaitCommand(0.1))))
 
-    ControlBoard.jiggle.whileTrue(
-        RepeatCommand(
-            SequentialCommandGroup(
-                defer(
-                    {
-                      superstructure.requestForceIntakeCommand(
-                          max(IntakeConstants.PIVOT_MIN_ANGLE, intakeOverridingAngle - 20.degrees))
-                    },
-                    setOf()),
-                WaitCommand(0.2),
-                defer(
-                    {
-                      superstructure.requestForceIntakeCommand(
-                          min(IntakeConstants.PIVOT_MAX_ANGLE, intakeOverridingAngle + 20.degrees))
-                    },
-                    setOf()),
-                WaitCommand(0.2),
-            )))
+    ControlBoard.jiggle.whileTrue(AgitateIntakeCommand(superstructure, intake))
 
     //    ControlBoard.rotateTrench.whileTrue(
     //        TargetAngleCommand(
