@@ -277,7 +277,7 @@ object RobotContainer {
                   intakeOverridingAngle =
                       min(
                           IntakeConstants.PIVOT_MAX_ANGLE - 20.degrees,
-                          intakeOverridingAngle + 40.degrees)
+                          intakeOverridingAngle + 30.degrees)
                 }),
                 Commands.defer(
                     { superstructure.requestForceIntakeCommand(intakeOverridingAngle) },
@@ -287,7 +287,7 @@ object RobotContainer {
         RepeatCommand(
             SequentialCommandGroup(
                 Commands.runOnce({
-                  intakeOverridingAngle = IntakeConstants.PIVOT_MAX_ANGLE - 15.degrees
+                  intakeOverridingAngle = IntakeConstants.PIVOT_MAX_ANGLE - 30.degrees
                 }),
                 Commands.defer(
                     { superstructure.requestForceIntakeCommand(intakeOverridingAngle) },
@@ -301,7 +301,7 @@ object RobotContainer {
                   intakeOverridingAngle =
                       max(
                           IntakeConstants.PIVOT_MIN_ANGLE + 15.degrees,
-                          intakeOverridingAngle - 40.degrees)
+                          intakeOverridingAngle - 30.degrees)
                 }),
                 Commands.defer(
                     { superstructure.requestForceIntakeCommand(intakeOverridingAngle) },
