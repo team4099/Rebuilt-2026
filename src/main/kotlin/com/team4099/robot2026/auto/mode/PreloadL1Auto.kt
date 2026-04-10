@@ -21,11 +21,9 @@ class PreloadL1Auto(val drivetrain: Drive, val superstructure: Superstructure) :
         ParallelCommandGroup(
             FollowChoreoPath(drivetrain, firstTrajectory),
             superstructure.requestPrepScoreCommand()),
-        WaitCommand(1.5),
-        AimOTFCommand(drivetrain, 2.seconds).until { AimOTFCommand.hasAligned },
-        superstructure.requestScoreCommand(),
-        WaitCommand(10.0),
-        superstructure.requestIdleCommand(),
+        ParallelCommandGroup(
+            AimOTFCommand(drivetrain, 20.seconds),
+            WaitCommand(0.5).andThen(superstructure.requestScoreCommand())),
         // superstructure.requestPrepClimbCommand(),
         // WaitCommand(2.0),
         // FollowChoreoPath(drivetrain, secondTrajectory)

@@ -30,8 +30,7 @@ class Leds(
           else if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
               CandleState.BLUE_DISABLED
           else CandleState.RED_DISABLED
-        }
-        else if (isAligningSupplier.get()) CandleState.IS_ALIGNING
+        } else if (isAligningSupplier.get()) CandleState.IS_ALIGNING
         else if (stateSupplier.get() == Superstructure.Companion.SuperstructureStates.INTAKE)
             CandleState.INTAKING_FUEL
         else if (manualScoringSupplier.get()) CandleState.MANUAL_SCORE
