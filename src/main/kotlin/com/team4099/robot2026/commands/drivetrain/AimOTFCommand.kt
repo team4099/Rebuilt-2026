@@ -105,7 +105,7 @@ class AimOTFCommand(
 
   private val thetaPID: PIDController<Radian, Velocity<Radian>>
 
-  private val MAX_VELOCITY_RADIUS = .75.meters.perSecond
+  private val MAX_VELOCITY_RADIUS = .5.meters.perSecond
   private var timeout = -1.seconds
   private var startTime = -1.seconds
   private var lastTimeNotStopped = -1.seconds
