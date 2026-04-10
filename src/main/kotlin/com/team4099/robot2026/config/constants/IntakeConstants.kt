@@ -81,7 +81,7 @@ object IntakeConstants {
     // PID Constants
     val REAL_PIVOT_KP: ProportionalGain<Radian, Volt> = 60.volts / 1.0.radians
     val REAL_PIVOT_KI: IntegralGain<Radian, Volt> = 0.0.volts / (1.0.radians * 1.0.seconds)
-    val REAL_PIVOT_KD: DerivativeGain<Radian, Volt> = 5.0.volts / 1.0.radians.perSecond
+    val REAL_PIVOT_KD: DerivativeGain<Radian, Volt> = 1.0.volts / 1.0.radians.perSecond
 
     val SIM_PIVOT_KP: ProportionalGain<Radian, Volt> = 20.volts / 1.0.radians
     val SIM_PIVOT_KI: IntegralGain<Radian, Volt> = 0.0.volts / (1.0.radians * 1.0.seconds)
