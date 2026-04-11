@@ -507,7 +507,6 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
       distanceToShooterMap.put(3.94.meters, 49.5.rotations.perSecond)
       distanceToShooterMap.put(4.34.meters, 50.25.rotations.perSecond)
       distanceToShooterMap.put(4.85.meters, 52.5.rotations.perSecond)
-      distanceToShooterMap.put(3.94.meters, 49.5.rotations.perSecond)
 
       passingShooterMap.put(2.meters, 27.75.rotations.perSecond)
       passingShooterMap.put(2.5.meters, 32.5.rotations.perSecond)
@@ -523,7 +522,7 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
       return max(
           ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY,
           min(
-              (11.31313 * distanceToTarget.inMeters + 6.89274).rotations.perSecond,
+              (8.999075 * distanceToTarget.inMeters + 11.44).rotations.perSecond,
               ShooterConstants.VELOCITIES.MAXIMUM_LAUNCH_VELOCITY))
     }
 
