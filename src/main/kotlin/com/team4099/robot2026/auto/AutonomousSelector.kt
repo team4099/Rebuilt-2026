@@ -55,7 +55,10 @@ object AutonomousSelector {
     // AutonomousMode.CENTERLINE_SWEEP_LEFT)
     // autonomousModeChooser.addOption("Centerline Sweep Right",
     // AutonomousMode.CENTERLINE_SWEEP_RIGHT)
-    autonomousModeChooser.addOption("Preload L1 Auto", AutonomousMode.PRELOAD_L1_AUTO)
+    autonomousModeChooser.addOption(
+        "Preload + Left Bump Center", AutonomousMode.PRELOAD_BUMP_CENTER_LEFT)
+    autonomousModeChooser.addOption(
+        "Preload + Right Bump Center", AutonomousMode.PRELOAD_BUMP_CENTER_RIGHT)
     autonomousModeChooser.addOption("Do nothing", AutonomousMode.DO_NOTHING)
 
     autoTab.add("Mode", autonomousModeChooser.sendableChooser).withSize(4, 2).withPosition(2, 0)
@@ -143,10 +146,20 @@ object AutonomousSelector {
       //                            AllianceFlipUtil.apply(CenterlineSweep.startingPose)))
       //              })
       //              .andThen(CenterlineSweep(drivetrain, superstructure, flipVeritcally = false))
-      AutonomousMode.PRELOAD_L1_AUTO ->
+      AutonomousMode.PRELOAD_BUMP_CENTER_LEFT ->
           WaitCommand(waitTime.inSeconds)
               .andThen({ drivetrain.pose = AllianceFlipUtil.apply(PreloadL1Auto.startingPose) })
-              .andThen(PreloadL1Auto(drivetrain, superstructure))
+              .andThen(PreloadL1Auto(drivetrain, superstructure, false))
+      AutonomousMode.PRELOAD_BUMP_CENTER_RIGHT ->
+          WaitCommand(waitTime.inSeconds)
+              .andThen({
+                drivetrain.pose =
+                    Pose2d(
+                        FollowChoreoPath.flipVertically(
+                                AllianceFlipUtil.apply(PreloadL1Auto.startingPose))
+                            .pose2d)
+              })
+              .andThen(PreloadL1Auto(drivetrain, superstructure, true))
       AutonomousMode.BIG_CIRCLE ->
           WaitCommand(waitTime.inSeconds)
               .andThen({ drivetrain.pose = AllianceFlipUtil.apply(BigCircle.startingPose) })
@@ -171,6 +184,7 @@ private enum class AutonomousMode {
   INTAKE_LEFT_SPIN,
   CENTERLINE_SWEEP_RIGHT,
   CENTERLINE_SWEEP_LEFT,
-  PRELOAD_L1_AUTO,
+  PRELOAD_BUMP_CENTER_LEFT,
+  PRELOAD_BUMP_CENTER_RIGHT,
   DO_NOTHING,
 }
