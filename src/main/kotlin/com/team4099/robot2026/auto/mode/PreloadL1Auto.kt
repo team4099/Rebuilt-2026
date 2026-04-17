@@ -25,8 +25,9 @@ class PreloadL1Auto(
             FollowChoreoPath(drivetrain, firstTrajectory, flipVertically = flipVertically),
             superstructure.requestPrepScoreCommand()),
         ParallelCommandGroup(
-            AimOTFCommand(drivetrain, 5.seconds),
-            WaitCommand(0.5).andThen(superstructure.requestScoreCommand())).withTimeout(5.0),
+                AimOTFCommand(drivetrain, 5.seconds),
+                WaitCommand(0.5).andThen(superstructure.requestScoreCommand()))
+            .withTimeout(5.0),
         superstructure.requestIdleCommand(),
         ParallelCommandGroup(
             FollowChoreoPath(drivetrain, secondTrajectory, flipVertically = flipVertically),
