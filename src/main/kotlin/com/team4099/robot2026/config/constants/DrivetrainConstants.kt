@@ -97,7 +97,7 @@ object DrivetrainConstants {
   val DRIVE_SUPPLY_CURRENT_LIMIT = 50.0.amps
 
   val STEERING_STATOR_CURRENT_LIMIT = 20.0.amps
-  val DRIVE_STATOR_CURRENT_LIMIT = 60.0.amps
+  val DRIVE_STATOR_CURRENT_LIMIT = 70.0.amps
 
   val STEERING_COMPENSATION_VOLTAGE = 10.volts
   val DRIVE_COMPENSATION_VOLTAGE = 12.volts
@@ -120,7 +120,7 @@ object DrivetrainConstants {
     val AUTO_POS_KP: ProportionalGain<Meter, Velocity<Meter>>
       get() {
         if (RobotBase.isReal()) {
-          return 2.52.meters.perSecond / 1.0.meters
+          return 6.7.meters.perSecond / 1.0.meters // 2.52
         } else {
           return 20.meters.perSecond / 1.0.meters
         }
@@ -138,7 +138,7 @@ object DrivetrainConstants {
     val AUTO_POS_KD: DerivativeGain<Meter, Velocity<Meter>>
       get() {
         if (RobotBase.isReal()) {
-          return (0.475.meters.perSecond / (1.0.meters.perSecond)) // 0.6
+          return (0.05.meters.perSecond / (1.0.meters.perSecond)) // 0.475
               .metersPerSecondPerMetersPerSecond // todo: 0.25
         } else {
           return (0.5.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
@@ -195,7 +195,7 @@ object DrivetrainConstants {
     val SIM_AUTO_THETA_PID_KI = AUTO_REEF_PID_KI
     val SIM_AUTO_THETA_PID_KD = AUTO_REEF_PID_KD
 
-    val STEERING_KP = 35.volts / 1.radians
+    val STEERING_KP = 100.volts / 1.radians
     val STEERING_KI = 0.0.volts.perDegreeSeconds
     val STEERING_KD = 0.0.volts.perDegreePerSecond
     val STEERING_KV: VelocityFeedforward<Radian, Volt>

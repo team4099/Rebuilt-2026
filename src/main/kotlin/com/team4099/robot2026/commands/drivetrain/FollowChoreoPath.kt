@@ -1,5 +1,6 @@
 package com.team4099.robot2026.commands.drivetrain
 
+import choreo.auto.AutoFactory
 import choreo.trajectory.SwerveSample
 import choreo.trajectory.Trajectory
 import com.team4099.lib.hal.Clock
@@ -14,10 +15,12 @@ import com.team4099.robot2026.util.Velocity2d
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.Subsystem
 import java.util.function.Supplier
 import kotlin.math.PI
 import org.team4099.lib.controller.PIDController
 import org.team4099.lib.geometry.Pose2d
+import org.team4099.lib.geometry.Pose2dWPILIB
 import org.team4099.lib.kinematics.ChassisSpeeds
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Meter
@@ -141,6 +144,7 @@ class FollowChoreoPath(
     val wantedPose = applyFlip(Pose2d(desiredState.pose))
 
     CustomLogger.recordOutput("FollowChoreoPath/desiredPose", wantedPose.pose2d)
+    CustomLogger.recordOutput("FollowChoreoPath/desiredSpeeds", desiredState.chassisSpeeds)
 
     val nextDriveState =
         swerveDriveController.calculate(applyFlip(drivetrain.pose).pose2d, desiredState)
@@ -200,6 +204,17 @@ class FollowChoreoPath(
   companion object {
     fun flipVertically(pose: Pose2d): Pose2d {
       return Pose2d(pose.x, FieldConstants.fieldWidth - pose.y, -pose.rotation)
+    }
+
+    fun warmupCmd(): Command {
+      val autoFactory =
+          AutoFactory(
+              { Pose2dWPILIB() },
+              { _: Pose2dWPILIB -> },
+              { _: SwerveSample -> },
+              false,
+              object : Subsystem {})
+      return autoFactory.warmupCmd()
     }
   }
 }

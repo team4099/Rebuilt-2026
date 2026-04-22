@@ -63,7 +63,6 @@ import org.littletonrobotics.junction.Logger
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.smoothDeadband
 import org.team4099.lib.units.derived.degrees
-import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.max
 import org.team4099.lib.units.min
 
@@ -202,10 +201,6 @@ object RobotContainer {
             { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
             { ControlBoard.slowMode },
             drivetrain)
-  }
-
-  fun zeroSensors(isInAutonomous: Boolean = false) {
-    drivetrain.pose = Pose2d(drivetrain.pose.x, drivetrain.pose.y, 0.radians)
   }
 
   fun setDriveBrakeMode(neutralModeValue: NeutralModeValue = NeutralModeValue.Brake) {
