@@ -15,6 +15,7 @@ abstract class DriverProfile(
     private val sensitivityRotationPowerConstant: Int,
     private val driveSlowModeClamp: Double = 0.75,
     private val turnSlowModeClamp: Double = 0.75
+    private val fieldRelativeControls: Boolean = true
 ) {
   private val invertDriveMultiplier = if (invertDrive) -1 else 1
   private val invertRotationMultiplier = if (invertRotation) -1 else 1
