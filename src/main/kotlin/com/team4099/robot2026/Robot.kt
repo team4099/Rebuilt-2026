@@ -121,8 +121,10 @@ object Robot : LoggedRobot() {
 
     Logger.recordOutput("LogFolder/isLogging", isLogging)
 
-    SignalLogger.setPath("/media/sda1/ctre-logs/")
-    //    SignalLogger.start(); <-- useful for SysID
+    // change whats commented below if using hoot logs
+    SignalLogger.enableAutoLogging(false)
+    SignalLogger.stop()
+    //    SignalLogger.setPath("/media/sda1/ctre-logs/")
 
     LiveWindow.disableAllTelemetry()
 

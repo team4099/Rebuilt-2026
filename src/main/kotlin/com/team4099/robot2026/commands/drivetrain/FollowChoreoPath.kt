@@ -12,6 +12,7 @@ import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.util.AllianceFlipUtil
 import com.team4099.robot2026.util.CustomLogger
 import com.team4099.robot2026.util.Velocity2d
+import edu.wpi.first.math.geometry.Transform2d
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.Command
@@ -152,7 +153,7 @@ class FollowChoreoPath(
     if (overrideRotationTrigger.get())
         drivetrain.runTranslationWhileKeepingRotation(
             Velocity2d(
-                nextDriveState.vxMetersPerSecond.meters.perSecond * if (flipVertically) -1 else 1,
+                nextDriveState.vxMetersPerSecond.meters.perSecond,
                 nextDriveState.vyMetersPerSecond.meters.perSecond * if (flipVertically) -1 else 1),
             flipIfRed = false)
     else
@@ -202,6 +203,20 @@ class FollowChoreoPath(
   }
 
   companion object {
+    init {
+      // note(nathan): speedmaxxing
+      CustomLogger.recordOutput(
+          "FollowChoreoPath/desiredPose", edu.wpi.first.math.geometry.Pose2d())
+      CustomLogger.recordOutput(
+          "FollowChoreoPath/desiredSpeeds", edu.wpi.first.math.kinematics.ChassisSpeeds())
+      CustomLogger.recordOutput("FollowChoreoPath/atSetpoint", false)
+
+      CustomLogger.recordOutput("FollowChoreoPath/poseDiff", Transform2d())
+      CustomLogger.recordOutput("FollowChoreoPath/poseDiffX", false)
+      CustomLogger.recordOutput("FollowChoreoPath/poseDiffY", false)
+      CustomLogger.recordOutput("FollowChoreoPath/poseDiffRot", false)
+    }
+
     fun flipVertically(pose: Pose2d): Pose2d {
       return Pose2d(pose.x, FieldConstants.fieldWidth - pose.y, -pose.rotation)
     }
