@@ -65,7 +65,7 @@ object AutonomousSelector {
 
     waitBeforeCommandSlider =
         autoTab
-            .add("Wait Time Before Shooting", 0)
+            .add("Wait Time", 0)
             .withSize(3, 2)
             .withPosition(0, 2)
             .withWidget(BuiltInWidgets.kTextView)
