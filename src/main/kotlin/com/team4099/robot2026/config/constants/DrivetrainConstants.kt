@@ -122,7 +122,7 @@ object DrivetrainConstants {
         if (RobotBase.isReal()) {
           return 6.7.meters.perSecond / 1.0.meters // 2.52
         } else {
-          return 20.meters.perSecond / 1.0.meters
+          return 6.7.meters.perSecond / 1.0.meters
         }
       }
 
@@ -141,7 +141,7 @@ object DrivetrainConstants {
           return (0.05.meters.perSecond / (1.0.meters.perSecond)) // 0.475
               .metersPerSecondPerMetersPerSecond // todo: 0.25
         } else {
-          return (0.5.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
+          return (0.05.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
         }
       }
 
@@ -150,10 +150,22 @@ object DrivetrainConstants {
     val LIMELIGHT_THETA_KD =
         (0.1.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
 
-    val AUTO_THETA_PID_KP = (3.degrees.perSecond / 1.degrees)
-    val AUTO_THETA_PID_KI = (0.0.radians.perSecond / (1.radians * 1.seconds))
-    val AUTO_THETA_PID_KD =
-        (0.175.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
+    val AUTO_THETA_PID_KP: ProportionalGain<Radian, Velocity<Radian>>
+      get() =
+          if (RobotBase.isReal()) 3.degrees.perSecond / 1.degrees
+          else 2.9.radians.perSecond / 1.radians
+
+    val AUTO_THETA_PID_KI: IntegralGain<Radian, Velocity<Radian>>
+      get() =
+          if (RobotBase.isReal()) 0.0.radians.perSecond / (1.radians * 1.seconds)
+          else 0.radians.perSecond / (1.radians * 1.seconds)
+
+    val AUTO_THETA_PID_KD: DerivativeGain<Radian, Velocity<Radian>>
+      get() =
+          if (RobotBase.isReal())
+              (0.175.degrees.perSecond / (1.degrees / 1.seconds))
+                  .radiansPerSecondPerRadiansPerSecond
+          else (0.4.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
 
     val SIM_HUB_PID_KP = (6.7.radians.perSecond / 1.radians)
     val SIM_HUB_PID_KI = (0.0.radians.perSecond / (1.radians * 1.seconds))

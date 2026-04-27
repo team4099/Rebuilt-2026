@@ -131,6 +131,7 @@ object Robot : LoggedRobot() {
     // init a buncha things
     RobotContainer
     AutonomousSelector
+    FollowChoreoPath
     FieldConstants.fieldLayout
     RobotContainer.mapDefaultCommands()
 
