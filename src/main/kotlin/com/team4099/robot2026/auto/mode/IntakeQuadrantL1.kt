@@ -27,7 +27,7 @@ class IntakeQuadrantL1(
             FollowChoreoPath(
                 drivetrain, mainTraj, flipVertically = flipVeritcally, interruptAtTimeout = true),
             SequentialCommandGroup(
-                WaitCommand(0.75),
+                WaitCommand(0.6),
                 superstructure.requestIntakeCommand(),
                 WaitCommand(5.25),
                 superstructure.requestPrepScoreCommand(),
