@@ -16,36 +16,35 @@ import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.units.base.seconds
 
 class IntakeQuadrantFollowClose(
-  val drivetrain: Drive,
-  val superstructure: Superstructure,
-  val intake: Intake,
-  flipVeritcally: Boolean
+    val drivetrain: Drive,
+    val superstructure: Superstructure,
+    val intake: Intake,
+    flipVeritcally: Boolean
 ) : SequentialCommandGroup() {
   init {
     addCommands(
-      ParallelCommandGroup(
-        FollowChoreoPath(
-          drivetrain, mainTraj, flipVertically = flipVeritcally, interruptAtTimeout = true),
-        SequentialCommandGroup(
-          WaitCommand(2.0),
-          superstructure.requestIntakeCommand(),
-          WaitCommand(7.0),
-          superstructure.requestPrepScoreCommand(),
-          ParallelCommandGroup(
-            AimOTFCommand(drivetrain, timeout = 15.seconds),
+        ParallelCommandGroup(
+            FollowChoreoPath(
+                drivetrain, mainTraj, flipVertically = flipVeritcally, interruptAtTimeout = true),
             SequentialCommandGroup(
-              WaitCommand(1.0),
-              superstructure.requestScoreCommand(),
-              AgitateIntakeCommand(superstructure, intake)
-                .withTimeout(20.0),
-              superstructure.requestForceIntakeCommand(
-                IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE)))),
-      ))
+                WaitCommand(2.0),
+                superstructure.requestIntakeCommand(),
+                WaitCommand(7.0),
+                superstructure.requestPrepScoreCommand(),
+                ParallelCommandGroup(
+                    AimOTFCommand(drivetrain, timeout = 15.seconds),
+                    SequentialCommandGroup(
+                        WaitCommand(1.0),
+                        superstructure.requestScoreCommand(),
+                        AgitateIntakeCommand(superstructure, intake).withTimeout(20.0),
+                        superstructure.requestForceIntakeCommand(
+                            IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE)))),
+        ))
   }
 
   companion object {
     val mainTraj =
-      Choreo.loadTrajectory<SwerveSample>("IntakeQuadrantL1/IntakeQuadrantFollowClose.traj").get()
+        Choreo.loadTrajectory<SwerveSample>("IntakeQuadrantL1/IntakeQuadrantFollowClose.traj").get()
     val startingPose = Pose2d(mainTraj.getInitialPose(false).get())
   }
 }

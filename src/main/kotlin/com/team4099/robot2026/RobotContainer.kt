@@ -192,18 +192,17 @@ object RobotContainer {
     leds.manualScoringSupplier = { superstructure.overrideShooterVelocity }
 
     ControlBoard.manualScore.onTrue(
-      Commands.defer(
-        {
-          Commands.runOnce({
-            superstructure.overrideShooterVelocity = !superstructure.overrideShooterVelocity
-          })
-        },
-        setOf(superstructure)))
+        Commands.defer(
+            {
+              Commands.runOnce({
+                superstructure.overrideShooterVelocity = !superstructure.overrideShooterVelocity
+              })
+            },
+            setOf(superstructure)))
     ControlBoard.defenseMode.onTrue(
-      Commands.defer(
-        { Commands.runOnce({ superstructure.defenseMode = !superstructure.defenseMode }) },
-        setOf(superstructure)))
-
+        Commands.defer(
+            { Commands.runOnce({ superstructure.defenseMode = !superstructure.defenseMode }) },
+            setOf(superstructure)))
   }
 
   fun mapDefaultCommands() {
@@ -261,18 +260,20 @@ object RobotContainer {
               superstructure.currentState ==
                   Superstructure.Companion.SuperstructureStates.SCORE_AND_INTAKE
         })
-//    ControlBoard.manualScore.onTrue(
-//        Commands.defer(
-//            {
-//              Commands.runOnce({
-//                superstructure.overrideShooterVelocity = !superstructure.overrideShooterVelocity
-//              })
-//            },
-//            setOf(superstructure)))
-//    ControlBoard.defenseMode.onTrue(
-//        Commands.defer(
-//            { Commands.runOnce({ superstructure.defenseMode = !superstructure.defenseMode }) },
-//            setOf(superstructure)))
+    //    ControlBoard.manualScore.onTrue(
+    //        Commands.defer(
+    //            {
+    //              Commands.runOnce({
+    //                superstructure.overrideShooterVelocity =
+    // !superstructure.overrideShooterVelocity
+    //              })
+    //            },
+    //            setOf(superstructure)))
+    //    ControlBoard.defenseMode.onTrue(
+    //        Commands.defer(
+    //            { Commands.runOnce({ superstructure.defenseMode = !superstructure.defenseMode })
+    // },
+    //            setOf(superstructure)))
 
     //    ControlBoard.prepClimb.onTrue(superstructure.requestPrepClimbCommand())
     //    ControlBoard.climb.onTrue(superstructure.requestClimbCommand())

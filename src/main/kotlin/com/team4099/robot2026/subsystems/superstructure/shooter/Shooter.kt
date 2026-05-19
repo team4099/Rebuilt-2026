@@ -331,7 +331,7 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
        * ```
        * v_launch = Launch velocity, represented as a number (vector) in 2D.
        *            Multiply by SHOOTER_ANGLE.cos or SHOOTER_ANGLE.sin for
-         *            v_launch_x or v_launch_y.
+       *            v_launch_x or v_launch_y.
        * h = Height of the hub.
        * s = Height of the shooter.
        * d = Distance shooterTRobot + robotTHub.
@@ -511,7 +511,6 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
       distanceToShooterMap.put(4.47.meters, 53.rotations.perSecond)
       distanceToShooterMap.put(4.80.meters, 55.rotations.perSecond)
       distanceToShooterMap.put(5.03.meters, 57.rotations.perSecond)
-
 
       passingShooterMap.put(2.meters, 30.rotations.perSecond)
       passingShooterMap.put(2.5.meters, 35.rotations.perSecond)
