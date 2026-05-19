@@ -69,14 +69,14 @@ class Hopper(private val io: HopperIO) : ControlledByStateMachine() {
 
   init {
     if (RobotBase.isReal()) {
-      io.configurePID(
+      io.configurePIDCurrent(
           HopperConstants.PID.REAL_KP, HopperConstants.PID.REAL_KI, HopperConstants.PID.REAL_KD)
-      io.configureFF(
+      io.configureFFCurrent(
           HopperConstants.PID.REAL_KS, HopperConstants.PID.REAL_KV, HopperConstants.PID.REAL_KA)
     } else {
-      io.configurePID(
+      io.configurePIDVoltage(
           HopperConstants.PID.SIM_KP, HopperConstants.PID.SIM_KI, HopperConstants.PID.SIM_KD)
-      io.configureFF(
+      io.configureFFVoltage(
           HopperConstants.PID.SIM_KS, HopperConstants.PID.SIM_KV, HopperConstants.PID.SIM_KA)
     }
   }

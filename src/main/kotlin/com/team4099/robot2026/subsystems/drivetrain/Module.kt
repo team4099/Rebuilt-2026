@@ -91,7 +91,7 @@ class Module(
   /** Runs the module with the specified output while controlling to zero degrees. */
   fun runCharacterization(output: Double) {
     io.setDriveOpenLoop(output)
-    io.setTurnPosition(Rotation2d())
+    io.setTurnPosition(Rotation2d.kZero)
   }
 
   /** Disables all outputs to motors. */

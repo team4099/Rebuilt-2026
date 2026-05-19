@@ -12,6 +12,7 @@ import org.team4099.lib.units.base.inMilliseconds
 class Leds(
     var isAligningSupplier: Supplier<Boolean>,
     var stateSupplier: Supplier<Superstructure.Companion.SuperstructureStates>,
+    var manualScoringSupplier: Supplier<Boolean>,
     vararg candles: LedIO,
 ) : SubsystemBase() {
   var io = candles.toList()
@@ -29,13 +30,12 @@ class Leds(
           else if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
               CandleState.BLUE_DISABLED
           else CandleState.RED_DISABLED
-        } else if (14 < DriverStation.getMatchTime() % 25 && DriverStation.getMatchTime() % 25 < 15)
-            CandleState.FIRST_WARNING
-        else if (4 < DriverStation.getMatchTime() % 25 && DriverStation.getMatchTime() % 25 < 5)
-            CandleState.SECOND_WARNING
-        else if (isAligningSupplier.get()) CandleState.IS_ALIGNING
+        } else if (isAligningSupplier.get()) CandleState.IS_ALIGNING
         else if (stateSupplier.get() == Superstructure.Companion.SuperstructureStates.INTAKE)
             CandleState.INTAKING_FUEL
+        else if (manualScoringSupplier.get()) CandleState.MANUAL_SCORE
+        else if (stateSupplier.get() == Superstructure.Companion.SuperstructureStates.UNJAM)
+            CandleState.UNJAM
         else if (stateSupplier.get() == Superstructure.Companion.SuperstructureStates.SCORE)
             CandleState.SHOOTING
         else CandleState.NOTHING

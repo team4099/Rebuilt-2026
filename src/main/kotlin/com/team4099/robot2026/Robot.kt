@@ -5,10 +5,11 @@ import com.pathplanner.lib.commands.FollowPathCommand
 import com.team4099.lib.hal.Clock
 import com.team4099.robot2026.auto.AutonomousSelector
 import com.team4099.robot2026.commands.drivetrain.DrivePathOTF
+import com.team4099.robot2026.commands.drivetrain.FollowChoreoPath
 import com.team4099.robot2026.config.ControlBoard
 import com.team4099.robot2026.config.constants.Constants
+import com.team4099.robot2026.config.constants.FieldConstants
 import com.team4099.robot2026.subsystems.superstructure.Request
-import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import com.team4099.robot2026.util.Alert
 import com.team4099.robot2026.util.Alert.AlertType
 import com.team4099.robot2026.util.CustomLogger
@@ -26,7 +27,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.simulation.DriverStationSim
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
-import edu.wpi.first.wpilibj2.command.Commands.runOnce
 import java.nio.file.Files
 import java.nio.file.Paths
 import org.ejml.EjmlVersion.BUILD_DATE
@@ -121,18 +121,23 @@ object Robot : LoggedRobot() {
 
     Logger.recordOutput("LogFolder/isLogging", isLogging)
 
-    SignalLogger.setPath("/media/sda1/ctre-logs/")
-    //    SignalLogger.start(); <-- useful for SysID
+    // change whats commented below if using hoot logs
+    SignalLogger.enableAutoLogging(false)
+    SignalLogger.stop()
+    //    SignalLogger.setPath("/media/sda1/ctre-logs/")
 
     LiveWindow.disableAllTelemetry()
 
-    // init robot container too
+    // init a buncha things
     RobotContainer
     AutonomousSelector
+    FollowChoreoPath
+    FieldConstants.fieldLayout
     RobotContainer.mapDefaultCommands()
 
     // init commands that have long startup
-    DrivePathOTF.warmupCommand()
+    CommandScheduler.getInstance().schedule(DrivePathOTF.warmupCommand())
+    CommandScheduler.getInstance().schedule(FollowChoreoPath.warmupCmd())
 
     // Set the scheduler to log events for command initialize, interrupt, finish
     CommandScheduler.getInstance().onCommandInitialize { command: Command ->
@@ -157,13 +162,15 @@ object Robot : LoggedRobot() {
 
     CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand())
 
+    Logger.recordOutput("TuningMode", Constants.Tuning.TUNING_MODE)
+
     if (isSimulation()) {
       DriverStation.silenceJoystickConnectionWarning(true)
     }
   }
 
   override fun autonomousInit() {
-    val autonCommandWithWait = runOnce({ RobotContainer.zeroSensors() }).andThen(autonomousCommand)
+    val autonCommandWithWait = autonomousCommand
     CommandScheduler.getInstance().schedule(autonCommandWithWait)
     RobotContainer.intake.setBrakeMode(true)
     autoStartTime = Clock.timestamp
@@ -211,12 +218,13 @@ object Robot : LoggedRobot() {
             (DriverStation.getGameSpecificMessage() == "B" &&
                 (DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) ==
                     DriverStation.Alliance.Red))
-    if (RobotContainer.superstructure.currentState ==
-        Superstructure.Companion.SuperstructureStates.CLIMB) {
-      RobotContainer.superstructure.currentRequest = Request.SuperstructureRequest.ExtendClimb()
-    } else {
-      RobotContainer.superstructure.currentRequest = Request.SuperstructureRequest.Idle()
-    }
+    //    if (RobotContainer.superstructure.currentState ==
+    //        Superstructure.Companion.SuperstructureStates.CLIMB) {
+    //     // RobotContainer.superstructure.currentRequest =
+    // Request.SuperstructureRequest.ExtendClimb()
+    //    } else {
+    RobotContainer.superstructure.currentRequest = Request.SuperstructureRequest.Idle()
+    //   }
     RobotContainer.intake.setBrakeMode(true)
   }
 
@@ -236,8 +244,10 @@ object Robot : LoggedRobot() {
     } else {
       CustomLogger.recordOutput("MatchData/ScoringNow", shiftIndex % 2 != 0)
     }
-    if (time > 25) {
+    if (125 > time && time > 25) {
       CustomLogger.recordOutput("MatchData/ShiftTimeLeft", time % 25)
+    } else if (time > 125) {
+      CustomLogger.recordOutput("MatchData/ShiftTimeLeft", time % 10)
     } else {
       CustomLogger.recordOutput("MatchData/ShiftTimeLeft", time % 30)
     }

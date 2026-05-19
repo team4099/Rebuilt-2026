@@ -1,9 +1,9 @@
 package com.team4099.robot2026.commands.drivetrain
 
+import choreo.auto.AutoFactory
 import choreo.trajectory.SwerveSample
 import choreo.trajectory.Trajectory
 import com.team4099.lib.hal.Clock
-import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.lib.trajectory.CustomHolonomicDriveController
 import com.team4099.robot2026.config.constants.DrivetrainConstants
 import com.team4099.robot2026.config.constants.FieldConstants
@@ -11,13 +11,15 @@ import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.util.AllianceFlipUtil
 import com.team4099.robot2026.util.CustomLogger
 import com.team4099.robot2026.util.Velocity2d
+import edu.wpi.first.math.geometry.Transform2d
 import edu.wpi.first.wpilibj.DriverStation
-import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.Subsystem
 import java.util.function.Supplier
 import kotlin.math.PI
 import org.team4099.lib.controller.PIDController
 import org.team4099.lib.geometry.Pose2d
+import org.team4099.lib.geometry.Pose2dWPILIB
 import org.team4099.lib.kinematics.ChassisSpeeds
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Meter
@@ -28,18 +30,6 @@ import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.degrees
-import org.team4099.lib.units.derived.inMetersPerSecondPerMeter
-import org.team4099.lib.units.derived.inMetersPerSecondPerMeterSeconds
-import org.team4099.lib.units.derived.inMetersPerSecondPerMetersPerSecond
-import org.team4099.lib.units.derived.inRadiansPerSecondPerRadian
-import org.team4099.lib.units.derived.inRadiansPerSecondPerRadianPerSecond
-import org.team4099.lib.units.derived.inRadiansPerSecondPerRadianSeconds
-import org.team4099.lib.units.derived.metersPerSecondPerMetersPerSecond
-import org.team4099.lib.units.derived.perMeter
-import org.team4099.lib.units.derived.perMeterSeconds
-import org.team4099.lib.units.derived.perRadian
-import org.team4099.lib.units.derived.perRadianPerSecond
-import org.team4099.lib.units.derived.perRadianSeconds
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.perSecond
 
@@ -51,76 +41,14 @@ class FollowChoreoPath(
     val interruptAtTimeout: Boolean = false,
     val extraTime: Time = 0.seconds
 ) : Command() {
-
-  private val xPID: PIDController<Meter, Velocity<Meter>>
-  private val yPID: PIDController<Meter, Velocity<Meter>>
-  private val thetaPID: PIDController<Radian, Velocity<Radian>>
-
   private var trajCurTime = 0.0.seconds
   private var trajStartTime = 0.0.seconds
-
-  val thetakP =
-      LoggedTunableValue(
-          "Pathfollow/thetakP",
-          Pair({ it.inRadiansPerSecondPerRadian }, { it.radians.perSecond.perRadian }))
-  val thetakI =
-      LoggedTunableValue(
-          "Pathfollow/thetakI",
-          Pair(
-              { it.inRadiansPerSecondPerRadianSeconds }, { it.radians.perSecond.perRadianSeconds }))
-  val thetakD =
-      LoggedTunableValue(
-          "Pathfollow/thetakD",
-          Pair(
-              { it.inRadiansPerSecondPerRadianPerSecond },
-              { it.radians.perSecond.perRadianPerSecond }))
-
-  val poskP =
-      LoggedTunableValue(
-          "Pathfollow/posKP",
-          DrivetrainConstants.PID.AUTO_POS_KP,
-          Pair({ it.inMetersPerSecondPerMeter }, { it.meters.perSecond.perMeter }))
-  val poskI =
-      LoggedTunableValue(
-          "Pathfollow/posKI",
-          DrivetrainConstants.PID.AUTO_POS_KI,
-          Pair({ it.inMetersPerSecondPerMeterSeconds }, { it.meters.perSecond.perMeterSeconds }))
-  val poskD =
-      LoggedTunableValue(
-          "Pathfollow/posKD",
-          DrivetrainConstants.PID.AUTO_POS_KD,
-          Pair(
-              { it.inMetersPerSecondPerMetersPerSecond }, { it.metersPerSecondPerMetersPerSecond }))
 
   private val finalPose: Pose2d =
       applyFlip(Pose2d(trajectory.getFinalPose(AllianceFlipUtil.shouldFlip()).get()))
 
-  val swerveDriveController: CustomHolonomicDriveController
-
   init {
     addRequirements(drivetrain)
-
-    if (RobotBase.isReal()) {
-      thetakP.initDefault(DrivetrainConstants.PID.AUTO_THETA_PID_KP)
-      thetakI.initDefault(DrivetrainConstants.PID.AUTO_THETA_PID_KI)
-      thetakD.initDefault(DrivetrainConstants.PID.AUTO_THETA_PID_KD)
-    } else {
-      thetakP.initDefault(DrivetrainConstants.PID.SIM_AUTO_THETA_PID_KP)
-      thetakI.initDefault(DrivetrainConstants.PID.SIM_AUTO_THETA_PID_KI)
-      thetakD.initDefault(DrivetrainConstants.PID.SIM_AUTO_THETA_PID_KD)
-    }
-
-    xPID = PIDController(poskP.get(), poskI.get(), poskD.get())
-    yPID = PIDController(poskP.get(), poskI.get(), poskD.get())
-    thetaPID = PIDController(thetakP.get(), thetakI.get(), thetakD.get())
-
-    thetaPID.enableContinuousInput(-PI.radians, PI.radians)
-
-    swerveDriveController =
-        CustomHolonomicDriveController(
-            xPID.wpiPidController, yPID.wpiPidController, thetaPID.wpiPidController)
-
-    swerveDriveController.setTolerance(Pose2d(2.5.inches, 2.5.inches, 5.degrees).pose2d)
   }
 
   override fun initialize() {
@@ -141,14 +69,15 @@ class FollowChoreoPath(
     val wantedPose = applyFlip(Pose2d(desiredState.pose))
 
     CustomLogger.recordOutput("FollowChoreoPath/desiredPose", wantedPose.pose2d)
+    CustomLogger.recordOutput("FollowChoreoPath/desiredSpeeds", desiredState.chassisSpeeds)
 
     val nextDriveState =
-        swerveDriveController.calculate(applyFlip(drivetrain.pose.toPose2d()).pose2d, desiredState)
+        swerveDriveController.calculate(applyFlip(drivetrain.pose).pose2d, desiredState)
 
     if (overrideRotationTrigger.get())
         drivetrain.runTranslationWhileKeepingRotation(
             Velocity2d(
-                nextDriveState.vxMetersPerSecond.meters.perSecond * if (flipVertically) -1 else 1,
+                nextDriveState.vxMetersPerSecond.meters.perSecond,
                 nextDriveState.vyMetersPerSecond.meters.perSecond * if (flipVertically) -1 else 1),
             flipIfRed = false)
     else
@@ -164,7 +93,7 @@ class FollowChoreoPath(
   }
 
   private fun atSetpoint(): Boolean {
-    val posediff = drivetrain.pose.toPose2d().minus(finalPose)
+    val posediff = drivetrain.pose.minus(finalPose)
 
     CustomLogger.recordOutput("FollowChoreoPath/poseDiff", posediff.transform2d)
 
@@ -198,8 +127,59 @@ class FollowChoreoPath(
   }
 
   companion object {
+    private val xPID: PIDController<Meter, Velocity<Meter>> =
+        PIDController(
+            DrivetrainConstants.PID.AUTO_POS_KP,
+            DrivetrainConstants.PID.AUTO_POS_KI,
+            DrivetrainConstants.PID.AUTO_POS_KD)
+    private val yPID: PIDController<Meter, Velocity<Meter>> =
+        PIDController(
+            DrivetrainConstants.PID.AUTO_POS_KP,
+            DrivetrainConstants.PID.AUTO_POS_KI,
+            DrivetrainConstants.PID.AUTO_POS_KD)
+    private val thetaPID: PIDController<Radian, Velocity<Radian>> =
+        PIDController(
+            DrivetrainConstants.PID.AUTO_THETA_PID_KP,
+            DrivetrainConstants.PID.AUTO_THETA_PID_KI,
+            DrivetrainConstants.PID.AUTO_THETA_PID_KD)
+
+    private val swerveDriveController: CustomHolonomicDriveController
+
+    init {
+      // note(nathan): speedmaxxing
+      CustomLogger.recordOutput(
+          "FollowChoreoPath/desiredPose", edu.wpi.first.math.geometry.Pose2d())
+      CustomLogger.recordOutput(
+          "FollowChoreoPath/desiredSpeeds", edu.wpi.first.math.kinematics.ChassisSpeeds())
+      CustomLogger.recordOutput("FollowChoreoPath/atSetpoint", false)
+
+      CustomLogger.recordOutput("FollowChoreoPath/poseDiff", Transform2d())
+      CustomLogger.recordOutput("FollowChoreoPath/poseDiffX", false)
+      CustomLogger.recordOutput("FollowChoreoPath/poseDiffY", false)
+      CustomLogger.recordOutput("FollowChoreoPath/poseDiffRot", false)
+
+      thetaPID.enableContinuousInput(-PI.radians, PI.radians)
+
+      swerveDriveController =
+          CustomHolonomicDriveController(
+              xPID.wpiPidController, yPID.wpiPidController, thetaPID.wpiPidController)
+
+      swerveDriveController.setTolerance(Pose2d(2.5.inches, 2.5.inches, 5.degrees).pose2d)
+    }
+
     fun flipVertically(pose: Pose2d): Pose2d {
       return Pose2d(pose.x, FieldConstants.fieldWidth - pose.y, -pose.rotation)
+    }
+
+    fun warmupCmd(): Command {
+      val autoFactory =
+          AutoFactory(
+              { Pose2dWPILIB() },
+              { _: Pose2dWPILIB -> },
+              { _: SwerveSample -> },
+              false,
+              object : Subsystem {})
+      return autoFactory.warmupCmd()
     }
   }
 }

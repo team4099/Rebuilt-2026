@@ -7,13 +7,11 @@ import com.team4099.robot2026.util.AllianceFlipUtil
 import edu.wpi.first.math.Matrix
 import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.math.numbers.N1
-import edu.wpi.first.math.numbers.N4
+import edu.wpi.first.math.numbers.N3
 import edu.wpi.first.wpilibj.RobotBase
 import java.util.function.Supplier
 import kotlin.math.sqrt
 import org.team4099.lib.geometry.Pose2d
-import org.team4099.lib.geometry.Pose3d
-import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
@@ -99,7 +97,7 @@ object DrivetrainConstants {
   val DRIVE_SUPPLY_CURRENT_LIMIT = 50.0.amps
 
   val STEERING_STATOR_CURRENT_LIMIT = 20.0.amps
-  val DRIVE_STATOR_CURRENT_LIMIT = 50.0.amps
+  val DRIVE_STATOR_CURRENT_LIMIT = 70.0.amps
 
   val STEERING_COMPENSATION_VOLTAGE = 10.volts
   val DRIVE_COMPENSATION_VOLTAGE = 12.volts
@@ -114,17 +112,17 @@ object DrivetrainConstants {
         Constants.WHOAMI.TESTBOT -> NITRILE_WHEEL_COF
       }
 
-  val INITIAL_SIM_POSE = Pose3d(3.meters, 3.meters, 0.meters, Rotation3d()).pose3d
+  val INITIAL_SIM_POSE = Pose2d(3.meters, 3.meters, 0.radians).pose2d
 
-  val STATE_STDEVS: Matrix<N4?, N1?> = VecBuilder.fill(0.003, 0.003, 0.003, 0.002)
+  val STATE_STDEVS: Matrix<N3?, N1?> = VecBuilder.fill(0.003, 0.003, 0.002)
 
   object PID {
     val AUTO_POS_KP: ProportionalGain<Meter, Velocity<Meter>>
       get() {
         if (RobotBase.isReal()) {
-          return 2.5.meters.perSecond / 1.0.meters
+          return 6.7.meters.perSecond / 1.0.meters // 2.52
         } else {
-          return 20.meters.perSecond / 1.0.meters
+          return 6.7.meters.perSecond / 1.0.meters
         }
       }
 
@@ -140,10 +138,10 @@ object DrivetrainConstants {
     val AUTO_POS_KD: DerivativeGain<Meter, Velocity<Meter>>
       get() {
         if (RobotBase.isReal()) {
-          return (0.5.meters.perSecond / (1.0.meters.perSecond)) // 0.6
+          return (0.05.meters.perSecond / (1.0.meters.perSecond)) // 0.475
               .metersPerSecondPerMetersPerSecond // todo: 0.25
         } else {
-          return (0.5.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
+          return (0.05.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
         }
       }
 
@@ -152,10 +150,22 @@ object DrivetrainConstants {
     val LIMELIGHT_THETA_KD =
         (0.1.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
 
-    val AUTO_THETA_PID_KP = (3.degrees.perSecond / 1.degrees)
-    val AUTO_THETA_PID_KI = (0.0.radians.perSecond / (1.radians * 1.seconds))
-    val AUTO_THETA_PID_KD =
-        (0.175.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
+    val AUTO_THETA_PID_KP: ProportionalGain<Radian, Velocity<Radian>>
+      get() =
+          if (RobotBase.isReal()) 3.degrees.perSecond / 1.degrees
+          else 2.9.radians.perSecond / 1.radians
+
+    val AUTO_THETA_PID_KI: IntegralGain<Radian, Velocity<Radian>>
+      get() =
+          if (RobotBase.isReal()) 0.0.radians.perSecond / (1.radians * 1.seconds)
+          else 0.radians.perSecond / (1.radians * 1.seconds)
+
+    val AUTO_THETA_PID_KD: DerivativeGain<Radian, Velocity<Radian>>
+      get() =
+          if (RobotBase.isReal())
+              (0.175.degrees.perSecond / (1.degrees / 1.seconds))
+                  .radiansPerSecondPerRadiansPerSecond
+          else (0.4.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
 
     val SIM_HUB_PID_KP = (6.7.radians.perSecond / 1.radians)
     val SIM_HUB_PID_KI = (0.0.radians.perSecond / (1.radians * 1.seconds))
@@ -167,10 +177,10 @@ object DrivetrainConstants {
     val AUTO_REEF_PID_KD =
         (0.4.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
 
-    val TELEOP_THETA_PID_KP = 2.2.degrees.perSecond / 1.degrees
+    val TELEOP_THETA_PID_KP = 4.5.degrees.perSecond / 1.degrees
     val TELEOP_THETA_PID_KI = 0.0.degrees.perSecond / (1.degrees * 1.seconds)
     val TELEOP_THETA_PID_KD =
-        (0.2.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
+        (0.12.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
 
     val TELEOP_X_PID_KP = 2.8.meters.perSecond / 1.meters
     val TELEOP_X_PID_KI = 0.0.meters.perSecond / (1.meters * 1.seconds)
@@ -197,7 +207,7 @@ object DrivetrainConstants {
     val SIM_AUTO_THETA_PID_KI = AUTO_REEF_PID_KI
     val SIM_AUTO_THETA_PID_KD = AUTO_REEF_PID_KD
 
-    val STEERING_KP = 35.volts / 1.radians
+    val STEERING_KP = 100.volts / 1.radians
     val STEERING_KI = 0.0.volts.perDegreeSeconds
     val STEERING_KD = 0.0.volts.perDegreePerSecond
     val STEERING_KV: VelocityFeedforward<Radian, Volt>
@@ -221,7 +231,7 @@ object DrivetrainConstants {
     val DRIVE_KV: VelocityFeedforward<Meter, Volt>
       get() =
           when (Constants.Universal.whoami) {
-            Constants.WHOAMI.COMPBOT -> 0.76.volts / 1.0.meters.perSecond
+            Constants.WHOAMI.COMPBOT -> 0.734832.volts / 1.0.meters.perSecond
             Constants.WHOAMI.ALPHABOT -> 0.74646.volts / 1.0.meters.perSecond
             Constants.WHOAMI.TESTBOT -> 0.718.volts / 1.0.meters.perSecond
           }
@@ -229,6 +239,7 @@ object DrivetrainConstants {
     val DRIVE_KA: AccelerationFeedforward<Meter, Volt>
       get() =
           when (Constants.Universal.whoami) {
+            Constants.WHOAMI.COMPBOT -> 0.084474.volts / 1.0.meters.perSecond.perSecond
             else -> 0.0.volts / 1.0.meters.perSecond.perSecond
           }
 
