@@ -5,6 +5,7 @@ import com.pathplanner.lib.commands.FollowPathCommand
 import com.team4099.lib.hal.Clock
 import com.team4099.robot2026.auto.AutonomousSelector
 import com.team4099.robot2026.commands.drivetrain.DrivePathOTF
+import com.team4099.robot2026.commands.drivetrain.FollowChoreoPath
 import com.team4099.robot2026.config.ControlBoard
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.FieldConstants
@@ -26,7 +27,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.simulation.DriverStationSim
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
-import edu.wpi.first.wpilibj2.command.Commands.runOnce
 import java.nio.file.Files
 import java.nio.file.Paths
 import org.ejml.EjmlVersion.BUILD_DATE
@@ -121,19 +121,23 @@ object Robot : LoggedRobot() {
 
     Logger.recordOutput("LogFolder/isLogging", isLogging)
 
-    SignalLogger.setPath("/media/sda1/ctre-logs/")
-    //    SignalLogger.start(); <-- useful for SysID
+    // change whats commented below if using hoot logs
+    SignalLogger.enableAutoLogging(false)
+    SignalLogger.stop()
+    //    SignalLogger.setPath("/media/sda1/ctre-logs/")
 
     LiveWindow.disableAllTelemetry()
 
     // init a buncha things
     RobotContainer
     AutonomousSelector
+    FollowChoreoPath
     FieldConstants.fieldLayout
     RobotContainer.mapDefaultCommands()
 
     // init commands that have long startup
-    DrivePathOTF.warmupCommand()
+    CommandScheduler.getInstance().schedule(DrivePathOTF.warmupCommand())
+    CommandScheduler.getInstance().schedule(FollowChoreoPath.warmupCmd())
 
     // Set the scheduler to log events for command initialize, interrupt, finish
     CommandScheduler.getInstance().onCommandInitialize { command: Command ->
@@ -167,7 +171,7 @@ object Robot : LoggedRobot() {
   }
 
   override fun autonomousInit() {
-    val autonCommandWithWait = runOnce({ RobotContainer.zeroSensors() }).andThen(autonomousCommand)
+    val autonCommandWithWait = autonomousCommand
     CommandScheduler.getInstance().schedule(autonCommandWithWait)
     RobotContainer.intake.setBrakeMode(true)
     autoStartTime = Clock.timestamp

@@ -165,7 +165,7 @@ class Superstructure(
         intake.currentRequest =
             Request.IntakeRequest.TargetingPosition(
                 if (!defenseMode) IntakeConstants.ANGLES.IDLE_ANGLE
-                else IntakeConstants.ANGLES.STOW_ANGLE)
+                else IntakeConstants.ANGLES.DEFENSE_MODE_ANGLE)
         intakeRollers.currentRequest =
             Request.RollersRequest.OpenLoop(RollersConstants.IDLE_VOLTAGE)
         shooter.currentRequest = Request.ShooterRequest.Idle()
@@ -238,7 +238,7 @@ class Superstructure(
       }
       SuperstructureStates.SCORE -> {
         shooter.currentRequest = Request.ShooterRequest.TargetVelocity(shooterTargetRPM)
-        if (Clock.timestamp - lastJammed < 1.5.seconds) {
+        if (Clock.timestamp - lastJammed < 0.75.seconds) {
           hopper.currentRequest = Request.HopperRequest.OpenLoop(HopperConstants.UNJAM_VOLTAGE)
           feeder.currentRequest = Request.FeederRequest.OpenLoop(FeederConstants.UNJAM_VOLTAGE)
         } else {
@@ -254,12 +254,13 @@ class Superstructure(
                 Request.RollersRequest.OpenLoop(RollersConstants.SCORE_ASSISTING_VOLTAGE)
           }
 
-          if (Clock.timestamp - lastTransitionTime > 1.seconds &&
-              (hopper.inputs.hopperStatorCurrent > HopperConstants.JAM_STALL_CURRENT ||
-                  feeder.inputs.feederStatorCurrent > FeederConstants.JAM_STALL_CURRENT ||
-                  hopper.inputs.hopperAngularVelocity < HopperConstants.JAM_STALL_VELOCITY ||
-                  feeder.inputs.feederVelocity < FeederConstants.JAM_STALL_VELOCITY)) {
-            //            lastJammed = Clock.timestamp
+          if (Clock.timestamp - lastTransitionTime > 2.seconds &&
+              Clock.timestamp - lastJammed > 2.seconds &&
+              (hopper.inputs.hopperAngularVelocity.absoluteValue <
+                  HopperConstants.JAM_STALL_VELOCITY ||
+                  feeder.inputs.feederVelocity.absoluteValue <
+                      FeederConstants.JAM_STALL_VELOCITY)) {
+            lastJammed = Clock.timestamp
           }
         }
 

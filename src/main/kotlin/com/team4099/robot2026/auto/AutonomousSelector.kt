@@ -2,6 +2,7 @@ package com.team4099.robot2026.auto
 
 import com.team4099.robot2026.auto.mode.BigCircle
 import com.team4099.robot2026.auto.mode.ExamplePathAuto
+import com.team4099.robot2026.auto.mode.IntakeQuadrantFollowClose
 import com.team4099.robot2026.auto.mode.IntakeQuadrantL1
 import com.team4099.robot2026.auto.mode.IntakeSideSpin
 import com.team4099.robot2026.auto.mode.PreloadL1Auto
@@ -59,13 +60,17 @@ object AutonomousSelector {
         "Preload + Left Bump Center", AutonomousMode.PRELOAD_BUMP_CENTER_LEFT)
     autonomousModeChooser.addOption(
         "Preload + Right Bump Center", AutonomousMode.PRELOAD_BUMP_CENTER_RIGHT)
+    autonomousModeChooser.addOption(
+        "Intake Follow Close Right (ADD A WAIT TIME)", AutonomousMode.INTAKE_FOLLOW_CLOSE_RIGHT)
+    autonomousModeChooser.addOption(
+        "Intake Follow Close Left (ADD A WAIT TIME)", AutonomousMode.INTAKE_FOLLOW_CLOSE_LEFT)
     autonomousModeChooser.addOption("Do nothing", AutonomousMode.DO_NOTHING)
 
     autoTab.add("Mode", autonomousModeChooser.sendableChooser).withSize(4, 2).withPosition(2, 0)
 
     waitBeforeCommandSlider =
         autoTab
-            .add("Wait Time Before Shooting", 0)
+            .add("Wait Time", 0)
             .withSize(3, 2)
             .withPosition(0, 2)
             .withWidget(BuiltInWidgets.kTextView)
@@ -160,6 +165,23 @@ object AutonomousSelector {
                             .pose2d)
               })
               .andThen(PreloadL1Auto(drivetrain, superstructure, true))
+      AutonomousMode.INTAKE_FOLLOW_CLOSE_RIGHT ->
+          WaitCommand(waitTime.inSeconds)
+              .andThen({
+                drivetrain.pose =
+                    Pose2d(AllianceFlipUtil.apply(IntakeQuadrantFollowClose.startingPose).pose2d)
+              })
+              .andThen(IntakeQuadrantFollowClose(drivetrain, superstructure, intake, false))
+      AutonomousMode.INTAKE_FOLLOW_CLOSE_LEFT ->
+          WaitCommand(waitTime.inSeconds)
+              .andThen({
+                drivetrain.pose =
+                    Pose2d(
+                        FollowChoreoPath.flipVertically(
+                                AllianceFlipUtil.apply(IntakeQuadrantFollowClose.startingPose))
+                            .pose2d)
+              })
+              .andThen(IntakeQuadrantFollowClose(drivetrain, superstructure, intake, true))
       AutonomousMode.BIG_CIRCLE ->
           WaitCommand(waitTime.inSeconds)
               .andThen({ drivetrain.pose = AllianceFlipUtil.apply(BigCircle.startingPose) })
@@ -186,5 +208,7 @@ private enum class AutonomousMode {
   CENTERLINE_SWEEP_LEFT,
   PRELOAD_BUMP_CENTER_LEFT,
   PRELOAD_BUMP_CENTER_RIGHT,
+  INTAKE_FOLLOW_CLOSE_RIGHT,
+  INTAKE_FOLLOW_CLOSE_LEFT,
   DO_NOTHING,
 }
