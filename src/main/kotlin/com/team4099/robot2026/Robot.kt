@@ -162,7 +162,6 @@ object Robot : LoggedRobot() {
 
     CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand())
 
-    Logger.recordOutput("RobotSimulation/simulateVision", Constants.Universal.SIMULATE_VISION)
     Logger.recordOutput("TuningMode", Constants.Tuning.TUNING_MODE)
 
     if (isSimulation()) {
