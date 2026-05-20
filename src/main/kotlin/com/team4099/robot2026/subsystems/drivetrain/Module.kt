@@ -48,7 +48,7 @@ class Module(
       Alert("Disconnected turn encoder on module $index.", Alert.AlertType.kError)
 
   /** Returns the module positions received this cycle. */
-  var odometryPositions: Array<SwerveModulePosition?> = arrayOf()
+  var odometryPositions: Array<SwerveModulePosition> = Array(20) { SwerveModulePosition() }
     private set
 
   fun periodic() {
@@ -57,11 +57,19 @@ class Module(
 
     // Calculate positions for odometry
     val sampleCount: Int = inputs.odometryTimestamps.size // All signals are sampled together
-    odometryPositions = arrayOfNulls(sampleCount)
+    if (odometryPositions.size < sampleCount) {
+      val newArray = Array(sampleCount) { SwerveModulePosition() }
+      for (i in odometryPositions.indices) {
+        newArray[i] = odometryPositions[i]
+      }
+      odometryPositions = newArray
+    }
+
     for (i in 0 until sampleCount) {
-      val position = (inputs.odometryDrivePositions[i].inRadians * constants.WheelRadius).meters
-      val angle: Angle = inputs.odometryTurnPositions[i]
-      odometryPositions[i] = SwerveModulePosition(position.inMeters, angle.inRotation2ds)
+      val position = inputs.odometryDrivePositionsRotations[i] * 2 * Math.PI * constants.WheelRadius
+      val angleRotations = inputs.odometryTurnPositionsRotations[i]
+      odometryPositions[i].distanceMeters = position
+      odometryPositions[i].angle = Rotation2d(angleRotations * 2 * Math.PI)
     }
 
     // Update alerts
@@ -112,13 +120,21 @@ class Module(
     /** Returns the current drive velocity of the module in meters per second. */
     get() = (inputs.driveVelocity.inRadiansPerSecond * constants.WheelRadius).meters.perSecond
 
-  val modulePosition: SwerveModulePosition
+  val modulePosition: SwerveModulePosition = SwerveModulePosition()
     /** Returns the module modulePosition (turn angle and drive modulePosition). */
-    get() = SwerveModulePosition(position.inMeters, angle.inRotation2ds)
+    get() {
+      field.distanceMeters = position.inMeters
+      field.angle = angle.inRotation2ds
+      return field
+    }
 
-  val state: SwerveModuleState
+  val state: SwerveModuleState = SwerveModuleState()
     /** Returns the module state (turn angle and drive velocity). */
-    get() = SwerveModuleState(velocity.inMetersPerSecond, angle.inRotation2ds)
+    get() {
+      field.speedMetersPerSecond = velocity.inMetersPerSecond
+      field.angle = angle.inRotation2ds
+      return field
+    }
 
   val odometryTimestamps: DoubleArray
     /** Returns the timestamps of the samples received this cycle. */

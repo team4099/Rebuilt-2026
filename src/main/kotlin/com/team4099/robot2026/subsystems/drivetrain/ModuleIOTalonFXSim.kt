@@ -38,10 +38,12 @@ class ModuleIOTalonFXSim(
     super.updateInputs(inputs)
 
     inputs.odometryTimestamps = PhoenixUtil.simulationOdometryTimeStamps
-    inputs.odometryDrivePositions =
-        simulation.cachedDriveWheelFinalPositions.map { it.`in`(Radians).radians }.toTypedArray()
-    inputs.odometryTurnPositions =
-        simulation.cachedSteerAbsolutePositions.map { it.radians.radians }.toTypedArray()
+    inputs.odometryDrivePositionsRotations =
+        simulation.cachedDriveWheelFinalPositions
+            .map { it.`in`(Radians) / (2 * Math.PI) }
+            .toDoubleArray()
+    inputs.odometryTurnPositionsRotations =
+        simulation.cachedSteerAbsolutePositions.map { it.radians / (2 * Math.PI) }.toDoubleArray()
   }
 
   companion object {

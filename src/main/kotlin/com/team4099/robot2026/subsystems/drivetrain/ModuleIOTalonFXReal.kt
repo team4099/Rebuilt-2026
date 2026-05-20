@@ -17,7 +17,6 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration
 import com.ctre.phoenix6.swerve.SwerveModuleConstants
 import com.team4099.robot2026.config.constants.DrivetrainConstants
 import java.util.Queue
-import org.team4099.lib.units.derived.rotations
 
 /**
  * Module IO implementation for Talon FX drive motor controller, Talon FX turn motor controller, and
@@ -41,8 +40,8 @@ class ModuleIOTalonFXReal(
 
     // Update odometry inputs
     inputs.odometryTimestamps = timestampQueue.toDoubleArray()
-    inputs.odometryDrivePositions = drivePositionQueue.map(Double::rotations).toTypedArray()
-    inputs.odometryTurnPositions = turnPositionQueue.map(Double::rotations).toTypedArray()
+    inputs.odometryDrivePositionsRotations = drivePositionQueue.toDoubleArray()
+    inputs.odometryTurnPositionsRotations = turnPositionQueue.toDoubleArray()
     timestampQueue.clear()
     drivePositionQueue.clear()
     turnPositionQueue.clear()

@@ -52,8 +52,8 @@ interface ModuleIO {
     var turnCurrent: Current = 0.0.amps
 
     var odometryTimestamps: DoubleArray = doubleArrayOf()
-    var odometryDrivePositions: Array<Angle> = arrayOf()
-    var odometryTurnPositions: Array<Angle> = arrayOf()
+    var odometryDrivePositionsRotations: DoubleArray = doubleArrayOf()
+    var odometryTurnPositionsRotations: DoubleArray = doubleArrayOf()
 
     override fun toLog(table: LogTable) {
       table.put("driveConnected", driveConnected)
@@ -69,6 +69,10 @@ interface ModuleIO {
       table.put("turnVelocityDegPerSec", turnVelocity.inDegreesPerSecond)
       table.put("turnAppliedVoltage", turnAppliedVoltage.inVolts)
       table.put("turnCurrent", turnCurrent.inAmperes)
+
+      table.put("odometryTimestamps", odometryTimestamps)
+      table.put("odometryDrivePositionsRotations", odometryDrivePositionsRotations)
+      table.put("odometryTurnPositionsRotations", odometryTurnPositionsRotations)
     }
 
     override fun fromLog(table: LogTable) {
@@ -95,6 +99,14 @@ interface ModuleIO {
         turnAppliedVoltage = it.volts
       }
       table.get("turnCurrent", turnCurrent.inAmperes).let { turnCurrent = it.amps }
+
+      table.get("odometryTimestamps", doubleArrayOf()).let { odometryTimestamps = it }
+      table.get("odometryDrivePositionsRotations", doubleArrayOf()).let {
+        odometryDrivePositionsRotations = it
+      }
+      table.get("odometryTurnPositionsRotations", doubleArrayOf()).let {
+        odometryTurnPositionsRotations = it
+      }
     }
   }
 

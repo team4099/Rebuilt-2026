@@ -104,12 +104,25 @@ class Drive(
               .map { translation: Translation2d -> translation.translation2d }
               .toTypedArray()))
   private var rawGyroRotation: Angle = 0.radians
-  private val lastModulePositions: Array<SwerveModulePosition?> = // For delta tracking
+  private val lastModulePositions: Array<SwerveModulePosition> = // For delta tracking
       arrayOf(
           SwerveModulePosition(),
           SwerveModulePosition(),
           SwerveModulePosition(),
           SwerveModulePosition())
+  private val odometryModulePositions =
+      arrayOf(
+          SwerveModulePosition(),
+          SwerveModulePosition(),
+          SwerveModulePosition(),
+          SwerveModulePosition())
+  private val odometryModuleDeltas =
+      arrayOf(
+          SwerveModulePosition(),
+          SwerveModulePosition(),
+          SwerveModulePosition(),
+          SwerveModulePosition())
+  private val emptySwerveStates = emptyArray<SwerveModuleState>()
   private val poseEstimator: SwerveDrivePoseEstimator =
       SwerveDrivePoseEstimator(
           kinematics,
@@ -197,8 +210,8 @@ class Drive(
 
     // Log empty setpoint states when disabled
     if (DriverStation.isDisabled()) {
-      CustomLogger.recordOutput("SwerveStates/Setpoints", *arrayOf<SwerveModuleState>())
-      CustomLogger.recordOutput("SwerveStates/SetpointsOptimized", *arrayOf<SwerveModuleState>())
+      CustomLogger.recordOutput("SwerveStates/Setpoints", *emptySwerveStates)
+      CustomLogger.recordOutput("SwerveStates/SetpointsOptimized", *emptySwerveStates)
     }
 
     // Update odometry
@@ -206,16 +219,17 @@ class Drive(
     val sampleCount = sampleTimestamps.size
     for (i in 0 until sampleCount) {
       // Read wheel positions and deltas from each module
-      val modulePositions: Array<SwerveModulePosition?> = arrayOfNulls(4)
-      val moduleDeltas: Array<SwerveModulePosition?> = arrayOfNulls(4)
       for (moduleIndex in 0..3) {
-        modulePositions[moduleIndex] = modules[moduleIndex]!!.odometryPositions[i]
-        moduleDeltas[moduleIndex] =
-            SwerveModulePosition(
-                modulePositions[moduleIndex]!!.distanceMeters -
-                    lastModulePositions[moduleIndex]!!.distanceMeters,
-                modulePositions[moduleIndex]!!.angle)
-        lastModulePositions[moduleIndex] = modulePositions[moduleIndex]
+        val currentPos = modules[moduleIndex]!!.odometryPositions[i]
+        odometryModulePositions[moduleIndex].distanceMeters = currentPos.distanceMeters
+        odometryModulePositions[moduleIndex].angle = currentPos.angle
+
+        odometryModuleDeltas[moduleIndex].distanceMeters =
+            currentPos.distanceMeters - lastModulePositions[moduleIndex].distanceMeters
+        odometryModuleDeltas[moduleIndex].angle = currentPos.angle
+
+        lastModulePositions[moduleIndex].distanceMeters = currentPos.distanceMeters
+        lastModulePositions[moduleIndex].angle = currentPos.angle
       }
 
       // Update gyro angle
@@ -224,13 +238,13 @@ class Drive(
         rawGyroRotation = gyroInputs.odometryYawPositions[i]
       } else {
         // Use the angle delta from the kinematics and module deltas
-        val twist = Twist2d(kinematics.toTwist2d(*moduleDeltas))
+        val twist = Twist2d(kinematics.toTwist2d(*odometryModuleDeltas))
         rawGyroRotation += twist.dtheta
       }
 
       // Apply update
       poseEstimator.updateWithTime(
-          sampleTimestamps[i], rawGyroRotation.inRotation2ds, modulePositions)
+          sampleTimestamps[i], rawGyroRotation.inRotation2ds, odometryModulePositions)
     }
 
     // Update gyro alert
@@ -334,24 +348,32 @@ class Drive(
     return run { runCharacterization(0.0) }.withTimeout(1.0).andThen(sysId.dynamic(direction))
   }
 
-  private val moduleStates: Array<SwerveModuleState?>
+  private val moduleStates: Array<SwerveModuleState> =
+      arrayOf(SwerveModuleState(), SwerveModuleState(), SwerveModuleState(), SwerveModuleState())
     /** Returns the module states (turn angles and drive velocities) for all of the modules. */
     get() {
-      val states: Array<SwerveModuleState?> = arrayOfNulls(4)
       for (i in 0..3) {
-        states[i] = modules[i]!!.state
+        val s = modules[i]!!.state
+        field[i].speedMetersPerSecond = s.speedMetersPerSecond
+        field[i].angle = s.angle
       }
-      return states
+      return field
     }
 
-  private val modulePositions: Array<SwerveModulePosition?>
+  private val modulePositions: Array<SwerveModulePosition> =
+      arrayOf(
+          SwerveModulePosition(),
+          SwerveModulePosition(),
+          SwerveModulePosition(),
+          SwerveModulePosition())
     /** Returns the module positions (turn angles and drive positions) for all of the modules. */
     get() {
-      val states: Array<SwerveModulePosition?> = arrayOfNulls<SwerveModulePosition>(4)
       for (i in 0..3) {
-        states[i] = modules[i]!!.modulePosition
+        val p = modules[i]!!.modulePosition
+        field[i].distanceMeters = p.distanceMeters
+        field[i].angle = p.angle
       }
-      return states
+      return field
     }
 
   val chassisSpeeds: ChassisSpeeds
@@ -431,6 +453,23 @@ class Drive(
                     DrivetrainConstants.tunerConstants.BackRight.LocationX,
                     DrivetrainConstants.tunerConstants.BackRight.LocationY)))
 
+    @JvmField val odometryLock: Lock = ReentrantLock()
+    @JvmField
+    val moduleTranslations: Array<Translation2d> =
+        arrayOf(
+            Translation2d(
+                DrivetrainConstants.tunerConstants.FrontLeft.LocationX.meters,
+                DrivetrainConstants.tunerConstants.FrontLeft.LocationY.meters),
+            Translation2d(
+                DrivetrainConstants.tunerConstants.FrontRight.LocationX.meters,
+                DrivetrainConstants.tunerConstants.FrontRight.LocationY.meters),
+            Translation2d(
+                DrivetrainConstants.tunerConstants.BackLeft.LocationX.meters,
+                DrivetrainConstants.tunerConstants.BackLeft.LocationY.meters),
+            Translation2d(
+                DrivetrainConstants.tunerConstants.BackRight.LocationX.meters,
+                DrivetrainConstants.tunerConstants.BackRight.LocationY.meters))
+
     // PathPlanner config constants
     val PP_CONFIG: RobotConfig =
         RobotConfig(
@@ -448,24 +487,6 @@ class Drive(
             *(moduleTranslations
                 .map { translation: Translation2d -> translation.translation2d }
                 .toTypedArray()))
-
-    @JvmField val odometryLock: Lock = ReentrantLock()
-    val moduleTranslations: Array<Translation2d>
-      /** Returns an array of module translations. */
-      get() =
-          arrayOf(
-              Translation2d(
-                  DrivetrainConstants.tunerConstants.FrontLeft.LocationX.meters,
-                  DrivetrainConstants.tunerConstants.FrontLeft.LocationY.meters),
-              Translation2d(
-                  DrivetrainConstants.tunerConstants.FrontRight.LocationX.meters,
-                  DrivetrainConstants.tunerConstants.FrontRight.LocationY.meters),
-              Translation2d(
-                  DrivetrainConstants.tunerConstants.BackLeft.LocationX.meters,
-                  DrivetrainConstants.tunerConstants.BackLeft.LocationY.meters),
-              Translation2d(
-                  DrivetrainConstants.tunerConstants.BackRight.LocationX.meters,
-                  DrivetrainConstants.tunerConstants.BackRight.LocationY.meters))
 
     val mapleSimConfig: DriveTrainSimulationConfig =
         DriveTrainSimulationConfig.Default()

@@ -125,8 +125,10 @@ class ModuleIOSim(
 
     // Update odometry inputs (50Hz because high-frequency odometry in sim doesn't matter)
     inputs.odometryTimestamps = doubleArrayOf(Timer.getFPGATimestamp())
-    inputs.odometryDrivePositions = arrayOf(inputs.drivePosition)
-    inputs.odometryTurnPositions = arrayOf(inputs.turnPosition)
+    inputs.odometryDrivePositionsRotations =
+        doubleArrayOf(driveSim.angularPositionRad / (2 * Math.PI))
+    inputs.odometryTurnPositionsRotations =
+        doubleArrayOf(turnSim.angularPositionRad / (2 * Math.PI))
   }
 
   override fun setDriveOpenLoop(output: Double) {
