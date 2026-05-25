@@ -149,7 +149,7 @@ interface CameraIO {
     inputs.timestamp = mostRecentPipelineResult.timestampSeconds.seconds
     Logger.recordOutput("Vision/$identifier/timestampIG", mostRecentPipelineResult.timestampSeconds)
 
-    inputs.cameraTargets = mutableListOf()
+    inputs.cameraTargets.clear()
 
     if (!inputs.warmedUp) {
       inputs.cameraTargets.addAll(
@@ -187,8 +187,13 @@ interface CameraIO {
               val poseEst = visionEst.get().estimatedPose
               inputs.frame = Pose3d(poseEst)
 
+              var sumAmbiguity = 0.0
+              val targetsUsed = visionEst.get().targetsUsed
+              for (i in targetsUsed.indices) {
+                sumAmbiguity += targetsUsed[i].poseAmbiguity
+              }
               val avgAmbiguityAcrossTargets =
-                  visionEst.get().targetsUsed.map { it.poseAmbiguity }.toTypedArray().average()
+                  if (targetsUsed.isNotEmpty()) sumAmbiguity / targetsUsed.size else 0.0
 
               inputs.frameAccepted =
                   shouldAcceptPose(
