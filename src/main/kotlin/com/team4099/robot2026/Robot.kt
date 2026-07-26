@@ -103,6 +103,7 @@ object Robot : LoggedRobot() {
       when (Constants.Universal.SIM_MODE) {
         Constants.Tuning.SimType.SIM -> {
           Logger.addDataReceiver(NTSafePublisher())
+          Logger.addDataReceiver(WPILOGWriter()) // writes to ./logs
           logSimulationAlert.set(true)
           DriverStationSim.setAllianceStationId(AllianceStationID.Blue1)
         }
