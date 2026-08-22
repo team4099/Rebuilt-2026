@@ -9,12 +9,14 @@ import com.team4099.robot2026.auto.mode.TestingAuto
 import com.team4099.robot2026.auto.mode.TuningAutoPos
 import com.team4099.robot2026.commands.characterization.DriveCharacterizationCommands
 import com.team4099.robot2026.commands.drivetrain.FollowChoreoPath
+import com.team4099.robot2026.config.constants.DrivetrainConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import com.team4099.robot2026.subsystems.superstructure.intake.Intake
 import com.team4099.robot2026.subsystems.vision.Vision
 import com.team4099.robot2026.util.AllianceFlipUtil
 import edu.wpi.first.math.controller.PIDController
+import edu.wpi.first.math.geometry.Pose2d as WPILIBPose2d
 import edu.wpi.first.math.kinematics.ChassisSpeeds as WPILIBSPEEDS
 import edu.wpi.first.networktables.GenericEntry
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets
@@ -92,17 +94,34 @@ object AutonomousSelector {
                 drivetrain,
                 { drivetrain.pose.pose2d },
                 { drivetrain.chassisSpeeds.chassisSpeedsWPILIB },
-                { speeds: WPILIBSPEEDS -> drivetrain.runSpeeds(ChassisSpeeds(speeds)) },
-                PIDController(2.0, 0.0, 0.0),
-                PIDController(1.0, 0.0, 0.0),
-                PIDController(0.2, 0.0, 0.0))
+                { speeds: WPILIBSPEEDS ->
+                  drivetrain.runSpeeds(ChassisSpeeds(speeds), flipIfRed = false)
+                },
+                PIDController(
+                    DrivetrainConstants.PID.AUTO_POS_KP.value,
+                    DrivetrainConstants.PID.AUTO_POS_KI.value,
+                    DrivetrainConstants.PID.AUTO_POS_KD.value),
+                PIDController(
+                    DrivetrainConstants.PID.AUTO_THETA_PID_KP.value,
+                    DrivetrainConstants.PID.AUTO_THETA_PID_KI.value,
+                    DrivetrainConstants.PID.AUTO_THETA_PID_KD.value),
+                PIDController(
+                    DrivetrainConstants.PID.AUTO_CROSSTRACK_KP.value,
+                    DrivetrainConstants.PID.AUTO_CROSSTRACK_KI.value,
+                    DrivetrainConstants.PID.AUTO_CROSSTRACK_KD.value))
             .withDefaultShouldFlip()
             .withTRatioBasedTranslationHandoffs(true)
             .withShouldMirror { false } // TODO: Change i dont feel like it
 
     return when (mode) {
       AutonomousMode.EXAMPLE_AUTO ->
-          return WaitCommand(waitTime.inSeconds).andThen(pathBuilder.build(Path("straightline")))
+          return WaitCommand(waitTime.inSeconds)
+              .andThen(
+                  pathBuilder
+                      .withPoseReset { startingPose: WPILIBPose2d ->
+                        drivetrain.pose = Pose2d(startingPose)
+                      }
+                      .build(Path("straightline")))
       AutonomousMode.WHEEL_RADIUS ->
           DriveCharacterizationCommands.wheelRadiusCharacterization(drivetrain)
       AutonomousMode.DRIVE_FF ->

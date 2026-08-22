@@ -155,6 +155,11 @@ object DrivetrainConstants {
     val AUTO_THETA_PID_KD =
         (0.175.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
 
+    val AUTO_CROSSTRACK_KP = 0.2.meters.perSecond / 1.0.meters
+    val AUTO_CROSSTRACK_KI = 0.0.meters.perSecond / (1.0.meters * 1.0.seconds)
+    val AUTO_CROSSTRACK_KD =
+        (0.0.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
+
     val SIM_HUB_PID_KP = (6.7.radians.perSecond / 1.radians)
     val SIM_HUB_PID_KI = (0.0.radians.perSecond / (1.radians * 1.seconds))
     val SIM_HUB_PID_KD =
