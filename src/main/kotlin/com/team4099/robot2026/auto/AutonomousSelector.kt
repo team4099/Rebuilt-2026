@@ -1,7 +1,6 @@
 package com.team4099.robot2026.auto
 
 import com.team4099.robot2026.auto.mode.BigCircle
-import com.team4099.robot2026.auto.mode.ExamplePathAuto
 import com.team4099.robot2026.auto.mode.IntakeQuadrantL1
 import com.team4099.robot2026.auto.mode.IntakeSideSpin
 import com.team4099.robot2026.auto.mode.PreloadL1Auto
@@ -15,14 +14,19 @@ import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import com.team4099.robot2026.subsystems.superstructure.intake.Intake
 import com.team4099.robot2026.subsystems.vision.Vision
 import com.team4099.robot2026.util.AllianceFlipUtil
+import edu.wpi.first.math.controller.PIDController
+import edu.wpi.first.math.kinematics.ChassisSpeeds as WPILIBSPEEDS
 import edu.wpi.first.networktables.GenericEntry
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.WaitCommand
+import frc.robot.lib.BLine.FollowPath
+import frc.robot.lib.BLine.Path
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser
 import org.team4099.lib.geometry.Pose2d
+import org.team4099.lib.kinematics.ChassisSpeeds
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.seconds
@@ -79,15 +83,26 @@ object AutonomousSelector {
       drivetrain: Drive,
       vision: Vision,
       superstructure: Superstructure,
-      intake: Intake
+      intake: Intake,
   ): Command {
     val mode = autonomousModeChooser.get()
 
+    var pathBuilder =
+        FollowPath.Builder(
+                drivetrain,
+                { drivetrain.pose.pose2d },
+                { drivetrain.chassisSpeeds.chassisSpeedsWPILIB },
+                { speeds: WPILIBSPEEDS -> drivetrain.runSpeeds(ChassisSpeeds(speeds)) },
+                PIDController(2.0, 0.0, 0.0),
+                PIDController(1.0, 0.0, 0.0),
+                PIDController(0.2, 0.0, 0.0))
+            .withDefaultShouldFlip()
+            .withTRatioBasedTranslationHandoffs(true)
+            .withShouldMirror { false } // TODO: Change i dont feel like it
+
     return when (mode) {
       AutonomousMode.EXAMPLE_AUTO ->
-          return WaitCommand(waitTime.inSeconds)
-              .andThen({ drivetrain.pose = AllianceFlipUtil.apply(ExamplePathAuto.startingPose) })
-              .andThen(ExamplePathAuto(drivetrain))
+          return WaitCommand(waitTime.inSeconds).andThen(pathBuilder.build(Path("straightline")))
       AutonomousMode.WHEEL_RADIUS ->
           DriveCharacterizationCommands.wheelRadiusCharacterization(drivetrain)
       AutonomousMode.DRIVE_FF ->
