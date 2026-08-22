@@ -146,14 +146,14 @@ spotless {
 		// by default the target is every '.kt' and '.kts` file in the java sourcesets
 		target fileTree(".") {
 			include "**/*.kt"
-			exclude "**/BuildConstants.kt", "**/build/**", "src/main/kotlin/com/team4099/lib/sim/**"
+			exclude "**/BuildConstants.kt", "**/build/**", "**/bin/**", "src/main/kotlin/com/team4099/lib/sim/**"
 		}
 		ktfmt()
 	}
 }
 
 wrapper {
-	gradleVersion = '8.6.0'
+	gradleVersion = '8.11'
 }
 
 // Configure jar and deploy tasks
