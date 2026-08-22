@@ -1,6 +1,7 @@
 package com.team4099.robot2026.auto
 
 import com.team4099.robot2026.auto.mode.BigCircle
+import com.team4099.robot2026.auto.mode.ExamplePathAuto
 import com.team4099.robot2026.auto.mode.IntakeQuadrantL1
 import com.team4099.robot2026.auto.mode.IntakeSideSpin
 import com.team4099.robot2026.auto.mode.PreloadL1Auto
@@ -15,9 +16,8 @@ import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import com.team4099.robot2026.subsystems.superstructure.intake.Intake
 import com.team4099.robot2026.subsystems.vision.Vision
 import com.team4099.robot2026.util.AllianceFlipUtil
-import edu.wpi.first.math.controller.PIDController
-import edu.wpi.first.math.geometry.Pose2d as WPILIBPose2d
-import edu.wpi.first.math.kinematics.ChassisSpeeds as WPILIBSPEEDS
+import com.team4099.robot2026.util.CustomLogger
+import edu.wpi.first.math.Pair
 import edu.wpi.first.networktables.GenericEntry
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
@@ -27,19 +27,28 @@ import edu.wpi.first.wpilibj2.command.WaitCommand
 import frc.robot.lib.BLine.FollowPath
 import frc.robot.lib.BLine.Path
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser
+import org.team4099.lib.controller.PIDController
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.kinematics.ChassisSpeeds
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.seconds
+import java.util.function.Consumer
+import edu.wpi.first.math.geometry.Pose2d as WPILIBPose2d
+import edu.wpi.first.math.kinematics.ChassisSpeeds as WPILIBSPEEDS
 
 object AutonomousSelector {
   private var autonomousModeChooser: LoggedDashboardChooser<AutonomousMode> =
       LoggedDashboardChooser("AutonomousMode")
   private var waitBeforeCommandSlider: GenericEntry
+  private var FieldSideChooser: LoggedDashboardChooser<Boolean> =
+    LoggedDashboardChooser("FieldSide")
 
   init {
     val autoTab = Shuffleboard.getTab("Pre-match")
+
+    FieldSideChooser.addOption("Left", false)
+    FieldSideChooser.addOption("Right", true)
 
     autonomousModeChooser.addOption(
         "Example Auto DO NOT RUN AT COMPETITION", AutonomousMode.EXAMPLE_AUTO)
@@ -88,6 +97,7 @@ object AutonomousSelector {
       intake: Intake,
   ): Command {
     val mode = autonomousModeChooser.get()
+    val shouldMirror = FieldSideChooser.get()
 
     var pathBuilder =
         FollowPath.Builder(
@@ -97,31 +107,42 @@ object AutonomousSelector {
                 { speeds: WPILIBSPEEDS ->
                   drivetrain.runSpeeds(ChassisSpeeds(speeds), flipIfRed = false)
                 },
+          PIDController(
+            DrivetrainConstants.PID.AUTO_POS_KP,
+            DrivetrainConstants.PID.AUTO_POS_KI,
+            DrivetrainConstants.PID.AUTO_POS_KD
+          ).wpiPidController,
                 PIDController(
-                    DrivetrainConstants.PID.AUTO_POS_KP.value,
-                    DrivetrainConstants.PID.AUTO_POS_KI.value,
-                    DrivetrainConstants.PID.AUTO_POS_KD.value),
+                    DrivetrainConstants.PID.AUTO_THETA_PID_KP,
+                    DrivetrainConstants.PID.AUTO_THETA_PID_KI,
+                    DrivetrainConstants.PID.AUTO_THETA_PID_KD).wpiPidController,
                 PIDController(
-                    DrivetrainConstants.PID.AUTO_THETA_PID_KP.value,
-                    DrivetrainConstants.PID.AUTO_THETA_PID_KI.value,
-                    DrivetrainConstants.PID.AUTO_THETA_PID_KD.value),
-                PIDController(
-                    DrivetrainConstants.PID.AUTO_CROSSTRACK_KP.value,
-                    DrivetrainConstants.PID.AUTO_CROSSTRACK_KI.value,
-                    DrivetrainConstants.PID.AUTO_CROSSTRACK_KD.value))
+                    DrivetrainConstants.PID.AUTO_CROSSTRACK_KP,
+                    DrivetrainConstants.PID.AUTO_CROSSTRACK_KI,
+                    DrivetrainConstants.PID.AUTO_CROSSTRACK_KD).wpiPidController)
             .withDefaultShouldFlip()
             .withTRatioBasedTranslationHandoffs(true)
-            .withShouldMirror { false } // TODO: Change i dont feel like it
+            .withShouldMirror { shouldMirror }
+
+    FollowPath.setDoubleLoggingConsumer(
+      Consumer { value -> CustomLogger.recordOutput(value.getFirst(), value.getSecond()) })
+    FollowPath.setBooleanLoggingConsumer(
+      Consumer { value -> CustomLogger.recordOutput(value.getFirst(), value.getSecond()) })
+    FollowPath.setPoseLoggingConsumer(
+      Consumer { value -> CustomLogger.recordOutput(value.getFirst(), value.getSecond()) })
+    FollowPath.setTranslationListLoggingConsumer(
+      Consumer { value ->
+        CustomLogger.recordOutput(
+          value.getFirst(),
+          value.getSecond()
+        )
+      })
 
     return when (mode) {
       AutonomousMode.EXAMPLE_AUTO ->
           return WaitCommand(waitTime.inSeconds)
-              .andThen(
-                  pathBuilder
-                      .withPoseReset { startingPose: WPILIBPose2d ->
-                        drivetrain.pose = Pose2d(startingPose)
-                      }
-                      .build(Path("straightline")))
+              .andThen(ExamplePathAuto(drivetrain, pathBuilder))
+
       AutonomousMode.WHEEL_RADIUS ->
           DriveCharacterizationCommands.wheelRadiusCharacterization(drivetrain)
       AutonomousMode.DRIVE_FF ->
