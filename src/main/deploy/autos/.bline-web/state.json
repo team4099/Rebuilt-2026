@@ -31,7 +31,8 @@
   "linked_targets": [],
   "paths": {
     "straightline.json": {
-      "display_name": "straightline"
+      "display_name": "straightline",
+      "editor_metadata": null
     }
   },
   "field_assets": {}

@@ -17,6 +17,11 @@ class ExamplePathAuto(val drivetrain: Drive, val pathBuilder: FollowPath.Builder
         WaitCommand(0.5),
         pathBuilder
             .withPoseReset { startingPose: WPILIBPose2d -> drivetrain.pose = Pose2d(startingPose) }
-            .build(Path("straightline")))
+            .build(pathOne))
+  }
+  companion object {
+    val pathOne =Path("straightline")
   }
 }
+
+
