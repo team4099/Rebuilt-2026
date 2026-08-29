@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.units.base.seconds
 
-class IntakeQuadrantL1(
+class IntakeQuadrantFollowClose(
     val drivetrain: Drive,
     val superstructure: Superstructure,
     val intake: Intake,
@@ -27,17 +27,16 @@ class IntakeQuadrantL1(
             FollowChoreoPath(
                 drivetrain, mainTraj, flipVertically = flipVeritcally, interruptAtTimeout = true),
             SequentialCommandGroup(
-                WaitCommand(0.6),
+                WaitCommand(2.0),
                 superstructure.requestIntakeCommand(),
-                WaitCommand(5.25),
+                WaitCommand(7.0),
                 superstructure.requestPrepScoreCommand(),
                 ParallelCommandGroup(
                     AimOTFCommand(drivetrain, timeout = 15.seconds),
                     SequentialCommandGroup(
                         WaitCommand(1.0),
                         superstructure.requestScoreCommand(),
-                        AgitateIntakeCommand(superstructure, intake)
-                            .withTimeout(18.0 - (5.25 + 0.75 + 1.0)),
+                        AgitateIntakeCommand(superstructure, intake).withTimeout(20.0),
                         superstructure.requestForceIntakeCommand(
                             IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE)))),
         ))
@@ -45,10 +44,7 @@ class IntakeQuadrantL1(
 
   companion object {
     val mainTraj =
-        Choreo.loadTrajectory<SwerveSample>("IntakeQuadrantL1/IntakeQuadrantClimbQuick.traj").get()
-    val secondSwipeTraj =
-        Choreo.loadTrajectory<SwerveSample>("IntakeQuadrantL1/BackToQuadrant.traj").get()
-
+        Choreo.loadTrajectory<SwerveSample>("IntakeQuadrantL1/IntakeQuadrantFollowClose.traj").get()
     val startingPose = Pose2d(mainTraj.getInitialPose(false).get())
   }
 }

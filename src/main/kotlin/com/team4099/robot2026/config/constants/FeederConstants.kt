@@ -35,7 +35,6 @@ object FeederConstants {
 
   val VELOCITY_TOLERANCE = 2.rotations.perSecond
 
-  val JAM_STALL_CURRENT = 75.amps
   val JAM_STALL_VELOCITY = 0.1.rotations.perSecond
 
   object PID {

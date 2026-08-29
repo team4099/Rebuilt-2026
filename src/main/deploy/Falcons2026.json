@@ -274,13 +274,27 @@
             "title": "AutonomousMode",
             "x": 0.0,
             "y": 0.0,
-            "width": 1024.0,
+            "width": 896.0,
             "height": 128.0,
             "type": "ComboBox Chooser",
             "properties": {
               "topic": "/SmartDashboard/AutonomousMode",
               "period": 0.06,
               "sort_options": false
+            }
+          },
+          {
+            "title": "Wait Time",
+            "x": 896.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/Shuffleboard/Pre-match/Wait Time",
+              "period": 0.033,
+              "data_type": "double",
+              "show_submit_button": false
             }
           }
         ]

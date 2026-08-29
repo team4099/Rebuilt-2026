@@ -4,6 +4,7 @@ import com.ctre.phoenix6.SignalLogger
 import com.pathplanner.lib.commands.FollowPathCommand
 import com.team4099.lib.hal.Clock
 import com.team4099.robot2026.commands.drivetrain.DrivePathOTF
+import com.team4099.robot2026.commands.drivetrain.FollowChoreoPath
 import com.team4099.robot2026.config.ControlBoard
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.FieldConstants
@@ -102,6 +103,7 @@ object Robot : LoggedRobot() {
       when (Constants.Universal.SIM_MODE) {
         Constants.Tuning.SimType.SIM -> {
           Logger.addDataReceiver(NTSafePublisher())
+          Logger.addDataReceiver(WPILOGWriter()) // writes to ./logs
           logSimulationAlert.set(true)
           DriverStationSim.setAllianceStationId(AllianceStationID.Blue1)
         }
@@ -120,18 +122,20 @@ object Robot : LoggedRobot() {
 
     Logger.recordOutput("LogFolder/isLogging", isLogging)
 
-    SignalLogger.setPath("/media/sda1/ctre-logs/")
-    //    SignalLogger.start(); <-- useful for SysID
+    // change whats commented below if using hoot logs
+    SignalLogger.enableAutoLogging(false)
+    SignalLogger.stop()
+    //    SignalLogger.setPath("/media/sda1/ctre-logs/")
 
     LiveWindow.disableAllTelemetry()
 
     // init a buncha things
-    RobotContainer
     FieldConstants.fieldLayout
     RobotContainer.mapDefaultCommands()
 
     // init commands that have long startup
-    DrivePathOTF.warmupCommand()
+    CommandScheduler.getInstance().schedule(DrivePathOTF.warmupCommand())
+    CommandScheduler.getInstance().schedule(FollowChoreoPath.warmupCmd())
 
     // Set the scheduler to log events for command initialize, interrupt, finish
     CommandScheduler.getInstance().onCommandInitialize { command: Command ->
@@ -156,7 +160,6 @@ object Robot : LoggedRobot() {
 
     CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand())
 
-    Logger.recordOutput("RobotSimulation/simulateVision", Constants.Universal.SIMULATE_VISION)
     Logger.recordOutput("TuningMode", Constants.Tuning.TUNING_MODE)
 
     FollowPath.setDoubleLoggingConsumer { value ->

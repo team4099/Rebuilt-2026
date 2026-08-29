@@ -207,8 +207,8 @@ class DrivePathOTF(
   }
 
   companion object {
-    fun warmupCommand() {
-      FollowPathCommand.warmupCommand()
+    fun warmupCommand(): Command {
+      return FollowPathCommand.warmupCommand()
     }
 
     fun allianceZoneToNeutralInLeftTrench(drivetrain: Drive): SequentialCommandGroup {

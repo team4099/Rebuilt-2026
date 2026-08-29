@@ -16,6 +16,9 @@ import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.perSecond
 
 object VisionConstants {
+  /** Helpful to turn to `false` when running on a low-spec machine */
+  const val STREAM_VISION_SIMULATIONS = false
+
   val CONTROLLER_RUMBLE_DIST = 2.25.meters
 
   val BLUE_TARGET_TAGS = arrayOf<Int>()

@@ -30,14 +30,14 @@ object IntakeConstants {
   val PIVOT_MAX_ANGLE = 120.degrees
   val PIVOT_MIN_ANGLE = (-50).degrees
   val PIVOT_MAX_FORCE_ANLGE = 110.0.degrees
-  val STATOR_CURRENT_LIMIT = 67.amps
+  val STATOR_CURRENT_LIMIT = 65.amps
   val SUPPLY_CURRENT_LIMIT = 40.amps
 
   val VOLTAGE_COMPENSATION = 12.0.volts
 
   val MAX_VELOCITY = 2000.rotations.perSecond
   val MAX_ACCELERATION = 2000.rotations.perSecond.perSecond
-  val MAX_JERK = 6000.rotations.perSecond.perSecond.perSecond
+  val MAX_JERK = 5000.rotations.perSecond.perSecond.perSecond
 
   val SIM_VELOCITY = 400.degrees.perSecond
   val SIM_ACCELERATION = 400.degrees.perSecond.perSecond
@@ -56,7 +56,7 @@ object IntakeConstants {
           if (DriverStation.isDisabled() ||
               DriverStation.isAutonomous() &&
                   (Robot.autoStartTime < 0.seconds ||
-                      Clock.timestamp - Robot.autoStartTime < 1.25.seconds)) {
+                      Clock.timestamp - Robot.autoStartTime < 0.5.seconds)) {
             STOW_ANGLE
           } else {
             INTAKE_ANGLE
@@ -71,15 +71,17 @@ object IntakeConstants {
     val FORCE_HALFDOWN_ANGLE = 20.degrees
     val FORCE_DOWN_ANGLE = -20.degrees
 
+    val DEFENSE_MODE_ANGLE = 105.degrees
+
     val AUTO_AGITATE_FULL_UP = 60.degrees
 
-    val RESET_INTAKE_ANGLE = INTAKE_ANGLE - 4.degrees
+    val RESET_INTAKE_ANGLE = INTAKE_ANGLE - 10.degrees
     val INTAKING_JIGGLE_ANGLE = INTAKE_ANGLE + 40.degrees
   }
 
   object PID {
     // PID Constants
-    val REAL_PIVOT_KP: ProportionalGain<Radian, Volt> = 60.volts / 1.0.radians
+    val REAL_PIVOT_KP: ProportionalGain<Radian, Volt> = 45.volts / 1.0.radians
     val REAL_PIVOT_KI: IntegralGain<Radian, Volt> = 0.0.volts / (1.0.radians * 1.0.seconds)
     val REAL_PIVOT_KD: DerivativeGain<Radian, Volt> = 1.0.volts / 1.0.radians.perSecond
 

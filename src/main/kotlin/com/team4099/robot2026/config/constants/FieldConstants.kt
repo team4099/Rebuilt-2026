@@ -20,7 +20,7 @@ import org.team4099.lib.units.base.meters
  * Width refers to the *y* direction (as described by wpilib)
  */
 object FieldConstants {
-  val fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark)
+  val fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded)
 
   val fieldLength = fieldLayout.fieldLength.meters
   val fieldWidth = fieldLayout.fieldWidth.meters

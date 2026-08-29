@@ -48,5 +48,10 @@ class CameraIOPVSim(
     cameraProperties.latencyStdDevMs = 5.0
 
     cameraSim = PhotonCameraSim(camera, cameraProperties)
+
+    if (!VisionConstants.STREAM_VISION_SIMULATIONS) {
+      cameraSim!!.enableRawStream(false)
+      cameraSim!!.enableProcessedStream(false)
+    }
   }
 }
