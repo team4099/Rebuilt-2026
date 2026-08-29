@@ -63,7 +63,6 @@ import org.littletonrobotics.junction.Logger
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.smoothDeadband
 import org.team4099.lib.units.derived.degrees
-import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.max
 import org.team4099.lib.units.min
 
@@ -83,6 +82,8 @@ object RobotContainer {
   var isAligning = false
 
   var intakeOverridingAngle = IntakeConstants.ANGLES.INTAKE_ANGLE
+
+  val autonomousSelector: AutonomousSelector
 
   init {
     SimulatedArena.overrideInstance(Arena2026Rebuilt(false))
@@ -191,6 +192,8 @@ object RobotContainer {
 
     leds.stateSupplier = { superstructure.currentState }
     leds.manualScoringSupplier = { superstructure.overrideShooterVelocity }
+
+    autonomousSelector = AutonomousSelector(drivetrain)
   }
 
   fun mapDefaultCommands() {
@@ -202,10 +205,6 @@ object RobotContainer {
             { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
             { ControlBoard.slowMode },
             drivetrain)
-  }
-
-  fun zeroSensors(isInAutonomous: Boolean = false) {
-    drivetrain.pose = Pose2d(drivetrain.pose.x, drivetrain.pose.y, 0.radians)
   }
 
   fun setDriveBrakeMode(neutralModeValue: NeutralModeValue = NeutralModeValue.Brake) {
@@ -407,8 +406,7 @@ object RobotContainer {
 
   fun mapTunableCommands() {}
 
-  fun getAutonomousCommand() =
-      AutonomousSelector.getCommand(drivetrain, vision, superstructure, intake)
+  fun getAutonomousCommand() = autonomousSelector.getCommand(superstructure, intake)
 
   fun resetSimulationField() {
     if (!RobotBase.isSimulation()) return

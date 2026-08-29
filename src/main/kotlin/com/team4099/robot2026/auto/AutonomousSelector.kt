@@ -14,10 +14,9 @@ import com.team4099.robot2026.config.constants.DrivetrainConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import com.team4099.robot2026.subsystems.superstructure.intake.Intake
-import com.team4099.robot2026.subsystems.vision.Vision
 import com.team4099.robot2026.util.AllianceFlipUtil
-import com.team4099.robot2026.util.CustomLogger
-import edu.wpi.first.math.kinematics.ChassisSpeeds as WPILIBSPEEDS
+import edu.wpi.first.math.geometry.Pose2d as WPILibPose2d
+import edu.wpi.first.math.kinematics.ChassisSpeeds as WPILIBSpeeds
 import edu.wpi.first.networktables.GenericEntry
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
@@ -25,7 +24,6 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.WaitCommand
 import frc.robot.lib.BLine.FollowPath
-import java.util.function.Consumer
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser
 import org.team4099.lib.controller.PIDController
 import org.team4099.lib.geometry.Pose2d
@@ -34,18 +32,20 @@ import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.seconds
 
-object AutonomousSelector {
+class AutonomousSelector(val drivetrain: Drive) {
   private var autonomousModeChooser: LoggedDashboardChooser<AutonomousMode> =
       LoggedDashboardChooser("AutonomousMode")
   private var waitBeforeCommandSlider: GenericEntry
-  private var FieldSideChooser: LoggedDashboardChooser<Boolean> =
+  private var fieldSideChooser: LoggedDashboardChooser<Boolean> =
       LoggedDashboardChooser("FieldSide")
+
+  private val pathBuilder: FollowPath.Builder
 
   init {
     val autoTab = Shuffleboard.getTab("Pre-match")
 
-    FieldSideChooser.addOption("Left", false)
-    FieldSideChooser.addOption("Right", true)
+    fieldSideChooser.addOption("Left", false)
+    fieldSideChooser.addOption("Right", true)
 
     autonomousModeChooser.addOption(
         "Example Auto DO NOT RUN AT COMPETITION", AutonomousMode.EXAMPLE_AUTO)
@@ -82,26 +82,13 @@ object AutonomousSelector {
             .withPosition(0, 2)
             .withWidget(BuiltInWidgets.kTextView)
             .entry
-  }
 
-  val waitTime: Time
-    get() = waitBeforeCommandSlider.getDouble(0.0).seconds
-
-  fun getCommand(
-      drivetrain: Drive,
-      vision: Vision,
-      superstructure: Superstructure,
-      intake: Intake,
-  ): Command {
-    val mode = autonomousModeChooser.get()
-    val shouldMirror = FieldSideChooser.get()
-
-    var pathBuilder =
+    pathBuilder =
         FollowPath.Builder(
                 drivetrain,
                 { drivetrain.pose.pose2d },
                 { drivetrain.chassisSpeeds.chassisSpeedsWPILIB },
-                { speeds: WPILIBSPEEDS ->
+                { speeds: WPILIBSpeeds ->
                   drivetrain.runSpeeds(ChassisSpeeds(speeds), flipIfRed = false)
                 },
                 PIDController(
@@ -121,20 +108,19 @@ object AutonomousSelector {
                     .wpiPidController)
             .withDefaultShouldFlip()
             .withTRatioBasedTranslationHandoffs(true)
-            .withShouldMirror { shouldMirror }
+            .withShouldMirror { fieldSideChooser.get() ?: false }
+            .withPoseReset { startingPose: WPILibPose2d -> drivetrain.pose = Pose2d(startingPose) }
+  }
 
-    FollowPath.setDoubleLoggingConsumer(
-        Consumer { value -> CustomLogger.recordOutput(value.getFirst(), value.getSecond()) })
-    FollowPath.setBooleanLoggingConsumer(
-        Consumer { value -> CustomLogger.recordOutput(value.getFirst(), value.getSecond()) })
-    FollowPath.setPoseLoggingConsumer(
-        Consumer { value -> CustomLogger.recordOutput(value.getFirst(), value.getSecond()) })
-    FollowPath.setTranslationListLoggingConsumer(
-        Consumer { value -> CustomLogger.recordOutput(value.getFirst(), value.getSecond()) })
+  val waitTime: Time
+    get() = waitBeforeCommandSlider.getDouble(0.0).seconds
+
+  fun getCommand(superstructure: Superstructure, intake: Intake): Command {
+    val mode = autonomousModeChooser.get()
 
     return when (mode) {
       AutonomousMode.EXAMPLE_AUTO ->
-          return WaitCommand(waitTime.inSeconds).andThen(ExamplePathAuto(drivetrain, pathBuilder))
+          WaitCommand(waitTime.inSeconds).andThen(ExamplePathAuto(drivetrain, pathBuilder))
       AutonomousMode.WHEEL_RADIUS ->
           DriveCharacterizationCommands.wheelRadiusCharacterization(drivetrain)
       AutonomousMode.DRIVE_FF ->
