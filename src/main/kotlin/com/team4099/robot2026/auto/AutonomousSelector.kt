@@ -135,9 +135,7 @@ class AutonomousSelector(val drivetrain: Drive) {
               .andThen({ drivetrain.pose = AllianceFlipUtil.apply(TestOTFAuto.startingPose) })
               .andThen(TestOTFAuto(drivetrain))
       AutonomousMode.AUTOPOS ->
-          WaitCommand(waitTime.inSeconds)
-              .andThen({ drivetrain.pose = AllianceFlipUtil.apply(TuningAutoPos.startingPose) })
-              .andThen(TuningAutoPos(drivetrain))
+          WaitCommand(waitTime.inSeconds).andThen(TuningAutoPos(drivetrain, pathBuilder))
       AutonomousMode.TESTING ->
           WaitCommand(waitTime.inSeconds).andThen(TestingAuto(drivetrain, superstructure))
       AutonomousMode.INTAKE_RIGHT_QUAD_L1 ->

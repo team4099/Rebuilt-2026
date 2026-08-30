@@ -1,22 +1,19 @@
 package com.team4099.robot2026.auto.mode
 
-import choreo.Choreo
-import choreo.trajectory.SwerveSample
-import com.team4099.robot2026.commands.drivetrain.FollowChoreoPath
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
-import org.team4099.lib.geometry.Pose2d
+import frc.robot.lib.BLine.FollowPath
+import frc.robot.lib.BLine.Path
 
-class TuningAutoPos(val drivetrain: Drive) : SequentialCommandGroup() {
+class TuningAutoPos(val drivetrain: Drive, pathBuilder: FollowPath.Builder) :
+    SequentialCommandGroup() {
   init {
     addRequirements(drivetrain)
 
-    addCommands(FollowChoreoPath(drivetrain, traj))
+    addCommands(pathBuilder.build(traj))
   }
 
   companion object {
-    val traj = Choreo.loadTrajectory<SwerveSample>("Test/path.traj").get()
-
-    val startingPose = Pose2d(traj.getInitialPose(false).get())
+    val traj = Path("tuning")
   }
 }
