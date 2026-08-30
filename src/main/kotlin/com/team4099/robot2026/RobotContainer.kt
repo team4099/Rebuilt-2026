@@ -60,7 +60,6 @@ import org.ironmaple.simulation.SimulatedArena
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.Arena2026Rebuilt
 import org.littletonrobotics.junction.Logger
-import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.smoothDeadband
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.max
