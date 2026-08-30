@@ -200,7 +200,7 @@ object CompBotTunerConstants : TunerConstants {
   private const val kFrontLeftDriveMotorId = 11
   private const val kFrontLeftSteerMotorId = 21
   private const val kFrontLeftEncoderId = 31
-  private val kFrontLeftEncoderOffset = -0.08984375.rotations
+  private val kFrontLeftEncoderOffset = 0.068.rotations // true don't change - nathan
   private const val kFrontLeftSteerMotorInverted = true
   private const val kFrontLeftEncoderInverted = false
 
