@@ -120,7 +120,7 @@ object DrivetrainConstants {
     val AUTO_POS_KP: ProportionalGain<Meter, Velocity<Meter>>
       get() {
         if (RobotBase.isReal()) {
-          return 0.9.meters.perSecond / 1.0.meters // pid working was 0.7
+          return 0.6.meters.perSecond / 1.0.meters // pid working was 0.7
         } else {
           return 6.7.meters.perSecond / 1.0.meters
         }
@@ -166,10 +166,10 @@ object DrivetrainConstants {
               (0.0.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
           else (0.4.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
 
-    val AUTO_CROSSTRACK_KP = 2.5.meters.perSecond / 1.0.meters // kp working was 0.5
+    val AUTO_CROSSTRACK_KP = 0.4.meters.perSecond / 1.0.meters // kp working was 0.5
     val AUTO_CROSSTRACK_KI = 0.0.meters.perSecond / (1.0.meters * 1.0.seconds)
     val AUTO_CROSSTRACK_KD =
-        (0.0.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
+        (0.1.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
 
     val SIM_HUB_PID_KP = (6.7.radians.perSecond / 1.radians)
     val SIM_HUB_PID_KI = (0.0.radians.perSecond / (1.radians * 1.seconds))

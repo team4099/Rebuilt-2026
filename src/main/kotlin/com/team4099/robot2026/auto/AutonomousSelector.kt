@@ -10,6 +10,7 @@ import com.team4099.robot2026.auto.mode.TestOTFAuto
 import com.team4099.robot2026.auto.mode.TestingAuto
 import com.team4099.robot2026.auto.mode.TuningAutoPos
 import com.team4099.robot2026.commands.characterization.DriveCharacterizationCommands
+import com.team4099.robot2026.commands.drivetrain.AimOTFCommand
 import com.team4099.robot2026.commands.drivetrain.FollowChoreoPath
 import com.team4099.robot2026.config.constants.DrivetrainConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
@@ -60,8 +61,7 @@ class AutonomousSelector(val drivetrain: Drive) {
     autonomousModeChooser.addOption("BIG CIRCLE AUTO RUN ONLY AT 836", AutonomousMode.BIG_CIRCLE)
     autonomousModeChooser.addOption(
         "Miscellaneous Testing Auto DO NOT RUN AT COMPETITION", AutonomousMode.TESTING)
-    autonomousModeChooser.addOption("Intake Right Quadrant L1", AutonomousMode.INTAKE_RIGHT_QUAD_L1)
-    autonomousModeChooser.addOption("Intake Left Quadrant L1", AutonomousMode.INTAKE_LEFT_QUAD_L1)
+    autonomousModeChooser.addOption("Intake Quadrant L1", AutonomousMode.INTAKE_QUAD_L1)
     autonomousModeChooser.addOption("Intake Right Spin", AutonomousMode.INTAKE_RIGHT_SPIN)
     autonomousModeChooser.addOption("Intake Left Spin", AutonomousMode.INTAKE_LEFT_SPIN)
     //  autonomousModeChooser.addOption("Centerline Sweep Left",
@@ -117,6 +117,13 @@ class AutonomousSelector(val drivetrain: Drive) {
             .withPoseReset { startingPose: WPILibPose2d -> drivetrain.pose = Pose2d(startingPose) }
   }
 
+  fun registerEventTriggers(superstructure: Superstructure) {
+    FollowPath.registerEventTrigger("startIntaking", superstructure.requestIntakeCommand())
+    FollowPath.registerEventTrigger("finishIntaking", superstructure.requestIdleCommand())
+    FollowPath.registerEventTrigger("startShooting", superstructure.requestScoreCommand())
+    FollowPath.registerEventTrigger("aimHubUntilEnd", AimOTFCommand(drivetrain, 20.0.seconds))
+  }
+
   val waitTime: Time
     get() = waitBeforeCommandSlider.getDouble(0.0).seconds
 
@@ -138,18 +145,8 @@ class AutonomousSelector(val drivetrain: Drive) {
           WaitCommand(waitTime.inSeconds).andThen(TuningAutoPos(drivetrain, pathBuilder))
       AutonomousMode.TESTING ->
           WaitCommand(waitTime.inSeconds).andThen(TestingAuto(drivetrain, superstructure))
-      AutonomousMode.INTAKE_RIGHT_QUAD_L1 ->
-          WaitCommand(waitTime.inSeconds)
-              .andThen({ drivetrain.pose = AllianceFlipUtil.apply(IntakeQuadrantL1.startingPose) })
-              .andThen(IntakeQuadrantL1(drivetrain, superstructure, intake, flipVeritcally = false))
-      AutonomousMode.INTAKE_LEFT_QUAD_L1 ->
-          WaitCommand(waitTime.inSeconds)
-              .andThen({
-                drivetrain.pose =
-                    FollowChoreoPath.flipVertically(
-                        AllianceFlipUtil.apply(IntakeQuadrantL1.startingPose))
-              })
-              .andThen(IntakeQuadrantL1(drivetrain, superstructure, intake, flipVeritcally = true))
+      AutonomousMode.INTAKE_QUAD_L1 ->
+          WaitCommand(waitTime.inSeconds).andThen(IntakeQuadrantL1(drivetrain, pathBuilder))
       AutonomousMode.INTAKE_RIGHT_SPIN ->
           WaitCommand(waitTime.inSeconds)
               .andThen({
@@ -231,8 +228,7 @@ private enum class AutonomousMode {
   AUTOPOS,
   TESTING,
   BIG_CIRCLE,
-  INTAKE_RIGHT_QUAD_L1,
-  INTAKE_LEFT_QUAD_L1,
+  INTAKE_QUAD_L1,
   INTAKE_RIGHT_SPIN,
   INTAKE_LEFT_SPIN,
   CENTERLINE_SWEEP_RIGHT,

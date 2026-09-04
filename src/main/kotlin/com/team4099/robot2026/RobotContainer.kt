@@ -36,6 +36,7 @@ import com.team4099.robot2026.subsystems.superstructure.hopper.HopperIOTalon
 import com.team4099.robot2026.subsystems.superstructure.intake.Intake
 import com.team4099.robot2026.subsystems.superstructure.intake.IntakeIO
 import com.team4099.robot2026.subsystems.superstructure.intake.IntakeIOSim
+import com.team4099.robot2026.subsystems.superstructure.intake.IntakeIOTalon
 import com.team4099.robot2026.subsystems.superstructure.intake.rollers.IntakeRollers
 import com.team4099.robot2026.subsystems.superstructure.intake.rollers.IntakeRollersIO
 import com.team4099.robot2026.subsystems.superstructure.intake.rollers.IntakeRollersIOSim
@@ -203,6 +204,8 @@ object RobotContainer {
         Commands.defer(
             { Commands.runOnce({ superstructure.defenseMode = !superstructure.defenseMode }) },
             setOf(superstructure)))
+
+    autonomousSelector.registerEventTriggers(superstructure)
   }
 
   fun mapDefaultCommands() {
