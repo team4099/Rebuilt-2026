@@ -1,0 +1,111 @@
+{
+  "path_elements": [
+    {
+      "type": "waypoint",
+      "translation_target": {
+        "x_meters": 4.39051,
+        "y_meters": 7.62059,
+        "intermediate_handoff_radius_meters": 0.45
+      },
+      "rotation_target": {
+        "rotation_radians": 1.5708,
+        "profiled_rotation": true
+      }
+    },
+    {
+      "type": "translation",
+      "x_meters": 5.6,
+      "y_meters": 7.62,
+      "intermediate_handoff_radius_meters": 0.45
+    },
+    {
+      "type": "event_trigger",
+      "t_ratio": 0.5,
+      "lib_key": "startIntaking"
+    },
+    {
+      "type": "waypoint",
+      "translation_target": {
+        "x_meters": 7.51761,
+        "y_meters": 7.1621,
+        "intermediate_handoff_radius_meters": 0.45
+      },
+      "rotation_target": {
+        "rotation_radians": 1.5708,
+        "profiled_rotation": true
+      }
+    },
+    {
+      "type": "waypoint",
+      "translation_target": {
+        "x_meters": 7.87029,
+        "y_meters": 4.98724,
+        "intermediate_handoff_radius_meters": 0.45
+      },
+      "rotation_target": {
+        "rotation_radians": 1.48353,
+        "profiled_rotation": true
+      }
+    },
+    {
+      "type": "event_trigger",
+      "t_ratio": 0.71827,
+      "lib_key": "finishIntaking"
+    },
+    {
+      "type": "waypoint",
+      "translation_target": {
+        "x_meters": 5.94231,
+        "y_meters": 5.59855,
+        "intermediate_handoff_radius_meters": 0.45
+      },
+      "rotation_target": {
+        "rotation_radians": 0.7854,
+        "profiled_rotation": true
+      }
+    },
+    {
+      "type": "waypoint",
+      "translation_target": {
+        "x_meters": 3.5,
+        "y_meters": 5.6,
+        "intermediate_handoff_radius_meters": 0.45
+      },
+      "rotation_target": {
+        "rotation_radians": 0.7854,
+        "profiled_rotation": true
+      }
+    },
+    {
+      "type": "event_trigger",
+      "t_ratio": 1.0,
+      "lib_key": "startShooting"
+    },
+    {
+      "type": "event_trigger",
+      "t_ratio": 0.9,
+      "lib_key": "aimHubUntilEnd"
+    },
+    {
+      "type": "waypoint",
+      "translation_target": {
+        "x_meters": 2.10984,
+        "y_meters": 5.77489,
+        "intermediate_handoff_radius_meters": 0.45
+      },
+      "rotation_target": {
+        "rotation_radians": -0.48382,
+        "profiled_rotation": true
+      }
+    }
+  ],
+  "constraints": {
+    "max_velocity_meters_per_sec": [
+      {
+        "value": 1.5,
+        "start_ordinal": 3,
+        "end_ordinal": 3
+      }
+    ]
+  }
+}

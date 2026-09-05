@@ -3,7 +3,6 @@ package com.team4099.robot2026
 import com.ctre.phoenix6.SignalLogger
 import com.pathplanner.lib.commands.FollowPathCommand
 import com.team4099.lib.hal.Clock
-import com.team4099.robot2026.auto.AutonomousSelector
 import com.team4099.robot2026.commands.drivetrain.DrivePathOTF
 import com.team4099.robot2026.commands.drivetrain.FollowChoreoPath
 import com.team4099.robot2026.config.ControlBoard
@@ -27,6 +26,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.simulation.DriverStationSim
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
+import frc.robot.lib.BLine.FollowPath
 import java.nio.file.Files
 import java.nio.file.Paths
 import org.ejml.EjmlVersion.BUILD_DATE
@@ -130,9 +130,6 @@ object Robot : LoggedRobot() {
     LiveWindow.disableAllTelemetry()
 
     // init a buncha things
-    RobotContainer
-    AutonomousSelector
-    FollowChoreoPath
     FieldConstants.fieldLayout
     RobotContainer.mapDefaultCommands()
 
@@ -165,14 +162,26 @@ object Robot : LoggedRobot() {
 
     Logger.recordOutput("TuningMode", Constants.Tuning.TUNING_MODE)
 
+    FollowPath.setDoubleLoggingConsumer { value ->
+      CustomLogger.recordOutput(value.getFirst(), value.getSecond())
+    }
+    FollowPath.setBooleanLoggingConsumer { value ->
+      CustomLogger.recordOutput(value.getFirst(), value.getSecond())
+    }
+    FollowPath.setPoseLoggingConsumer { value ->
+      CustomLogger.recordOutput(value.getFirst(), value.getSecond())
+    }
+    FollowPath.setTranslationListLoggingConsumer { value ->
+      CustomLogger.recordOutput(value.getFirst(), value.getSecond())
+    }
+
     if (isSimulation()) {
       DriverStation.silenceJoystickConnectionWarning(true)
     }
   }
 
   override fun autonomousInit() {
-    val autonCommandWithWait = autonomousCommand
-    CommandScheduler.getInstance().schedule(autonCommandWithWait)
+    CommandScheduler.getInstance().schedule(autonomousCommand)
     RobotContainer.intake.setBrakeMode(true)
     autoStartTime = Clock.timestamp
   }

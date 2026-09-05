@@ -10,31 +10,44 @@ import com.team4099.robot2026.auto.mode.TestOTFAuto
 import com.team4099.robot2026.auto.mode.TestingAuto
 import com.team4099.robot2026.auto.mode.TuningAutoPos
 import com.team4099.robot2026.commands.characterization.DriveCharacterizationCommands
+import com.team4099.robot2026.commands.drivetrain.AimOTFCommand
 import com.team4099.robot2026.commands.drivetrain.FollowChoreoPath
+import com.team4099.robot2026.config.constants.DrivetrainConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import com.team4099.robot2026.subsystems.superstructure.intake.Intake
-import com.team4099.robot2026.subsystems.vision.Vision
 import com.team4099.robot2026.util.AllianceFlipUtil
+import edu.wpi.first.math.geometry.Pose2d as WPILibPose2d
+import edu.wpi.first.math.kinematics.ChassisSpeeds as WPILIBSpeeds
 import edu.wpi.first.networktables.GenericEntry
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.WaitCommand
+import frc.robot.lib.BLine.FollowPath
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser
+import org.team4099.lib.controller.PIDController
 import org.team4099.lib.geometry.Pose2d
+import org.team4099.lib.kinematics.ChassisSpeeds
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.seconds
 
-object AutonomousSelector {
+class AutonomousSelector(val drivetrain: Drive) {
   private var autonomousModeChooser: LoggedDashboardChooser<AutonomousMode> =
       LoggedDashboardChooser("AutonomousMode")
   private var waitBeforeCommandSlider: GenericEntry
+  private var fieldSideChooser: LoggedDashboardChooser<Boolean> =
+      LoggedDashboardChooser("FieldSide")
+
+  private val pathBuilder: FollowPath.Builder
 
   init {
     val autoTab = Shuffleboard.getTab("Pre-match")
+
+    fieldSideChooser.addOption("Left", false)
+    fieldSideChooser.addOption("Right", true)
 
     autonomousModeChooser.addOption(
         "Example Auto DO NOT RUN AT COMPETITION", AutonomousMode.EXAMPLE_AUTO)
@@ -48,8 +61,7 @@ object AutonomousSelector {
     autonomousModeChooser.addOption("BIG CIRCLE AUTO RUN ONLY AT 836", AutonomousMode.BIG_CIRCLE)
     autonomousModeChooser.addOption(
         "Miscellaneous Testing Auto DO NOT RUN AT COMPETITION", AutonomousMode.TESTING)
-    autonomousModeChooser.addOption("Intake Right Quadrant L1", AutonomousMode.INTAKE_RIGHT_QUAD_L1)
-    autonomousModeChooser.addOption("Intake Left Quadrant L1", AutonomousMode.INTAKE_LEFT_QUAD_L1)
+    autonomousModeChooser.addOption("Intake Quadrant L1", AutonomousMode.INTAKE_QUAD_L1)
     autonomousModeChooser.addOption("Intake Right Spin", AutonomousMode.INTAKE_RIGHT_SPIN)
     autonomousModeChooser.addOption("Intake Left Spin", AutonomousMode.INTAKE_LEFT_SPIN)
     //  autonomousModeChooser.addOption("Centerline Sweep Left",
@@ -75,24 +87,52 @@ object AutonomousSelector {
             .withPosition(0, 2)
             .withWidget(BuiltInWidgets.kTextView)
             .entry
+
+    pathBuilder =
+        FollowPath.Builder(
+                drivetrain,
+                { drivetrain.pose.pose2d },
+                { drivetrain.chassisSpeeds.chassisSpeedsWPILIB },
+                { speeds: WPILIBSpeeds ->
+                  drivetrain.runSpeeds(ChassisSpeeds(speeds), flipIfRed = false)
+                },
+                PIDController(
+                        DrivetrainConstants.PID.AUTO_POS_KP,
+                        DrivetrainConstants.PID.AUTO_POS_KI,
+                        DrivetrainConstants.PID.AUTO_POS_KD)
+                    .wpiPidController,
+                PIDController(
+                        DrivetrainConstants.PID.AUTO_THETA_PID_KP,
+                        DrivetrainConstants.PID.AUTO_THETA_PID_KI,
+                        DrivetrainConstants.PID.AUTO_THETA_PID_KD)
+                    .wpiPidController,
+                PIDController(
+                        DrivetrainConstants.PID.AUTO_CROSSTRACK_KP,
+                        DrivetrainConstants.PID.AUTO_CROSSTRACK_KI,
+                        DrivetrainConstants.PID.AUTO_CROSSTRACK_KD)
+                    .wpiPidController)
+            .withDefaultShouldFlip()
+            .withTRatioBasedTranslationHandoffs(true)
+            .withShouldMirror { fieldSideChooser.get() ?: false }
+            .withPoseReset { startingPose: WPILibPose2d -> drivetrain.pose = Pose2d(startingPose) }
+  }
+
+  fun registerEventTriggers(superstructure: Superstructure) {
+    FollowPath.registerEventTrigger("startIntaking", superstructure.requestIntakeCommand())
+    FollowPath.registerEventTrigger("finishIntaking", superstructure.requestIdleCommand())
+    FollowPath.registerEventTrigger("startShooting", superstructure.requestScoreCommand())
+    FollowPath.registerEventTrigger("aimHubUntilEnd", AimOTFCommand(drivetrain, 20.0.seconds))
   }
 
   val waitTime: Time
     get() = waitBeforeCommandSlider.getDouble(0.0).seconds
 
-  fun getCommand(
-      drivetrain: Drive,
-      vision: Vision,
-      superstructure: Superstructure,
-      intake: Intake
-  ): Command {
+  fun getCommand(superstructure: Superstructure, intake: Intake): Command {
     val mode = autonomousModeChooser.get()
 
     return when (mode) {
       AutonomousMode.EXAMPLE_AUTO ->
-          return WaitCommand(waitTime.inSeconds)
-              .andThen({ drivetrain.pose = AllianceFlipUtil.apply(ExamplePathAuto.startingPose) })
-              .andThen(ExamplePathAuto(drivetrain))
+          WaitCommand(waitTime.inSeconds).andThen(ExamplePathAuto(drivetrain, pathBuilder))
       AutonomousMode.WHEEL_RADIUS ->
           DriveCharacterizationCommands.wheelRadiusCharacterization(drivetrain)
       AutonomousMode.DRIVE_FF ->
@@ -102,23 +142,11 @@ object AutonomousSelector {
               .andThen({ drivetrain.pose = AllianceFlipUtil.apply(TestOTFAuto.startingPose) })
               .andThen(TestOTFAuto(drivetrain))
       AutonomousMode.AUTOPOS ->
-          WaitCommand(waitTime.inSeconds)
-              .andThen({ drivetrain.pose = AllianceFlipUtil.apply(TuningAutoPos.startingPose) })
-              .andThen(TuningAutoPos(drivetrain))
+          WaitCommand(waitTime.inSeconds).andThen(TuningAutoPos(drivetrain, pathBuilder))
       AutonomousMode.TESTING ->
           WaitCommand(waitTime.inSeconds).andThen(TestingAuto(drivetrain, superstructure))
-      AutonomousMode.INTAKE_RIGHT_QUAD_L1 ->
-          WaitCommand(waitTime.inSeconds)
-              .andThen({ drivetrain.pose = AllianceFlipUtil.apply(IntakeQuadrantL1.startingPose) })
-              .andThen(IntakeQuadrantL1(drivetrain, superstructure, intake, flipVeritcally = false))
-      AutonomousMode.INTAKE_LEFT_QUAD_L1 ->
-          WaitCommand(waitTime.inSeconds)
-              .andThen({
-                drivetrain.pose =
-                    FollowChoreoPath.flipVertically(
-                        AllianceFlipUtil.apply(IntakeQuadrantL1.startingPose))
-              })
-              .andThen(IntakeQuadrantL1(drivetrain, superstructure, intake, flipVeritcally = true))
+      AutonomousMode.INTAKE_QUAD_L1 ->
+          WaitCommand(waitTime.inSeconds).andThen(IntakeQuadrantL1(drivetrain, pathBuilder))
       AutonomousMode.INTAKE_RIGHT_SPIN ->
           WaitCommand(waitTime.inSeconds)
               .andThen({
@@ -200,8 +228,7 @@ private enum class AutonomousMode {
   AUTOPOS,
   TESTING,
   BIG_CIRCLE,
-  INTAKE_RIGHT_QUAD_L1,
-  INTAKE_LEFT_QUAD_L1,
+  INTAKE_QUAD_L1,
   INTAKE_RIGHT_SPIN,
   INTAKE_LEFT_SPIN,
   CENTERLINE_SWEEP_RIGHT,
