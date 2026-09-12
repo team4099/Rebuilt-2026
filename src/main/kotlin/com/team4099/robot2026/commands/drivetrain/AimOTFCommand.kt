@@ -9,6 +9,7 @@ import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import com.team4099.robot2026.subsystems.superstructure.shooter.Shooter
 import com.team4099.robot2026.util.CustomLogger
 import com.team4099.robot2026.util.driver.DriverProfile
+import edu.wpi.first.math.filter.SlewRateLimiter
 import edu.wpi.first.units.LinearVelocityUnit
 import edu.wpi.first.units.Units.Degrees
 import edu.wpi.first.units.Units.Meters
@@ -38,6 +39,7 @@ import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.inRotation2ds
+import org.team4099.lib.units.derived.metersPerSecondPerMetersPerSecond
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.perSecond
@@ -109,6 +111,8 @@ class AimOTFCommand(
   private var timeout = -1.seconds
   private var startTime = -1.seconds
   private var lastTimeNotStopped = -1.seconds
+  //TUNE THIS TODAY
+  private val driveRateLimiter = SlewRateLimiter(3.0)
 
   private var startedInAuto = false
 
@@ -164,16 +168,26 @@ class AimOTFCommand(
       if (speedMagnitude > 0.1.meters.perSecond || !hasAligned) {
         // Reset x-lock timer when moving
         lastTimeNotStopped = Clock.timestamp
-        if (speedMagnitude > MAX_VELOCITY_RADIUS) {
+
+        var desiredSpeed = speedMagnitude
+        if (desiredSpeed > MAX_VELOCITY_RADIUS) {
           // Convert to unit vector and then * MAX_VELOCITY_RADIUS
           speedX = speedX / speedMagnitude.inMetersPerSecond * MAX_VELOCITY_RADIUS.inMetersPerSecond
           speedY = speedY / speedMagnitude.inMetersPerSecond * MAX_VELOCITY_RADIUS.inMetersPerSecond
+          desiredSpeed = MAX_VELOCITY_RADIUS
         }
+          val filteredSpeed = driveRateLimiter.calculate(desiredSpeed.inMetersPerSecond);
 
+         if(desiredSpeed.inMetersPerSecond > .001) {
+           val scale = filteredSpeed/ desiredSpeed.inMetersPerSecond
+           speedX *= scale
+           speedY *= scale
+         }
         drivetrain.runSpeeds(
             ChassisSpeeds.fromFieldRelativeSpeeds(
                 speedX, speedY, thetaVel, drivetrain.pose.rotation))
       } else {
+        driveRateLimiter.reset(0.0)
         if (Clock.timestamp - lastTimeNotStopped > 1.seconds) drivetrain.stopWithX()
       }
     }
