@@ -120,7 +120,7 @@ object DrivetrainConstants {
     val AUTO_POS_KP: ProportionalGain<Meter, Velocity<Meter>>
       get() {
         if (RobotBase.isReal()) {
-          return 0.6.meters.perSecond / 1.0.meters // pid working was 0.7
+          return 2.35.meters.perSecond / 1.0.meters
         } else {
           return 6.7.meters.perSecond / 1.0.meters
         }
@@ -138,8 +138,7 @@ object DrivetrainConstants {
     val AUTO_POS_KD: DerivativeGain<Meter, Velocity<Meter>>
       get() {
         if (RobotBase.isReal()) {
-          return (0.0.meters.perSecond / (1.0.meters.perSecond))
-              .metersPerSecondPerMetersPerSecond // todo: 0.25
+          return (0.0.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
         } else {
           return (0.05.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
         }
@@ -152,8 +151,8 @@ object DrivetrainConstants {
 
     val AUTO_THETA_PID_KP: ProportionalGain<Radian, Velocity<Radian>>
       get() =
-          if (RobotBase.isReal()) 9.0.degrees.perSecond / 1.degrees // pid working was 3.67 😭😭😭
-          else 2.9.radians.perSecond / 1.radians
+          if (RobotBase.isReal()) 9.0.degrees.perSecond / 1.degrees
+          else 2.0.radians.perSecond / 1.radians
 
     val AUTO_THETA_PID_KI: IntegralGain<Radian, Velocity<Radian>>
       get() =
@@ -166,10 +165,10 @@ object DrivetrainConstants {
               (0.0.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
           else (0.4.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
 
-    val AUTO_CROSSTRACK_KP = 0.4.meters.perSecond / 1.0.meters // kp working was 0.5
+    val AUTO_CROSSTRACK_KP = 0.05.meters.perSecond / 1.0.meters
     val AUTO_CROSSTRACK_KI = 0.0.meters.perSecond / (1.0.meters * 1.0.seconds)
     val AUTO_CROSSTRACK_KD =
-        (0.1.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
+        (0.05.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
 
     val SIM_HUB_PID_KP = (6.7.radians.perSecond / 1.radians)
     val SIM_HUB_PID_KI = (0.0.radians.perSecond / (1.radians * 1.seconds))

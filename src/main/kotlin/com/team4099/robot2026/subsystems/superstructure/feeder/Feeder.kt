@@ -85,6 +85,7 @@ class Feeder(private val io: FeederIO) : ControlledByStateMachine() {
 
     CustomLogger.recordOutput("Feeder/CurrentState", currentState.name)
     CustomLogger.recordOutput("Feeder/CurrentRequest", currentRequest.javaClass.simpleName)
+    CustomLogger.recordOutput("Feeder/isAtTargetedVelocity", isAtTargetedVelocity)
 
     var nextState = currentState
     when (currentState) {

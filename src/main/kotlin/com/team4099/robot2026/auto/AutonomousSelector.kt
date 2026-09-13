@@ -43,6 +43,8 @@ class AutonomousSelector(val drivetrain: Drive) {
 
   private val pathBuilder: FollowPath.Builder
 
+  private val autoAimOTFCommand = AimOTFCommand(drivetrain, timeout = 20.seconds)
+
   init {
     val autoTab = Shuffleboard.getTab("Pre-match")
 
@@ -121,7 +123,6 @@ class AutonomousSelector(val drivetrain: Drive) {
     FollowPath.registerEventTrigger("startIntaking", superstructure.requestIntakeCommand())
     FollowPath.registerEventTrigger("finishIntaking", superstructure.requestIdleCommand())
     FollowPath.registerEventTrigger("startShooting", superstructure.requestScoreCommand())
-    FollowPath.registerEventTrigger("aimHubUntilEnd", AimOTFCommand(drivetrain, 20.0.seconds))
   }
 
   val waitTime: Time
@@ -146,7 +147,8 @@ class AutonomousSelector(val drivetrain: Drive) {
       AutonomousMode.TESTING ->
           WaitCommand(waitTime.inSeconds).andThen(TestingAuto(drivetrain, superstructure))
       AutonomousMode.INTAKE_QUAD_L1 ->
-          WaitCommand(waitTime.inSeconds).andThen(IntakeQuadrantL1(drivetrain, pathBuilder))
+          WaitCommand(waitTime.inSeconds)
+              .andThen(IntakeQuadrantL1(drivetrain, superstructure, intake, pathBuilder))
       AutonomousMode.INTAKE_RIGHT_SPIN ->
           WaitCommand(waitTime.inSeconds)
               .andThen({

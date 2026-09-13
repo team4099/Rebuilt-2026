@@ -14,7 +14,7 @@
     },
     {
       "type": "translation",
-      "x_meters": 5.6,
+      "x_meters": 6.0,
       "y_meters": 7.62,
       "intermediate_handoff_radius_meters": 0.45
     },
@@ -26,8 +26,8 @@
     {
       "type": "waypoint",
       "translation_target": {
-        "x_meters": 7.51761,
-        "y_meters": 7.1621,
+        "x_meters": 7.26243,
+        "y_meters": 7.02431,
         "intermediate_handoff_radius_meters": 0.45
       },
       "rotation_target": {
@@ -55,8 +55,8 @@
     {
       "type": "waypoint",
       "translation_target": {
-        "x_meters": 5.94231,
-        "y_meters": 5.59855,
+        "x_meters": 5.98,
+        "y_meters": 5.42,
         "intermediate_handoff_radius_meters": 0.45
       },
       "rotation_target": {
@@ -67,8 +67,8 @@
     {
       "type": "waypoint",
       "translation_target": {
-        "x_meters": 3.5,
-        "y_meters": 5.6,
+        "x_meters": 3.46614,
+        "y_meters": 5.42,
         "intermediate_handoff_radius_meters": 0.45
       },
       "rotation_target": {
@@ -78,23 +78,18 @@
     },
     {
       "type": "event_trigger",
-      "t_ratio": 1.0,
+      "t_ratio": 0.8,
       "lib_key": "startShooting"
     },
     {
-      "type": "event_trigger",
-      "t_ratio": 0.9,
-      "lib_key": "aimHubUntilEnd"
-    },
-    {
       "type": "waypoint",
       "translation_target": {
-        "x_meters": 2.10984,
-        "y_meters": 5.77489,
+        "x_meters": 1.90346,
+        "y_meters": 5.83532,
         "intermediate_handoff_radius_meters": 0.45
       },
       "rotation_target": {
-        "rotation_radians": -0.48382,
+        "rotation_radians": -0.49642,
         "profiled_rotation": true
       }
     }
@@ -105,6 +100,28 @@
         "value": 1.5,
         "start_ordinal": 3,
         "end_ordinal": 3
+      },
+      {
+        "value": 3.13,
+        "start_ordinal": 4,
+        "end_ordinal": 4
+      },
+      {
+        "value": 4.05,
+        "start_ordinal": 5,
+        "end_ordinal": 5
+      },
+      {
+        "value": 4.05,
+        "start_ordinal": 6,
+        "end_ordinal": 6
+      }
+    ],
+    "max_acceleration_meters_per_sec2": [
+      {
+        "value": 5.0,
+        "start_ordinal": 4,
+        "end_ordinal": 6
       }
     ]
   }

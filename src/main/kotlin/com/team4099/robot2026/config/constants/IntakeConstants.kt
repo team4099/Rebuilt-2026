@@ -30,14 +30,14 @@ object IntakeConstants {
   val PIVOT_MAX_ANGLE = 120.degrees
   val PIVOT_MIN_ANGLE = (-50).degrees
   val PIVOT_MAX_FORCE_ANLGE = 110.0.degrees
-  val STATOR_CURRENT_LIMIT = 65.amps
+  val STATOR_CURRENT_LIMIT = 40.amps
   val SUPPLY_CURRENT_LIMIT = 40.amps
 
   val VOLTAGE_COMPENSATION = 12.0.volts
 
   val MAX_VELOCITY = 2000.rotations.perSecond
   val MAX_ACCELERATION = 2000.rotations.perSecond.perSecond
-  val MAX_JERK = 5000.rotations.perSecond.perSecond.perSecond
+  val MAX_JERK = 3500.rotations.perSecond.perSecond.perSecond
 
   val SIM_VELOCITY = 400.degrees.perSecond
   val SIM_ACCELERATION = 400.degrees.perSecond.perSecond

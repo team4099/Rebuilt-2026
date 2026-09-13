@@ -69,6 +69,8 @@ class Intake(private val io: IntakeIO) : ControlledByStateMachine() {
           IntakeConstants.PID.SIM_PIVOT_KV,
           IntakeConstants.PID.SIM_PIVOT_KA)
     }
+
+    io.zeroPivot(pivotZero)
   }
 
   override fun onLoop() {
