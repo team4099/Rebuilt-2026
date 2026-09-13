@@ -21,12 +21,6 @@ data class Velocity2d(val x: LinearVelocity, val y: LinearVelocity) {
 
   val heading: Angle = velocity2dWPIlib.angle.angle
 
-  companion object {
-    fun fromVelocityVectorToVelocity2d(speed: LinearVelocity, heading: Angle): Velocity2d {
-      return Velocity2d(speed * heading.cos, speed * heading.sin)
-    }
-  }
-
   operator fun plus(other: Velocity2d): Velocity2d {
     return Velocity2d(x + other.x, y + other.y)
   }
@@ -65,3 +59,6 @@ data class Velocity2d(val x: LinearVelocity, val y: LinearVelocity) {
     return true
   }
 }
+
+fun Velocity2d(speed: LinearVelocity, heading: Angle): Velocity2d =
+    Velocity2d(speed * heading.cos, speed * heading.sin)

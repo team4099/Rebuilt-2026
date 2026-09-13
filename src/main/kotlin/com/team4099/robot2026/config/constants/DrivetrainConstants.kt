@@ -203,6 +203,11 @@ object DrivetrainConstants {
     val SIM_TELEOP_X_PID_KI = TELEOP_X_PID_KI
     val SIM_TELEOP_X_PID_KD = TELEOP_X_PID_KD
 
+    val SIM_TELEOP_THETA_PID_KP = 6.degrees.perSecond / 1.degrees
+    val SIM_TELEOP_THETA_PID_KI = 0.degrees.perSecond / (1.degrees * 1.seconds)
+    val SIM_TELEOP_THETA_PID_KD =
+        (0.12.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
+
     val SIM_AUTO_THETA_PID_KP = AUTO_REEF_PID_KP
     val SIM_AUTO_THETA_PID_KI = AUTO_REEF_PID_KI
     val SIM_AUTO_THETA_PID_KD = AUTO_REEF_PID_KD

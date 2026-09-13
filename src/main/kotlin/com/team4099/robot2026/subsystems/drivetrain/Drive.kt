@@ -254,7 +254,7 @@ class Drive(
    *
    * @param speeds Speeds in meters/sec
    */
-  fun  runSpeeds(speeds: ChassisSpeeds, flipIfRed: Boolean = true) {
+  fun runSpeeds(speeds: ChassisSpeeds, flipIfRed: Boolean = true) {
     targetSpeeds = speeds
 
     val flippedSpeeds =
