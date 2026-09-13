@@ -9,6 +9,7 @@ import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import com.team4099.robot2026.subsystems.superstructure.shooter.Shooter
 import com.team4099.robot2026.util.CustomLogger
 import com.team4099.robot2026.util.driver.DriverProfile
+import edu.wpi.first.math.filter.SlewRateLimiter
 import edu.wpi.first.units.LinearVelocityUnit
 import edu.wpi.first.units.Units.Degrees
 import edu.wpi.first.units.Units.Meters
@@ -105,19 +106,21 @@ class AimOTFCommand(
 
   private val thetaPID: PIDController<Radian, Velocity<Radian>>
 
-  private val MAX_VELOCITY_RADIUS = .5.meters.perSecond
   private var timeout = -1.seconds
   private var startTime = -1.seconds
   private var lastTimeNotStopped = -1.seconds
+  // TODO(shaunak): TUNE THIS TODAY
+  private val xRateLimiter = SlewRateLimiter(.8)
+  private val yRateLimiter = SlewRateLimiter(.8)
 
   private var startedInAuto = false
 
   init {
     thetaPID =
         PIDController(
-            DrivetrainConstants.PID.TELEOP_THETA_PID_KP,
-            DrivetrainConstants.PID.TELEOP_THETA_PID_KI,
-            DrivetrainConstants.PID.TELEOP_THETA_PID_KD)
+            DrivetrainConstants.PID.SIM_TELEOP_THETA_PID_KP,
+            DrivetrainConstants.PID.SIM_TELEOP_THETA_PID_KI,
+            DrivetrainConstants.PID.SIM_TELEOP_THETA_PID_KD)
 
     thetaPID.enableContinuousInput(-PI.radians, PI.radians)
   }
@@ -157,30 +160,30 @@ class AimOTFCommand(
     } else {
       // Take the drivers speed being inputted, and clamp the magnitude
       // of the drive vector to < MAX_VELOCITY_RADIUS meters per second
-      var (speedX, speedY) = vSup.get()
+      val (speedX, speedY) = vSup.get()
       val speedMagnitude =
           sqrt(speedX.inMetersPerSecond.pow(2) + speedY.inMetersPerSecond.pow(2)).meters.perSecond
 
       if (speedMagnitude > 0.1.meters.perSecond || !hasAligned) {
         // Reset x-lock timer when moving
         lastTimeNotStopped = Clock.timestamp
-        if (speedMagnitude > MAX_VELOCITY_RADIUS) {
-          // Convert to unit vector and then * MAX_VELOCITY_RADIUS
-          speedX = speedX / speedMagnitude.inMetersPerSecond * MAX_VELOCITY_RADIUS.inMetersPerSecond
-          speedY = speedY / speedMagnitude.inMetersPerSecond * MAX_VELOCITY_RADIUS.inMetersPerSecond
-        }
+
+        val filteredSpeedX = xRateLimiter.calculate(speedX.inMetersPerSecond).meters.perSecond
+        val filteredSpeedY = yRateLimiter.calculate(speedY.inMetersPerSecond).meters.perSecond
 
         drivetrain.runSpeeds(
             ChassisSpeeds.fromFieldRelativeSpeeds(
-                speedX, speedY, thetaVel, drivetrain.pose.rotation))
+                filteredSpeedX, filteredSpeedY, thetaVel, drivetrain.pose.rotation))
       } else {
+        xRateLimiter.reset(0.0)
+        yRateLimiter.reset(0.0)
         if (Clock.timestamp - lastTimeNotStopped > 1.seconds) drivetrain.stopWithX()
       }
     }
 
     if (RobotBase.isSimulation() &&
         (hasAligned &&
-            Clock.timestamp.inSeconds % 1 < 0.04 &&
+            Clock.timestamp.inSeconds % .2 < 0.04 &&
             RobotContainer.superstructure.currentState ==
                 Superstructure.Companion.SuperstructureStates.SCORE ||
             DriverStation.isAutonomous())) {
