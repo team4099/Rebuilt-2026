@@ -37,14 +37,14 @@ object IntakeConstants {
 
   val MAX_VELOCITY = 2000.rotations.perSecond
   val MAX_ACCELERATION = 2000.rotations.perSecond.perSecond
-  val MAX_JERK = 3500.rotations.perSecond.perSecond.perSecond
+  val MAX_JERK = 4500.rotations.perSecond.perSecond.perSecond
 
   val SIM_VELOCITY = 400.degrees.perSecond
   val SIM_ACCELERATION = 400.degrees.perSecond.perSecond
 
   val LENGTH_EXTENDED = 0.0.inches
 
-  val FORCE_HOME_INTAKE_VOLTAGE = -2.5.volts
+  val FORCE_HOME_INTAKE_VOLTAGE = -2.0.volts
 
   val AGITATION_STUCK_STATOR_THRESHOLD = 55.amps
 
