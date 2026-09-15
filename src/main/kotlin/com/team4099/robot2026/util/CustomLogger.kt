@@ -25,6 +25,11 @@ class CustomLogger {
       Logger.recordOutput(key, value)
     }
 
+    @JvmName("recordOutputStructArray")
+    inline fun <T : StructSerializable> recordOutput(key: String, value: Array<T>) {
+      Logger.recordOutput(key, *value)
+    }
+
     inline fun <T : StructSerializable> recordOutput(key: String, vararg value: T) {
       Logger.recordOutput(key, *value)
     }

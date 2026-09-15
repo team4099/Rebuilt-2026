@@ -82,6 +82,8 @@ object RobotContainer {
 
   var intakeOverridingAngle = IntakeConstants.ANGLES.INTAKE_ANGLE
 
+  val autonomousSelector: AutonomousSelector
+
   init {
     SimulatedArena.overrideInstance(Arena2026Rebuilt(false))
 
@@ -188,6 +190,8 @@ object RobotContainer {
     leds.stateSupplier = { superstructure.currentState }
     leds.manualScoringSupplier = { superstructure.overrideShooterVelocity }
 
+    autonomousSelector = AutonomousSelector(drivetrain)
+
     ControlBoard.manualScore.onTrue(
         Commands.defer(
             {
@@ -200,6 +204,8 @@ object RobotContainer {
         Commands.defer(
             { Commands.runOnce({ superstructure.defenseMode = !superstructure.defenseMode }) },
             setOf(superstructure)))
+
+    autonomousSelector.registerEventTriggers(superstructure)
   }
 
   fun mapDefaultCommands() {
@@ -414,8 +420,7 @@ object RobotContainer {
 
   fun mapTunableCommands() {}
 
-  fun getAutonomousCommand() =
-      AutonomousSelector.getCommand(drivetrain, vision, superstructure, intake)
+  fun getAutonomousCommand() = autonomousSelector.getCommand(superstructure, intake)
 
   fun resetSimulationField() {
     if (!RobotBase.isSimulation()) return
