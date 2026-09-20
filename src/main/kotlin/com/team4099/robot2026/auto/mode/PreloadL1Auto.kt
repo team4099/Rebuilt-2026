@@ -1,51 +1,34 @@
 package com.team4099.robot2026.auto.mode
 
-import choreo.Choreo
-import choreo.trajectory.SwerveSample
-import com.team4099.robot2026.commands.drivetrain.AimOTFCommand
-import com.team4099.robot2026.commands.drivetrain.FollowChoreoPath
+import com.team4099.robot2026.commands.AgitateIntakeCommand
+import com.team4099.robot2026.config.constants.IntakeConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.subsystems.superstructure.Superstructure
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
+import com.team4099.robot2026.subsystems.superstructure.intake.Intake
+import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.WaitCommand
-import org.team4099.lib.geometry.Pose2d
-import org.team4099.lib.units.base.seconds
+import edu.wpi.first.wpilibj2.command.WrapperCommand
+import frc.robot.lib.BLine.BLineCommands
+import frc.robot.lib.BLine.FollowPath
+import frc.robot.lib.BLine.Path
 
 class PreloadL1Auto(
     val drivetrain: Drive,
     val superstructure: Superstructure,
-    val flipVertically: Boolean
-) : SequentialCommandGroup() {
-  init {
-    addRequirements(drivetrain)
-
-    addCommands(
-        ParallelCommandGroup(
-            FollowChoreoPath(drivetrain, firstTrajectory, flipVertically = flipVertically),
-            superstructure.requestPrepScoreCommand()),
-        ParallelCommandGroup(
-                AimOTFCommand(drivetrain, 5.seconds),
-                WaitCommand(0.5).andThen(superstructure.requestScoreCommand()))
-            .withTimeout(5.0),
-        superstructure.requestIdleCommand(),
-        ParallelCommandGroup(
-            FollowChoreoPath(drivetrain, secondTrajectory, flipVertically = flipVertically),
-            SequentialCommandGroup(
-                WaitCommand(1.5),
-                superstructure.requestIntakeCommand(),
-                WaitCommand(4.0),
-                superstructure.requestPrepScoreCommand(),
-                ParallelCommandGroup(
-                    AimOTFCommand(drivetrain, 10.seconds),
-                    WaitCommand(0.5).andThen(superstructure.requestScoreCommand())))))
-  }
-
+    val intake: Intake,
+    pathBuilder: FollowPath.Builder
+) :
+    WrapperCommand(
+        BLineCommands.sequence(
+            pathBuilder.build(pathOne),
+            WaitCommand(5.0),
+            Commands.runOnce({ pathBuilder.withPoseReset { _ -> {} } }),
+            pathBuilder.build(pathTwo),
+            WaitCommand(1.0),
+            AgitateIntakeCommand(superstructure, intake).withTimeout(18.0 - (0.90 + 5.0 + 5.62)),
+            superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE))) {
   companion object {
-    val firstTrajectory = Choreo.loadTrajectory<SwerveSample>("preload/PreloadShoot.traj").get()
-    val secondTrajectory = Choreo.loadTrajectory<SwerveSample>("preload/GoToQuadrant.traj").get()
-    // val secondTrajectory = Choreo.loadTrajectory<SwerveSample>("preload/climb.traj").get()
-
-    val startingPose = Pose2d(firstTrajectory.getInitialPose(false).get())
+    val pathOne = Path("preload")
+    val pathTwo = Path("preload2quadrant")
   }
 }

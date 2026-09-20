@@ -50,7 +50,7 @@
     {
       "type": "event_trigger",
       "t_ratio": 0.71827,
-      "lib_key": "finishIntaking"
+      "lib_key": "stopIntaking"
     },
     {
       "type": "waypoint",
@@ -78,20 +78,31 @@
     },
     {
       "type": "event_trigger",
+      "t_ratio": 0.2,
+      "lib_key": "startAiming"
+    },
+    {
+      "type": "event_trigger",
       "t_ratio": 0.8,
       "lib_key": "startShooting"
     },
     {
       "type": "waypoint",
       "translation_target": {
-        "x_meters": 1.90346,
-        "y_meters": 5.83532,
-        "intermediate_handoff_radius_meters": 0.45
+        "x_meters": 2.1691,
+        "y_meters": 5.76256,
+        "intermediate_handoff_radius_meters": 0.25
       },
       "rotation_target": {
-        "rotation_radians": -0.49642,
+        "rotation_radians": -0.57083,
         "profiled_rotation": true
       }
+    },
+    {
+      "type": "translation",
+      "x_meters": 1.90346,
+      "y_meters": 5.83532,
+      "intermediate_handoff_radius_meters": 0.45
     }
   ],
   "constraints": {
@@ -110,11 +121,6 @@
         "value": 4.05,
         "start_ordinal": 5,
         "end_ordinal": 5
-      },
-      {
-        "value": 4.05,
-        "start_ordinal": 6,
-        "end_ordinal": 6
       }
     ],
     "max_acceleration_meters_per_sec2": [

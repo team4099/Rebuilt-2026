@@ -17,24 +17,6 @@ class AgitateIntakeCommand(val superstructure: Superstructure, val intake: Intak
 
   init {
     addRequirements(superstructure)
-    //    addCommands(
-    //        RepeatCommand(
-    //                SequentialCommandGroup(
-    //                    superstructure.requestForceIntakeCommand(
-    //                        IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE),
-    //                    WaitCommand(0.2),
-    //                    superstructure.requestForceIntakeCommand(IntakeConstants.PIVOT_MIN_ANGLE +
-    // 5.degrees),
-    //                    WaitCommand(0.2)))
-    //            .withTimeout(9.0),
-    //        RepeatCommand(
-    //            SequentialCommandGroup(
-    //
-    // superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE),
-    //                WaitCommand(0.2),
-    //
-    // superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_DOWN_ANGLE),
-    //                WaitCommand(0.2))))
 
     addCommands(
         RepeatCommand(

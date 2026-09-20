@@ -118,31 +118,20 @@ object DrivetrainConstants {
 
   object PID {
     val AUTO_POS_KP: ProportionalGain<Meter, Velocity<Meter>>
-      get() {
-        if (RobotBase.isReal()) {
-          return 2.35.meters.perSecond / 1.0.meters
-        } else {
-          return 6.7.meters.perSecond / 1.0.meters
-        }
-      }
+      get() =
+          if (RobotBase.isReal()) 2.35.meters.perSecond / 1.0.meters
+          else 2.0.meters.perSecond / 1.0.meters
 
     val AUTO_POS_KI: IntegralGain<Meter, Velocity<Meter>>
-      get() {
-        if (RobotBase.isReal()) {
-          return 0.0.meters.perSecond / (1.0.meters * 1.0.seconds)
-        } else {
-          return 0.0.meters.perSecond / (1.0.meters * 1.0.seconds)
-        }
-      }
+      get() =
+          if (RobotBase.isReal()) 0.0.meters.perSecond / (1.0.meters * 1.0.seconds)
+          else 0.0.meters.perSecond / (1.0.meters * 1.0.seconds)
 
     val AUTO_POS_KD: DerivativeGain<Meter, Velocity<Meter>>
-      get() {
-        if (RobotBase.isReal()) {
-          return (0.0.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
-        } else {
-          return (0.05.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
-        }
-      }
+      get() =
+          if (RobotBase.isReal())
+              (0.0.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
+          else (0.0.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
 
     val LIMELIGHT_THETA_KP = 4.0.degrees.perSecond / 1.degrees
     val LIMELIGHT_THETA_KI = 0.0.degrees.perSecond / (1.degrees * 1.seconds)
@@ -163,7 +152,7 @@ object DrivetrainConstants {
       get() =
           if (RobotBase.isReal())
               (0.0.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
-          else (0.4.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
+          else (0.0.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
 
     val AUTO_CROSSTRACK_KP = 0.05.meters.perSecond / 1.0.meters
     val AUTO_CROSSTRACK_KI = 0.0.meters.perSecond / (1.0.meters * 1.0.seconds)
