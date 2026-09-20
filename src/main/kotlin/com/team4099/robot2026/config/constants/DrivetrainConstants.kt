@@ -141,7 +141,7 @@ object DrivetrainConstants {
     val AUTO_THETA_PID_KP: ProportionalGain<Radian, Velocity<Radian>>
       get() =
           if (RobotBase.isReal()) 9.0.degrees.perSecond / 1.degrees
-          else 2.0.radians.perSecond / 1.radians
+          else 9.0.degrees.perSecond / 1.degrees
 
     val AUTO_THETA_PID_KI: IntegralGain<Radian, Velocity<Radian>>
       get() =

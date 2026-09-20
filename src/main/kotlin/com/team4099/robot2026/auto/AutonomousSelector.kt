@@ -4,6 +4,7 @@ import com.team4099.robot2026.auto.mode.ExamplePathAuto
 import com.team4099.robot2026.auto.mode.IntakeQuadrantFollowClose
 import com.team4099.robot2026.auto.mode.IntakeQuadrantFollowFar
 import com.team4099.robot2026.auto.mode.IntakeQuadrantL1
+import com.team4099.robot2026.auto.mode.IntakeQuadrantSteal
 import com.team4099.robot2026.auto.mode.PreloadL1Auto
 import com.team4099.robot2026.auto.mode.TuningAutoPos
 import com.team4099.robot2026.commands.characterization.DriveCharacterizationCommands
@@ -15,6 +16,7 @@ import com.team4099.robot2026.subsystems.superstructure.intake.Intake
 import edu.wpi.first.math.geometry.Pose2d as WPILibPose2d
 import edu.wpi.first.math.kinematics.ChassisSpeeds as WPILIBSpeeds
 import edu.wpi.first.networktables.GenericEntry
+import edu.wpi.first.wpilibj.Alert
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj2.command.Command
@@ -43,6 +45,11 @@ class AutonomousSelector(val drivetrain: Drive) {
 
   private val autoAimOTFCommand = AimOTFCommand(drivetrain, timeout = 20.seconds)
 
+  private val autoSelectionAlert =
+      Alert("No auto selected! Please select an auto.", Alert.AlertType.kError)
+  private val autoSideAlert =
+      Alert("No auto side selected! Please select a side.", Alert.AlertType.kError)
+
   init {
     val autoTab = Shuffleboard.getTab("Pre-match")
 
@@ -58,6 +65,7 @@ class AutonomousSelector(val drivetrain: Drive) {
     autonomousModeChooser.addOption(
         "Auto Pose Tuner DO NOT RUN AT COMPETITION", AutonomousMode.AUTOPOS)
     autonomousModeChooser.addOption("Intake Quadrant L1", AutonomousMode.INTAKE_QUAD_L1)
+    autonomousModeChooser.addOption("Intake Quadrant Steal", AutonomousMode.INTAKE_QUAD_STEAL)
     autonomousModeChooser.addOption("Preload + Bump Center", AutonomousMode.PRELOAD_BUMP_CENTER)
     autonomousModeChooser.addOption(
         "Intake Follow Close (ADD A WAIT TIME)", AutonomousMode.INTAKE_FOLLOW_CLOSE)
@@ -131,6 +139,9 @@ class AutonomousSelector(val drivetrain: Drive) {
       drivetrain.pose = Pose2d(startingPose)
     }
 
+    autoSelectionAlert.set(mode == null)
+    autoSideAlert.set(fieldSideChooser.get() == null)
+
     val command =
         when (mode) {
           AutonomousMode.EXAMPLE_AUTO -> ExamplePathAuto(drivetrain, pathBuilder)
@@ -141,6 +152,10 @@ class AutonomousSelector(val drivetrain: Drive) {
           AutonomousMode.AUTOPOS -> TuningAutoPos(drivetrain, pathBuilder)
           AutonomousMode.INTAKE_QUAD_L1 ->
               IntakeQuadrantL1(drivetrain, superstructure, intake, pathBuilder).finallyDo { _ ->
+                FollowPath.clearRotationOverride()
+              }
+          AutonomousMode.INTAKE_QUAD_STEAL ->
+              IntakeQuadrantSteal(drivetrain, superstructure, intake, pathBuilder).finallyDo { _ ->
                 FollowPath.clearRotationOverride()
               }
           AutonomousMode.PRELOAD_BUMP_CENTER ->
@@ -170,6 +185,7 @@ private enum class AutonomousMode {
   DRIVE_FF,
   AUTOPOS,
   INTAKE_QUAD_L1,
+  INTAKE_QUAD_STEAL,
   PRELOAD_BUMP_CENTER,
   INTAKE_FOLLOW_CLOSE,
   INTAKE_FOLLOW_FAR,
