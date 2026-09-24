@@ -23,7 +23,7 @@ class IntakeQuadrantFollowClose(
             pathBuilder.build(pathOne),
             SequentialCommandGroup(
                 WaitCommand(1.0),
-                AgitateIntakeCommand(superstructure, intake).withTimeout(18.0 - (5.50 + 1.0)),
+                AgitateIntakeCommand(superstructure, intake).withTimeout(18.0 - (5.88 + 1.0)),
                 superstructure.requestForceIntakeCommand(
                     IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE)))) {
   companion object {
