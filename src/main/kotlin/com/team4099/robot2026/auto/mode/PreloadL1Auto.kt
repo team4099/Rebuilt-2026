@@ -5,7 +5,6 @@ import com.team4099.robot2026.config.constants.IntakeConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import com.team4099.robot2026.subsystems.superstructure.intake.Intake
-import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.WaitCommand
 import edu.wpi.first.wpilibj2.command.WrapperCommand
 import frc.robot.lib.BLine.BLineCommands
@@ -20,7 +19,7 @@ class PreloadL1Auto(
 ) :
     WrapperCommand(
         BLineCommands.sequence(
-          pathBuilder.build(PreloadL1Auto.pathOne),
+            pathBuilder.build(PreloadL1Auto.pathOne),
             WaitCommand(1.0),
             AgitateIntakeCommand(superstructure, intake).withTimeout(18.0 - (0.90 + 5.0 + 5.62)),
             superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE))) {
