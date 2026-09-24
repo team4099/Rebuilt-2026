@@ -49,7 +49,7 @@
         "intermediate_handoff_radius_meters": 0.25
       },
       "rotation_target": {
-        "rotation_radians": 2.01832,
+        "rotation_radians": 1.18294,
         "profiled_rotation": true
       }
     },
@@ -112,11 +112,6 @@
       "lib_key": "startAiming"
     },
     {
-      "type": "event_trigger",
-      "t_ratio": 0.7,
-      "lib_key": "startShooting"
-    },
-    {
       "type": "waypoint",
       "translation_target": {
         "x_meters": 2.37909,
@@ -127,6 +122,11 @@
         "rotation_radians": -0.48018,
         "profiled_rotation": true
       }
+    },
+    {
+      "type": "event_trigger",
+      "t_ratio": 0.7,
+      "lib_key": "startShooting"
     },
     {
       "type": "translation",

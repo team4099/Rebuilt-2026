@@ -43,15 +43,13 @@ object VisionConstants {
                   "raven_1" to
                       Pair(
                           CameraIO.DetectionPipeline.APRIL_TAG,
-                          Transform3d(
-                              Translation3d(9.773802.inches, 11.230054.inches, 8.495934.inches),
-                              Rotation3d(0.0.degrees, -28.125.degrees, 30.degrees))),
+                        Transform3d(Translation3d(9.918309.inches, 10.498040.inches, 9.194894.inches),
+                        Rotation3d(0.degrees, -45.degrees, 30.degrees))),
                   "raven_2" to
                       Pair(
                           CameraIO.DetectionPipeline.APRIL_TAG,
-                          Transform3d(
-                              Translation3d(9.773802.inches, -11.230054.inches, 8.495934.inches),
-                              Rotation3d(0.0.degrees, -28.125.degrees, -30.degrees))),
+                        Transform3d(Translation3d(9.918309.inches, -10.498040.inches, 9.194894.inches),
+                        Rotation3d(0.degrees, -45.degrees, -30.degrees))),
                   "raven_3" to
                       Pair(
                           CameraIO.DetectionPipeline.APRIL_TAG,

@@ -14,13 +14,13 @@
     },
     {
       "type": "event_trigger",
-      "t_ratio": 0.25,
-      "lib_key": "startAiming"
+      "t_ratio": 0.92569,
+      "lib_key": "startShooting"
     },
     {
       "type": "event_trigger",
-      "t_ratio": 0.8,
-      "lib_key": "startShooting"
+      "t_ratio": 1.0,
+      "lib_key": "startAiming"
     },
     {
       "type": "translation",
