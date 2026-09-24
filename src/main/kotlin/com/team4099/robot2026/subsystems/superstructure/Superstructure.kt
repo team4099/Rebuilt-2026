@@ -18,7 +18,6 @@ import com.team4099.robot2026.subsystems.superstructure.climb.Climb
 import com.team4099.robot2026.subsystems.superstructure.feeder.Feeder
 import com.team4099.robot2026.subsystems.superstructure.hopper.Hopper
 import com.team4099.robot2026.subsystems.superstructure.intake.Intake
-import com.team4099.robot2026.subsystems.superstructure.intake.IntakeIO
 import com.team4099.robot2026.subsystems.superstructure.intake.rollers.IntakeRollers
 import com.team4099.robot2026.subsystems.superstructure.shooter.Shooter
 import com.team4099.robot2026.subsystems.vision.Vision
@@ -390,9 +389,9 @@ class Superstructure(
   }
 
   fun requestForceHomeCurrentControl(): Command {
-    val returnCommand = run { currentRequest = SuperstructureRequest.ForceHome() }.until { intake.inputs.intakeStatorCurrent ==
-      IntakeConstants.STATOR_CURRENT_LIMIT
-    }
+    val returnCommand =
+        run { currentRequest = SuperstructureRequest.ForceHome() }
+            .until { intake.inputs.intakeStatorCurrent == IntakeConstants.STATOR_CURRENT_LIMIT }
     returnCommand.name = "RequestForceHomeCurrentControl"
     return returnCommand
   }
