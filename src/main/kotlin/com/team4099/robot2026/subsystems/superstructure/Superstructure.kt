@@ -18,6 +18,7 @@ import com.team4099.robot2026.subsystems.superstructure.climb.Climb
 import com.team4099.robot2026.subsystems.superstructure.feeder.Feeder
 import com.team4099.robot2026.subsystems.superstructure.hopper.Hopper
 import com.team4099.robot2026.subsystems.superstructure.intake.Intake
+import com.team4099.robot2026.subsystems.superstructure.intake.IntakeIO
 import com.team4099.robot2026.subsystems.superstructure.intake.rollers.IntakeRollers
 import com.team4099.robot2026.subsystems.superstructure.shooter.Shooter
 import com.team4099.robot2026.subsystems.vision.Vision
@@ -58,7 +59,7 @@ class Superstructure(
   val launchData: Shooter.Companion.CalculatedLaunchData
     get() = Shooter.calculateLaunchData(drivetrain.pose, drivetrain.chassisSpeeds)
 
-  var overrideShooterVelocity = true
+  var overrideShooterVelocity = false
   var defenseMode = false
 
   val shooterTargetRPM: AngularVelocity
@@ -385,6 +386,14 @@ class Superstructure(
   fun requestForceHomeCommand(): Command {
     val returnCommand = runOnce { currentRequest = SuperstructureRequest.ForceHome() }
     returnCommand.name = "RequestForceHomeCommand"
+    return returnCommand
+  }
+
+  fun requestForceHomeCurrentControl(): Command {
+    val returnCommand = run { currentRequest = SuperstructureRequest.ForceHome() }.until { intake.inputs.intakeStatorCurrent ==
+      IntakeConstants.STATOR_CURRENT_LIMIT
+    }
+    returnCommand.name = "RequestForceHomeCurrentControl"
     return returnCommand
   }
 

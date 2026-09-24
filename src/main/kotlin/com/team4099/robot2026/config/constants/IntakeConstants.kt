@@ -37,7 +37,7 @@ object IntakeConstants {
 
   val MAX_VELOCITY = 2000.rotations.perSecond
   val MAX_ACCELERATION = 2000.rotations.perSecond.perSecond
-  val MAX_JERK = 4500.rotations.perSecond.perSecond.perSecond
+  val MAX_JERK = 4000.rotations.perSecond.perSecond.perSecond
 
   val SIM_VELOCITY = 400.degrees.perSecond
   val SIM_ACCELERATION = 400.degrees.perSecond.perSecond
