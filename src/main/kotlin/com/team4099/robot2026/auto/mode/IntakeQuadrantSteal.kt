@@ -21,7 +21,7 @@ class IntakeQuadrantSteal(
         BLineCommands.sequence(
             pathBuilder.build(pathOne),
             WaitCommand(1.0),
-            AgitateIntakeCommand(superstructure, intake).withTimeout(18.0 - (5.16 + 1.0)),
+            AgitateIntakeCommand(superstructure, intake).withTimeout(18.0 - (5.56 + 1.0)),
             superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE))) {
   companion object {
     val pathOne = Path("intakequadrantsteal")
