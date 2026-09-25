@@ -32,38 +32,44 @@
     {
       "type": "waypoint",
       "translation_target": {
-        "x_meters": 7.65308,
-        "y_meters": 7.16082,
+        "x_meters": 7.7,
+        "y_meters": 7.18,
         "intermediate_handoff_radius_meters": 0.45
       },
       "rotation_target": {
-        "rotation_radians": 1.48353,
+        "rotation_radians": 1.5708,
         "profiled_rotation": true
       }
     },
     {
       "type": "rotation",
-      "rotation_radians": 1.39626,
-      "t_ratio": 0.31545,
+      "rotation_radians": 1.41372,
+      "t_ratio": 0.24494,
       "profiled_rotation": true
     },
     {
       "type": "waypoint",
       "translation_target": {
-        "x_meters": 8.27183,
-        "y_meters": 4.75198,
+        "x_meters": 8.54509,
+        "y_meters": 4.8365,
         "intermediate_handoff_radius_meters": 0.2
       },
       "rotation_target": {
-        "rotation_radians": 1.309,
+        "rotation_radians": 1.51844,
         "profiled_rotation": true
       }
     },
     {
-      "type": "translation",
-      "x_meters": 7.23728,
-      "y_meters": 5.16048,
-      "intermediate_handoff_radius_meters": 0.1
+      "type": "waypoint",
+      "translation_target": {
+        "x_meters": 7.53733,
+        "y_meters": 4.54856,
+        "intermediate_handoff_radius_meters": 0.25
+      },
+      "rotation_target": {
+        "rotation_radians": -1.61521,
+        "profiled_rotation": true
+      }
     },
     {
       "type": "event_trigger",
@@ -107,9 +113,9 @@
     {
       "type": "waypoint",
       "translation_target": {
-        "x_meters": 1.45575,
-        "y_meters": 5.67165,
-        "intermediate_handoff_radius_meters": 0.45
+        "x_meters": 1.68494,
+        "y_meters": 5.59197,
+        "intermediate_handoff_radius_meters": 0.3
       },
       "rotation_target": {
         "rotation_radians": -0.46345,
@@ -118,8 +124,8 @@
     },
     {
       "type": "translation",
-      "x_meters": 1.43516,
-      "y_meters": 5.69224,
+      "x_meters": 1.57191,
+      "y_meters": 5.61577,
       "intermediate_handoff_radius_meters": 0.45
     }
   ],
@@ -131,17 +137,17 @@
         "end_ordinal": 3
       },
       {
-        "value": 2.83,
+        "value": 4.5,
         "start_ordinal": 4,
         "end_ordinal": 4
       },
       {
-        "value": 4.05,
+        "value": 2.2,
         "start_ordinal": 5,
         "end_ordinal": 5
       },
       {
-        "value": 2.5,
+        "value": 3.5,
         "start_ordinal": 6,
         "end_ordinal": 6
       },
