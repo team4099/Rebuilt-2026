@@ -281,7 +281,11 @@ object RobotContainer {
     //    ControlBoard.prepClimb.onTrue(superstructure.requestPrepClimbCommand())
     //    ControlBoard.climb.onTrue(superstructure.requestClimbCommand())
 
-    ControlBoard.intake.onTrue(superstructure.requestIntakeCommand())
+    ControlBoard.intake.onTrue(SequentialCommandGroup(
+      superstructure.requestForceHomeCommand(),
+      WaitCommand(0.5),
+      superstructure.requestIntakeCommand()
+    ))
     ControlBoard.intake.onFalse(superstructure.requestIdleCommand())
     ControlBoard.forceIntakeUpTrigger.whileTrue(
         RepeatCommand(
