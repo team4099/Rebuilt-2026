@@ -283,7 +283,7 @@ object RobotContainer {
 
     ControlBoard.intake.onTrue(SequentialCommandGroup(
       superstructure.requestForceHomeCommand(),
-      WaitCommand(0.5),
+      WaitCommand(0.25),
       superstructure.requestIntakeCommand()
     ))
     ControlBoard.intake.onFalse(superstructure.requestIdleCommand())
