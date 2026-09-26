@@ -30,13 +30,18 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Time
+import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
+import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.inMetersPerSecond
+import org.team4099.lib.units.inRotationsPerSecond
 import org.team4099.lib.units.max
+import org.team4099.lib.units.perMinute
+import org.team4099.lib.units.perSecond
 
 class Superstructure(
     private val drivetrain: Drive,
@@ -64,12 +69,10 @@ class Superstructure(
   val shooterTargetRPM: AngularVelocity
     get() {
       return if (overrideShooterVelocity) ShooterConstants.VELOCITIES.MANUAL_SHOOTING
-      else
-          max(
+      else (
               if (FieldConstants.inTrenchAllianceZone(drivetrain.pose))
                   Shooter.distanceToShooterRPM(launchData.distanceToTarget)
-              else Shooter.passingDistanceToShooterRPM(launchData.distanceToTarget),
-              ShooterConstants.VELOCITIES.MINIMUM_LAUNCH_VELOCITY)
+              else Shooter.passingDistanceToShooterRPM(launchData.distanceToTarget)) + scoringOffset
     }
 
   val field = Field2d()
@@ -77,13 +80,20 @@ class Superstructure(
   var lastJammed = Clock.timestamp
   var jigglingIntake = false
 
+  var goodShooterValues :  ArrayList<Pair<Length, AngularVelocity>> = ArrayList()
+  var scoringOffset = 0.rotations.perMinute
+
   init {
     SmartDashboard.putData("Field", field)
   }
 
   override fun periodic() {
     val startTime = Clock.epochTime
-    CustomLogger.recordOutput("idk", (intakeOverridingAngle + 10.degrees).inDegrees)
+
+    CustomLogger.recordOutput("offsetRPS", scoringOffset.inRotationsPerSecond)
+    for ((distance, vel) in goodShooterValues) {
+      CustomLogger.recordOutput("shooterManualMap/${distance.inMeters}", vel.inRotationsPerSecond)
+    }
 
     val climbStartTime = Clock.epochTime
     climb.onLoop()
@@ -453,6 +463,24 @@ class Superstructure(
   fun requestEjectCommand(): Command {
     val returnCommand = runOnce { currentRequest = SuperstructureRequest.Eject() }
     returnCommand.name = "RequestEjectCommand"
+    return returnCommand
+  }
+
+  fun decreaseOffsetCommand(): Command {
+    val returnCommand = runOnce { scoringOffset -= .5.rotations.perSecond }
+    returnCommand.name = "DecreaseOffsetCommand"
+    return returnCommand
+  }
+
+  fun increaseOffsetCommand(): Command {
+    val returnCommand = runOnce { scoringOffset += .5.rotations.perSecond }
+    returnCommand.name = "IncreaseOffsetCommand"
+    return returnCommand
+  }
+
+  fun saveOffsetCommand(): Command {
+    val returnCommand = runOnce { goodShooterValues.add(Pair(launchData.distanceToTarget, shooterTargetRPM)) }
+    returnCommand.name = "SaveOffsetCommand"
     return returnCommand
   }
 
