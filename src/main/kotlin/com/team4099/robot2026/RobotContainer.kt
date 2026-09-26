@@ -205,10 +205,6 @@ object RobotContainer {
             { Commands.runOnce({ superstructure.defenseMode = !superstructure.defenseMode }) },
             setOf(superstructure)))
 
-    ControlBoard.offsetDecrease.onTrue(superstructure.decreaseOffsetCommand())
-    ControlBoard.offsetIncrease.onTrue(superstructure.increaseOffsetCommand())
-    ControlBoard.offsetSave.onTrue(superstructure.saveOffsetCommand())
-
     autonomousSelector.registerEventTriggers(superstructure)
   }
 
@@ -257,7 +253,7 @@ object RobotContainer {
 
     ControlBoard.forceIdle.onTrue(superstructure.requestIdleCommand())
 
-//    ControlBoard.prepScore.onTrue(superstructure.requestPrepScoreCommand())
+    ControlBoard.prepScore.onTrue(superstructure.requestPrepScoreCommand())
     ControlBoard.score.onTrue(superstructure.requestScoreCommand())
 
     ControlBoard.score.onFalse(

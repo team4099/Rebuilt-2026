@@ -43,10 +43,6 @@ object ControlBoard {
   val defenseMode = Trigger { operator.bButton && operator.dPadRight }
   val unjam = Trigger { operator.xButton }
 
-  val offsetDecrease = Trigger { operator.yButton && operator.dPadLeft }
-  val offsetIncrease = Trigger { operator.yButton && operator.dPadRight }
-  val offsetSave = Trigger { operator.yButton && operator.dPadUp }
-
   // val climb = Trigger { driver.aButton }
   val forceIdle = Trigger { driver.dPadDown || operator.dPadDown }
   val leftTrenchOTF = Trigger { driver.leftShoulderButton }
@@ -56,7 +52,7 @@ object ControlBoard {
 
   val eject = Trigger { driver.dPadUp || operator.dPadUp }
 
-//  val prepScore = Trigger { operator.yButton }
+  val prepScore = Trigger { operator.yButton }
   val forceIntakeUpTrigger = Trigger { operator.rightTriggerAxis > .5 }
   val forceIntakeUpShoulder = Trigger { operator.rightShoulderButton }
   val forceIntakeDownTrigger = Trigger { operator.leftTriggerAxis > .5 }
