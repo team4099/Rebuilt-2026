@@ -1,9 +1,9 @@
 package com.team4099.lib.pathfollow
 
-import com.team4099.robot2026.util.Alert
 import edu.wpi.first.math.spline.PoseWithCurvature
 import edu.wpi.first.math.spline.SplineHelper
 import edu.wpi.first.math.spline.SplineParameterizer
+import edu.wpi.first.wpilibj.Alert
 import kotlin.math.PI
 import kotlin.math.atan2
 import org.team4099.lib.geometry.Pose2d
@@ -24,8 +24,8 @@ class Path constructor(val startingPose: Pose2d, val endingPose: Pose2d) {
   private val waypoints = mutableListOf<Translation2d>()
   var built = false
   val addTranslationAlert: Alert =
-      Alert("Failed to add translation to built path", Alert.AlertType.ERROR)
-  val alreadyBuiltAlert: Alert = Alert("Failed build already built path", Alert.AlertType.ERROR)
+      Alert("Failed to add translation to built path", Alert.AlertType.kError)
+  val alreadyBuiltAlert: Alert = Alert("Failed build already built path", Alert.AlertType.kError)
 
   /**
    * Add a waypoint to the middle of this path.

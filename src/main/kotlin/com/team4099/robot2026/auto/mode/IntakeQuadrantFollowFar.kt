@@ -12,7 +12,7 @@ import frc.robot.lib.BLine.BLineCommands
 import frc.robot.lib.BLine.FollowPath
 import frc.robot.lib.BLine.Path
 
-class IntakeQuadrantFollowClose(
+class IntakeQuadrantFollowFar(
     val drivetrain: Drive,
     val superstructure: Superstructure,
     val intake: Intake,
@@ -23,10 +23,10 @@ class IntakeQuadrantFollowClose(
             pathBuilder.build(pathOne),
             SequentialCommandGroup(
                 WaitCommand(1.0),
-                AgitateIntakeCommand(superstructure, intake).withTimeout(18.0 - (6.12 + 1.0)),
+                AgitateIntakeCommand(superstructure, intake).withTimeout(18.0 - (7.46 + 1.0)),
                 superstructure.requestForceIntakeCommand(
                     IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE)))) {
   companion object {
-    val pathOne = Path("intakequadfollowclose")
+    val pathOne = Path("intakequadfollowfar")
   }
 }

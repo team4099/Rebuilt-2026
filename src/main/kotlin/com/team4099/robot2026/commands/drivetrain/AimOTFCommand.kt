@@ -103,21 +103,22 @@ class AimOTFCommand(
     this.timeout = timeout
   }
 
-  private val thetaPID: PIDController<Radian, Velocity<Radian>>
+  private val thetaPID: PIDController<Radian, Velocity<Radian>> =
+      PIDController(
+          DrivetrainConstants.PID.TELEOP_THETA_PID_KP,
+          DrivetrainConstants.PID.TELEOP_THETA_PID_KI,
+          DrivetrainConstants.PID.TELEOP_THETA_PID_KD)
 
   private val MAX_VELOCITY_RADIUS = .5.meters.perSecond
   private var timeout = -1.seconds
   private var startTime = -1.seconds
   private var lastTimeNotStopped = -1.seconds
 
+  var omega = 0.radians.perSecond
+
   private var startedInAuto = false
 
   init {
-    thetaPID =
-        PIDController(
-            DrivetrainConstants.PID.TELEOP_THETA_PID_KP,
-            DrivetrainConstants.PID.TELEOP_THETA_PID_KI,
-            DrivetrainConstants.PID.TELEOP_THETA_PID_KD)
 
     thetaPID.enableContinuousInput(-PI.radians, PI.radians)
   }
@@ -133,27 +134,25 @@ class AimOTFCommand(
   }
 
   override fun execute() {
-    CustomLogger.recordOutput("ActiveCommands/FaceHubCommand", true)
-
     val (distanceToHub, launchSpeed, timeOfFlight, wantedRotation) =
         Shooter.calculateLaunchData(drivetrain.pose, drivetrain.chassisSpeeds)
 
-    val thetaVel = thetaPID.calculate(drivetrain.rotation, wantedRotation)
+    omega = thetaPID.calculate(drivetrain.rotation, wantedRotation)
 
-    CustomLogger.recordOutput("FaceHubCommand/thetaError", thetaPID.error.inDegrees)
+    CustomLogger.recordOutput("AimOTFCommand/thetaError", thetaPID.error.inDegrees)
 
     CustomLogger.recordOutput(
-        "FaceHubCommand/wantedPose",
+        "AimOTFCommand/wantedPose",
         Pose2d(drivetrain.pose.x, drivetrain.pose.y, wantedRotation).pose2d)
 
     hasAligned = distanceToHub * thetaPID.error.absoluteValue.inRadians < 8.inches
 
-    CustomLogger.recordOutput("FaceHubCommand/hasAligned", hasAligned)
-    CustomLogger.recordOutput("FaceHubCommand/distanceTHubMeters", distanceToHub.inMeters)
+    CustomLogger.recordOutput("AimOTFCommand/hasAligned", hasAligned)
+    CustomLogger.recordOutput("AimOTFCommand/distanceTHubMeters", distanceToHub.inMeters)
 
     if (DriverStation.isAutonomous()) {
       // Use planned path velocities, dont adjust
-      drivetrain.runRotationWhileKeepingTranslation(thetaVel)
+      drivetrain.runRotationWhileKeepingTranslation(omega, flipIfRed = false)
     } else {
       // Take the drivers speed being inputted, and clamp the magnitude
       // of the drive vector to < MAX_VELOCITY_RADIUS meters per second
@@ -171,8 +170,7 @@ class AimOTFCommand(
         }
 
         drivetrain.runSpeeds(
-            ChassisSpeeds.fromFieldRelativeSpeeds(
-                speedX, speedY, thetaVel, drivetrain.pose.rotation))
+            ChassisSpeeds.fromFieldRelativeSpeeds(speedX, speedY, omega, drivetrain.pose.rotation))
       } else {
         if (Clock.timestamp - lastTimeNotStopped > 1.seconds) drivetrain.stopWithX()
       }
@@ -207,12 +205,12 @@ class AimOTFCommand(
   }
 
   override fun end(interrupted: Boolean) {
-    CustomLogger.recordOutput("FaceHubCommand/interrupted", interrupted)
+    CustomLogger.recordOutput("AimOTFCommand/interrupted", interrupted)
 
     drivetrain.runSpeeds(ChassisSpeeds())
     RobotContainer.isAligning = false
 
-    CustomLogger.recordOutput("ActiveCommands/FaceHubCommand", false)
+    CustomLogger.recordOutput("ActiveCommands/AimOTFCommand", false)
   }
 
   companion object {

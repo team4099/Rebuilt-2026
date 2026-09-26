@@ -295,7 +295,7 @@ class Superstructure(
         shooter.currentRequest = Request.ShooterRequest.Idle()
         hopper.currentRequest = Request.HopperRequest.Idle()
         feeder.currentRequest = Request.FeederRequest.Idle()
-        if (intake.inputs.position < 0.degrees) {
+        if (intake.inputs.position <= 0.degrees) {
           if (DriverStation.isAutonomous()) { // Run intake faster in teleop
             intakeRollers.currentRequest =
                 Request.RollersRequest.OpenLoop(RollersConstants.AUTO_INTAKE_VOLTAGE)
@@ -385,6 +385,14 @@ class Superstructure(
   fun requestForceHomeCommand(): Command {
     val returnCommand = runOnce { currentRequest = SuperstructureRequest.ForceHome() }
     returnCommand.name = "RequestForceHomeCommand"
+    return returnCommand
+  }
+
+  fun requestForceHomeCurrentControl(): Command {
+    val returnCommand =
+        run { currentRequest = SuperstructureRequest.ForceHome() }
+            .until { intake.inputs.intakeStatorCurrent == IntakeConstants.STATOR_CURRENT_LIMIT }
+    returnCommand.name = "RequestForceHomeCurrentControl"
     return returnCommand
   }
 

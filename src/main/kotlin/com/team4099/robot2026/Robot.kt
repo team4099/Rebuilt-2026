@@ -3,20 +3,19 @@ package com.team4099.robot2026
 import com.ctre.phoenix6.SignalLogger
 import com.pathplanner.lib.commands.FollowPathCommand
 import com.team4099.lib.hal.Clock
-import com.team4099.robot2026.auto.AutonomousSelector
 import com.team4099.robot2026.commands.drivetrain.DrivePathOTF
 import com.team4099.robot2026.commands.drivetrain.FollowChoreoPath
 import com.team4099.robot2026.config.ControlBoard
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.FieldConstants
 import com.team4099.robot2026.subsystems.superstructure.Request
-import com.team4099.robot2026.util.Alert
-import com.team4099.robot2026.util.Alert.AlertType
 import com.team4099.robot2026.util.CustomLogger
 import com.team4099.robot2026.util.NTSafePublisher
 import edu.wpi.first.hal.AllianceStationID
 import edu.wpi.first.net.WebServer
 import edu.wpi.first.networktables.GenericEntry
+import edu.wpi.first.wpilibj.Alert
+import edu.wpi.first.wpilibj.Alert.AlertType
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Filesystem
 import edu.wpi.first.wpilibj.PowerDistribution
@@ -27,6 +26,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.simulation.DriverStationSim
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
+import frc.robot.lib.BLine.FollowPath
 import java.nio.file.Files
 import java.nio.file.Paths
 import org.ejml.EjmlVersion.BUILD_DATE
@@ -46,15 +46,16 @@ import org.team4099.lib.units.base.seconds
 
 object Robot : LoggedRobot() {
   val logFolderAlert =
-      Alert("Log folder path does not exist. Data will NOT be logged.", AlertType.ERROR)
+      Alert("Log folder path does not exist. Data will NOT be logged.", AlertType.kError)
   val logReceiverQueueAlert =
-      Alert("Logging queue exceeded capacity, data will NOT be logged.", AlertType.ERROR)
-  val logOpenFileAlert = Alert("Failed to open log file. Data will NOT be logged", AlertType.ERROR)
+      Alert("Logging queue exceeded capacity, data will NOT be logged.", AlertType.kError)
+  val logOpenFileAlert = Alert("Failed to open log file. Data will NOT be logged", AlertType.kError)
   val logWriteAlert =
-      Alert("Failed write to the log file. Data will NOT be logged", AlertType.ERROR)
-  val logSimulationAlert = Alert("Running in simulation", AlertType.INFO)
+      Alert("Failed write to the log file. Data will NOT be logged", AlertType.kError)
+  val logSimulationAlert = Alert("Running in simulation", AlertType.kInfo)
   val logTuningModeEnabled =
-      Alert("Tuning Mode Enabled. Expect loop times to be greater", AlertType.WARNING)
+      Alert("Tuning Mode Enabled. Expect loop times to be greater", AlertType.kWarning)
+
   lateinit var allianceSelected: GenericEntry
   lateinit var autonomousCommand: Command
   var scoringFirst: Boolean = false
@@ -130,9 +131,6 @@ object Robot : LoggedRobot() {
     LiveWindow.disableAllTelemetry()
 
     // init a buncha things
-    RobotContainer
-    AutonomousSelector
-    FollowChoreoPath
     FieldConstants.fieldLayout
     RobotContainer.mapDefaultCommands()
 
@@ -165,14 +163,26 @@ object Robot : LoggedRobot() {
 
     Logger.recordOutput("TuningMode", Constants.Tuning.TUNING_MODE)
 
+    FollowPath.setDoubleLoggingConsumer { value ->
+      CustomLogger.recordOutput(value.getFirst(), value.getSecond())
+    }
+    FollowPath.setBooleanLoggingConsumer { value ->
+      CustomLogger.recordOutput(value.getFirst(), value.getSecond())
+    }
+    FollowPath.setPoseLoggingConsumer { value ->
+      CustomLogger.recordOutput(value.getFirst(), value.getSecond())
+    }
+    FollowPath.setTranslationListLoggingConsumer { value ->
+      CustomLogger.recordOutput(value.getFirst(), value.getSecond())
+    }
+
     if (isSimulation()) {
       DriverStation.silenceJoystickConnectionWarning(true)
     }
   }
 
   override fun autonomousInit() {
-    val autonCommandWithWait = autonomousCommand
-    CommandScheduler.getInstance().schedule(autonCommandWithWait)
+    CommandScheduler.getInstance().schedule(autonomousCommand)
     RobotContainer.intake.setBrakeMode(true)
     autoStartTime = Clock.timestamp
   }

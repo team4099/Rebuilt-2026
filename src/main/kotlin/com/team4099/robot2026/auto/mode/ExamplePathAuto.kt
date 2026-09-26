@@ -1,31 +1,20 @@
 package com.team4099.robot2026.auto.mode
 
-import choreo.Choreo
-import choreo.trajectory.SwerveSample
-import com.team4099.robot2026.commands.drivetrain.FollowChoreoPath
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.WaitCommand
-import org.team4099.lib.geometry.Pose2d
+import frc.robot.lib.BLine.FollowPath
+import frc.robot.lib.BLine.Path
 
-class ExamplePathAuto(val drivetrain: Drive) : SequentialCommandGroup() {
+class ExamplePathAuto(val drivetrain: Drive, pathBuilder: FollowPath.Builder) :
+    SequentialCommandGroup() {
   init {
     addRequirements(drivetrain)
 
-    addCommands(
-        WaitCommand(0.5),
-        FollowChoreoPath(drivetrain, firstTrajectory),
-        FollowChoreoPath(drivetrain, secondTrajectory),
-    )
+    addCommands(WaitCommand(0.5), pathBuilder.build(pathOne))
   }
 
   companion object {
-    val firstTrajectory =
-        Choreo.loadTrajectory<SwerveSample>("Example/ExamplePathTranslation.traj").get()
-    val secondTrajectory =
-        Choreo.loadTrajectory<SwerveSample>("Example/ExamplePathRotation.traj").get()
-
-    // don't flip pose: poses are robot relative since field frame estimator was reset
-    val startingPose = Pose2d(firstTrajectory.getInitialPose(false).get())
+    val pathOne = Path("straightline")
   }
 }
