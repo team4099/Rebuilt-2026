@@ -5,6 +5,7 @@ import com.team4099.robot2026.config.constants.IntakeConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import com.team4099.robot2026.subsystems.superstructure.intake.Intake
+import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.WaitCommand
 import edu.wpi.first.wpilibj2.command.WrapperCommand
@@ -25,6 +26,7 @@ class EjectSwipe(
         WaitCommand(5.77),
         superstructure.requestEjectCommand(),
         WaitCommand(5.0),
+        Commands.runOnce({pathBuilder.withPoseReset{ _ -> {}}}),
         pathBuilder.build(pathTwo),
         AgitateIntakeCommand(superstructure, intake).withTimeout(18.0 - (1.0)),
         superstructure.requestForceIntakeCommand(
