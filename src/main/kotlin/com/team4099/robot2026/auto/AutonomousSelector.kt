@@ -1,5 +1,6 @@
 package com.team4099.robot2026.auto
 
+import com.team4099.robot2026.auto.mode.EjectSwipe
 import com.team4099.robot2026.auto.mode.ExamplePathAuto
 import com.team4099.robot2026.auto.mode.IntakeQuadrantFollowClose
 import com.team4099.robot2026.auto.mode.IntakeQuadrantFollowFar
@@ -71,7 +72,9 @@ class AutonomousSelector(val drivetrain: Drive) {
         "Intake Follow Close (ADD A WAIT TIME)", AutonomousMode.INTAKE_FOLLOW_CLOSE)
     autonomousModeChooser.addOption(
         "Intake Follow Far (ADD A WAIT TIME)", AutonomousMode.INTAKE_FOLLOW_FAR)
+    autonomousModeChooser.addOption("Intake Eject Full Swipe Shoot", AutonomousMode.EJECT_SWIPE)
     autonomousModeChooser.addOption("Do nothing", AutonomousMode.DO_NOTHING)
+
 
     autoTab.add("Mode", autonomousModeChooser.sendableChooser).withSize(4, 2).withPosition(2, 0)
 
@@ -170,6 +173,11 @@ class AutonomousSelector(val drivetrain: Drive) {
                 ->
                 FollowPath.clearRotationOverride()
               }
+          AutonomousMode.EJECT_SWIPE ->
+            EjectSwipe(drivetrain, superstructure, intake, pathBuilder).finallyDo { _
+              ->
+              FollowPath.clearRotationOverride()
+              }
           AutonomousMode.DO_NOTHING -> InstantCommand()
           else -> InstantCommand()
         }
@@ -189,5 +197,6 @@ private enum class AutonomousMode {
   PRELOAD_BUMP_CENTER,
   INTAKE_FOLLOW_CLOSE,
   INTAKE_FOLLOW_FAR,
+  EJECT_SWIPE,
   DO_NOTHING,
 }
