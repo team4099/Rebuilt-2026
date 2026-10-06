@@ -204,8 +204,7 @@ class Superstructure(
             currentRequest is SuperstructureRequest.Intake ||
             currentRequest is SuperstructureRequest.PrepScore ||
             currentRequest is SuperstructureRequest.Score ||
-            intake.inputs.intakeStatorCurrent >= IntakeConstants.STATOR_CURRENT_LIMIT * 0.9
-        )
+            intake.inputs.intakeStatorCurrent >= IntakeConstants.STATOR_CURRENT_LIMIT * 0.9)
             intake.currentRequest =
                 Request.IntakeRequest.ZeroPivot(IntakeConstants.ANGLES.RESET_INTAKE_ANGLE)
 
