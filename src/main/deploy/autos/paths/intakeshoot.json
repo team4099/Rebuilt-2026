@@ -37,6 +37,11 @@
       }
     },
     {
+      "type": "event_trigger",
+      "t_ratio": 0.17413,
+      "lib_key": "startIntaking"
+    },
+    {
       "type": "waypoint",
       "translation_target": {
         "x_meters": 7.8477,
@@ -51,32 +56,31 @@
     {
       "type": "waypoint",
       "translation_target": {
-        "x_meters": 7.79865,
-        "y_meters": 1.35313,
+        "x_meters": 5.95588,
+        "y_meters": 2.65805,
         "intermediate_handoff_radius_meters": 0.45
       },
       "rotation_target": {
-        "rotation_radians": 1.55134,
+        "rotation_radians": -1.47804,
         "profiled_rotation": true
       }
-    },
-    {
-      "type": "translation",
-      "x_meters": 6.44673,
-      "y_meters": 3.89196,
-      "intermediate_handoff_radius_meters": 0.45
     },
     {
       "type": "waypoint",
       "translation_target": {
-        "x_meters": 5.84544,
-        "y_meters": 5.42446,
+        "x_meters": 5.97586,
+        "y_meters": 5.19643,
         "intermediate_handoff_radius_meters": 0.45
       },
       "rotation_target": {
-        "rotation_radians": -0.37429,
+        "rotation_radians": -0.82885,
         "profiled_rotation": true
       }
+    },
+    {
+      "type": "event_trigger",
+      "t_ratio": 0.24818,
+      "lib_key": "stopIntaking"
     },
     {
       "type": "waypoint",
@@ -89,6 +93,16 @@
         "rotation_radians": -0.37429,
         "profiled_rotation": true
       }
+    },
+    {
+      "type": "event_trigger",
+      "t_ratio": 0.35233,
+      "lib_key": "startAiming"
+    },
+    {
+      "type": "event_trigger",
+      "t_ratio": 1.0,
+      "lib_key": "startShooting"
     },
     {
       "type": "waypoint",
@@ -116,29 +130,24 @@
         "end_ordinal": 2
       },
       {
-        "value": 3.0,
-        "start_ordinal": 4,
-        "end_ordinal": 4
+        "value": 3.3,
+        "start_ordinal": 3,
+        "end_ordinal": 3
       },
       {
-        "value": 1.25,
+        "value": 1.86,
         "start_ordinal": 5,
         "end_ordinal": 5
       },
       {
-        "value": 3.0,
-        "start_ordinal": 8,
-        "end_ordinal": 8
+        "value": 1.25,
+        "start_ordinal": 6,
+        "end_ordinal": 6
       },
       {
-        "value": 3.4,
+        "value": 3.0,
         "start_ordinal": 7,
         "end_ordinal": 7
-      },
-      {
-        "value": 3.3,
-        "start_ordinal": 3,
-        "end_ordinal": 3
       }
     ]
   }
