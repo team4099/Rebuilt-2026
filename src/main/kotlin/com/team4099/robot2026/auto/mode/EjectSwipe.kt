@@ -22,10 +22,10 @@ class EjectSwipe(
   WrapperCommand(
     BLineCommands.sequence(
       pathBuilder.build(pathOne),
-      SequentialCommandGroup(
-        WaitCommand(5.77),
+      BLineCommands.sequence(
         superstructure.requestEjectCommand(),
-        WaitCommand(5.0),
+        WaitCommand(1.5),
+        superstructure.requestIdleCommand(),
         Commands.runOnce({pathBuilder.withPoseReset{ _ -> {}}}),
         pathBuilder.build(pathTwo),
         AgitateIntakeCommand(superstructure, intake).withTimeout(18.0 - (1.0)),
