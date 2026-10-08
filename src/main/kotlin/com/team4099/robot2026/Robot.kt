@@ -4,7 +4,6 @@ import com.ctre.phoenix6.SignalLogger
 import com.pathplanner.lib.commands.FollowPathCommand
 import com.team4099.lib.hal.Clock
 import com.team4099.robot2026.commands.drivetrain.DrivePathOTF
-import com.team4099.robot2026.commands.drivetrain.FollowChoreoPath
 import com.team4099.robot2026.config.ControlBoard
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.FieldConstants
@@ -136,7 +135,6 @@ object Robot : LoggedRobot() {
 
     // init commands that have long startup
     CommandScheduler.getInstance().schedule(DrivePathOTF.warmupCommand())
-    CommandScheduler.getInstance().schedule(FollowChoreoPath.warmupCmd())
 
     // Set the scheduler to log events for command initialize, interrupt, finish
     CommandScheduler.getInstance().onCommandInitialize { command: Command ->
