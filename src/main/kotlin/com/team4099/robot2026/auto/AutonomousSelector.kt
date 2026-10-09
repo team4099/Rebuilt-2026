@@ -130,6 +130,8 @@ class AutonomousSelector(val drivetrain: Drive) {
             .andThen(BLineCommands.deferredProxy { autoAimOTFCommand }))
     FollowPath.registerEventTrigger(
         "stopAiming", Commands.runOnce({ FollowPath.clearRotationOverride() }))
+    FollowPath.registerEventTrigger("startEject", superstructure.requestEjectCommand())
+    FollowPath.registerEventTrigger("endEject", superstructure.requestIdleCommand())
   }
 
 
