@@ -36,7 +36,7 @@ object IntakeConstants {
   val VOLTAGE_COMPENSATION = 12.0.volts
 
   val MAX_VELOCITY = 2000.rotations.perSecond
-  val MAX_ACCELERATION = 2000.rotations.perSecond.perSecond
+  val MAX_ACCELERATION = 2200.rotations.perSecond.perSecond
   val MAX_JERK = 4000.rotations.perSecond.perSecond.perSecond
 
   val SIM_VELOCITY = 400.degrees.perSecond

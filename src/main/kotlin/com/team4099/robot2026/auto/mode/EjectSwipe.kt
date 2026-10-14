@@ -25,7 +25,7 @@ class EjectSwipe(
       BLineCommands.sequence(
         Commands.runOnce({pathBuilder.withPoseReset{ _ -> {}}}),
         pathBuilder.build(pathTwo),
-        AgitateIntakeCommand(superstructure, intake).withTimeout(18.0 - (6.10) - (6.82) - (1.0)),
+        AgitateIntakeCommand(superstructure, intake).withTimeout(18.0 - (5.1) - (6.82) - (1.0)),
         superstructure.requestForceIntakeCommand(
           IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE))
           )) {
