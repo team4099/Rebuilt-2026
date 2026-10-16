@@ -3,6 +3,7 @@ package com.team4099.robot2026.subsystems.superstructure.intake.rollers
 import com.team4099.robot2026.subsystems.superstructure.Request
 import com.team4099.robot2026.util.ControlledByStateMachine
 import com.team4099.robot2026.util.CustomLogger
+import org.team4099.lib.units.base.Current
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.volts
 
@@ -41,6 +42,10 @@ class IntakeRollers(private val io: IntakeRollersIO) : ControlledByStateMachine(
       }
     }
     currentState = nextState
+  }
+
+  fun setCurrentLimit(current: Current) {
+    io.setCurrentLimit(current)
   }
 
   companion object {

@@ -16,6 +16,7 @@ import edu.wpi.first.units.measure.AngularVelocity as WPILibAngularVelocity
 import edu.wpi.first.units.measure.Current as WPILibCurrent
 import edu.wpi.first.units.measure.Temperature as WPILibTemperature
 import edu.wpi.first.units.measure.Voltage as WPILibVoltage
+import org.team4099.lib.units.base.Current
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.inAmperes
@@ -130,5 +131,11 @@ object IntakeRollersIOTalon : IntakeRollersIO {
             (-RollersConstants.VOLTAGE_COMPENSATION),
             RollersConstants.VOLTAGE_COMPENSATION)
     leaderTalon.setVoltage(clampedVoltage.inVolts)
+  }
+
+  override fun setCurrentLimit(current: Current) {
+    rollerConfig.CurrentLimits.SupplyCurrentLimit = current.inAmperes
+    leaderTalon.configurator.apply(rollerConfig)
+    followerTalon.configurator.apply(rollerConfig)
   }
 }

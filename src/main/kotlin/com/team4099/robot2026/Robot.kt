@@ -8,6 +8,7 @@ import com.team4099.robot2026.commands.drivetrain.FollowChoreoPath
 import com.team4099.robot2026.config.ControlBoard
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.FieldConstants
+import com.team4099.robot2026.config.constants.RollersConstants
 import com.team4099.robot2026.subsystems.superstructure.Request
 import com.team4099.robot2026.util.CustomLogger
 import com.team4099.robot2026.util.NTSafePublisher
@@ -184,6 +185,7 @@ object Robot : LoggedRobot() {
   override fun autonomousInit() {
     CommandScheduler.getInstance().schedule(autonomousCommand)
     RobotContainer.intake.setBrakeMode(true)
+    RobotContainer.intakeRollers.setCurrentLimit(RollersConstants.AUTO_SUPPLY_CURRENT_LIMIT)
     autoStartTime = Clock.timestamp
   }
 
@@ -237,6 +239,7 @@ object Robot : LoggedRobot() {
     RobotContainer.superstructure.currentRequest = Request.SuperstructureRequest.Idle()
     //   }
     RobotContainer.intake.setBrakeMode(true)
+    RobotContainer.intakeRollers.setCurrentLimit(RollersConstants.SUPPLY_CURRENT_LIMIT)
   }
 
   override fun teleopPeriodic() {
