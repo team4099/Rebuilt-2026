@@ -75,7 +75,6 @@ class AutonomousSelector(val drivetrain: Drive) {
     autonomousModeChooser.addOption("Intake Eject Full Swipe Shoot", AutonomousMode.EJECT_SWIPE)
     autonomousModeChooser.addOption("Do nothing", AutonomousMode.DO_NOTHING)
 
-
     autoTab.add("Mode", autonomousModeChooser.sendableChooser).withSize(4, 2).withPosition(2, 0)
 
     waitBeforeCommandSlider =
@@ -134,7 +133,6 @@ class AutonomousSelector(val drivetrain: Drive) {
     FollowPath.registerEventTrigger("endEject", superstructure.requestIdleCommand())
   }
 
-
   val waitTime: Time
     get() = waitBeforeCommandSlider.getDouble(0.0).seconds
 
@@ -177,9 +175,8 @@ class AutonomousSelector(val drivetrain: Drive) {
                 FollowPath.clearRotationOverride()
               }
           AutonomousMode.EJECT_SWIPE ->
-            EjectSwipe(drivetrain, superstructure, intake, pathBuilder).finallyDo { _
-              ->
-              FollowPath.clearRotationOverride()
+              EjectSwipe(drivetrain, superstructure, intake, pathBuilder).finallyDo { _ ->
+                FollowPath.clearRotationOverride()
               }
           AutonomousMode.DO_NOTHING -> InstantCommand()
           else -> InstantCommand()
