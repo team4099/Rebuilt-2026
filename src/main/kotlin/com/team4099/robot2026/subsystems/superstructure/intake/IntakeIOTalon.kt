@@ -15,10 +15,10 @@ import com.team4099.robot2026.config.constants.IntakeConstants
 import edu.wpi.first.units.measure.Angle as WPIAngle
 import edu.wpi.first.units.measure.AngularAcceleration
 import edu.wpi.first.units.measure.AngularVelocity
-import org.team4099.lib.units.base.Current
-import edu.wpi.first.units.measure.Temperature
 import edu.wpi.first.units.measure.Current as WPICurrent
+import edu.wpi.first.units.measure.Temperature
 import edu.wpi.first.units.measure.Voltage
+import org.team4099.lib.units.base.Current
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.inAmperes
@@ -158,9 +158,9 @@ object IntakeIOTalon : IntakeIO {
   override fun zeroPivot(zeroPosition: Angle) {
     intakeTalon.setPosition(zeroPosition.inRotations)
   }
+
   override fun setSupplyCurrentLimit(current: Current) {
     intakeConfiguration.CurrentLimits.SupplyCurrentLimit = current.inAmperes
     intakeTalon.configurator.apply(intakeConfiguration)
-
   }
 }

@@ -108,6 +108,7 @@ class Intake(private val io: IntakeIO) : ControlledByStateMachine() {
 
     currentState = nextState
   }
+
   fun setSupplyCurrentLimit(current: Current) {
     io.setSupplyCurrentLimit(current)
   }
