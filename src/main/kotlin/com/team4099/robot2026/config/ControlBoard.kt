@@ -48,6 +48,7 @@ object ControlBoard {
   val leftTrenchOTF = Trigger { driver.leftShoulderButton }
   val rightTrenchOTF = Trigger { driver.rightShoulderButton }
 
+  
   //  val climbOTF = Trigger { driver.yButton }
 
   val eject = Trigger { driver.dPadUp || operator.dPadUp }
