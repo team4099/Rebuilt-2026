@@ -133,7 +133,7 @@ object IntakeRollersIOTalon : IntakeRollersIO {
     leaderTalon.setVoltage(clampedVoltage.inVolts)
   }
 
-  override fun setCurrentLimit(current: Current) {
+  override fun setSupplyCurrentLimit(current: Current) {
     rollerConfig.CurrentLimits.SupplyCurrentLimit = current.inAmperes
     leaderTalon.configurator.apply(rollerConfig)
     followerTalon.configurator.apply(rollerConfig)

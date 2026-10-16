@@ -90,5 +90,5 @@ interface IntakeRollersIO {
 
   fun setVoltage(voltage: ElectricalPotential) {}
 
-  fun setCurrentLimit(current: Current) {}
+  fun setSupplyCurrentLimit(current: Current) {}
 }

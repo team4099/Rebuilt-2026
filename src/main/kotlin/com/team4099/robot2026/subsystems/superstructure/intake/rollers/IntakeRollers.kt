@@ -44,8 +44,8 @@ class IntakeRollers(private val io: IntakeRollersIO) : ControlledByStateMachine(
     currentState = nextState
   }
 
-  fun setCurrentLimit(current: Current) {
-    io.setCurrentLimit(current)
+  fun setSupplyCurrentLimit(current: Current) {
+    io.setSupplyCurrentLimit(current)
   }
 
   companion object {
