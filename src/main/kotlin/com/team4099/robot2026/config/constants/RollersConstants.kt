@@ -19,6 +19,7 @@ object RollersConstants {
   val MOMENT_OF_INERTIA = 1.0.grams.meterSquared // TODO: Change
 
   val SUPPLY_CURRENT_LIMIT = 40.0.amps
+  val AUTO_SUPPLY_CURRENT_LIMIT = 80.0.amps
   val STATOR_CURRENT_LIMIT = 100.0.amps
 
   val FUEL_STALL_CURRENT = 35.amps

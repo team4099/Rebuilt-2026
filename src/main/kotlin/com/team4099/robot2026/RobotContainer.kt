@@ -72,7 +72,7 @@ object RobotContainer {
   private val feeder: Feeder
   private val hopper: Hopper
   val intake: Intake
-  private val intakeRollers: IntakeRollers
+  val intakeRollers: IntakeRollers
   private val shooter: Shooter
   val superstructure: Superstructure
   val leds: Leds
