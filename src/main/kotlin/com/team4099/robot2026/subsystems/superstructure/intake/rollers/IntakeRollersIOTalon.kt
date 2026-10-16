@@ -137,5 +137,6 @@ object IntakeRollersIOTalon : IntakeRollersIO {
     rollerConfig.CurrentLimits.SupplyCurrentLimit = current.inAmperes
     leaderTalon.configurator.apply(rollerConfig)
     followerTalon.configurator.apply(rollerConfig)
+
   }
 }

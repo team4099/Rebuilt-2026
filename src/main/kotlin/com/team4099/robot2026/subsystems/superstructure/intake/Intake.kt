@@ -5,6 +5,7 @@ import com.team4099.robot2026.subsystems.superstructure.Request
 import com.team4099.robot2026.util.ControlledByStateMachine
 import com.team4099.robot2026.util.CustomLogger
 import edu.wpi.first.wpilibj.RobotBase
+import org.team4099.lib.units.base.Current
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.inDegrees
@@ -106,6 +107,9 @@ class Intake(private val io: IntakeIO) : ControlledByStateMachine() {
     }
 
     currentState = nextState
+  }
+  fun setSupplyCurrentLimit(current: Current) {
+    io.setSupplyCurrentLimit(current)
   }
 
   fun setBrakeMode(brake: Boolean) {

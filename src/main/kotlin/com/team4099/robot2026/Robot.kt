@@ -185,6 +185,7 @@ object Robot : LoggedRobot() {
   override fun autonomousInit() {
     CommandScheduler.getInstance().schedule(autonomousCommand)
     RobotContainer.intake.setBrakeMode(true)
+    RobotContainer.intake.setSupplyCurrentLimit(RollersConstants.AUTO_SUPPLY_CURRENT_LIMIT)
     RobotContainer.intakeRollers.setSupplyCurrentLimit(RollersConstants.AUTO_SUPPLY_CURRENT_LIMIT)
     autoStartTime = Clock.timestamp
   }
@@ -239,6 +240,7 @@ object Robot : LoggedRobot() {
     RobotContainer.superstructure.currentRequest = Request.SuperstructureRequest.Idle()
     //   }
     RobotContainer.intake.setBrakeMode(true)
+    RobotContainer.intake.setSupplyCurrentLimit(RollersConstants.SUPPLY_CURRENT_LIMIT)
     RobotContainer.intakeRollers.setSupplyCurrentLimit(RollersConstants.SUPPLY_CURRENT_LIMIT)
   }
 
