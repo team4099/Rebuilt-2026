@@ -60,11 +60,4 @@ class Trajectory(private val states: List<TrajectoryState>) {
   //  private val endVelocity: LinearVelocity,
   //  private val trajectoryConfig: TrajectoryConfig
 
-  //  public fun convertToTrajectory(pathPlannerTrajectory: PathPlannerTrajectory):
-  // org.wpilib.math.trajectory.Trajectory{
-  //    var traj: Trajectory = org.wpilib.math.trajectory.Trajectory(
-  //      e),
-  //    pathPlannerTrajectory.
-  //    )
-  //  }
 }

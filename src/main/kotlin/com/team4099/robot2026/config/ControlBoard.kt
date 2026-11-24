@@ -49,8 +49,6 @@ object ControlBoard {
 
   // val climb = Trigger { driver.aButton }
   val forceIdle = Trigger { driver.dPadDown || operator.dPadDown }
-  val leftTrenchOTF = Trigger { driver.leftShoulderButton }
-  val rightTrenchOTF = Trigger { driver.rightShoulderButton }
 
   //  val climbOTF = Trigger { driver.yButton }
 

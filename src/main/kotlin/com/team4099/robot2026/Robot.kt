@@ -2,9 +2,7 @@ package com.team4099.robot2026
 
 import bline.commands.FollowPathV2 as FollowPath
 import com.ctre.phoenix6.SignalLogger
-import com.pathplanner.lib.commands.FollowPathCommand
 import com.team4099.lib.hal.Clock
-import com.team4099.robot2026.commands.drivetrain.DrivePathOTF
 import com.team4099.robot2026.config.ControlBoard
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.FieldConstants
@@ -143,9 +141,6 @@ object Robot : LoggedRobot() {
     FieldConstants.fieldLayout
     RobotContainer.mapDefaultCommands()
 
-    // init commands that have long startup
-    CommandScheduler.getInstance().schedule(DrivePathOTF.warmupCommand())
-
     // Set the scheduler to log events for command initialize, interrupt, finish
     CommandScheduler.getInstance().onCommandInitialize { command: Command ->
       Logger.recordOutput("/ActiveCommands/${command.name}", true)
@@ -158,8 +153,6 @@ object Robot : LoggedRobot() {
     CommandScheduler.getInstance().onCommandInterrupt { command: Command ->
       Logger.recordOutput("/ActiveCommands/${command.name}", false)
     }
-
-    CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand())
 
     Logger.recordOutput("TuningMode", Constants.Tuning.TUNING_MODE)
 

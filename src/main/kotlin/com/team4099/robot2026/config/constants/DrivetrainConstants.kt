@@ -3,8 +3,6 @@ package com.team4099.robot2026.config.constants
 import com.team4099.robot2026.subsystems.drivetrain.generated.AlphaBotTunerConstants
 import com.team4099.robot2026.subsystems.drivetrain.generated.CompBotTunerConstants
 import com.team4099.robot2026.subsystems.drivetrain.generated.TestBotTunerConstants
-import com.team4099.robot2026.util.AllianceFlipUtil
-import java.util.function.Supplier
 import kotlin.math.sqrt
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.units.Velocity
@@ -257,77 +255,5 @@ object DrivetrainConstants {
     val SIM_STEERING_KI = STEERING_KI
     val SIM_STEERING_KD = STEERING_KD
     val SIM_STEERING_KV = STEERING_KV
-  }
-
-  object OTF_PATHS {
-    val LEFT_TO_NEUTRAL_1 =
-        listOf(
-            Supplier { Pose2d(3.0.meters, 7.4.meters, 0.degrees) },
-            Supplier { Pose2d(3.6.meters, 7.4.meters, 0.degrees) },
-        )
-    val LEFT_TO_NEUTRAL_2 =
-        listOf(
-            Supplier { Pose2d(3.6.meters, 7.4.meters, 0.degrees) },
-            Supplier { Pose2d(6.meters, 7.4.meters, 0.degrees) },
-        )
-
-    val LEFT_TO_ALLIANCE_1 =
-        listOf(
-            Supplier { Pose2d(6.5.meters, 7.4.meters, 180.degrees) },
-            Supplier { Pose2d(6.0.meters, 7.4.meters, 180.degrees) },
-        )
-    val LEFT_TO_ALLIANCE_2 =
-        listOf(
-            Supplier { Pose2d(6.0.meters, 7.4.meters, 180.degrees) },
-            Supplier { Pose2d(3.0.meters, 7.4.meters, 180.degrees) },
-        )
-    val RIGHT_TO_NEUTRAL_1 =
-        listOf(
-            Supplier { Pose2d(3.0.meters, 0.63.meters, 0.degrees) },
-            Supplier { Pose2d(3.6.meters, 0.63.meters, 0.degrees) },
-        )
-    val RIGHT_TO_NEUTRAL_2 =
-        listOf(
-            Supplier { Pose2d(3.6.meters, 0.63.meters, 0.degrees) },
-            Supplier { Pose2d(6.meters, .63.meters, 0.degrees) },
-        )
-    val RIGHT_TO_ALLIANCE_1 =
-        listOf(
-            Supplier { Pose2d(6.5.meters, .63.meters, 180.degrees) },
-            Supplier { Pose2d(6.0.meters, 0.631.meters, 180.degrees) },
-        )
-    val RIGHT_TO_ALLIANCE_2 =
-        listOf(
-            Supplier { Pose2d(6.0.meters, 0.631.meters, 180.degrees) },
-            Supplier { Pose2d(3.0.meters, .63.meters, 180.degrees) },
-        )
-    val CLIMB_BOTTOM =
-        Pair(
-            Supplier {
-              Pose2d(
-                  1.23.meters,
-                  2.5.meters,
-                  if (AllianceFlipUtil.shouldFlip()) -90.degrees else 90.degrees)
-            },
-            Supplier {
-              Pose2d(
-                  1.23.meters,
-                  3.02.meters,
-                  if (AllianceFlipUtil.shouldFlip()) -90.degrees else 90.degrees)
-            })
-    val CLIMB_TOP =
-        Pair(
-            Supplier {
-              Pose2d(
-                  .98.meters,
-                  5.meters,
-                  if (AllianceFlipUtil.shouldFlip()) 90.degrees else -90.degrees)
-            },
-            Supplier {
-              Pose2d(
-                  .98.meters,
-                  4.515.meters,
-                  if (AllianceFlipUtil.shouldFlip()) 90.degrees else -90.degrees)
-            })
   }
 }

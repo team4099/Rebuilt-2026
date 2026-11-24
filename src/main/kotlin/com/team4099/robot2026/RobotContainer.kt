@@ -4,7 +4,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue
 import com.team4099.robot2026.auto.AutonomousSelector
 import com.team4099.robot2026.commands.AgitateIntakeCommand
 import com.team4099.robot2026.commands.drivetrain.AimOTFCommand
-import com.team4099.robot2026.commands.drivetrain.DrivePathOTF
 import com.team4099.robot2026.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2026.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2026.config.ControlBoard
@@ -387,26 +386,6 @@ object RobotContainer {
               //                  superstructure.currentState ==
               //                      Superstructure.Companion.SuperstructureStates.PREP_SCORE
             })
-
-    ControlBoard.leftTrenchOTF.whileTrue(
-        ConditionalCommand(
-            DrivePathOTF.allianceZoneToNeutralInLeftTrench(drivetrain),
-            DrivePathOTF.neutralZoneToAllianceInLeftTrench(drivetrain)) {
-              FieldConstants.inTrenchAllianceZone(drivetrain.pose)
-            })
-    ControlBoard.rightTrenchOTF.whileTrue(
-        ConditionalCommand(
-            DrivePathOTF.allianceZoneToNeutralInRightTrench(drivetrain),
-            DrivePathOTF.neutralZoneToAllianceInRightTrench(drivetrain)) {
-              FieldConstants.inTrenchAllianceZone(drivetrain.pose)
-            })
-
-    //    ControlBoard.climbOTF.whileTrue(
-    //        ConditionalCommand(
-    //            DrivePathOTF.alignClimbBottom(drivetrain), DrivePathOTF.alignClimbTop(drivetrain))
-    // {
-    //              FieldConstants.inClimbLowerHalf(drivetrain.pose)
-    //            })\][
 
     //    ControlBoard.quasiForward.whileTrue(
     //        drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kForward))

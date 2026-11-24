@@ -12,13 +12,6 @@
 // GNU General Public License for more details.
 package com.team4099.robot2026.subsystems.drivetrain
 
-import com.pathplanner.lib.auto.AutoBuilder
-import com.pathplanner.lib.config.ModuleConfig
-import com.pathplanner.lib.config.PIDConstants
-import com.pathplanner.lib.config.RobotConfig
-import com.pathplanner.lib.controllers.PPHolonomicDriveController
-import com.pathplanner.lib.pathfinding.Pathfinding
-import com.pathplanner.lib.util.PathPlannerLogging
 import com.team4099.lib.hal.Clock
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.DrivetrainConstants
@@ -27,7 +20,6 @@ import com.team4099.robot2026.config.constants.VisionConstants
 import com.team4099.robot2026.util.AllianceFlipUtil
 import com.team4099.robot2026.util.CustomLogger
 import com.team4099.robot2026.util.Velocity2d
-import frc.robot.util.LocalADStarAK
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 import java.util.function.Consumer
@@ -49,13 +41,6 @@ import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.Angle
-import org.team4099.lib.units.derived.inKilogramsMeterSquared
-import org.team4099.lib.units.derived.inMetersPerSecondPerMeterPerSecond
-import org.team4099.lib.units.derived.inMetersPerSecondPerMeterSeconds
-import org.team4099.lib.units.derived.inMetersPerSecondPerMetersPerSecond
-import org.team4099.lib.units.derived.inRadiansPerSecondPerRadian
-import org.team4099.lib.units.derived.inRadiansPerSecondPerRadianSeconds
-import org.team4099.lib.units.derived.inRadiansPerSecondPerRadiansPerSecond
 import org.team4099.lib.units.derived.inRotation2ds
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.inMetersPerSecond
@@ -66,7 +51,6 @@ import org.wpilib.framework.RobotBase
 import org.wpilib.hardware.hal.HAL
 import org.wpilib.math.estimator.SwerveDrivePoseEstimator
 import org.wpilib.math.geometry.Pose2d as WPIPose2d
-import org.wpilib.math.kinematics.ChassisVelocities as WPIChassisSpeeds
 import org.wpilib.math.kinematics.SwerveDriveKinematics
 import org.wpilib.math.kinematics.SwerveModulePosition
 import org.wpilib.math.kinematics.SwerveModuleVelocity as SwerveModuleState
@@ -134,37 +118,6 @@ class Drive(
 
     // Start odometry thread
     PhoenixOdometryThread.instance.start()
-
-    // Configure AutoBuilder for PathPlanner
-    // WARNING! takes in pose as pose2d and does not account for z
-    AutoBuilder.configure(
-        { this.pose.pose2d },
-        { pose: WPIPose2d -> this.pose = Pose2d(pose) },
-        { this.chassisSpeeds.chassisVelocitiesWPILIB },
-        { speeds: WPIChassisSpeeds -> this.runSpeeds(ChassisSpeeds(speeds)) },
-        PPHolonomicDriveController(
-            PIDConstants(
-                DrivetrainConstants.PID.AUTO_POS_KD.inMetersPerSecondPerMetersPerSecond,
-                DrivetrainConstants.PID.AUTO_POS_KI.inMetersPerSecondPerMeterSeconds,
-                DrivetrainConstants.PID.AUTO_POS_KD.inMetersPerSecondPerMeterPerSecond),
-            PIDConstants(
-                DrivetrainConstants.PID.AUTO_THETA_PID_KP.inRadiansPerSecondPerRadian,
-                DrivetrainConstants.PID.AUTO_THETA_PID_KD.inRadiansPerSecondPerRadiansPerSecond,
-                DrivetrainConstants.PID.AUTO_THETA_PID_KI.inRadiansPerSecondPerRadianSeconds)),
-        PP_CONFIG,
-        {
-          org.wpilib.driverstation.MatchState.getAlliance()
-              .orElse(org.wpilib.driverstation.Alliance.BLUE) ==
-              org.wpilib.driverstation.Alliance.RED
-        },
-        this)
-    Pathfinding.setPathfinder(LocalADStarAK())
-    PathPlannerLogging.setLogActivePathCallback { activePath: List<WPIPose2d> ->
-      CustomLogger.recordOutput("Odometry/Trajectory", *activePath.toTypedArray<WPIPose2d>())
-    }
-    PathPlannerLogging.setLogTargetPoseCallback { targetPose: WPIPose2d ->
-      CustomLogger.recordOutput("Odometry/TrajectorySetpoint", targetPose)
-    }
 
     // Configure SysId
     sysId =
@@ -426,24 +379,6 @@ class Drive(
                 hypot(
                     DrivetrainConstants.tunerConstants.BackRight.LocationX,
                     DrivetrainConstants.tunerConstants.BackRight.LocationY)))
-
-    // PathPlanner config constants
-    val PP_CONFIG: RobotConfig =
-        RobotConfig(
-            Constants.Universal.ROBOT_WEIGHT.inKilograms,
-            Constants.Universal.ROBOT_MOI.inKilogramsMeterSquared,
-            ModuleConfig(
-                DrivetrainConstants.tunerConstants.FrontLeft.WheelRadius,
-                DrivetrainConstants.tunerConstants.kSpeedAt12Volts.inMetersPerSecond,
-                DrivetrainConstants.CURRENT_COF,
-                DCMotor.getKrakenX60Foc(1)
-                    .withReduction(
-                        DrivetrainConstants.tunerConstants.FrontLeft.DriveMotorGearRatio),
-                DrivetrainConstants.tunerConstants.FrontLeft.SlipCurrent,
-                1),
-            *(moduleTranslations
-                .map { translation: Translation2d -> translation.translation2d }
-                .toTypedArray()))
 
     @JvmField val odometryLock: Lock = ReentrantLock()
     val moduleTranslations: Array<Translation2d>
