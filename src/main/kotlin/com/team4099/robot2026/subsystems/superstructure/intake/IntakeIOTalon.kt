@@ -72,7 +72,6 @@ object IntakeIOTalon : IntakeIO {
     intakeConfiguration.CurrentLimits.SupplyCurrentLimit =
         IntakeConstants.TELEOP_SUPPLY_CURRENT_LIMIT.inAmperes
     intakeConfiguration.Slot0.GravityType = GravityTypeValue.Arm_Cosine
-
     intakeConfiguration.MotionMagic.MotionMagicCruiseVelocity =
         IntakeConstants.MAX_VELOCITY.inRotationsPerSecond
     intakeConfiguration.MotionMagic.MotionMagicAcceleration =
