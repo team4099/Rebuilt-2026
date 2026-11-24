@@ -34,7 +34,6 @@ import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
-import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.max
 
@@ -83,7 +82,6 @@ class Superstructure(
 
   override fun periodic() {
     val startTime = Clock.epochTime
-    CustomLogger.recordOutput("idk", (intakeOverridingAngle + 10.degrees).inDegrees)
 
     val climbStartTime = Clock.epochTime
     climb.onLoop()
@@ -205,7 +203,8 @@ class Superstructure(
         if (currentRequest is SuperstructureRequest.Idle ||
             currentRequest is SuperstructureRequest.Intake ||
             currentRequest is SuperstructureRequest.PrepScore ||
-            currentRequest is SuperstructureRequest.Score)
+            currentRequest is SuperstructureRequest.Score ||
+            intake.inputs.intakeStatorCurrent >= IntakeConstants.STATOR_CURRENT_LIMIT * 0.9)
             intake.currentRequest =
                 Request.IntakeRequest.ZeroPivot(IntakeConstants.ANGLES.RESET_INTAKE_ANGLE)
 

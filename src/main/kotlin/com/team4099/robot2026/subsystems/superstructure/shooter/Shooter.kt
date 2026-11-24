@@ -498,19 +498,19 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
             })
 
     init {
-      distanceToShooterMap.put(2.02.meters, 33.rotations.perSecond)
-      distanceToShooterMap.put(2.26.meters, 35.5.rotations.perSecond)
-      distanceToShooterMap.put(2.52.meters, 37.5.rotations.perSecond)
-      distanceToShooterMap.put(2.76.meters, 40.rotations.perSecond)
-      distanceToShooterMap.put(3.01.meters, 42.rotations.perSecond)
-      distanceToShooterMap.put(3.27.meters, 44.rotations.perSecond)
-      distanceToShooterMap.put(3.48.meters, 46.rotations.perSecond)
-      distanceToShooterMap.put(3.71.meters, 48.rotations.perSecond)
-      distanceToShooterMap.put(4.01.meters, 50.rotations.perSecond)
-      distanceToShooterMap.put(4.35.meters, 52.rotations.perSecond)
-      distanceToShooterMap.put(4.47.meters, 53.rotations.perSecond)
-      distanceToShooterMap.put(4.80.meters, 55.rotations.perSecond)
-      distanceToShooterMap.put(5.03.meters, 57.rotations.perSecond)
+      distanceToShooterMap.put(2.02.meters, 33.rotations.perSecond - 2.5.rotations.perSecond)
+      distanceToShooterMap.put(2.26.meters, 35.5.rotations.perSecond - 2.5.rotations.perSecond)
+      distanceToShooterMap.put(2.52.meters, 37.5.rotations.perSecond - 2.5.rotations.perSecond)
+      distanceToShooterMap.put(2.76.meters, 40.rotations.perSecond - 2.5.rotations.perSecond)
+      distanceToShooterMap.put(3.01.meters, 42.rotations.perSecond - 2.5.rotations.perSecond)
+      distanceToShooterMap.put(3.27.meters, 44.rotations.perSecond - 2.5.rotations.perSecond)
+      distanceToShooterMap.put(3.48.meters, 46.rotations.perSecond - 2.5.rotations.perSecond)
+      distanceToShooterMap.put(3.71.meters, 48.rotations.perSecond - 2.5.rotations.perSecond)
+      distanceToShooterMap.put(4.01.meters, 50.rotations.perSecond - 2.5.rotations.perSecond)
+      distanceToShooterMap.put(4.35.meters, 52.rotations.perSecond - 2.5.rotations.perSecond)
+      distanceToShooterMap.put(4.47.meters, 53.rotations.perSecond - 2.5.rotations.perSecond)
+      distanceToShooterMap.put(4.80.meters, 55.rotations.perSecond - 2.5.rotations.perSecond)
+      distanceToShooterMap.put(5.03.meters, 57.rotations.perSecond - 2.5.rotations.perSecond)
 
       passingShooterMap.put(2.meters, 30.rotations.perSecond)
       passingShooterMap.put(2.5.meters, 35.rotations.perSecond)
@@ -531,7 +531,7 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
     }
 
     fun passingDistanceToShooterRPM(distanceToTarget: Length): AngularVelocity {
-      if (2.meters <= distanceToTarget && distanceToTarget <= 4.meters) {
+      if (2.meters <= distanceToTarget && distanceToTarget <= 5.meters) {
         return passingShooterMap.get(distanceToTarget)
       }
       return max(

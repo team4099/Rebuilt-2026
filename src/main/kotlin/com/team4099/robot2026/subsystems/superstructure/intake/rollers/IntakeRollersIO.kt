@@ -2,6 +2,7 @@ package com.team4099.robot2026.subsystems.superstructure.intake.rollers
 
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
+import org.team4099.lib.units.base.Current
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.inAmperes
@@ -88,4 +89,6 @@ interface IntakeRollersIO {
   fun updateInputs(inputs: RollerInputs) {}
 
   fun setVoltage(voltage: ElectricalPotential) {}
+
+  fun setSupplyCurrentLimit(current: Current) {}
 }

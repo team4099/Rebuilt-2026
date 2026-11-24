@@ -19,11 +19,11 @@ class PreloadL1Auto(
 ) :
     WrapperCommand(
         BLineCommands.sequence(
-            pathBuilder.build(PreloadL1Auto.pathOne),
+            pathBuilder.build(pathOne),
             WaitCommand(1.0),
-            AgitateIntakeCommand(superstructure, intake).withTimeout(18.0 - (0.90 + 5.0 + 5.62)),
+            AgitateIntakeCommand(superstructure, intake).withTimeout(18.0 - (0.90 + 1.0)),
             superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE))) {
   companion object {
-    val pathOne = Path("preload2quadrant")
+    val pathOne = Path("preload")
   }
 }

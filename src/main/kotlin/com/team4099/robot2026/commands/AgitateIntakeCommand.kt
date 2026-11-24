@@ -25,7 +25,7 @@ class AgitateIntakeCommand(val superstructure: Superstructure, val intake: Intak
                     IntakeConstants.ANGLES.AUTO_AGITATE_FULL_UP),
                 WaitUntilCommand {
                       intake.inputs.intakeStatorCurrent.absoluteValue >=
-                          IntakeConstants.AGITATION_STUCK_STATOR_THRESHOLD
+                          IntakeConstants.STATOR_CURRENT_LIMIT
                     }
                     .withTimeout(.2),
                 Commands.runOnce({ lastStuckPosition = intake.inputs.position }),
