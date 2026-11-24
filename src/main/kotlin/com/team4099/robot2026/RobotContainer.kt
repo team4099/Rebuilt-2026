@@ -9,14 +9,13 @@ import com.team4099.robot2026.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2026.config.ControlBoard
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.DrivetrainConstants
-import com.team4099.robot2026.config.constants.FieldConstants
 import com.team4099.robot2026.config.constants.IntakeConstants
 import com.team4099.robot2026.config.constants.VisionConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
+import com.team4099.robot2026.subsystems.drivetrain.GyroIO
 import com.team4099.robot2026.subsystems.drivetrain.GyroIOPigeon2
-import com.team4099.robot2026.subsystems.drivetrain.GyroIOSim
+import com.team4099.robot2026.subsystems.drivetrain.ModuleIOSim
 import com.team4099.robot2026.subsystems.drivetrain.ModuleIOTalonFXReal
-import com.team4099.robot2026.subsystems.drivetrain.ModuleIOTalonFXSim
 import com.team4099.robot2026.subsystems.leds.LedIO
 import com.team4099.robot2026.subsystems.leds.LedIOCandle
 import com.team4099.robot2026.subsystems.leds.Leds
@@ -48,10 +47,6 @@ import com.team4099.robot2026.subsystems.vision.Vision
 import com.team4099.robot2026.subsystems.vision.camera.CameraIOPVSim
 import com.team4099.robot2026.subsystems.vision.camera.CameraIOPhotonvision
 import com.team4099.robot2026.util.driver.Jessika
-import org.ironmaple.simulation.SimulatedArena
-import org.ironmaple.simulation.drivesims.SwerveDriveSimulation
-import org.ironmaple.simulation.seasonspecific.rebuilt2026.Arena2026Rebuilt
-import org.littletonrobotics.junction.Logger
 import org.team4099.lib.smoothDeadband
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.max
@@ -76,7 +71,6 @@ object RobotContainer {
   val superstructure: Superstructure
   val leds: Leds
 
-  var driveSimulation: SwerveDriveSimulation? = null
   var isAligning = false
 
   var intakeOverridingAngle = IntakeConstants.ANGLES.INTAKE_ANGLE
@@ -84,18 +78,8 @@ object RobotContainer {
   val autonomousSelector: AutonomousSelector
 
   init {
-    SimulatedArena.overrideInstance(Arena2026Rebuilt(false))
-
-    if (Constants.Universal.DISABLE_COLLISIONS)
-        SimulatedArena.overrideInstance(FieldConstants.EMPTY_MAPLESIM_FIELD)
-
     if (RobotBase.isReal()) {
-      drivetrain =
-          Drive(
-              GyroIOPigeon2,
-              ModuleIOTalonFXReal.generateModules(),
-              { org.wpilib.math.geometry.Pose2d.ZERO },
-              { pose -> {} })
+      drivetrain = Drive(GyroIOPigeon2, ModuleIOTalonFXReal.generateModules())
       vision =
           Vision(
               *VisionConstants.CAMERAS.map {
@@ -143,16 +127,7 @@ object RobotContainer {
         }
       }
     } else {
-      driveSimulation =
-          SwerveDriveSimulation(Drive.mapleSimConfig, DrivetrainConstants.INITIAL_SIM_POSE)
-      SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation)
-
-      drivetrain =
-          Drive(
-              GyroIOSim(driveSimulation!!.gyroSimulation),
-              ModuleIOTalonFXSim.generateModules(driveSimulation!!),
-              driveSimulation!!::getSimulatedDriveTrainPose,
-              driveSimulation!!::setSimulationWorldPose)
+      drivetrain = Drive(object : GyroIO {}, ModuleIOSim.generateModules())
 
       vision =
           Vision(
@@ -406,18 +381,9 @@ object RobotContainer {
   fun getAutonomousCommand() = autonomousSelector.getCommand(superstructure, intake)
 
   fun resetSimulationField() {
-    if (!RobotBase.isSimulation()) return
-
-    driveSimulation!!.setSimulationWorldPose(DrivetrainConstants.INITIAL_SIM_POSE)
-    SimulatedArena.getInstance().resetFieldForAuto()
+    if (RobotBase.isSimulation())
+        drivetrain.pose = org.team4099.lib.geometry.Pose2d(DrivetrainConstants.INITIAL_SIM_POSE)
   }
 
-  fun updateSimulation() {
-    if (!RobotBase.isSimulation()) return
-
-    SimulatedArena.getInstance().simulationPeriodic()
-    Logger.recordOutput("FieldSimulation/RobotPosition", driveSimulation!!.simulatedDriveTrainPose)
-    Logger.recordOutput(
-        "FieldSimulation/Fuel", *SimulatedArena.getInstance().getGamePiecesArrayByType("Fuel"))
-  }
+  fun updateSimulation() {}
 }

@@ -22,21 +22,14 @@ import com.team4099.robot2026.util.CustomLogger
 import com.team4099.robot2026.util.Velocity2d
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
-import java.util.function.Consumer
-import java.util.function.Supplier
-import kotlin.math.absoluteValue
 import kotlin.math.hypot
 import kotlin.math.max
-import org.ironmaple.simulation.drivesims.COTS
-import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig
-import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Translation2d
 import org.team4099.lib.geometry.Twist2d
 import org.team4099.lib.kinematics.ChassisVelocities as ChassisSpeeds
 import org.team4099.lib.units.AngularVelocity
-import org.team4099.lib.units.base.inKilograms
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.base.meters
@@ -57,12 +50,8 @@ import org.wpilib.math.kinematics.SwerveModuleVelocity as SwerveModuleState
 import org.wpilib.math.linalg.Matrix
 import org.wpilib.math.numbers.N1
 import org.wpilib.math.numbers.N3
-import org.wpilib.math.system.DCMotor
 import org.wpilib.sysid.SysIdRoutineLog
 import org.wpilib.units.Units
-import org.wpilib.units.Units.KilogramSquareMeters
-import org.wpilib.units.Units.Kilograms
-import org.wpilib.units.Units.Meters
 import org.wpilib.units.Units.Seconds
 import org.wpilib.units.Units.Volts
 import org.wpilib.units.measure.Voltage
@@ -71,8 +60,6 @@ import org.wpilib.util.Alert
 class Drive(
     private val gyroIO: GyroIO,
     val moduleIOs: Array<ModuleIO>,
-    val getSimulationPoseCallback: Supplier<org.wpilib.math.geometry.Pose2d>,
-    val resetSimulationPoseCallback: Consumer<org.wpilib.math.geometry.Pose2d>
 ) : SubsystemBase() {
   private val gyroInputs: GyroIO.GyroIOInputs = GyroIO.GyroIOInputs()
   private val modules = arrayOfNulls<Module>(4) // FL, FR, BL, BR
@@ -329,12 +316,9 @@ class Drive(
 
   var pose: Pose2d
     /** Returns the current odometry pose. */
-    get() =
-        if (RobotBase.isReal()) Pose2d(poseEstimator.estimatedPosition)
-        else Pose2d(getSimulationPoseCallback.get())
+    get() = Pose2d(poseEstimator.estimatedPosition)
     /** Resets the current odometry pose. */
     set(pose) {
-      resetSimulationPoseCallback.accept(pose.pose2d)
       poseEstimator.resetPosition(rawGyroRotation.inRotation2ds, modulePositions, pose.pose2d)
     }
 
@@ -397,46 +381,5 @@ class Drive(
               Translation2d(
                   DrivetrainConstants.tunerConstants.BackRight.LocationX.meters,
                   DrivetrainConstants.tunerConstants.BackRight.LocationY.meters))
-
-    val mapleSimConfig: DriveTrainSimulationConfig =
-        DriveTrainSimulationConfig.Default()
-            .withBumperSize(
-                Meters.of(
-                    (DrivetrainConstants.DRIVETRAIN_LENGTH + DrivetrainConstants.BUMPER_WIDTH * 2)
-                        .inMeters),
-                Meters.of(
-                    (DrivetrainConstants.DRIVETRAIN_WIDTH + DrivetrainConstants.BUMPER_WIDTH * 2)
-                        .inMeters))
-            .withTrackLengthTrackWidth(
-                Meters.of(
-                    DrivetrainConstants.tunerConstants.FrontLeft.LocationX.absoluteValue +
-                        DrivetrainConstants.tunerConstants.BackRight.LocationX.absoluteValue),
-                Meters.of(
-                    DrivetrainConstants.tunerConstants.FrontLeft.LocationY.absoluteValue +
-                        DrivetrainConstants.tunerConstants.BackRight.LocationY.absoluteValue))
-            .withRobotMass(Kilograms.of(Constants.Universal.ROBOT_WEIGHT.inKilograms))
-            .withGyro(COTS.ofPigeon2())
-            .withSwerveModules(
-                // FL, FR, BL, BR
-                // reason we map the factories is in case we have seperate
-                // modules (aka seperate ratios/constants) on some corners
-                *(arrayOf(
-                        DrivetrainConstants.tunerConstants.FrontLeft,
-                        DrivetrainConstants.tunerConstants.FrontRight,
-                        DrivetrainConstants.tunerConstants.BackLeft,
-                        DrivetrainConstants.tunerConstants.BackRight)
-                    .map {
-                      SwerveModuleSimulationConfig(
-                          DCMotor.getKrakenX60Foc(1),
-                          DCMotor.getKrakenX60Foc(1),
-                          it.DriveMotorGearRatio,
-                          it.SteerMotorGearRatio,
-                          Volts.of(it.DriveFrictionVoltage),
-                          Volts.of(it.SteerFrictionVoltage),
-                          Meters.of(it.WheelRadius),
-                          KilogramSquareMeters.of(it.SteerInertia),
-                          DrivetrainConstants.CURRENT_COF)
-                    }
-                    .toTypedArray()))
   }
 }

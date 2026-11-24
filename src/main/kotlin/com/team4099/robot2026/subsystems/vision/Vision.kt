@@ -10,10 +10,8 @@ import com.team4099.robot2026.subsystems.vision.camera.CameraIO
 import com.team4099.robot2026.util.CustomLogger
 import com.team4099.robot2026.util.toPose3d
 import java.util.function.Supplier
-import org.ironmaple.simulation.SimulatedArena
 import org.photonvision.simulation.VisionSystemSim
 import org.team4099.lib.geometry.Pose2d
-import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.geometry.Transform3d
 import org.team4099.lib.geometry.Transform3dWPILIB
@@ -213,16 +211,6 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose2d>) : Sub
           } else {
             objectsDetected =
                 MutableList(VisionConstants.OBJECT_CLASS.entries.size) { mutableListOf() }
-
-            for (objIdx in VisionConstants.OBJECT_CLASS.entries.toTypedArray().indices) {
-              objectsDetected[objIdx].addAll(
-                  SimulatedArena.getInstance()
-                      .getGamePiecesByType(
-                          VisionConstants.OBJECT_CLASS.entries[objIdx].mapleSimType!!)
-                      .map {
-                        Transform3d(Pose3d(poseSupplier.get()), Pose3d(it.pose3d)).translation
-                      })
-            }
           }
 
           for (objects in VisionConstants.OBJECT_CLASS.entries) {

@@ -74,7 +74,6 @@ repositories {
 	maven { url "https://jitpack.io" }
 }
 
-sourceSets.main.java.srcDirs += ['third_party/maple-sim/src/main/java']
 
 configurations {
 	falconUtilsBundle { transitive = false }
@@ -129,7 +128,6 @@ dependencies {
 	implementation 'org.jetbrains.kotlin:kotlin-test-junit5'
 	falconUtilsBundle 'com.github.team4099:FalconUtils:2.0.0-beta.2'
 	implementation files(falconUtilsJar)
-	implementation 'org.dyn4j:dyn4j:5.0.2'
 	implementation 'org.wpilib.thirdparty.opencv:opencv-java:2027-4.13.0-3'
 	implementation 'org.wpilib.apriltag:apriltag-java:2027.0.0-alpha-8'
 	implementation 'org.wpilib.commandsv2:commandsv2-java:2027.0.0-alpha-8'

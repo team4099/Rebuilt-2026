@@ -3,9 +3,7 @@ package com.team4099.robot2026.commands.drivetrain
 import com.team4099.lib.hal.Clock
 import com.team4099.robot2026.RobotContainer
 import com.team4099.robot2026.config.constants.DrivetrainConstants
-import com.team4099.robot2026.config.constants.ShooterConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
-import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import com.team4099.robot2026.subsystems.superstructure.shooter.Shooter
 import com.team4099.robot2026.util.CustomLogger
 import com.team4099.robot2026.util.driver.DriverProfile
@@ -13,8 +11,6 @@ import java.util.function.Supplier
 import kotlin.math.PI
 import kotlin.math.pow
 import kotlin.math.sqrt
-import org.ironmaple.simulation.SimulatedArena
-import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly
 import org.team4099.lib.controller.PIDController
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.kinematics.ChassisVelocities as ChassisSpeeds
@@ -22,24 +18,16 @@ import org.team4099.lib.units.LinearVelocity
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMeters
-import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inRadians
-import org.team4099.lib.units.derived.inRotation2ds
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.perSecond
 import org.wpilib.command2.Command
-import org.wpilib.framework.RobotBase
-import org.wpilib.units.LinearVelocityUnit
-import org.wpilib.units.Units.Degrees
-import org.wpilib.units.Units.Meters
-import org.wpilib.units.Units.Seconds
-import org.wpilib.units.measure.LinearVelocity as WPILinearVelocity
 
 /**
  * Aim for the HUB or to pass, depending on current position on the field and which option is legal.
@@ -173,27 +161,6 @@ class AimOTFCommand(
       } else {
         if (Clock.timestamp - lastTimeNotStopped > 1.seconds) drivetrain.stopWithX()
       }
-    }
-
-    if (RobotBase.isSimulation() &&
-        (hasAligned &&
-            Clock.timestamp.inSeconds % 1 < 0.04 &&
-            RobotContainer.superstructure.currentState ==
-                Superstructure.Companion.SuperstructureStates.SCORE ||
-            org.wpilib.driverstation.RobotState.isAutonomous())) {
-      SimulatedArena.getInstance()
-          .addGamePieceProjectile(
-              RebuiltFuelOnFly(
-                  drivetrain.pose.translation.translation2d,
-                  ShooterConstants.SHOOTER_OFFSET.translation.translation2d,
-                  drivetrain.chassisSpeeds.chassisVelocitiesWPILIB.toFieldRelative(
-                      drivetrain.rotation.inRotation2ds),
-                  (drivetrain.pose.rotation + ShooterConstants.SHOOTER_OFFSET.rotation)
-                      .inRotation2ds,
-                  Meters.of(ShooterConstants.SHOOTER_HEIGHT.inMeters),
-                  WPILinearVelocity.ofBaseUnits(
-                      launchSpeed.inMetersPerSecond, LinearVelocityUnit.combine(Meters, Seconds)),
-                  Degrees.of(ShooterConstants.SHOOTER_ANGLE.inDegrees)))
     }
   }
 

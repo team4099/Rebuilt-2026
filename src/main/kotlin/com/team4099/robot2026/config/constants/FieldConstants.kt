@@ -1,7 +1,6 @@
 package com.team4099.robot2026.config.constants
 
 import com.team4099.robot2026.util.AllianceFlipUtil
-import org.ironmaple.simulation.SimulatedArena
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Translation3d
@@ -24,11 +23,6 @@ object FieldConstants {
 
   val fieldLength = fieldLayout.fieldLength.meters
   val fieldWidth = fieldLayout.fieldWidth.meters
-
-  val EMPTY_MAPLESIM_FIELD =
-      object : SimulatedArena(object : FieldMap() {}) {
-        override fun placeGamePiecesOnField() {}
-      }
 
   val ALLIANCE_LINE_X: Length
     get() = AllianceFlipUtil.apply(156.61.inches)

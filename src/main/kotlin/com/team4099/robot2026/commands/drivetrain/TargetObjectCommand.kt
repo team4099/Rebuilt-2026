@@ -8,8 +8,6 @@ import com.team4099.robot2026.subsystems.vision.Vision
 import com.team4099.robot2026.util.ClusterScore
 import com.team4099.robot2026.util.CustomLogger
 import kotlin.math.PI
-import org.ironmaple.simulation.SimulatedArena
-import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnField
 import org.team4099.lib.controller.PIDController
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Transform2d
@@ -70,65 +68,6 @@ class TargetObjectCommand(
     startTime = Clock.timestamp
     thetaPID.reset()
     hasThetaAligned = false
-
-    if (RobotBase.isSimulation()) {
-      val arena = SimulatedArena.getInstance()
-      val robotPose = drivetrain.pose
-      val rng = java.util.Random()
-
-      val fuelRadius = 0.15
-      val minSpacing = fuelRadius * 2.0 + 0.01 // 1 cm gap
-      val maxDistanceFromRobot = 5.0
-
-      data class Point(val x: Double, val y: Double)
-
-      fun dist(a: Point, b: Point): Double = kotlin.math.hypot(a.x - b.x, a.y - b.y)
-
-      val allPlacedPoints = mutableListOf<Point>()
-
-      repeat(3) { clusterIndex ->
-        // Random cluster center within 5m of robot
-        val r = rng.nextDouble() * maxDistanceFromRobot
-        val theta = rng.nextDouble() * 2.0 * Math.PI
-
-        val clusterCenter =
-            Point(
-                robotPose.x.inMeters + r * kotlin.math.cos(theta),
-                robotPose.y.inMeters + r * kotlin.math.sin(theta))
-
-        // Random cluster size (tweak bounds if desired)
-        val clusterSize = rng.nextInt(4) + 3 // 3–6 balls
-
-        val clusterPoints = mutableListOf<Point>()
-
-        var attempts = 0
-        while (clusterPoints.size < clusterSize && attempts < 500) {
-          attempts++
-
-          // Small random offset inside cluster
-          val cr = rng.nextDouble() * 0.6
-          val ct = rng.nextDouble() * 2.0 * Math.PI
-
-          val candidate =
-              Point(
-                  clusterCenter.x + cr * kotlin.math.cos(ct),
-                  clusterCenter.y + cr * kotlin.math.sin(ct))
-
-          // Ensure no touching ANY existing fuel
-          val valid = (clusterPoints + allPlacedPoints).all { dist(it, candidate) >= minSpacing }
-
-          if (valid) {
-            clusterPoints.add(candidate)
-            allPlacedPoints.add(candidate)
-          }
-        }
-
-        // Spawn fuel
-        clusterPoints.forEach { p ->
-          arena.addGamePiece(RebuiltFuelOnField(org.wpilib.math.geometry.Translation2d(p.x, p.y)))
-        }
-      }
-    }
 
     CustomLogger.recordOutput("TargetObjectCommand/lastInitialized", Clock.timestamp.inSeconds)
   }
