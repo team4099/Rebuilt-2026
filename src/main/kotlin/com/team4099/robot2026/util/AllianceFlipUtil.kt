@@ -1,7 +1,6 @@
 package com.team4099.robot2026.util
 
 import com.team4099.lib.math.Zone2d
-import com.team4099.lib.trajectory.RotationSequence
 import com.team4099.robot2026.config.constants.FieldConstants
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.trajectory.Trajectory
@@ -106,16 +105,6 @@ object AllianceFlipUtil {
       Zone2d(zone.vertices.map { AllianceFlipUtil.apply(it, force) })
     } else {
       zone
-    }
-  }
-
-  /** Flips a rotation sequence state based on the current alliance color. */
-  fun apply(state: RotationSequence.State): RotationSequence.State {
-    return if (shouldFlip()) {
-      RotationSequence.State(
-          Rotation2d(-state.position.cos, state.position.sin), -state.velocityRadiansPerSec)
-    } else {
-      state
     }
   }
 
