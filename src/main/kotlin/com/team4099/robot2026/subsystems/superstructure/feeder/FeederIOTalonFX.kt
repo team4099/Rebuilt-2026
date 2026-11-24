@@ -10,12 +10,6 @@ import com.ctre.phoenix6.signals.InvertedValue
 import com.ctre.phoenix6.signals.NeutralModeValue
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.FeederConstants
-import edu.wpi.first.units.measure.Angle as WPILibAngle
-import edu.wpi.first.units.measure.AngularAcceleration as WPILibAngularAcceleration
-import edu.wpi.first.units.measure.AngularVelocity as WPILibAngularVelocity
-import edu.wpi.first.units.measure.Current as WPILibCurrent
-import edu.wpi.first.units.measure.Temperature as WPILibTemperature
-import edu.wpi.first.units.measure.Voltage as WPILibVoltage
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
@@ -31,10 +25,17 @@ import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inRotationsPerSecond
 import org.team4099.lib.units.perMinute
 import org.team4099.lib.units.perSecond
+import org.wpilib.units.measure.Angle as WPILibAngle
+import org.wpilib.units.measure.AngularAcceleration as WPILibAngularAcceleration
+import org.wpilib.units.measure.AngularVelocity as WPILibAngularVelocity
+import org.wpilib.units.measure.Current as WPILibCurrent
+import org.wpilib.units.measure.Temperature as WPILibTemperature
+import org.wpilib.units.measure.Voltage as WPILibVoltage
 
 object FeederIOTalonFX : FeederIO {
 
-  private val feederTalon: TalonFX = TalonFX(Constants.Feeder.FEEDER_MOTOR_ID)
+  private val feederTalon: TalonFX =
+      TalonFX(Constants.Feeder.FEEDER_MOTOR_ID, com.ctre.phoenix6.CANBus())
   private val feederConfiguration: TalonFXConfiguration = TalonFXConfiguration()
 
   private val feederSensor =

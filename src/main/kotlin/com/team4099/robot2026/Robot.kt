@@ -1,5 +1,6 @@
 package com.team4099.robot2026
 
+import bline.commands.FollowPathV2 as FollowPath
 import com.ctre.phoenix6.SignalLogger
 import com.pathplanner.lib.commands.FollowPathCommand
 import com.team4099.lib.hal.Clock
@@ -12,22 +13,6 @@ import com.team4099.robot2026.config.constants.RollersConstants
 import com.team4099.robot2026.subsystems.superstructure.Request
 import com.team4099.robot2026.util.CustomLogger
 import com.team4099.robot2026.util.NTSafePublisher
-import edu.wpi.first.hal.AllianceStationID
-import edu.wpi.first.net.WebServer
-import edu.wpi.first.networktables.GenericEntry
-import edu.wpi.first.wpilibj.Alert
-import edu.wpi.first.wpilibj.Alert.AlertType
-import edu.wpi.first.wpilibj.DriverStation
-import edu.wpi.first.wpilibj.Filesystem
-import edu.wpi.first.wpilibj.PowerDistribution
-import edu.wpi.first.wpilibj.RobotBase
-import edu.wpi.first.wpilibj.livewindow.LiveWindow
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
-import edu.wpi.first.wpilibj.simulation.DriverStationSim
-import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.CommandScheduler
-import frc.robot.lib.BLine.FollowPath
 import java.nio.file.Files
 import java.nio.file.Paths
 import org.ejml.EjmlVersion.BUILD_DATE
@@ -44,25 +29,50 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.base.seconds
+import org.wpilib.command2.Command
+import org.wpilib.command2.CommandScheduler
+import org.wpilib.framework.RobotBase
+import org.wpilib.hardware.hal.AllianceStationID
+import org.wpilib.hardware.power.PowerDistribution
+import org.wpilib.net.WebServer
+import org.wpilib.simulation.DriverStationSim
+import org.wpilib.system.Filesystem
+import org.wpilib.util.Alert
+import org.wpilib.util.Alert.Level as AlertType
 
 object Robot : LoggedRobot() {
   val logFolderAlert =
-      Alert("Log folder path does not exist. Data will NOT be logged.", AlertType.kError)
+      Alert(
+          "Log folder path does not exist. Data will NOT be logged.",
+          "Log folder path does not exist. Data will NOT be logged.",
+          AlertType.HIGH)
   val logReceiverQueueAlert =
-      Alert("Logging queue exceeded capacity, data will NOT be logged.", AlertType.kError)
-  val logOpenFileAlert = Alert("Failed to open log file. Data will NOT be logged", AlertType.kError)
+      Alert(
+          "Logging queue exceeded capacity, data will NOT be logged.",
+          "Logging queue exceeded capacity, data will NOT be logged.",
+          AlertType.HIGH)
+  val logOpenFileAlert =
+      Alert(
+          "Failed to open log file. Data will NOT be logged",
+          "Failed to open log file. Data will NOT be logged",
+          AlertType.HIGH)
   val logWriteAlert =
-      Alert("Failed write to the log file. Data will NOT be logged", AlertType.kError)
-  val logSimulationAlert = Alert("Running in simulation", AlertType.kInfo)
+      Alert(
+          "Failed write to the log file. Data will NOT be logged",
+          "Failed write to the log file. Data will NOT be logged",
+          AlertType.HIGH)
+  val logSimulationAlert = Alert("Running in simulation", "Running in simulation", AlertType.LOW)
   val logTuningModeEnabled =
-      Alert("Tuning Mode Enabled. Expect loop times to be greater", AlertType.kWarning)
+      Alert(
+          "Tuning Mode Enabled. Expect loop times to be greater",
+          "Tuning Mode Enabled. Expect loop times to be greater",
+          AlertType.MEDIUM)
 
-  lateinit var allianceSelected: GenericEntry
   lateinit var autonomousCommand: Command
   var scoringFirst: Boolean = false
   var autoStartTime: Time = (-1337).seconds
 
-  override fun robotInit() {
+  init {
     // elastic layout upload dont remove
     WebServer.start(5800, Filesystem.getDeployDirectory().getPath())
     // running replays as fast as possible when replaying. (play in real time when robot is real or
@@ -100,14 +110,14 @@ object Robot : LoggedRobot() {
 
       Logger.addDataReceiver(NTSafePublisher())
       LoggedPowerDistribution.getInstance(
-          Constants.Universal.POWER_DISTRIBUTION_HUB_ID, PowerDistribution.ModuleType.kRev)
+          Constants.Universal.POWER_DISTRIBUTION_HUB_ID, 0, PowerDistribution.ModuleType.REV)
     } else {
       when (Constants.Universal.SIM_MODE) {
         Constants.Tuning.SimType.SIM -> {
           Logger.addDataReceiver(NTSafePublisher())
           Logger.addDataReceiver(WPILOGWriter()) // writes to ./logs
           logSimulationAlert.set(true)
-          DriverStationSim.setAllianceStationId(AllianceStationID.Blue1)
+          DriverStationSim.setAllianceStationId(AllianceStationID.BLUE_1)
         }
         Constants.Tuning.SimType.REPLAY -> {
           // if in replay mode get file path from command line and read log file
@@ -129,8 +139,6 @@ object Robot : LoggedRobot() {
     SignalLogger.stop()
     //    SignalLogger.setPath("/media/sda1/ctre-logs/")
 
-    LiveWindow.disableAllTelemetry()
-
     // init a buncha things
     FieldConstants.fieldLayout
     RobotContainer.mapDefaultCommands()
@@ -151,14 +159,6 @@ object Robot : LoggedRobot() {
       Logger.recordOutput("/ActiveCommands/${command.name}", false)
     }
 
-    val autoTab = Shuffleboard.getTab("Pre-match")
-    allianceSelected =
-        autoTab
-            .add("Alliance Selected", "No alliance")
-            .withPosition(0, 1)
-            .withWidget(BuiltInWidgets.kTextView)
-            .entry
-
     CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand())
 
     Logger.recordOutput("TuningMode", Constants.Tuning.TUNING_MODE)
@@ -174,10 +174,6 @@ object Robot : LoggedRobot() {
     }
     FollowPath.setTranslationListLoggingConsumer { value ->
       CustomLogger.recordOutput(value.getFirst(), value.getSecond())
-    }
-
-    if (isSimulation()) {
-      DriverStation.silenceJoystickConnectionWarning(true)
     }
   }
 
@@ -225,12 +221,14 @@ object Robot : LoggedRobot() {
       RobotContainer.mapTunableCommands()
     }
     scoringFirst =
-        (DriverStation.getGameSpecificMessage() == "R" &&
-            (DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) ==
-                DriverStation.Alliance.Blue)) ||
-            (DriverStation.getGameSpecificMessage() == "B" &&
-                (DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) ==
-                    DriverStation.Alliance.Red))
+        (org.wpilib.driverstation.MatchState.getGameData().orElse("") == "R" &&
+            (org.wpilib.driverstation.MatchState.getAlliance()
+                .orElse(org.wpilib.driverstation.Alliance.BLUE) ==
+                org.wpilib.driverstation.Alliance.BLUE)) ||
+            (org.wpilib.driverstation.MatchState.getGameData().orElse("") == "B" &&
+                (org.wpilib.driverstation.MatchState.getAlliance()
+                    .orElse(org.wpilib.driverstation.Alliance.BLUE) ==
+                    org.wpilib.driverstation.Alliance.RED))
     //    if (RobotContainer.superstructure.currentState ==
     //        Superstructure.Companion.SuperstructureStates.CLIMB) {
     //     // RobotContainer.superstructure.currentRequest =
@@ -244,7 +242,7 @@ object Robot : LoggedRobot() {
   }
 
   override fun teleopPeriodic() {
-    val time = DriverStation.getMatchTime()
+    val time = org.wpilib.driverstation.MatchState.getMatchTime()
     val shiftIndex =
         when {
           time > 125 -> 0
@@ -268,7 +266,7 @@ object Robot : LoggedRobot() {
     }
   }
 
-  override fun testInit() {
+  override fun utilityInit() {
     RobotContainer.mapTestControls()
     RobotContainer.getAutonomousCommand().cancel()
     RobotContainer.intake.setBrakeMode(true)

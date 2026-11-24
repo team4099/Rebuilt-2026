@@ -1,9 +1,5 @@
 package com.team4099.robot2026.util
 
-import edu.wpi.first.util.sendable.Sendable
-import edu.wpi.first.util.sendable.SendableBuilder
-import edu.wpi.first.util.sendable.SendableRegistry
-
 /**
  * This abstract class creates "fake" subsystems with a "fake" periodic ([onLoop]). These will have
  * their loops run by Superstructure during its periodic. This enables us to cleanly control the
@@ -14,28 +10,15 @@ import edu.wpi.first.util.sendable.SendableRegistry
  * will remain in the old paradigm and be controlled by the `CommandScheduler`.
  *
  * @param name Name of the class. If not passed in, the simple name of the class is used.
- * @see [edu.wpi.first.wpilibj2.command.CommandScheduler]
- * @see [edu.wpi.first.wpilibj2.command.SubsystemBase]
+ * @see [org.wpilib.command2.CommandScheduler]
+ * @see [org.wpilib.command2.SubsystemBase]
  * @author Nathan Areguzz, Ryan Chunguzz
  */
-abstract class ControlledByStateMachine(name: String?) : Sendable {
+abstract class ControlledByStateMachine(name: String?) {
   constructor() : this(null)
-
-  init {
-    val sentName = name ?: this.javaClass.simpleName
-    SendableRegistry.addLW(this, sentName, sentName)
-  }
 
   /**
    * The method to be run on every loop cycle, preceding the superstructure's state machine logic.
    */
   abstract fun onLoop()
-
-  /**
-   * @see [edu.wpi.first.wpilibj2.command.SubsystemBase]
-   * @see [edu.wpi.first.util.sendable.Sendable]
-   */
-  final override fun initSendable(builder: SendableBuilder) {
-    builder.setSmartDashboardType("Subsystem")
-  }
 }

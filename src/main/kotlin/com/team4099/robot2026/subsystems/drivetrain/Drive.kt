@@ -27,32 +27,6 @@ import com.team4099.robot2026.config.constants.VisionConstants
 import com.team4099.robot2026.util.AllianceFlipUtil
 import com.team4099.robot2026.util.CustomLogger
 import com.team4099.robot2026.util.Velocity2d
-import edu.wpi.first.hal.FRCNetComm
-import edu.wpi.first.hal.HAL
-import edu.wpi.first.math.Matrix
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
-import edu.wpi.first.math.geometry.Pose2d as WPIPose2d
-import edu.wpi.first.math.kinematics.ChassisSpeeds as WPIChassisSpeeds
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics
-import edu.wpi.first.math.kinematics.SwerveModulePosition
-import edu.wpi.first.math.kinematics.SwerveModuleState
-import edu.wpi.first.math.numbers.N1
-import edu.wpi.first.math.numbers.N3
-import edu.wpi.first.math.system.plant.DCMotor
-import edu.wpi.first.units.Units
-import edu.wpi.first.units.Units.KilogramSquareMeters
-import edu.wpi.first.units.Units.Kilograms
-import edu.wpi.first.units.Units.Meters
-import edu.wpi.first.units.Units.Seconds
-import edu.wpi.first.units.Units.Volts
-import edu.wpi.first.units.measure.Voltage
-import edu.wpi.first.wpilibj.Alert
-import edu.wpi.first.wpilibj.DriverStation
-import edu.wpi.first.wpilibj.RobotBase
-import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog
-import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.SubsystemBase
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine
 import frc.robot.util.LocalADStarAK
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
@@ -68,7 +42,7 @@ import org.littletonrobotics.junction.Logger
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Translation2d
 import org.team4099.lib.geometry.Twist2d
-import org.team4099.lib.kinematics.ChassisSpeeds
+import org.team4099.lib.kinematics.ChassisVelocities as ChassisSpeeds
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.base.inKilograms
 import org.team4099.lib.units.base.inMeters
@@ -85,18 +59,45 @@ import org.team4099.lib.units.derived.inRadiansPerSecondPerRadiansPerSecond
 import org.team4099.lib.units.derived.inRotation2ds
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.inMetersPerSecond
+import org.wpilib.command2.Command
+import org.wpilib.command2.SubsystemBase
+import org.wpilib.command2.sysid.SysIdRoutine
+import org.wpilib.framework.RobotBase
+import org.wpilib.hardware.hal.HAL
+import org.wpilib.math.estimator.SwerveDrivePoseEstimator
+import org.wpilib.math.geometry.Pose2d as WPIPose2d
+import org.wpilib.math.kinematics.ChassisVelocities as WPIChassisSpeeds
+import org.wpilib.math.kinematics.SwerveDriveKinematics
+import org.wpilib.math.kinematics.SwerveModulePosition
+import org.wpilib.math.kinematics.SwerveModuleVelocity as SwerveModuleState
+import org.wpilib.math.linalg.Matrix
+import org.wpilib.math.numbers.N1
+import org.wpilib.math.numbers.N3
+import org.wpilib.math.system.DCMotor
+import org.wpilib.sysid.SysIdRoutineLog
+import org.wpilib.units.Units
+import org.wpilib.units.Units.KilogramSquareMeters
+import org.wpilib.units.Units.Kilograms
+import org.wpilib.units.Units.Meters
+import org.wpilib.units.Units.Seconds
+import org.wpilib.units.Units.Volts
+import org.wpilib.units.measure.Voltage
+import org.wpilib.util.Alert
 
 class Drive(
     private val gyroIO: GyroIO,
     val moduleIOs: Array<ModuleIO>,
-    val getSimulationPoseCallback: Supplier<edu.wpi.first.math.geometry.Pose2d>,
-    val resetSimulationPoseCallback: Consumer<edu.wpi.first.math.geometry.Pose2d>
+    val getSimulationPoseCallback: Supplier<org.wpilib.math.geometry.Pose2d>,
+    val resetSimulationPoseCallback: Consumer<org.wpilib.math.geometry.Pose2d>
 ) : SubsystemBase() {
   private val gyroInputs: GyroIO.GyroIOInputs = GyroIO.GyroIOInputs()
   private val modules = arrayOfNulls<Module>(4) // FL, FR, BL, BR
   private val sysId: SysIdRoutine
   private val gyroDisconnectedAlert =
-      Alert("Disconnected gyro, using kinematics as fallback.", Alert.AlertType.kError)
+      Alert(
+          "Disconnected gyro, using kinematics as fallback.",
+          "Disconnected gyro, using kinematics as fallback.",
+          Alert.Level.HIGH)
 
   private val kinematics: SwerveDriveKinematics =
       SwerveDriveKinematics(
@@ -129,9 +130,7 @@ class Drive(
     modules[3] = Module(moduleIOs[3], 3, DrivetrainConstants.tunerConstants.BackRight)
 
     // Usage reporting for swerve template
-    HAL.report(
-        FRCNetComm.tResourceType.kResourceType_RobotDrive,
-        FRCNetComm.tInstances.kRobotDriveSwerve_AdvantageKit)
+    HAL.reportUsage("RobotDrive", "Swerve/AdvantageKit")
 
     // Start odometry thread
     PhoenixOdometryThread.instance.start()
@@ -141,7 +140,7 @@ class Drive(
     AutoBuilder.configure(
         { this.pose.pose2d },
         { pose: WPIPose2d -> this.pose = Pose2d(pose) },
-        { this.chassisSpeeds.chassisSpeedsWPILIB },
+        { this.chassisSpeeds.chassisVelocitiesWPILIB },
         { speeds: WPIChassisSpeeds -> this.runSpeeds(ChassisSpeeds(speeds)) },
         PPHolonomicDriveController(
             PIDConstants(
@@ -154,8 +153,9 @@ class Drive(
                 DrivetrainConstants.PID.AUTO_THETA_PID_KI.inRadiansPerSecondPerRadianSeconds)),
         PP_CONFIG,
         {
-          DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) ==
-              DriverStation.Alliance.Red
+          org.wpilib.driverstation.MatchState.getAlliance()
+              .orElse(org.wpilib.driverstation.Alliance.BLUE) ==
+              org.wpilib.driverstation.Alliance.RED
         },
         this)
     Pathfinding.setPathfinder(LocalADStarAK())
@@ -189,14 +189,14 @@ class Drive(
     odometryLock.unlock()
 
     // Stop moving when disabled
-    if (DriverStation.isDisabled()) {
+    if (org.wpilib.driverstation.RobotState.isDisabled()) {
       for (module in modules) {
         module!!.stop()
       }
     }
 
     // Log empty setpoint states when disabled
-    if (DriverStation.isDisabled()) {
+    if (org.wpilib.driverstation.RobotState.isDisabled()) {
       CustomLogger.recordOutput("SwerveStates/Setpoints", *arrayOf<SwerveModuleState>())
       CustomLogger.recordOutput("SwerveStates/SetpointsOptimized", *arrayOf<SwerveModuleState>())
     }
@@ -212,8 +212,8 @@ class Drive(
         modulePositions[moduleIndex] = modules[moduleIndex]!!.odometryPositions[i]
         moduleDeltas[moduleIndex] =
             SwerveModulePosition(
-                modulePositions[moduleIndex]!!.distanceMeters -
-                    lastModulePositions[moduleIndex]!!.distanceMeters,
+                modulePositions[moduleIndex]!!.distance -
+                    lastModulePositions[moduleIndex]!!.distance,
                 modulePositions[moduleIndex]!!.angle)
         lastModulePositions[moduleIndex] = modulePositions[moduleIndex]
       }
@@ -237,7 +237,7 @@ class Drive(
     gyroDisconnectedAlert.set(!gyroInputs.connected && RobotBase.isReal())
 
     CustomLogger.recordOutput("Odometry/pose", pose.pose2d)
-    CustomLogger.recordOutput("SwerveChassisSpeeds/Measured", chassisSpeeds.chassisSpeedsWPILIB)
+    CustomLogger.recordOutput("SwerveChassisSpeeds/Measured", chassisSpeeds.chassisVelocitiesWPILIB)
 
     Logger.recordOutput("SwerveStates/Measured", *moduleStates)
 
@@ -262,25 +262,21 @@ class Drive(
             ChassisSpeeds(-speeds.vx, -speeds.vy, speeds.omega)
         else speeds
     // Calculate module setpoints
-    val discreteSpeeds =
-        ChassisSpeeds.discretize(flippedSpeeds, Constants.Universal.LOOP_PERIOD_TIME)
+    val discreteSpeeds = flippedSpeeds.discretize(Constants.Universal.LOOP_PERIOD_TIME)
     val setpointStates: Array<SwerveModuleState> =
-        kinematics.toSwerveModuleStates(discreteSpeeds.chassisSpeedsWPILIB)
-
-    SwerveDriveKinematics.desaturateWheelSpeeds(
-        setpointStates, DrivetrainConstants.tunerConstants.kSpeedAt12Volts.inMetersPerSecond)
+        SwerveDriveKinematics.desaturateWheelVelocities(
+            kinematics.toSwerveModuleVelocities(discreteSpeeds.chassisVelocitiesWPILIB),
+            DrivetrainConstants.tunerConstants.kSpeedAt12Volts.inMetersPerSecond)
 
     // Log unoptimized setpoints and setpoint speeds
     Logger.recordOutput("SwerveStates/Setpoints", *setpointStates)
-    Logger.recordOutput("SwerveChassisSpeeds/Setpoints", discreteSpeeds.chassisSpeedsWPILIB)
+    Logger.recordOutput("SwerveChassisSpeeds/Setpoints", discreteSpeeds.chassisVelocitiesWPILIB)
 
     // Send setpoints to modules
-    for (i in 0..3) {
-      modules[i]!!.runSetpoint(setpointStates[i])
-    }
+    val optimizedStates = Array(4) { i -> modules[i]!!.runSetpoint(setpointStates[i]) }
 
-    // Log optimized setpoints (runSetpoint mutates each state)
-    Logger.recordOutput("SwerveStates/SetpointsOptimized", *setpointStates)
+    // Log optimized setpoints
+    Logger.recordOutput("SwerveStates/SetpointsOptimized", *optimizedStates)
   }
 
   fun runTranslationWhileKeepingRotation(vels: Velocity2d, flipIfRed: Boolean = true) {
@@ -356,7 +352,7 @@ class Drive(
 
   val chassisSpeeds: ChassisSpeeds
     /** Returns the measured chassis speeds of the robot. */
-    get() = ChassisSpeeds(kinematics.toChassisSpeeds(*moduleStates))
+    get() = ChassisSpeeds(kinematics.toChassisVelocities(*moduleStates))
 
   val wheelRadiusCharacterizationPositions: DoubleArray
     /** Returns the position of each module in radians. */

@@ -1,15 +1,14 @@
 package com.team4099.robot2026.util
 
-import edu.wpi.first.networktables.GenericPublisher
-import edu.wpi.first.networktables.IntegerPublisher
-import edu.wpi.first.networktables.NetworkTable
-import edu.wpi.first.networktables.NetworkTableInstance
-import edu.wpi.first.networktables.PubSubOption
-import edu.wpi.first.wpilibj.DriverStation
 import org.littletonrobotics.junction.LogDataReceiver
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.LogTable.LogValue
 import org.littletonrobotics.junction.LogTable.LoggableType
+import org.wpilib.networktables.GenericPublisher
+import org.wpilib.networktables.IntegerPublisher
+import org.wpilib.networktables.NetworkTable
+import org.wpilib.networktables.NetworkTableInstance
+import org.wpilib.networktables.PubSubOption
 
 class NTSafePublisher : LogDataReceiver {
   private val rootTable: NetworkTable = NetworkTableInstance.getDefault().getTable("/AdvantageKit")
@@ -17,12 +16,12 @@ class NTSafePublisher : LogDataReceiver {
   private val timestampPublisher: IntegerPublisher =
       rootTable
           .getIntegerTopic(LogDataReceiver.timestampKey.substring(1))
-          .publish(PubSubOption.sendAll(true))
+          .publish(PubSubOption.SEND_ALL)
   private val publishers: MutableMap<String, GenericPublisher?> = HashMap()
 
   override fun putTable(table: LogTable) {
     // only stream data if we are not connected to FMS to reduce bandwidth issues
-    if (!DriverStation.isFMSAttached()) {
+    if (!org.wpilib.driverstation.RobotState.isFMSAttached()) {
       // Send timestamp
       timestampPublisher[table.timestamp] = table.timestamp
 
@@ -43,7 +42,7 @@ class NTSafePublisher : LogDataReceiver {
         var publisher = publishers[key]
         if (publisher == null) {
           publisher =
-              rootTable.getTopic(key).genericPublish(newValue.nT4Type, PubSubOption.sendAll(true))
+              rootTable.getTopic(key).genericPublish(newValue.nT4Type, PubSubOption.SEND_ALL)
           publishers[key] = publisher
         }
 

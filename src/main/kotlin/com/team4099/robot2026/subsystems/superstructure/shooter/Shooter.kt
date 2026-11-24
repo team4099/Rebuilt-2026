@@ -9,20 +9,6 @@ import com.team4099.robot2026.subsystems.superstructure.Request
 import com.team4099.robot2026.util.ControlledByStateMachine
 import com.team4099.robot2026.util.CustomLogger
 import com.team4099.robot2026.util.Velocity2d
-import edu.wpi.first.math.MathUtil
-import edu.wpi.first.math.Matrix
-import edu.wpi.first.math.Nat.N1
-import edu.wpi.first.math.Nat.N2
-import edu.wpi.first.math.Vector
-import edu.wpi.first.math.interpolation.InterpolatingTreeMap
-import edu.wpi.first.units.Units.Volts
-import edu.wpi.first.units.measure.Voltage as WPILibVoltage
-import edu.wpi.first.wpilibj.RobotBase
-import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog
-import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.SubsystemBase
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Mechanism
 import java.util.function.Consumer
 import kotlin.math.atan2
 import kotlin.math.max
@@ -31,7 +17,7 @@ import kotlin.math.sqrt
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Translation2d
 import org.team4099.lib.geometry.Translation3d
-import org.team4099.lib.kinematics.ChassisSpeeds
+import org.team4099.lib.kinematics.ChassisVelocities as ChassisSpeeds
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.LinearVelocity
 import org.team4099.lib.units.base.Length
@@ -59,6 +45,20 @@ import org.team4099.lib.units.inRotationsPerSecond
 import org.team4099.lib.units.max
 import org.team4099.lib.units.min
 import org.team4099.lib.units.perSecond
+import org.wpilib.command2.Command
+import org.wpilib.command2.SubsystemBase
+import org.wpilib.command2.sysid.SysIdRoutine
+import org.wpilib.command2.sysid.SysIdRoutine.Mechanism
+import org.wpilib.framework.RobotBase
+import org.wpilib.math.interpolation.InterpolatingTreeMap
+import org.wpilib.math.linalg.Matrix
+import org.wpilib.math.linalg.Vector
+import org.wpilib.math.numbers.N1
+import org.wpilib.math.numbers.N2
+import org.wpilib.math.util.MathUtil
+import org.wpilib.sysid.SysIdRoutineLog
+import org.wpilib.units.Units.Volts
+import org.wpilib.units.measure.Voltage as WPILibVoltage
 
 class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
   val inputs = ShooterIO.ShooterInputs()
@@ -286,8 +286,8 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
       // Get field-relative drivetrain velocity, and convert it into a vector.
       val fieldSpeeds =
           ChassisSpeeds(
-              edu.wpi.first.math.kinematics.ChassisSpeeds.fromRobotRelativeSpeeds(
-                  chassisSpeeds.chassisSpeedsWPILIB, drivetrainPose.rotation.inRotation2ds))
+              chassisSpeeds.chassisVelocitiesWPILIB.toFieldRelative(
+                  drivetrainPose.rotation.inRotation2ds))
 
       // Shooter tangential velocity
       val shooterCurrentTransform =
@@ -305,15 +305,18 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
       val driveVector =
           Vector(
               Matrix(
-                  N2(),
-                  N1(),
+                  org.wpilib.math.util.Nat.N2(),
+                  org.wpilib.math.util.Nat.N1(),
                   doubleArrayOf(
                       (fieldSpeeds.vx + shooterSpeeds.x).inMetersPerSecond,
                       (fieldSpeeds.vy + shooterSpeeds.y).inMetersPerSecond)))
 
       val robotTHubVector =
           Vector(
-              Matrix(N2(), N1(), doubleArrayOf(shooterTTargetX.inMeters, shooterTTargetY.inMeters)))
+              Matrix(
+                  org.wpilib.math.util.Nat.N2(),
+                  org.wpilib.math.util.Nat.N1(),
+                  doubleArrayOf(shooterTTargetX.inMeters, shooterTTargetY.inMeters)))
 
       // Get the distance (signed) between the robot and the HUB
       val hubUnitVector = robotTHubVector.times(1.0 / shooterTTargetMag.inMeters)
@@ -482,19 +485,19 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
     private val distanceToShooterMap: InterpolatingTreeMap<Length, AngularVelocity> =
         InterpolatingTreeMap(
             { startValue, endValue, q ->
-              MathUtil.inverseInterpolate(startValue.value, endValue.value, q.value)
+              MathUtil.inverseLerp(startValue.value, endValue.value, q.value)
             },
             { startValue, endValue, t ->
-              AngularVelocity(MathUtil.interpolate(startValue.value, endValue.value, t))
+              AngularVelocity(MathUtil.lerp(startValue.value, endValue.value, t))
             })
 
     private val passingShooterMap: InterpolatingTreeMap<Length, AngularVelocity> =
         InterpolatingTreeMap(
             { startValue, endValue, q ->
-              MathUtil.inverseInterpolate(startValue.value, endValue.value, q.value)
+              MathUtil.inverseLerp(startValue.value, endValue.value, q.value)
             },
             { startValue, endValue, t ->
-              AngularVelocity(MathUtil.interpolate(startValue.value, endValue.value, t))
+              AngularVelocity(MathUtil.lerp(startValue.value, endValue.value, t))
             })
 
     init {

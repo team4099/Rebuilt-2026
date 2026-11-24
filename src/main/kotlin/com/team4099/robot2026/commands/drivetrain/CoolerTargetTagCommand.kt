@@ -6,13 +6,10 @@ import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.subsystems.vision.Vision
 import com.team4099.robot2026.util.CustomLogger
 import com.team4099.robot2026.util.toPose3d
-import edu.wpi.first.wpilibj.DriverStation
-import edu.wpi.first.wpilibj.RobotBase
-import edu.wpi.first.wpilibj2.command.Command
 import kotlin.math.PI
 import org.team4099.lib.controller.PIDController
 import org.team4099.lib.geometry.Pose3d
-import org.team4099.lib.kinematics.ChassisSpeeds
+import org.team4099.lib.kinematics.ChassisVelocities as ChassisSpeeds
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
@@ -30,6 +27,8 @@ import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.inDegreesPerSecond
 import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.perSecond
+import org.wpilib.command2.Command
+import org.wpilib.framework.RobotBase
 
 class CoolerTargetTagCommand(
     private val drivetrain: Drive,
@@ -79,7 +78,7 @@ class CoolerTargetTagCommand(
               DrivetrainConstants.PID.SIM_TELEOP_X_PID_KI,
               DrivetrainConstants.PID.SIM_TELEOP_X_PID_KD)
     } else {
-      if (DriverStation.isAutonomous()) {
+      if (org.wpilib.driverstation.RobotState.isAutonomous()) {
         thetaPID =
             PIDController(
                 DrivetrainConstants.PID.AUTO_REEF_PID_KP,

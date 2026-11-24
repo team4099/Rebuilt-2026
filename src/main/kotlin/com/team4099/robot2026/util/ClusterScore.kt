@@ -1,10 +1,6 @@
 package com.team4099.robot2026.util
 
 import com.team4099.robot2026.config.constants.Constants
-import edu.wpi.first.math.geometry.Pose2d
-import edu.wpi.first.math.geometry.Rotation2d
-import edu.wpi.first.math.geometry.Translation2d
-import edu.wpi.first.math.geometry.Translation3d
 import kotlin.math.pow
 import kotlin.math.sqrt
 import org.tribuo.Feature
@@ -18,6 +14,10 @@ import org.tribuo.impl.ArrayExample
 import org.tribuo.math.distance.L2Distance
 import org.tribuo.math.neighbour.NeighboursQueryFactoryType
 import org.tribuo.provenance.SimpleDataSourceProvenance
+import org.wpilib.math.geometry.Pose2d
+import org.wpilib.math.geometry.Rotation2d
+import org.wpilib.math.geometry.Translation2d
+import org.wpilib.math.geometry.Translation3d
 
 /**
  * Clusters individual Translation2d object detections using HDBSCAN, scores clusters based on

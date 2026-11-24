@@ -11,11 +11,6 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue
 import com.team4099.lib.math.clamp
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.RollersConstants
-import edu.wpi.first.units.measure.AngularAcceleration as WPILibAngularAcceleration
-import edu.wpi.first.units.measure.AngularVelocity as WPILibAngularVelocity
-import edu.wpi.first.units.measure.Current as WPILibCurrent
-import edu.wpi.first.units.measure.Temperature as WPILibTemperature
-import edu.wpi.first.units.measure.Voltage as WPILibVoltage
 import org.team4099.lib.units.base.Current
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
@@ -26,11 +21,18 @@ import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
+import org.wpilib.units.measure.AngularAcceleration as WPILibAngularAcceleration
+import org.wpilib.units.measure.AngularVelocity as WPILibAngularVelocity
+import org.wpilib.units.measure.Current as WPILibCurrent
+import org.wpilib.units.measure.Temperature as WPILibTemperature
+import org.wpilib.units.measure.Voltage as WPILibVoltage
 
 object IntakeRollersIOTalon : IntakeRollersIO {
 
-  private val leaderTalon: TalonFX = TalonFX(Constants.Intake.LEADER_ROLLERS_MOTOR_ID)
-  private val followerTalon: TalonFX = TalonFX(Constants.Intake.FOLLOWER_ROLLERS_MOTOR_ID)
+  private val leaderTalon: TalonFX =
+      TalonFX(Constants.Intake.LEADER_ROLLERS_MOTOR_ID, com.ctre.phoenix6.CANBus())
+  private val followerTalon: TalonFX =
+      TalonFX(Constants.Intake.FOLLOWER_ROLLERS_MOTOR_ID, com.ctre.phoenix6.CANBus())
 
   private val rollerConfig: TalonFXConfiguration = TalonFXConfiguration()
 

@@ -1,7 +1,6 @@
 package com.team4099.lib.logging
 
 import com.team4099.robot2026.config.constants.Constants
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 
 /**
  * Taken from
@@ -40,7 +39,7 @@ class TunableNumber(dashboardKey: String) {
     this.defaultValue = defaultValue
 
     // This makes sure the data is on NetworkTables but will not change it
-    SmartDashboard.putNumber(key, SmartDashboard.getNumber(key, defaultValue))
+    Dashboard.putNumber(key, Dashboard.getNumber(key, defaultValue))
   }
 
   /**
@@ -49,7 +48,7 @@ class TunableNumber(dashboardKey: String) {
    * @return The current value
    */
   fun get(): Double {
-    return if (Constants.Tuning.TUNING_MODE) SmartDashboard.getNumber(key, defaultValue)
+    return if (Constants.Tuning.TUNING_MODE) Dashboard.getNumber(key, defaultValue)
     else defaultValue
   }
 

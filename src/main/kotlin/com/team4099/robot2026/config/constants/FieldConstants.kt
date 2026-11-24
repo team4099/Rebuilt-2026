@@ -1,8 +1,6 @@
 package com.team4099.robot2026.config.constants
 
 import com.team4099.robot2026.util.AllianceFlipUtil
-import edu.wpi.first.apriltag.AprilTagFieldLayout
-import edu.wpi.first.apriltag.AprilTagFields
 import org.ironmaple.simulation.SimulatedArena
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Pose3d
@@ -10,6 +8,8 @@ import org.team4099.lib.geometry.Translation3d
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
+import org.wpilib.fields.Field
+import org.wpilib.fields.Fields
 
 /**
  * Contains various field dimensions and useful reference points. Dimensions are in meters, and sets
@@ -20,7 +20,7 @@ import org.team4099.lib.units.base.meters
  * Width refers to the *y* direction (as described by wpilib)
  */
 object FieldConstants {
-  val fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded)
+  val fieldLayout = Field.loadField(Fields.FRC_2026_REBUILT_WELDED)
 
   val fieldLength = fieldLayout.fieldLength.meters
   val fieldWidth = fieldLayout.fieldWidth.meters

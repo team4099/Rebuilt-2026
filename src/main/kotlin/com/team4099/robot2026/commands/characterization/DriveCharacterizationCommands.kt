@@ -8,24 +8,24 @@ package com.team4099.robot2026.commands.characterization
 
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.util.CustomLogger
-import edu.wpi.first.math.filter.SlewRateLimiter
-import edu.wpi.first.math.geometry.Rotation2d
-import edu.wpi.first.math.util.Units
-import edu.wpi.first.wpilibj.Timer
-import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.Commands
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.util.LinkedList
 import kotlin.math.abs
-import org.team4099.lib.kinematics.ChassisSpeeds
+import org.team4099.lib.kinematics.ChassisVelocities as ChassisSpeeds
 import org.team4099.lib.units.base.inInches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.inRotation2ds
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.perSecond
+import org.wpilib.command2.Command
+import org.wpilib.command2.Commands
+import org.wpilib.command2.ParallelCommandGroup
+import org.wpilib.command2.SequentialCommandGroup
+import org.wpilib.math.filter.SlewRateLimiter
+import org.wpilib.math.geometry.Rotation2d
+import org.wpilib.math.util.Units
+import org.wpilib.system.Timer
 
 object DriveCharacterizationCommands {
   private const val FF_START_DELAY = 2.0
@@ -148,7 +148,7 @@ object DriveCharacterizationCommands {
 
   private class WheelRadiusCharacterizationState {
     var positions: DoubleArray = DoubleArray(4)
-    var lastAngle: Rotation2d = Rotation2d.kZero
+    var lastAngle: Rotation2d = Rotation2d.ZERO
     var gyroDelta: Double = 0.0
   }
 }

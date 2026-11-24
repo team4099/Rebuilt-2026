@@ -3,10 +3,6 @@ package com.team4099.robot2026.subsystems.superstructure.climb
 import com.team4099.lib.math.clamp
 import com.team4099.robot2026.config.constants.ClimbConstants
 import com.team4099.robot2026.config.constants.Constants
-import edu.wpi.first.math.system.plant.DCMotor
-import edu.wpi.first.wpilibj.simulation.BatterySim
-import edu.wpi.first.wpilibj.simulation.ElevatorSim
-import edu.wpi.first.wpilibj.simulation.RoboRioSim
 import org.team4099.lib.controller.ProfiledPIDController
 import org.team4099.lib.controller.TrapezoidProfile
 import org.team4099.lib.units.base.Length
@@ -24,6 +20,10 @@ import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.volts
+import org.wpilib.math.system.DCMotor
+import org.wpilib.simulation.BatterySim
+import org.wpilib.simulation.ElevatorSim
+import org.wpilib.simulation.RoboRioSim
 
 object ClimbIOSim : ClimbIO {
   // Modeling the Climb like an elevator
@@ -51,15 +51,14 @@ object ClimbIOSim : ClimbIO {
   override fun updateInputs(inputs: ClimbIO.ClimbInputs) {
     climbSim.update(Constants.Universal.LOOP_PERIOD_TIME.inSeconds)
 
-    inputs.climbPosition = climbSim.positionMeters.meters
+    inputs.climbPosition = climbSim.position.meters
 
     inputs.temperature = 0.0.celsius
-    inputs.statorCurrent = climbSim.currentDrawAmps.amps
+    inputs.statorCurrent = climbSim.currentDraw.amps
     inputs.supplyCurrent = 0.0.amps
     inputs.appliedVoltage = lastAppliedVoltage
 
-    RoboRioSim.setVInVoltage(
-        BatterySim.calculateDefaultBatteryLoadedVoltage(climbSim.currentDrawAmps))
+    RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(climbSim.currentDraw))
   }
 
   override fun setVoltage(targetVoltage: ElectricalPotential) {
@@ -75,7 +74,7 @@ object ClimbIOSim : ClimbIO {
 
   override fun setPosition(position: Length) {
     climbPIDController.setGoal(position)
-    val pidOutput = climbPIDController.calculate(climbSim.positionMeters.meters)
+    val pidOutput = climbPIDController.calculate(climbSim.position.meters)
     setVoltage(pidOutput)
   }
 

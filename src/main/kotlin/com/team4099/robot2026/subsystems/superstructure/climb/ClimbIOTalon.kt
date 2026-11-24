@@ -10,11 +10,6 @@ import com.ctre.phoenix6.signals.InvertedValue
 import com.ctre.phoenix6.signals.NeutralModeValue
 import com.team4099.robot2026.config.constants.ClimbConstants
 import com.team4099.robot2026.config.constants.Constants
-import edu.wpi.first.units.measure.Angle
-import edu.wpi.first.units.measure.AngularVelocity
-import edu.wpi.first.units.measure.Current as WPILibCurrent
-import edu.wpi.first.units.measure.Temperature as WPILibTemperature
-import edu.wpi.first.units.measure.Voltage as WPILibVoltage
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.amps
@@ -31,9 +26,14 @@ import org.team4099.lib.units.derived.inVoltsPerInch
 import org.team4099.lib.units.derived.inVoltsPerInchPerSecond
 import org.team4099.lib.units.derived.inVoltsPerInchSeconds
 import org.team4099.lib.units.derived.volts
+import org.wpilib.units.measure.Angle
+import org.wpilib.units.measure.AngularVelocity
+import org.wpilib.units.measure.Current as WPILibCurrent
+import org.wpilib.units.measure.Temperature as WPILibTemperature
+import org.wpilib.units.measure.Voltage as WPILibVoltage
 
 object ClimbIOTalon : ClimbIO {
-  private val talon: TalonFX = TalonFX(Constants.Climb.CLIMB_MOTOR_ID)
+  private val talon: TalonFX = TalonFX(Constants.Climb.CLIMB_MOTOR_ID, com.ctre.phoenix6.CANBus())
 
   private val configs: TalonFXConfiguration = TalonFXConfiguration()
   private val slot0Configs = configs.Slot0

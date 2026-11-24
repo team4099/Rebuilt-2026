@@ -3,9 +3,6 @@ package com.team4099.robot2026.subsystems.superstructure.shooter
 import com.team4099.lib.math.clamp
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.ShooterConstants
-import edu.wpi.first.math.system.plant.DCMotor
-import edu.wpi.first.math.system.plant.LinearSystemId
-import edu.wpi.first.wpilibj.simulation.FlywheelSim
 import org.team4099.lib.controller.PIDController
 import org.team4099.lib.controller.SimpleMotorFeedforward
 import org.team4099.lib.units.AngularVelocity
@@ -28,11 +25,14 @@ import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
+import org.wpilib.math.system.DCMotor
+import org.wpilib.math.system.Models
+import org.wpilib.simulation.FlywheelSim
 
 object ShooterIOSim : ShooterIO {
   private val shooterSim: FlywheelSim =
       FlywheelSim(
-          LinearSystemId.createFlywheelSystem(
+          Models.flywheelFromPhysicalConstants(
               DCMotor.getKrakenX60(2),
               ShooterConstants.MOMENT_OF_INERTIA.inKilogramsMeterSquared,
               1.0 / ShooterConstants.GEAR_RATIO,
@@ -49,22 +49,20 @@ object ShooterIOSim : ShooterIO {
 
   override fun updateInputs(inputs: ShooterIO.ShooterInputs) {
     shooterSim.update(Constants.Universal.LOOP_PERIOD_TIME.inSeconds)
-    inputs.shooterLeaderVelocity = shooterSim.angularVelocityRadPerSec.radians.perSecond
-    inputs.shooterLeaderAcceleration =
-        shooterSim.angularAccelerationRadPerSecSq.radians.perSecond.perSecond
+    inputs.shooterLeaderVelocity = shooterSim.angularVelocity.radians.perSecond
+    inputs.shooterLeaderAcceleration = shooterSim.angularAcceleration.radians.perSecond.perSecond
     inputs.shooterLeaderVoltage = shooterSim.inputVoltage.volts
     inputs.shooterLeaderSupplyCurrent = 0.0.amps
-    inputs.shooterLeaderStatorCurrent = shooterSim.currentDrawAmps.amps
-    inputs.shooterLeaderTorqueCurrent = shooterSim.currentDrawAmps.amps.absoluteValue
+    inputs.shooterLeaderStatorCurrent = shooterSim.currentDraw.amps
+    inputs.shooterLeaderTorqueCurrent = shooterSim.currentDraw.amps.absoluteValue
     inputs.shooterLeaderTemperature = 0.0.celsius
 
-    inputs.shooterFollowerVelocity = shooterSim.angularVelocityRadPerSec.radians.perSecond
-    inputs.shooterFollowerAcceleration =
-        shooterSim.angularAccelerationRadPerSecSq.radians.perSecond.perSecond
+    inputs.shooterFollowerVelocity = shooterSim.angularVelocity.radians.perSecond
+    inputs.shooterFollowerAcceleration = shooterSim.angularAcceleration.radians.perSecond.perSecond
     inputs.shooterFollowerVoltage = shooterSim.inputVoltage.volts
     inputs.shooterFollowerSupplyCurrent = 0.0.amps
-    inputs.shooterFollowerStatorCurrent = shooterSim.currentDrawAmps.amps
-    inputs.shooterFollowerTorqueCurrent = shooterSim.currentDrawAmps.amps.absoluteValue
+    inputs.shooterFollowerStatorCurrent = shooterSim.currentDraw.amps
+    inputs.shooterFollowerTorqueCurrent = shooterSim.currentDraw.amps.absoluteValue
     inputs.shooterFollowerTemperature = 0.0.celsius
   }
 
@@ -77,12 +75,10 @@ object ShooterIOSim : ShooterIO {
 
   override fun setVelocity(velocity: AngularVelocity) {
     var pidOutput =
-        shooterPIDController.calculate(
-            shooterSim.angularVelocityRadPerSec.radians.perSecond, velocity)
+        shooterPIDController.calculate(shooterSim.angularVelocity.radians.perSecond, velocity)
     if (pidOutput.inVolts.isNaN()) pidOutput = 0.volts
     val ffOutput =
-        shooterFFController.calculateWithVelocities(
-            shooterSim.angularVelocityRadPerSec.radians.perSecond, velocity)
+        shooterFFController.calculate(shooterSim.angularVelocity.radians.perSecond, velocity)
     setVoltage(pidOutput + ffOutput)
   }
 

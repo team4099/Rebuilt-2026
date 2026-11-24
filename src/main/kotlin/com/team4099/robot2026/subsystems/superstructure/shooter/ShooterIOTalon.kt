@@ -16,11 +16,6 @@ import com.team4099.lib.math.clamp
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.ShooterConstants
 import com.team4099.robot2026.util.CustomLogger
-import edu.wpi.first.units.measure.AngularAcceleration as WPILibAngularAcceleration
-import edu.wpi.first.units.measure.AngularVelocity as WPILibAngularVelocity
-import edu.wpi.first.units.measure.Current as WPILibCurrent
-import edu.wpi.first.units.measure.Temperature as WPILibTemperature
-import edu.wpi.first.units.measure.Voltage as WPILibVoltage
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.Fraction
 import org.team4099.lib.units.base.Ampere
@@ -45,10 +40,17 @@ import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
+import org.wpilib.units.measure.AngularAcceleration as WPILibAngularAcceleration
+import org.wpilib.units.measure.AngularVelocity as WPILibAngularVelocity
+import org.wpilib.units.measure.Current as WPILibCurrent
+import org.wpilib.units.measure.Temperature as WPILibTemperature
+import org.wpilib.units.measure.Voltage as WPILibVoltage
 
 object ShooterIOTalon : ShooterIO {
-  private val leaderTalon: TalonFX = TalonFX(Constants.Shooter.LEADER_MOTOR_ID)
-  private val followerTalon: TalonFX = TalonFX(Constants.Shooter.FOLLOWER_MOTOR_ID)
+  private val leaderTalon: TalonFX =
+      TalonFX(Constants.Shooter.LEADER_MOTOR_ID, com.ctre.phoenix6.CANBus())
+  private val followerTalon: TalonFX =
+      TalonFX(Constants.Shooter.FOLLOWER_MOTOR_ID, com.ctre.phoenix6.CANBus())
   private val motionMagicControl: MotionMagicVelocityTorqueCurrentFOC =
       MotionMagicVelocityTorqueCurrentFOC(-1337.0)
   private val voltReq = VoltageOut(0.0).withEnableFOC(true)

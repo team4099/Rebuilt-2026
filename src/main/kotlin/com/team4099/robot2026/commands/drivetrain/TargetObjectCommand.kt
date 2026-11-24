@@ -7,9 +7,6 @@ import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.subsystems.vision.Vision
 import com.team4099.robot2026.util.ClusterScore
 import com.team4099.robot2026.util.CustomLogger
-import edu.wpi.first.wpilibj.DriverStation
-import edu.wpi.first.wpilibj.RobotBase
-import edu.wpi.first.wpilibj2.command.Command
 import kotlin.math.PI
 import org.ironmaple.simulation.SimulatedArena
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnField
@@ -17,7 +14,7 @@ import org.team4099.lib.controller.PIDController
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Transform2d
 import org.team4099.lib.geometry.Translation2d
-import org.team4099.lib.kinematics.ChassisSpeeds
+import org.team4099.lib.kinematics.ChassisVelocities as ChassisSpeeds
 import org.team4099.lib.units.Value
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Time
@@ -31,6 +28,8 @@ import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.inDegreesPerSecond
 import org.team4099.lib.units.perSecond
+import org.wpilib.command2.Command
+import org.wpilib.framework.RobotBase
 
 class TargetObjectCommand(
     private val drivetrain: Drive,
@@ -51,7 +50,7 @@ class TargetObjectCommand(
               DrivetrainConstants.PID.SIM_AUTO_THETA_PID_KP,
               DrivetrainConstants.PID.SIM_AUTO_THETA_PID_KI,
               DrivetrainConstants.PID.SIM_AUTO_THETA_PID_KD)
-    } else if (DriverStation.isAutonomous()) {
+    } else if (org.wpilib.driverstation.RobotState.isAutonomous()) {
       thetaPID =
           PIDController(
               DrivetrainConstants.PID.AUTO_REEF_PID_KP,
@@ -126,8 +125,7 @@ class TargetObjectCommand(
 
         // Spawn fuel
         clusterPoints.forEach { p ->
-          arena.addGamePiece(
-              RebuiltFuelOnField(edu.wpi.first.math.geometry.Translation2d(p.x, p.y)))
+          arena.addGamePiece(RebuiltFuelOnField(org.wpilib.math.geometry.Translation2d(p.x, p.y)))
         }
       }
     }
@@ -161,7 +159,10 @@ class TargetObjectCommand(
     CustomLogger.recordOutput("TargetObjectCommand/odomTObjecty", robotTObject.y.inMeters)
 
     val setpointRotation: Value<Radian> =
-        robotTObject.translation2d.angle.radians.radians + drivetrain.pose.rotation
+        robotTObject.translation2d.angle
+            .orElse(org.wpilib.math.geometry.Rotation2d.ZERO)
+            .radians
+            .radians + drivetrain.pose.rotation
 
     CustomLogger.recordOutput("TargetObjectCommand/setPointRotation", setpointRotation.inDegrees)
     CustomLogger.recordOutput("TargetObjectCommand/driverot", drivetrain.rotation.inDegrees)

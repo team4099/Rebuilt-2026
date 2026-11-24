@@ -3,13 +3,13 @@ package com.team4099.robot2026.commands
 import com.team4099.robot2026.config.constants.IntakeConstants
 import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import com.team4099.robot2026.subsystems.superstructure.intake.Intake
-import edu.wpi.first.wpilibj2.command.Commands
-import edu.wpi.first.wpilibj2.command.RepeatCommand
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
-import edu.wpi.first.wpilibj2.command.WaitCommand
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.max
+import org.wpilib.command2.Commands
+import org.wpilib.command2.RepeatCommand
+import org.wpilib.command2.SequentialCommandGroup
+import org.wpilib.command2.WaitCommand
+import org.wpilib.command2.WaitUntilCommand
 
 class AgitateIntakeCommand(val superstructure: Superstructure, val intake: Intake) :
     SequentialCommandGroup() {

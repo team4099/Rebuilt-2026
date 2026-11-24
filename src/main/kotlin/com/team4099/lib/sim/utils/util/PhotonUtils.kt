@@ -23,13 +23,13 @@
  */
 package com.team4099.lib.sim.utils.util
 
-import edu.wpi.first.math.geometry.Pose2d
-import edu.wpi.first.math.geometry.Pose3d
-import edu.wpi.first.math.geometry.Rotation2d
-import edu.wpi.first.math.geometry.Rotation3d
-import edu.wpi.first.math.geometry.Transform3d
-import edu.wpi.first.math.geometry.Translation2d
-import edu.wpi.first.math.geometry.Translation3d
+import org.wpilib.math.geometry.Pose2d
+import org.wpilib.math.geometry.Pose3d
+import org.wpilib.math.geometry.Rotation2d
+import org.wpilib.math.geometry.Rotation3d
+import org.wpilib.math.geometry.Transform3d
+import org.wpilib.math.geometry.Translation2d
+import org.wpilib.math.geometry.Translation3d
 
 object PhotonUtils {
   /**
@@ -51,7 +51,7 @@ object PhotonUtils {
    * @return Yaw to the target
    */
   fun getYawToTarget(robotPose: Pose2d?, targetPose: Pose2d): Rotation2d {
-    return targetPose.relativeTo(robotPose).translation.angle
+    return targetPose.relativeTo(robotPose).translation.angle.orElse(Rotation2d.ZERO)
   }
 
   /**
@@ -109,10 +109,10 @@ object PhotonUtils {
     robotAngle: Rotation2d, robotToCamera: Transform3d
   ): Transform3d {
     // find the rotation of our camera given its orientation relative to the robot angle
-    val cameraRot = Rotation3d(0.0, 0.0, robotAngle.radians).plus(robotToCamera.rotation)
+    val cameraRot = Rotation3d(0.0, 0.0, robotAngle.radians).rotateBy(robotToCamera.rotation)
     return Transform3d(
       cameraToTargetTranslation,
-      fieldToTarget.rotation.minus(cameraRot)
+      fieldToTarget.rotation.relativeTo(cameraRot)
     )
   }
 

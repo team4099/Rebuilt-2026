@@ -1,6 +1,5 @@
 package com.team4099.robot2026.util
 
-import edu.wpi.first.math.geometry.Translation2d
 import kotlin.math.hypot
 import org.team4099.lib.units.LinearVelocity
 import org.team4099.lib.units.base.meters
@@ -10,6 +9,7 @@ import org.team4099.lib.units.derived.cos
 import org.team4099.lib.units.derived.sin
 import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.perSecond
+import org.wpilib.math.geometry.Translation2d
 
 data class Velocity2d(val x: LinearVelocity, val y: LinearVelocity) {
 
@@ -19,7 +19,7 @@ data class Velocity2d(val x: LinearVelocity, val y: LinearVelocity) {
 
   val magnitude = hypot(x.inMetersPerSecond, y.inMetersPerSecond).meters.perSecond
 
-  val heading: Angle = velocity2dWPIlib.angle.angle
+  val heading: Angle = velocity2dWPIlib.angle.orElse(org.wpilib.math.geometry.Rotation2d.ZERO).angle
 
   companion object {
     fun fromVelocityVectorToVelocity2d(speed: LinearVelocity, heading: Angle): Velocity2d {

@@ -12,11 +12,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue
 import com.team4099.lib.math.clamp
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.HopperConstants
-import edu.wpi.first.units.measure.AngularAcceleration as WPIAngularAcceleration
-import edu.wpi.first.units.measure.AngularVelocity as WPIAngularVelocity
-import edu.wpi.first.units.measure.Current
-import edu.wpi.first.units.measure.Temperature as WPITemp
-import edu.wpi.first.units.measure.Voltage
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.Fraction
 import org.team4099.lib.units.base.Ampere
@@ -42,9 +37,15 @@ import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inRotationsPerSecond
 import org.team4099.lib.units.perSecond
+import org.wpilib.units.measure.AngularAcceleration as WPIAngularAcceleration
+import org.wpilib.units.measure.AngularVelocity as WPIAngularVelocity
+import org.wpilib.units.measure.Current
+import org.wpilib.units.measure.Temperature as WPITemp
+import org.wpilib.units.measure.Voltage
 
 object HopperIOTalon : HopperIO {
-  private val hopperTalon: TalonFX = TalonFX(Constants.Hopper.HOPPER_MOTOR_ID)
+  private val hopperTalon: TalonFX =
+      TalonFX(Constants.Hopper.HOPPER_MOTOR_ID, com.ctre.phoenix6.CANBus())
   private val configs: TalonFXConfiguration = TalonFXConfiguration()
   private val slot0Configs: Slot0Configs = configs.Slot0
   private val hopperSensor =
@@ -148,6 +149,6 @@ object HopperIOTalon : HopperIO {
   }
 
   override fun setBrakeMode(brake: Boolean) {
-    hopperTalon.setNeutralMode(if (brake) NeutralModeValue.Brake else NeutralModeValue.Coast)
+    hopperTalon.configNeutralMode(if (brake) NeutralModeValue.Brake else NeutralModeValue.Coast)
   }
 }

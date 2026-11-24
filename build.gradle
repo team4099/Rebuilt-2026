@@ -8,10 +8,11 @@ plugins {
 	id "org.jetbrains.kotlinx.kover" version "0.8.3"
 }
 
- java {
+java {
 	sourceCompatibility = JavaVersion.VERSION_25
 	targetCompatibility = JavaVersion.VERSION_25
- }
+	toolchain { languageVersion = JavaLanguageVersion.of(25) }
+}
 
 def TEAM = 4099
 // do not change main class (does not run without it being Main
@@ -36,15 +37,13 @@ deploy {
 				// First part is artifact name, 2nd is artifact type
 				// getTargetTypeClass is a shortcut to get the class type using a string
 
-				frcJava(getArtifactTypeClass('FRCJavaArtifact')) {
+				wpilibJava(getArtifactTypeClass('WPILibJavaArtifact')) {
 					jvmArgs.add("-Dcom.sun.management.jmxremote=true")
 					jvmArgs.add("-Dcom.sun.management.jmxremote.port=1198")
 					jvmArgs.add("-Dcom.sun.management.jmxremote.local.only=false")
 					jvmArgs.add("-Dcom.sun.management.jmxremote.ssl=false")
 					jvmArgs.add("-Dcom.sun.management.jmxremote.authenticate=false")
 					jvmArgs.add("-Djava.rmi.server.hostname=10.40.99.2")
-				}
-				wpilibJava(getArtifactTypeClass('WPILibJavaArtifact')) {
 					// Set to true to use debug including JNI, which will drastically impact performance.
 					debugJni = false
 				}
@@ -75,9 +74,21 @@ repositories {
 	maven { url "https://jitpack.io" }
 }
 
+sourceSets.main.java.srcDirs += ['third_party/maple-sim/src/main/java', 'third_party/pathplanner/src/main/java']
+
+configurations {
+	falconUtilsBundle { transitive = false }
+}
+
+def falconUtilsJar = tasks.register('falconUtilsJar', Jar) {
+	archiveClassifier = 'falconutils-only'
+	from({ zipTree(configurations.falconUtilsBundle.singleFile) }) {
+		include 'org/team4099/**', 'META-INF/FalconUtils.kotlin_module'
+	}
+}
+
 // Set to true to use debug for all targets including JNI, which will drastically impact
 // performance.
-wpi.java.debugJni = false
 
 
 
@@ -115,7 +126,12 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
 	implementation 'org.jetbrains.kotlin:kotlin-test-junit5'
-	implementation 'com.github.team4099:FalconUtils:2.0.0-beta.2'
+	falconUtilsBundle 'com.github.team4099:FalconUtils:2.0.0-beta.2'
+	implementation files(falconUtilsJar)
+	implementation 'org.dyn4j:dyn4j:5.0.2'
+	implementation 'org.wpilib.thirdparty.opencv:opencv-java:2027-4.13.0-3'
+	implementation 'org.wpilib.apriltag:apriltag-java:2027.0.0-alpha-8'
+	implementation 'org.wpilib.commandsv2:commandsv2-java:2027.0.0-alpha-8'
 	implementation 'org.apache.commons:commons-collections4:4.0'
 	implementation 'com.google.code.gson:gson:2.10.1'
 	implementation "io.javalin:javalin:5.3.2"
@@ -152,7 +168,7 @@ jar {
 	from('src') { into 'backup/src' }
 	from('vendordeps') { into 'backup/vendordeps' }
 	from('build.gradle') { into 'backup' }
-	manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
+	manifest org.wpilib.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
 	duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
@@ -181,12 +197,10 @@ spotless {
 }
 
 wrapper {
-	gradleVersion = '8.11'
+	gradleVersion = '9.4.1'
 }
 
 // Configure jar and deploy tasks
-deployArtifact.jarTask = jar
-wpi.java.configureExecutableTasks(jar)
 wpi.java.configureTestTasks(test)
 
 
@@ -197,7 +211,7 @@ tasks.withType(JavaCompile) {
 
 compileKotlin {
 	kotlinOptions {
-		jvmTarget = "17"
+		jvmTarget = "25"
 	}
 }
 
@@ -224,8 +238,6 @@ gversion {
 project.compileKotlin.dependsOn(createVersionFile)
 project.compileJava.dependsOn(createVersionFile)
 // Configure jar and deploy tasks
-deployArtifact.jarTask = jar
-wpi.java.configureExecutableTasks(jar)
 wpi.java.configureTestTasks(test)
 
 task(eventDeploy) {

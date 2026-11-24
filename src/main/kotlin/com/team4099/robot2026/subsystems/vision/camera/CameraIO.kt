@@ -2,11 +2,6 @@ package com.team4099.robot2026.subsystems.vision.camera
 
 import com.team4099.robot2026.config.constants.FieldConstants
 import com.team4099.robot2026.config.constants.VisionConstants
-import edu.wpi.first.math.Matrix
-import edu.wpi.first.math.VecBuilder
-import edu.wpi.first.math.geometry.Transform3d
-import edu.wpi.first.math.numbers.N1
-import edu.wpi.first.math.numbers.N3
 import java.util.Optional
 import java.util.function.Supplier
 import org.littletonrobotics.junction.LogTable
@@ -22,12 +17,17 @@ import org.team4099.lib.geometry.Pose2dWPILIB
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Pose3dWPILIB
 import org.team4099.lib.geometry.Transform3dWPILIB
-import org.team4099.lib.kinematics.ChassisSpeeds
+import org.team4099.lib.kinematics.ChassisVelocities as ChassisSpeeds
 import org.team4099.lib.math.hypot
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.Angle
+import org.wpilib.math.geometry.Transform3d
+import org.wpilib.math.linalg.Matrix
+import org.wpilib.math.linalg.VecBuilder
+import org.wpilib.math.numbers.N1
+import org.wpilib.math.numbers.N3
 
 interface CameraIO {
   enum class DetectionPipeline {
@@ -159,7 +159,7 @@ interface CameraIO {
                 0.0,
                 0.0,
                 0.0,
-                it.ID,
+                it.id,
                 0,
                 0.0f,
                 Transform3dWPILIB(),

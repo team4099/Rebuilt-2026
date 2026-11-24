@@ -1,12 +1,12 @@
 package com.team4099.robot2026.auto.mode
 
+import bline.path.Path
+import com.team4099.robot2026.auto.AutoPathBuilder
 import com.team4099.robot2026.subsystems.drivetrain.Drive
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
-import edu.wpi.first.wpilibj2.command.WaitCommand
-import frc.robot.lib.BLine.FollowPath
-import frc.robot.lib.BLine.Path
+import org.wpilib.command2.SequentialCommandGroup
+import org.wpilib.command2.WaitCommand
 
-class ExamplePathAuto(val drivetrain: Drive, pathBuilder: FollowPath.Builder) :
+class ExamplePathAuto(val drivetrain: Drive, pathBuilder: AutoPathBuilder) :
     SequentialCommandGroup() {
   init {
     addRequirements(drivetrain)

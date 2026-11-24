@@ -13,7 +13,6 @@
 package com.team4099.robot2026.subsystems.drivetrain
 
 import com.ctre.phoenix6.signals.NeutralModeValue
-import edu.wpi.first.math.geometry.Rotation2d
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
 import org.team4099.lib.units.AngularVelocity
@@ -34,6 +33,7 @@ import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inDegreesPerSecond
 import org.team4099.lib.units.perSecond
+import org.wpilib.math.geometry.Rotation2d
 
 interface ModuleIO {
   class ModuleIOInputs : LoggableInputs {

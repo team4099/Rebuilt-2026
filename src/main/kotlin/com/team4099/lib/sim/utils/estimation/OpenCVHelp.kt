@@ -5,11 +5,11 @@ import org.ejml.simple.SimpleMatrix
 import org.opencv.core.MatOfDouble
 import org.opencv.core.Mat
 import org.opencv.core.CvType
-import edu.wpi.first.math.Num
+import org.wpilib.math.util.Num
 import org.opencv.core.MatOfPoint3f
 import org.opencv.core.Point3
-import edu.wpi.first.math.numbers.N3
-import edu.wpi.first.math.Nat
+import org.wpilib.math.numbers.N3
+import org.wpilib.math.util.Nat
 import org.photonvision.targeting.TargetCorner
 import org.opencv.core.MatOfPoint2f
 import com.team4099.lib.sim.vision.RotTrlTransform3d
@@ -19,14 +19,14 @@ import org.opencv.imgproc.Imgproc
 import org.opencv.core.MatOfPoint
 import org.opencv.core.MatOfInt
 import com.team4099.lib.sim.utils.estimation.VisionEstimation.PNPResults
-import edu.wpi.first.math.numbers.N1
-import edu.wpi.first.math.Matrix
-import edu.wpi.first.math.Vector
-import edu.wpi.first.math.geometry.CoordinateSystem
-import edu.wpi.first.math.geometry.Pose3d
-import edu.wpi.first.math.geometry.Rotation3d
-import edu.wpi.first.math.geometry.Transform3d
-import edu.wpi.first.math.geometry.Translation3d
+import org.wpilib.math.numbers.N1
+import org.wpilib.math.linalg.Matrix
+import org.wpilib.math.linalg.Vector
+import org.wpilib.math.geometry.CoordinateSystem
+import org.wpilib.math.geometry.Pose3d
+import org.wpilib.math.geometry.Rotation3d
+import org.wpilib.math.geometry.Transform3d
+import org.wpilib.math.geometry.Translation3d
 import org.opencv.core.Point
 import java.lang.Exception
 import java.lang.RuntimeException
@@ -180,7 +180,7 @@ object OpenCVHelp {
       Rotation3d(),
       CoordinateSystem.NWU(),
       CoordinateSystem.EDN()
-    ).plus(
+    ).rotateBy(
       CoordinateSystem.convert(
         rot,
         CoordinateSystem.EDN(),
@@ -198,7 +198,7 @@ object OpenCVHelp {
       Rotation3d(),
       CoordinateSystem.EDN(),
       CoordinateSystem.NWU()
-    ).plus(
+    ).rotateBy(
       CoordinateSystem.convert(
         rot,
         CoordinateSystem.NWU(),

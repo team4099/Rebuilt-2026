@@ -13,31 +13,30 @@
 package com.team4099.robot2026.subsystems.drivetrain
 
 import com.ctre.phoenix6.BaseStatusSignal
-import com.ctre.phoenix6.CANBus
 import com.ctre.phoenix6.StatusCode
 import com.ctre.phoenix6.StatusSignal
 import com.ctre.phoenix6.configs.GyroTrimConfigs
 import com.ctre.phoenix6.hardware.Pigeon2
 import com.team4099.robot2026.config.constants.DrivetrainConstants
-import edu.wpi.first.units.measure.AngularVelocity
 import java.util.Queue
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.perSecond
+import org.wpilib.units.measure.AngularVelocity
 
 /** IO implementation for Pigeon 2. */
 object GyroIOPigeon2 : GyroIO {
   private val pigeon: Pigeon2 =
       Pigeon2(
           DrivetrainConstants.tunerConstants.CTREDrivetrainConstants.Pigeon2Id,
-          CANBus(DrivetrainConstants.tunerConstants.CTREDrivetrainConstants.CANBusName))
+          DrivetrainConstants.tunerConstants.CTREDrivetrainConstants.Network)
 
-  private val roll: StatusSignal<edu.wpi.first.units.measure.Angle> = pigeon.roll
+  private val roll: StatusSignal<org.wpilib.units.measure.Angle> = pigeon.roll
   private val rollPositionQueue: Queue<Double>
   private val rollTimestampQueue: Queue<Double>
-  private val pitch: StatusSignal<edu.wpi.first.units.measure.Angle> = pigeon.pitch
+  private val pitch: StatusSignal<org.wpilib.units.measure.Angle> = pigeon.pitch
   private val pitchPositionQueue: Queue<Double>
   private val pitchTimestampQueue: Queue<Double>
-  private val yaw: StatusSignal<edu.wpi.first.units.measure.Angle> = pigeon.yaw
+  private val yaw: StatusSignal<org.wpilib.units.measure.Angle> = pigeon.yaw
   private val yawPositionQueue: Queue<Double>
   private val yawTimestampQueue: Queue<Double>
   private val rollVelocity: StatusSignal<AngularVelocity> = pigeon.angularVelocityXWorld

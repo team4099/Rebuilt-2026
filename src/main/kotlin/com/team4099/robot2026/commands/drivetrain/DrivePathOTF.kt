@@ -11,18 +11,12 @@ import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.DrivetrainConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.util.AllianceFlipUtil
-import edu.wpi.first.math.geometry.Pose2d as WPIPose2d
-import edu.wpi.first.math.geometry.Rotation2d
-import edu.wpi.first.math.kinematics.ChassisSpeeds as WPIChassisSpeeds
-import edu.wpi.first.wpilibj.RobotBase
-import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import java.util.function.DoubleSupplier
 import java.util.function.Supplier
 import org.littletonrobotics.junction.Logger
 import org.littletonrobotics.junction.Logger.*
 import org.team4099.lib.geometry.Pose2d
-import org.team4099.lib.kinematics.ChassisSpeeds
+import org.team4099.lib.kinematics.ChassisVelocities as ChassisSpeeds
 import org.team4099.lib.pplib.PathPlannerHolonomicDriveController
 import org.team4099.lib.pplib.PathPlannerHolonomicDriveController.Companion.GoalEndState
 import org.team4099.lib.pplib.PathPlannerHolonomicDriveController.Companion.PathConstraints
@@ -50,6 +44,12 @@ import org.team4099.lib.units.derived.perRadianPerSecond
 import org.team4099.lib.units.derived.perRadianSeconds
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.perSecond
+import org.wpilib.command2.Command
+import org.wpilib.command2.SequentialCommandGroup
+import org.wpilib.framework.RobotBase
+import org.wpilib.math.geometry.Pose2d as WPIPose2d
+import org.wpilib.math.geometry.Rotation2d
+import org.wpilib.math.kinematics.ChassisVelocities as WPIChassisSpeeds
 
 /**
  * @property drivetrain
@@ -169,7 +169,7 @@ class DrivePathOTF(
         FollowPathCommand(
             path,
             { AllianceFlipUtil.apply(Pose2d(poseReferenceSupplier.get())).pose2d },
-            { drivetrain.chassisSpeeds.chassisSpeedsWPILIB },
+            { drivetrain.chassisSpeeds.chassisVelocitiesWPILIB },
             { speeds: WPIChassisSpeeds, ff: DriveFeedforwards ->
               drivetrain.runSpeeds(ChassisSpeeds(speeds), flipIfRed = false)
             },

@@ -2,10 +2,6 @@ package com.team4099.robot2026.config.constants
 
 import com.team4099.robot2026.config.constants.Constants.WHOAMI
 import com.team4099.robot2026.subsystems.vision.camera.CameraIO
-import edu.wpi.first.math.Matrix
-import edu.wpi.first.math.VecBuilder
-import edu.wpi.first.math.numbers.N1
-import edu.wpi.first.math.numbers.N3
 import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.geometry.Transform3d
 import org.team4099.lib.geometry.Translation3d
@@ -14,6 +10,10 @@ import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.centi
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.perSecond
+import org.wpilib.math.linalg.Matrix
+import org.wpilib.math.linalg.VecBuilder
+import org.wpilib.math.numbers.N1
+import org.wpilib.math.numbers.N3
 
 object VisionConstants {
   /** Helpful to turn to `false` when running on a low-spec machine */

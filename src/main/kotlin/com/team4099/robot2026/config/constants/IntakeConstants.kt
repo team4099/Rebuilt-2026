@@ -2,7 +2,6 @@ package com.team4099.robot2026.config.constants
 
 import com.team4099.lib.hal.Clock
 import com.team4099.robot2026.Robot
-import edu.wpi.first.wpilibj.DriverStation
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.grams
 import org.team4099.lib.units.base.inches
@@ -51,8 +50,8 @@ object IntakeConstants {
     val STOW_ANGLE = PIVOT_MAX_ANGLE
     val IDLE_ANGLE: Angle
       get() =
-          if (DriverStation.isDisabled() ||
-              DriverStation.isAutonomous() &&
+          if (org.wpilib.driverstation.RobotState.isDisabled() ||
+              org.wpilib.driverstation.RobotState.isAutonomous() &&
                   (Robot.autoStartTime < 0.seconds ||
                       Clock.timestamp - Robot.autoStartTime < 0.5.seconds)) {
             STOW_ANGLE

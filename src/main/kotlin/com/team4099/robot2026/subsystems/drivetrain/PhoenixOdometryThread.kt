@@ -19,13 +19,13 @@ import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.subsystems.drivetrain.generated.AlphaBotTunerConstants
 import com.team4099.robot2026.subsystems.drivetrain.generated.CompBotTunerConstants
 import com.team4099.robot2026.subsystems.drivetrain.generated.TestBotTunerConstants
-import edu.wpi.first.units.measure.Angle
-import edu.wpi.first.wpilibj.RobotController
 import java.util.Queue
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 import java.util.function.DoubleSupplier
+import org.wpilib.system.RobotController
+import org.wpilib.units.measure.Angle
 
 /**
  * Provides an interface for asynchronously reading high-frequency measurements to a set of queues.
@@ -125,7 +125,7 @@ class PhoenixOdometryThread private constructor() : Thread() {
         // Sample timestamp is current FPGA time minus average CAN latency
         //     Default timestamps from Phoenix are NOT compatible with
         //     FPGA timestamps, this solution is imperfect but close
-        var timestamp: Double = RobotController.getFPGATime() / 1e6
+        var timestamp: Double = RobotController.getMonotonicTime() / 1e6
         var totalLatency = 0.0
         for (signal in phoenixSignals) {
           totalLatency += signal!!.timestamp.latency

@@ -19,13 +19,6 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.DrivetrainConstants
 import com.team4099.robot2026.subsystems.drivetrain.ModuleIO.ModuleIOInputs
-import edu.wpi.first.math.MathUtil
-import edu.wpi.first.math.controller.PIDController
-import edu.wpi.first.math.geometry.Rotation2d
-import edu.wpi.first.math.system.plant.DCMotor
-import edu.wpi.first.math.system.plant.LinearSystemId
-import edu.wpi.first.wpilibj.Timer
-import edu.wpi.first.wpilibj.simulation.DCMotorSim
 import kotlin.math.sign
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Meter
@@ -45,6 +38,12 @@ import org.team4099.lib.units.derived.inVoltsPerRadianSeconds
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
+import org.wpilib.math.controller.PIDController
+import org.wpilib.math.geometry.Rotation2d
+import org.wpilib.math.system.DCMotor
+import org.wpilib.math.system.Models
+import org.wpilib.simulation.DCMotorSim
+import org.wpilib.system.Timer
 
 /**
  * Physics sim implementation of module IO. The sim models are configured using a set of module
@@ -57,12 +56,12 @@ class ModuleIOSim(
   // Create drive and turn sim models
   private val driveSim: DCMotorSim =
       DCMotorSim(
-          LinearSystemId.createDCMotorSystem(
+          Models.singleJointedArmFromPhysicalConstants(
               DRIVE_GEARBOX, constants.DriveInertia, constants.DriveMotorGearRatio),
           DRIVE_GEARBOX)
   private val turnSim: DCMotorSim =
       DCMotorSim(
-          LinearSystemId.createDCMotorSystem(
+          Models.singleJointedArmFromPhysicalConstants(
               TURN_GEARBOX, constants.SteerInertia, constants.SteerMotorGearRatio),
           TURN_GEARBOX)
 
@@ -82,25 +81,24 @@ class ModuleIOSim(
   override fun updateInputs(inputs: ModuleIOInputs) {
     // Run closed-loop control
     if (driveClosedLoop) {
-      driveAppliedVolts =
-          driveFFVolts + driveController.calculate(driveSim.angularVelocityRadPerSec)
+      driveAppliedVolts = driveFFVolts + driveController.calculate(driveSim.angularVelocity)
     } else {
       driveController.reset()
     }
     if (turnClosedLoop) {
-      turnAppliedVolts = turnController.calculate(turnSim.angularPositionRad)
+      turnAppliedVolts = turnController.calculate(turnSim.angularPosition)
     } else {
       turnController.reset()
     }
 
     // Update simulation state
     driveSim.inputVoltage =
-        MathUtil.clamp(
+        Math.clamp(
             driveAppliedVolts,
             -DrivetrainConstants.DRIVE_COMPENSATION_VOLTAGE.inVolts,
             DrivetrainConstants.DRIVE_COMPENSATION_VOLTAGE.inVolts)
     turnSim.inputVoltage =
-        MathUtil.clamp(
+        Math.clamp(
             turnAppliedVolts,
             -DrivetrainConstants.STEERING_COMPENSATION_VOLTAGE.inVolts,
             DrivetrainConstants.STEERING_COMPENSATION_VOLTAGE.inVolts)
@@ -109,22 +107,22 @@ class ModuleIOSim(
 
     // Update drive inputs
     inputs.driveConnected = true
-    inputs.drivePosition = driveSim.angularPositionRad.radians
-    inputs.driveVelocity = driveSim.angularVelocityRadPerSec.radians.perSecond
+    inputs.drivePosition = driveSim.angularPosition.radians
+    inputs.driveVelocity = driveSim.angularVelocity.radians.perSecond
     inputs.driveAppliedVoltage = driveAppliedVolts.volts
-    inputs.driveCurrent = driveSim.currentDrawAmps.amps.absoluteValue
+    inputs.driveCurrent = driveSim.currentDraw.amps.absoluteValue
 
     // Update turn inputs
     inputs.turnConnected = true
     inputs.turnEncoderConnected = true
-    inputs.turnAbsolutePosition = turnSim.angularPositionRad.radians
-    inputs.turnPosition = turnSim.angularPositionRad.radians
-    inputs.turnVelocity = turnSim.angularVelocityRadPerSec.radians.perSecond
+    inputs.turnAbsolutePosition = turnSim.angularPosition.radians
+    inputs.turnPosition = turnSim.angularPosition.radians
+    inputs.turnVelocity = turnSim.angularVelocity.radians.perSecond
     inputs.turnAppliedVoltage = turnAppliedVolts.volts
-    inputs.turnCurrent = turnSim.currentDrawAmps.amps.absoluteValue
+    inputs.turnCurrent = turnSim.currentDraw.amps.absoluteValue
 
     // Update odometry inputs (50Hz because high-frequency odometry in sim doesn't matter)
-    inputs.odometryTimestamps = doubleArrayOf(Timer.getFPGATimestamp())
+    inputs.odometryTimestamps = doubleArrayOf(Timer.getTimestamp())
     inputs.odometryDrivePositions = arrayOf(inputs.drivePosition)
     inputs.odometryTurnPositions = arrayOf(inputs.turnPosition)
   }

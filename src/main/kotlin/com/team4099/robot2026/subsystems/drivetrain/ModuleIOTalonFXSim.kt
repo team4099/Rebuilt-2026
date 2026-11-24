@@ -18,10 +18,10 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration
 import com.ctre.phoenix6.swerve.SwerveModuleConstants
 import com.team4099.lib.phoenix6.PhoenixUtil
 import com.team4099.robot2026.config.constants.DrivetrainConstants
-import edu.wpi.first.units.Units.Radians
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation
 import org.ironmaple.simulation.drivesims.SwerveModuleSimulation
 import org.team4099.lib.units.derived.radians
+import org.wpilib.units.Units.Radians
 
 class ModuleIOTalonFXSim(
     constants:

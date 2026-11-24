@@ -22,12 +22,6 @@ import com.ctre.phoenix6.sim.CANcoderSimState
 import com.ctre.phoenix6.sim.TalonFXSimState
 import com.ctre.phoenix6.swerve.SwerveModuleConstants
 import com.team4099.robot2026.config.constants.DrivetrainConstants
-import edu.wpi.first.units.Units
-import edu.wpi.first.units.measure.Angle
-import edu.wpi.first.units.measure.AngularVelocity
-import edu.wpi.first.units.measure.Voltage
-import edu.wpi.first.wpilibj.RobotBase
-import edu.wpi.first.wpilibj.Timer
 import java.util.function.Supplier
 import org.ironmaple.simulation.SimulatedArena
 import org.ironmaple.simulation.motorsims.SimulatedBattery
@@ -40,6 +34,12 @@ import org.team4099.lib.units.derived.inVoltsPerMetersPerSecondPerSecond
 import org.team4099.lib.units.derived.inVoltsPerRadian
 import org.team4099.lib.units.derived.inVoltsPerRadianPerSecond
 import org.team4099.lib.units.derived.inVoltsPerRadianSeconds
+import org.wpilib.framework.RobotBase
+import org.wpilib.system.Timer
+import org.wpilib.units.Units
+import org.wpilib.units.measure.Angle
+import org.wpilib.units.measure.AngularVelocity
+import org.wpilib.units.measure.Voltage
 
 object PhoenixUtil {
   /** Attempts to run the command until no error is produced. */
@@ -85,8 +85,7 @@ object PhoenixUtil {
       val odometryTimeStamps = DoubleArray(SimulatedArena.getSimulationSubTicksIn1Period())
       for (i in odometryTimeStamps.indices) {
         odometryTimeStamps[i] =
-            (Timer.getFPGATimestamp() - 0.02 +
-                i * SimulatedArena.getSimulationDt().`in`(Units.Seconds))
+            (Timer.getTimestamp() - 0.02 + i * SimulatedArena.getSimulationDt().`in`(Units.Seconds))
       }
 
       return odometryTimeStamps

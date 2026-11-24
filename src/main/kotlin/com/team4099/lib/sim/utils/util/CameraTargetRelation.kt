@@ -1,8 +1,8 @@
 package com.team4099.lib.sim.utils.util
 
-import edu.wpi.first.math.geometry.Pose3d
-import edu.wpi.first.math.geometry.Rotation2d
-import edu.wpi.first.math.geometry.Transform3d
+import org.wpilib.math.geometry.Pose3d
+import org.wpilib.math.geometry.Rotation2d
+import org.wpilib.math.geometry.Transform3d
 
 /** Holds various helper geometries describing the relation between camera and target.  */
 class CameraTargetRelation(val camPose: Pose3d, targetPose: Pose3d?) {

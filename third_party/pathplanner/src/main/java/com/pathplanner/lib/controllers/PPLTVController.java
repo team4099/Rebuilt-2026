@@ -1,0 +1,79 @@
+package com.pathplanner.lib.controllers;
+
+import com.pathplanner.lib.trajectory.PathPlannerTrajectoryState;
+import org.wpilib.math.controller.LTVUnicycleController;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.kinematics.ChassisVelocities;
+import org.wpilib.math.linalg.Vector;
+import org.wpilib.math.numbers.N2;
+import org.wpilib.math.numbers.N3;
+
+/** LTV following controller */
+public class PPLTVController extends LTVUnicycleController implements PathFollowingController {
+
+  private double lastError = 0;
+
+  /**
+   * Constructs a linear time-varying unicycle controller with default maximum desired error
+   * tolerances of (0.0625 m, 0.125 m, 2 rad) and default maximum desired control effort of (1 m/s,
+   * 2 rad/s).
+   *
+   * @param dt Discretization timestep in seconds.
+   */
+  public PPLTVController(double dt) {
+    super(dt);
+  }
+
+  /**
+   * Constructs a linear time-varying unicycle controller.
+   *
+   * <p>See
+   * https://docs.wpilib.org/en/stable/docs/software/advanced-controls/state-space/state-space-intro.html#lqr-tuning
+   * for how to select the tolerances.
+   *
+   * @param qelems The maximum desired error tolerance for each state.
+   * @param relems The maximum desired control effort for each input.
+   * @param dt Discretization timestep in seconds.
+   */
+  public PPLTVController(Vector<N3> qelems, Vector<N2> relems, double dt) {
+    super(qelems, relems, dt);
+  }
+
+  /**
+   * Calculates the next output of the path following controller
+   *
+   * @param currentPose The current robot pose
+   * @param targetState The desired trajectory state
+   * @return The next robot relative output of the path following controller
+   */
+  @Override
+  public ChassisVelocities calculateRobotRelativeSpeeds(
+      Pose2d currentPose, PathPlannerTrajectoryState targetState) {
+    lastError = currentPose.getTranslation().getDistance(targetState.pose.getTranslation());
+
+    return calculate(
+        currentPose, targetState.pose, targetState.linearVelocity, targetState.fieldSpeeds.omega);
+  }
+
+  /**
+   * Resets the controller based on the current state of the robot
+   *
+   * @param currentPose Current robot pose
+   * @param currentSpeeds Current robot relative chassis speeds
+   */
+  @Override
+  public void reset(Pose2d currentPose, ChassisVelocities currentSpeeds) {
+    lastError = 0;
+  }
+
+  /**
+   * Is this controller for holonomic drivetrains? Used to handle some differences in functionality
+   * in the path following command.
+   *
+   * @return True if this controller is for a holonomic drive train
+   */
+  @Override
+  public boolean isHolonomic() {
+    return false;
+  }
+}

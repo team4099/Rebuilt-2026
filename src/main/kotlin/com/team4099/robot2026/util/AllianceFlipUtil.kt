@@ -2,20 +2,17 @@ package com.team4099.robot2026.util
 
 import com.team4099.lib.math.Zone2d
 import com.team4099.robot2026.config.constants.FieldConstants
-import edu.wpi.first.math.geometry.Rotation2d
-import edu.wpi.first.math.trajectory.Trajectory
-import edu.wpi.first.wpilibj.DriverStation
-import edu.wpi.first.wpilibj.DriverStation.Alliance
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Translation2d
 import org.team4099.lib.geometry.Translation2dWPILIB
 import org.team4099.lib.geometry.Translation3d
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.inMeters
-import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.cos
 import org.team4099.lib.units.derived.sin
+import org.wpilib.driverstation.Alliance
+import org.wpilib.math.geometry.Rotation2d
 
 /**
  * Utility functions for flipping from the blue to red alliance. By default, all translations and
@@ -80,26 +77,6 @@ object AllianceFlipUtil {
     }
   }
 
-  /**
-   * Flips a trajectory state to the correct side of the field based on the current alliance color.
-   */
-  fun apply(state: Trajectory.State): Trajectory.State {
-    return if (shouldFlip()) {
-      Trajectory.State(
-          state.timeSeconds,
-          state.velocityMetersPerSecond,
-          state.accelerationMetersPerSecondSq,
-          Pose2d(
-                  FieldConstants.fieldLength - state.poseMeters.x.meters,
-                  state.poseMeters.y.meters,
-                  Angle(-state.poseMeters.rotation.cos, state.poseMeters.rotation.sin))
-              .pose2d,
-          -state.curvatureRadPerMeter)
-    } else {
-      state
-    }
-  }
-
   fun apply(zone: Zone2d, force: Boolean = false): Zone2d {
     return if (shouldFlip() || force) {
       Zone2d(zone.vertices.map { AllianceFlipUtil.apply(it, force) })
@@ -109,8 +86,8 @@ object AllianceFlipUtil {
   }
 
   fun shouldFlip(): Boolean {
-    if (DriverStation.getAlliance().isPresent) {
-      return DriverStation.getAlliance().get() == Alliance.Red
+    if (org.wpilib.driverstation.MatchState.getAlliance().isPresent) {
+      return org.wpilib.driverstation.MatchState.getAlliance().get() == Alliance.RED
     } else {
       return false
     }

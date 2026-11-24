@@ -1,10 +1,10 @@
 package com.team4099.robot2026.config
 
 import com.team4099.robot2026.config.constants.Constants
-import edu.wpi.first.wpilibj.GenericHID
-import edu.wpi.first.wpilibj2.command.button.Trigger
 import java.util.function.Consumer
 import org.team4099.lib.joystick.XboxOneGamepad
+import org.wpilib.command2.button.Trigger
+import org.wpilib.driverstation.GenericHID
 
 object ControlBoard {
 
@@ -14,12 +14,16 @@ object ControlBoard {
 
   val driverRumbleConsumer =
       Consumer<Boolean> {
-        driver.setRumble(GenericHID.RumbleType.kBothRumble, if (it) 1.0 else 0.0)
+        val intensity = if (it) 1.0 else 0.0
+        driver.hid.setRumble(GenericHID.RumbleType.LEFT_RUMBLE, intensity)
+        driver.hid.setRumble(GenericHID.RumbleType.RIGHT_RUMBLE, intensity)
       }
 
   val operatorRumbleConsumer =
       Consumer<Boolean> {
-        operator.setRumble(GenericHID.RumbleType.kBothRumble, if (it) 1.0 else 0.0)
+        val intensity = if (it) 1.0 else 0.0
+        operator.hid.setRumble(GenericHID.RumbleType.LEFT_RUMBLE, intensity)
+        operator.hid.setRumble(GenericHID.RumbleType.RIGHT_RUMBLE, intensity)
       }
 
   val strafe: Double

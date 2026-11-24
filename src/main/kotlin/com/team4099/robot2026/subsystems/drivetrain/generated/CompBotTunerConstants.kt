@@ -137,7 +137,7 @@ object CompBotTunerConstants : TunerConstants {
 
   // CAN bus that the devices are located on;
   // All swerve devices must share the same CAN bus
-  override val kCANBus: CANBus = CANBus("FalconVore", "./logs/example.hoot")
+  override val kCANBus: CANBus = CANBus("FalconVore")
 
   // Theoretical free speed (m/s) at 12 V applied output;
   // This needs to be tuned to your individual robot
@@ -166,7 +166,7 @@ object CompBotTunerConstants : TunerConstants {
 
   override val CTREDrivetrainConstants: SwerveDrivetrainConstants =
       SwerveDrivetrainConstants()
-          .withCANBusName(kCANBus.name)
+          .withNetwork(kCANBus)
           .withPigeon2Id(kPigeonId)
           .withPigeon2Configs(pigeonConfigs)
 
