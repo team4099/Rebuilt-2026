@@ -125,7 +125,7 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
 	implementation 'org.jetbrains.kotlin:kotlin-test-junit5'
-	falconUtilsBundle 'com.github.team4099:FalconUtils:2.0.0-beta.2'
+	falconUtilsBundle 'com.github.team4099:FalconUtils:2.0.0-beta.3'
 	implementation files(falconUtilsJar)
 	implementation 'org.wpilib.thirdparty.opencv:opencv-java:2027-4.13.0-3'
 	implementation 'org.wpilib.apriltag:apriltag-java:2027.0.0-alpha-8'

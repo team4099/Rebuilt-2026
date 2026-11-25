@@ -2,24 +2,15 @@ package com.team4099.robot2026.config
 
 import com.team4099.robot2026.config.constants.Constants
 import java.util.function.Consumer
-import org.team4099.lib.joystick.XboxOneGamepad
+import org.wpilib.driverstation.XboxController
 import org.wpilib.command2.button.Trigger
 import org.wpilib.driverstation.GenericHID
-import org.wpilib.framework.RobotBase
 
 object ControlBoard {
 
-  private val driver = XboxOneGamepad(Constants.Joysticks.DRIVER_PORT)
-  private val operator = XboxOneGamepad(Constants.Joysticks.SHOTGUN_PORT)
-  private val technician = XboxOneGamepad(Constants.Joysticks.TECHNICIAN_PORT)
-
-  // The macOS simulator's gamepad mapping reports both sticks before the triggers,
-  // unlike the Xbox mapping used by the robot's Driver Station.
-  private val macSimulation = RobotBase.isSimulation() && System.getProperty("os.name").startsWith("Mac")
-  private fun leftTrigger(gamepad: XboxOneGamepad) =
-      if (macSimulation) gamepad.getRawAxis(4) else gamepad.leftTriggerAxis
-  private fun rightTrigger(gamepad: XboxOneGamepad) =
-      if (macSimulation) gamepad.getRawAxis(5) else gamepad.rightTriggerAxis
+  private val driver = XboxController(Constants.Joysticks.DRIVER_PORT)
+  private val operator = XboxController(Constants.Joysticks.SHOTGUN_PORT)
+  private val technician = XboxController(Constants.Joysticks.TECHNICIAN_PORT)
 
   val driverRumbleConsumer =
       Consumer<Boolean> {
@@ -36,43 +27,43 @@ object ControlBoard {
       }
 
   val strafe: Double
-    get() = -driver.leftXAxis
+    get() = -driver.leftX
 
   val forward: Double
-    get() = -driver.leftYAxis
+    get() = -driver.leftY
 
   val turn: Double
-    get() = if (macSimulation) driver.getRawAxis(2) else driver.rightXAxis
+    get() = driver.rightX
 
   val slowMode: Boolean
-    get() = driver.rightJoystickButton
+    get() = driver.rightStickButton
 
-  val resetGyro = Trigger { driver.startButton && driver.selectButton }
+  val resetGyro = Trigger { driver.menuButton && driver.viewButton }
 
-  val intake = Trigger { leftTrigger(driver) > .5 }
-  val score = Trigger { rightTrigger(driver) > .5 }
+  val intake = Trigger { driver.leftTrigger > .5 }
+  val score = Trigger { driver.rightTrigger > .5 }
 
-  val manualScore = Trigger { operator.bButton && operator.dPadLeft }
-  val defenseMode = Trigger { operator.bButton && operator.dPadRight }
+  val manualScore = Trigger { operator.bButton && operator.dpadLeftButton }
+  val defenseMode = Trigger { operator.bButton && operator.dpadRightButton }
   val unjam = Trigger { operator.xButton }
 
   // val climb = Trigger { driver.aButton }
-  val forceIdle = Trigger { driver.dPadDown || operator.dPadDown }
+  val forceIdle = Trigger { driver.dpadDownButton || operator.dpadDownButton }
 
   //  val climbOTF = Trigger { driver.yButton }
 
-  val eject = Trigger { driver.dPadUp || operator.dPadUp }
+  val eject = Trigger { driver.dpadUpButton || operator.dpadUpButton }
 
   val prepScore = Trigger { operator.yButton }
-  val forceIntakeUpTrigger = Trigger { rightTrigger(operator) > .5 }
-  val forceIntakeUpShoulder = Trigger { operator.rightShoulderButton }
-  val forceIntakeDownTrigger = Trigger { leftTrigger(operator) > .5 }
-  val forceIntakeDownShoulder = Trigger { operator.leftShoulderButton }
+  val forceIntakeUpTrigger = Trigger { operator.rightTrigger > .5 }
+  val forceIntakeUpShoulder = Trigger { operator.rightBumperButton }
+  val forceIntakeDownTrigger = Trigger { operator.leftTrigger > .5 }
+  val forceIntakeDownShoulder = Trigger { operator.leftBumperButton }
   val jiggle = Trigger { operator.aButton }
 
   // val prepClimb = Trigger { operator.aButton }
 
-  val forceHome = Trigger { operator.startButton && operator.selectButton }
+  val forceHome = Trigger { operator.menuButton && operator.viewButton }
 
   val quasiForward = Trigger { driver.xButton }
   val quasiBackward = Trigger { driver.yButton }
