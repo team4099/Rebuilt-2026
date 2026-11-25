@@ -2,9 +2,9 @@ package com.team4099.robot2026.config
 
 import com.team4099.robot2026.config.constants.Constants
 import java.util.function.Consumer
-import org.wpilib.driverstation.XboxController
 import org.wpilib.command2.button.Trigger
 import org.wpilib.driverstation.GenericHID
+import org.wpilib.driverstation.XboxController
 
 object ControlBoard {
 
