@@ -18,14 +18,12 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerMotorArrangement
 import com.ctre.phoenix6.swerve.SwerveModuleConstantsFactory
 import com.team4099.robot2026.config.constants.DrivetrainConstants
 import com.team4099.robot2026.config.constants.GyroConstants
-import org.team4099.lib.units.base.grams
 import org.team4099.lib.units.base.inAmperes
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.inDegrees
-import org.team4099.lib.units.derived.inKilogramsMeterSquared
 import org.team4099.lib.units.derived.inRotations
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.inVoltsPerMeters
@@ -35,11 +33,9 @@ import org.team4099.lib.units.derived.inVoltsPerRadian
 import org.team4099.lib.units.derived.inVoltsPerRadianPerSecond
 import org.team4099.lib.units.derived.inVoltsPerRadianSeconds
 import org.team4099.lib.units.derived.inVoltsPerRadiansPerSecond
-import org.team4099.lib.units.derived.meterSquared
 import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inMetersPerSecond
-import org.team4099.lib.units.kilo
 import org.team4099.lib.units.perSecond
 
 // TODO THESE ARE FAKE
@@ -157,8 +153,8 @@ object CompBotTunerConstants : TunerConstants {
   private const val kPigeonId = 0
 
   // These are only used for simulation
-  private val kSteerInertia = 0.04.kilo.grams.meterSquared
-  private val kDriveInertia = 0.025.kilo.grams.meterSquared
+  private val kSteerInertia = 0.04
+  private val kDriveInertia = 0.025
 
   // Simulated voltage necessary to overcome friction
   private val kSteerFrictionVoltage: ElectricalPotential = 0.2.volts
@@ -191,8 +187,8 @@ object CompBotTunerConstants : TunerConstants {
           .withDriveMotorInitialConfigs(driveInitialConfigs)
           .withSteerMotorInitialConfigs(steerInitialConfigs)
           .withEncoderInitialConfigs(encoderInitialConfigs)
-          .withSteerInertia(kSteerInertia.inKilogramsMeterSquared)
-          .withDriveInertia(kDriveInertia.inKilogramsMeterSquared)
+          .withSteerInertia(kSteerInertia)
+          .withDriveInertia(kDriveInertia)
           .withSteerFrictionVoltage(kSteerFrictionVoltage.inVolts)
           .withDriveFrictionVoltage(kDriveFrictionVoltage.inVolts)
 

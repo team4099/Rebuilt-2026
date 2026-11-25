@@ -1,6 +1,11 @@
 package com.team4099.lib.logging
 
 import com.team4099.robot2026.config.constants.Constants
+import org.wpilib.backend.NetworkTablesTunableBackend
+import org.wpilib.networktables.NetworkTableInstance
+import org.wpilib.tunable.TunableDouble
+import org.wpilib.tunable.TunableRegistry
+import org.wpilib.tunable.Tunables
 
 /**
  * Taken from
@@ -8,6 +13,7 @@ import com.team4099.robot2026.config.constants.Constants
  */
 class TunableNumber(dashboardKey: String) {
   private val key: String
+  private var tunable: TunableDouble? = null
   private var defaultValue = 0.0
   private var lastHasChangedValue = defaultValue
 
@@ -38,8 +44,7 @@ class TunableNumber(dashboardKey: String) {
   fun setDefault(defaultValue: Double) {
     this.defaultValue = defaultValue
 
-    // This makes sure the data is on NetworkTables but will not change it
-    Dashboard.putNumber(key, Dashboard.getNumber(key, defaultValue))
+    if (tunable == null) tunable = Tunables.addDouble(key, defaultValue)
   }
 
   /**
@@ -48,8 +53,7 @@ class TunableNumber(dashboardKey: String) {
    * @return The current value
    */
   fun get(): Double {
-    return if (Constants.Tuning.TUNING_MODE) Dashboard.getNumber(key, defaultValue)
-    else defaultValue
+    return if (Constants.Tuning.TUNING_MODE) tunable?.get() ?: defaultValue else defaultValue
   }
 
   /**
@@ -68,7 +72,13 @@ class TunableNumber(dashboardKey: String) {
   }
 
   companion object {
-    private const val tableKey = "TunableNumbers"
+    private const val tableKey = "/TunableNumbers"
+
+    init {
+      TunableRegistry.registerBackend(
+          tableKey,
+          NetworkTablesTunableBackend(NetworkTableInstance.getDefault(), "/SmartDashboard"))
+    }
   }
 
   /**

@@ -83,7 +83,6 @@ def falconUtilsJar = tasks.register('falconUtilsJar', Jar) {
 	archiveClassifier = 'falconutils-only'
 	from({ zipTree(configurations.falconUtilsBundle.singleFile) }) {
 		include 'org/team4099/**', 'META-INF/FalconUtils.kotlin_module'
-		exclude 'org/team4099/lib/pplib/**'
 	}
 }
 

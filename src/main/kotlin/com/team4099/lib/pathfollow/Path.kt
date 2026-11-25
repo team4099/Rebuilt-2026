@@ -25,14 +25,9 @@ class Path constructor(val startingPose: Pose2d, val endingPose: Pose2d) {
   var built = false
   val addTranslationAlert: Alert =
       Alert(
-          "path-${System.identityHashCode(this)}-translation",
-          "Failed to add translation to built path",
-          Alert.Level.HIGH)
+          "pathTranslationAfterBuild", "Failed to add translation to built path", Alert.Level.HIGH)
   val alreadyBuiltAlert: Alert =
-      Alert(
-          "path-${System.identityHashCode(this)}-built",
-          "Failed build already built path",
-          Alert.Level.HIGH)
+      Alert("pathAlreadyBuilt", "Failed build already built path", Alert.Level.HIGH)
 
   /**
    * Add a waypoint to the middle of this path.

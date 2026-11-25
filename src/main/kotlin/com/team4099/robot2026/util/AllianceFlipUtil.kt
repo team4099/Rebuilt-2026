@@ -12,6 +12,7 @@ import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.cos
 import org.team4099.lib.units.derived.sin
 import org.wpilib.driverstation.Alliance
+import org.wpilib.driverstation.MatchState
 import org.wpilib.math.geometry.Rotation2d
 
 /**
@@ -86,8 +87,8 @@ object AllianceFlipUtil {
   }
 
   fun shouldFlip(): Boolean {
-    if (org.wpilib.driverstation.MatchState.getAlliance().isPresent) {
-      return org.wpilib.driverstation.MatchState.getAlliance().get() == Alliance.RED
+    if (MatchState.getAlliance().isPresent) {
+      return MatchState.getAlliance().get() == Alliance.RED
     } else {
       return false
     }

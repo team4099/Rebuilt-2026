@@ -13,7 +13,7 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 import org.team4099.lib.controller.PIDController
 import org.team4099.lib.geometry.Pose2d
-import org.team4099.lib.kinematics.ChassisVelocities as ChassisSpeeds
+import org.team4099.lib.kinematics.ChassisVelocities
 import org.team4099.lib.units.LinearVelocity
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Time
@@ -28,6 +28,7 @@ import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.perSecond
 import org.wpilib.command2.Command
+import org.wpilib.driverstation.RobotState
 
 /**
  * Aim for the HUB or to pass, depending on current position on the field and which option is legal.
@@ -115,7 +116,7 @@ class AimOTFCommand(
 
     hasAligned = false
     startTime = Clock.timestamp
-    startedInAuto = org.wpilib.driverstation.RobotState.isAutonomous()
+    startedInAuto = RobotState.isAutonomous()
 
     RobotContainer.isAligning = true
   }
@@ -137,7 +138,7 @@ class AimOTFCommand(
     CustomLogger.recordOutput("AimOTFCommand/hasAligned", hasAligned)
     CustomLogger.recordOutput("AimOTFCommand/distanceTHubMeters", distanceToHub.inMeters)
 
-    if (org.wpilib.driverstation.RobotState.isAutonomous()) {
+    if (RobotState.isAutonomous()) {
       // Use planned path velocities, dont adjust
       drivetrain.runRotationWhileKeepingTranslation(omega, flipIfRed = false)
     } else {
@@ -157,7 +158,8 @@ class AimOTFCommand(
         }
 
         drivetrain.runSpeeds(
-            ChassisSpeeds.fromFieldRelativeSpeeds(speedX, speedY, omega, drivetrain.pose.rotation))
+            ChassisVelocities.fromFieldRelativeSpeeds(
+                speedX, speedY, omega, drivetrain.pose.rotation))
       } else {
         if (Clock.timestamp - lastTimeNotStopped > 1.seconds) drivetrain.stopWithX()
       }
@@ -166,13 +168,13 @@ class AimOTFCommand(
 
   override fun isFinished(): Boolean {
     return timeout > 0.seconds && Clock.timestamp - startTime > timeout ||
-        startedInAuto xor org.wpilib.driverstation.RobotState.isAutonomous()
+        startedInAuto xor RobotState.isAutonomous()
   }
 
   override fun end(interrupted: Boolean) {
     CustomLogger.recordOutput("AimOTFCommand/interrupted", interrupted)
 
-    drivetrain.runSpeeds(ChassisSpeeds())
+    drivetrain.runSpeeds(ChassisVelocities())
     RobotContainer.isAligning = false
 
     CustomLogger.recordOutput("ActiveCommands/AimOTFCommand", false)

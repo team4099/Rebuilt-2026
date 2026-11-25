@@ -12,7 +12,7 @@ import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.util.LinkedList
 import kotlin.math.abs
-import org.team4099.lib.kinematics.ChassisVelocities as ChassisSpeeds
+import org.team4099.lib.kinematics.ChassisVelocities
 import org.team4099.lib.units.base.inInches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.inRotation2ds
@@ -96,7 +96,7 @@ object DriveCharacterizationCommands {
                           CustomLogger.recordOutput(
                               "DriveCharacterizationCommands/wheelRadiusOmegaRadPS", speed)
                           drive.runSpeeds(
-                              ChassisSpeeds(
+                              ChassisVelocities(
                                   0.0.meters.perSecond,
                                   0.0.meters.perSecond,
                                   speed.radians.perSecond))

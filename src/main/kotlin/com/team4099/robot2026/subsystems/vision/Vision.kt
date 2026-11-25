@@ -24,6 +24,8 @@ import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.sin
 import org.wpilib.command2.SubsystemBase
+import org.wpilib.driverstation.Alliance
+import org.wpilib.driverstation.MatchState
 import org.wpilib.framework.RobotBase
 
 class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose2d>) : SubsystemBase() {
@@ -83,9 +85,7 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose2d>) : Sub
     visionSim?.update(poseSupplier.get().pose2d)
 
     tagIDFilter =
-        if (org.wpilib.driverstation.MatchState.getAlliance()
-            .orElse(org.wpilib.driverstation.Alliance.BLUE) ==
-            org.wpilib.driverstation.Alliance.BLUE)
+        if (MatchState.getAlliance().orElse(Alliance.BLUE) == Alliance.BLUE)
             VisionConstants.BLUE_TARGET_TAGS
         else VisionConstants.RED_TARGET_TAGS
 

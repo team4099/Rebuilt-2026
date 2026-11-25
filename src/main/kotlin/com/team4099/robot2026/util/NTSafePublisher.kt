@@ -4,6 +4,7 @@ import org.littletonrobotics.junction.LogDataReceiver
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.LogTable.LogValue
 import org.littletonrobotics.junction.LogTable.LoggableType
+import org.wpilib.driverstation.RobotState
 import org.wpilib.networktables.GenericPublisher
 import org.wpilib.networktables.IntegerPublisher
 import org.wpilib.networktables.NetworkTable
@@ -21,7 +22,7 @@ class NTSafePublisher : LogDataReceiver {
 
   override fun putTable(table: LogTable) {
     // only stream data if we are not connected to FMS to reduce bandwidth issues
-    if (!org.wpilib.driverstation.RobotState.isFMSAttached()) {
+    if (!RobotState.isFMSAttached()) {
       // Send timestamp
       timestampPublisher[table.timestamp] = table.timestamp
 

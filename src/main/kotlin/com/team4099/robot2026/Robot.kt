@@ -29,6 +29,8 @@ import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.base.seconds
 import org.wpilib.command2.Command
 import org.wpilib.command2.CommandScheduler
+import org.wpilib.driverstation.Alliance
+import org.wpilib.driverstation.MatchState
 import org.wpilib.framework.RobotBase
 import org.wpilib.hardware.hal.AllianceStationID
 import org.wpilib.hardware.power.PowerDistribution
@@ -112,6 +114,7 @@ object Robot : LoggedRobot() {
     } else {
       when (Constants.Universal.SIM_MODE) {
         Constants.Tuning.SimType.SIM -> {
+          isLogging = true
           Logger.addDataReceiver(NTSafePublisher())
           Logger.addDataReceiver(WPILOGWriter()) // writes to ./logs
           logSimulationAlert.set(true)
@@ -214,14 +217,10 @@ object Robot : LoggedRobot() {
       RobotContainer.mapTunableCommands()
     }
     scoringFirst =
-        (org.wpilib.driverstation.MatchState.getGameData().orElse("") == "R" &&
-            (org.wpilib.driverstation.MatchState.getAlliance()
-                .orElse(org.wpilib.driverstation.Alliance.BLUE) ==
-                org.wpilib.driverstation.Alliance.BLUE)) ||
-            (org.wpilib.driverstation.MatchState.getGameData().orElse("") == "B" &&
-                (org.wpilib.driverstation.MatchState.getAlliance()
-                    .orElse(org.wpilib.driverstation.Alliance.BLUE) ==
-                    org.wpilib.driverstation.Alliance.RED))
+        (MatchState.getGameData().orElse("") == "R" &&
+            (MatchState.getAlliance().orElse(Alliance.BLUE) == Alliance.BLUE)) ||
+            (MatchState.getGameData().orElse("") == "B" &&
+                (MatchState.getAlliance().orElse(Alliance.BLUE) == Alliance.RED))
     //    if (RobotContainer.superstructure.currentState ==
     //        Superstructure.Companion.SuperstructureStates.CLIMB) {
     //     // RobotContainer.superstructure.currentRequest =
@@ -235,7 +234,7 @@ object Robot : LoggedRobot() {
   }
 
   override fun teleopPeriodic() {
-    val time = org.wpilib.driverstation.MatchState.getMatchTime()
+    val time = MatchState.getMatchTime()
     val shiftIndex =
         when {
           time > 125 -> 0

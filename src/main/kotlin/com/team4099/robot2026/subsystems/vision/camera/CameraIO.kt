@@ -12,12 +12,11 @@ import org.photonvision.PhotonCamera
 import org.photonvision.PhotonPoseEstimator
 import org.photonvision.simulation.PhotonCameraSim
 import org.photonvision.targeting.PhotonTrackedTarget
-import org.photonvision.targeting.TargetCorner
 import org.team4099.lib.geometry.Pose2dWPILIB
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Pose3dWPILIB
 import org.team4099.lib.geometry.Transform3dWPILIB
-import org.team4099.lib.kinematics.ChassisVelocities as ChassisSpeeds
+import org.team4099.lib.kinematics.ChassisVelocities
 import org.team4099.lib.math.hypot
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.meters
@@ -40,7 +39,7 @@ interface CameraIO {
   val transform: org.team4099.lib.geometry.Transform3d
   val poseMeasurementConsumer: (Pose2dWPILIB?, Double, Matrix<N3?, N1?>) -> Unit
   val drivetrainRotationSupplier: Supplier<Angle>
-  val drivetrainChassisSpeedsSupplier: Supplier<ChassisSpeeds>
+  val drivetrainChassisSpeedsSupplier: Supplier<ChassisVelocities>
 
   val camera: PhotonCamera
   var cameraSim: PhotonCameraSim?
@@ -48,7 +47,7 @@ interface CameraIO {
   val photonEstimator: PhotonPoseEstimator
 
   fun shouldAcceptPose(
-      chassisSpeeds: ChassisSpeeds,
+      chassisSpeeds: ChassisVelocities,
       visionPose: Pose3d,
       ambiguityRating: Double
   ): Boolean {
@@ -76,8 +75,6 @@ interface CameraIO {
     var frameAccepted: Boolean = false
     var cameraTargets = mutableListOf<PhotonTrackedTarget>()
     var indices = 0
-
-    var warmedUp: Boolean = false
 
     override fun toLog(table: LogTable) {
       table.put("timestampSeconds", timestamp.inSeconds)
@@ -119,19 +116,21 @@ interface CameraIO {
 
       cameraTargets = mutableListOf()
 
-      for (targetID in 0..indices) {
+      for (targetID in 0 until indices) {
         val target = PhotonTrackedTarget()
 
-        target.fiducialId = table.get("cameraTargets/$targetID/id", 0)
-        target.yaw = table.get("cameraTarget/$targetID/yaw", 0.0)
-        target.pitch = table.get("cameraTarget/$targetID/pitch", 0.0)
-        target.area = table.get("cameraTarget/$targetID/area", 0.0)
-        target.pitch = table.get("cameraTarget/$targetID/skew", 0.0)
+        target.fiducialId = table.get("cameraTargets/$targetID/id", -1)
+        target.objDetectId = table.get("cameraTargets/$targetID/classId", -1)
+        target.objDetectConf = table.get("cameraTargets/$targetID/confidence", 0.0f)
+        target.yaw = table.get("cameraTargets/$targetID/yaw", 0.0)
+        target.pitch = table.get("cameraTargets/$targetID/pitch", 0.0)
+        target.area = table.get("cameraTargets/$targetID/area", 0.0)
+        target.skew = table.get("cameraTargets/$targetID/skew", 0.0)
 
         target.bestCameraToTarget =
-            table.get("cameraTarget/$targetID/cameraToTarget", Transform3d())?.get(0)
+            table.get("cameraTargets/$targetID/cameraToTarget", Transform3d())?.get(0)
                 ?: Transform3d()
-        target.poseAmbiguity = table.get("cameraTarget/$targetID/ambiguity", 0.0)
+        target.poseAmbiguity = table.get("cameraTargets/$targetID/ambiguity", 0.0)
 
         cameraTargets.add(target)
       }
@@ -150,28 +149,6 @@ interface CameraIO {
     Logger.recordOutput("Vision/$identifier/timestampIG", mostRecentPipelineResult.timestampSeconds)
 
     inputs.cameraTargets = mutableListOf()
-
-    if (!inputs.warmedUp) {
-      inputs.cameraTargets.addAll(
-          FieldConstants.fieldLayout.tags.map {
-            PhotonTrackedTarget(
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                it.id,
-                0,
-                0.0f,
-                Transform3dWPILIB(),
-                Transform3dWPILIB(),
-                0.0,
-                mutableListOf(TargetCorner()),
-                mutableListOf(TargetCorner()))
-          })
-
-      inputs.warmedUp = true
-      return
-    }
 
     when (pipeline) {
       DetectionPipeline.APRIL_TAG -> {

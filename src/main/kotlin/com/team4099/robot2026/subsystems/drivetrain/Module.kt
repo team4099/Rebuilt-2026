@@ -29,7 +29,7 @@ import org.team4099.lib.units.inRotationsPerSecond
 import org.team4099.lib.units.perSecond
 import org.wpilib.math.geometry.Rotation2d
 import org.wpilib.math.kinematics.SwerveModulePosition
-import org.wpilib.math.kinematics.SwerveModuleVelocity as SwerveModuleState
+import org.wpilib.math.kinematics.SwerveModuleVelocity
 import org.wpilib.util.Alert
 
 class Module(
@@ -80,7 +80,7 @@ class Module(
   }
 
   /** Runs the module with the specified setpoint state and returns the optimized setpoint. */
-  fun runSetpoint(state: SwerveModuleState): SwerveModuleState {
+  fun runSetpoint(state: SwerveModuleVelocity): SwerveModuleVelocity {
     // Optimize velocity setpoint
     val optimized =
         state.optimize(angle.inRotation2ds).cosineScale(inputs.turnPosition.inRotation2ds)
@@ -92,7 +92,7 @@ class Module(
   }
 
   fun pointWheelsAt(angle: Angle) {
-    val state = SwerveModuleState(0.0, angle.inRotation2ds)
+    val state = SwerveModuleVelocity(0.0, angle.inRotation2ds)
     io.setTurnPosition(state.optimize(this.angle.inRotation2ds).angle)
   }
 
@@ -124,9 +124,9 @@ class Module(
     /** Returns the module modulePosition (turn angle and drive modulePosition). */
     get() = SwerveModulePosition(position.inMeters, angle.inRotation2ds)
 
-  val state: SwerveModuleState
+  val state: SwerveModuleVelocity
     /** Returns the module state (turn angle and drive velocity). */
-    get() = SwerveModuleState(velocity.inMetersPerSecond, angle.inRotation2ds)
+    get() = SwerveModuleVelocity(velocity.inMetersPerSecond, angle.inRotation2ds)
 
   val odometryTimestamps: DoubleArray
     /** Returns the timestamps of the samples received this cycle. */

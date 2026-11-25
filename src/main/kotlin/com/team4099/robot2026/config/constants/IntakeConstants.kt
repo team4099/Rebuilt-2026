@@ -2,29 +2,30 @@ package com.team4099.robot2026.config.constants
 
 import com.team4099.lib.hal.Clock
 import com.team4099.robot2026.Robot
+import org.team4099.lib.units.Value
 import org.team4099.lib.units.base.amps
-import org.team4099.lib.units.base.grams
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.DerivativeGain
 import org.team4099.lib.units.derived.IntegralGain
+import org.team4099.lib.units.derived.MomentOfInertia
 import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.degrees
-import org.team4099.lib.units.derived.meterSquared
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
+import org.wpilib.driverstation.RobotState
 
 object IntakeConstants {
   const val GEAR_RATIO = (12.0 / 36.0) * (18.0 / 54.0) * (12.0 / 36.0)
 
   val INTAKE_TOLERANCE = 2.0.degrees
 
-  val PIVOT_INERTIA = 1.0.grams.meterSquared
+  val PIVOT_INERTIA: MomentOfInertia = Value(0.001)
   val PIVOT_LENGTH = 1.0.inches
   val PIVOT_MAX_ANGLE = 120.degrees
   val PIVOT_MIN_ANGLE = (-60).degrees
@@ -50,8 +51,8 @@ object IntakeConstants {
     val STOW_ANGLE = PIVOT_MAX_ANGLE
     val IDLE_ANGLE: Angle
       get() =
-          if (org.wpilib.driverstation.RobotState.isDisabled() ||
-              org.wpilib.driverstation.RobotState.isAutonomous() &&
+          if (RobotState.isDisabled() ||
+              RobotState.isAutonomous() &&
                   (Robot.autoStartTime < 0.seconds ||
                       Clock.timestamp - Robot.autoStartTime < 0.5.seconds)) {
             STOW_ANGLE

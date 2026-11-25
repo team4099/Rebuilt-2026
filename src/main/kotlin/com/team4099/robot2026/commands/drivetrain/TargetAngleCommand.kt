@@ -10,7 +10,7 @@ import com.team4099.robot2026.util.driver.DriverProfile
 import kotlin.math.PI
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.PIDController
-import org.team4099.lib.kinematics.ChassisVelocities as ChassisSpeeds
+import org.team4099.lib.kinematics.ChassisVelocities
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.Radian
@@ -119,7 +119,7 @@ class TargetAngleCommand(
     val speed = driver.driveSpeedClampedSupplier(driveX, driveY, slowMode)
 
     drivetrain.runSpeeds(
-        ChassisSpeeds.fromFieldRelativeSpeeds(
+        ChassisVelocities.fromFieldRelativeSpeeds(
             speed.first, speed.second, thetaFeedback, drivetrain.rotation))
   }
 
@@ -132,7 +132,7 @@ class TargetAngleCommand(
     val speed = driver.driveSpeedClampedSupplier(driveX, driveY, slowMode)
     val rotation = driver.rotationSpeedClampedSupplier(turn, slowMode)
     drivetrain.runSpeeds(
-        ChassisSpeeds.fromFieldRelativeSpeeds(
+        ChassisVelocities.fromFieldRelativeSpeeds(
             speed.first, speed.second, rotation, drivetrain.pose.rotation))
   }
 }

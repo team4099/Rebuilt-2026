@@ -2,12 +2,9 @@ package com.team4099.robot2026.config.constants
 
 import com.team4099.robot2026.util.ArgParser.argToBool
 import com.team4099.robot2026.util.ArgParser.argToEnum
-import org.team4099.lib.units.base.grams
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.pounds
 import org.team4099.lib.units.base.seconds
-import org.team4099.lib.units.derived.meterSquared
-import org.team4099.lib.units.kilo
 import org.team4099.lib.units.milli
 import org.team4099.lib.units.perSecond
 
@@ -30,7 +27,7 @@ object Constants {
     const val DISABLE_COLLISIONS = false
 
     val ROBOT_WEIGHT = 125.pounds
-    val ROBOT_MOI = 6.3.kilo.grams.meterSquared
+    const val ROBOT_MOI_KG_METERS_SQUARED = 6.3
 
     val whoami = argToEnum<WHOAMI>(System.getProperty("robot"))
   }

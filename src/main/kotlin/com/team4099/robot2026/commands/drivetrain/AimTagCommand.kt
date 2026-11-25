@@ -8,7 +8,7 @@ import kotlin.math.PI
 import kotlin.math.atan2
 import org.team4099.lib.controller.PIDController
 import org.team4099.lib.geometry.Transform3d
-import org.team4099.lib.kinematics.ChassisVelocities as ChassisSpeeds
+import org.team4099.lib.kinematics.ChassisVelocities
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.meters
@@ -69,7 +69,7 @@ class AimTagCommand(val drivetrain: Drive, val vision: Vision) : Command() {
 
     CustomLogger.recordOutput("AimTagCommand/omegaDPS", omega.inDegreesPerSecond)
 
-    drivetrain.runSpeeds(ChassisSpeeds(0.meters.perSecond, 0.meters.perSecond, omega))
+    drivetrain.runSpeeds(ChassisVelocities(0.meters.perSecond, 0.meters.perSecond, omega))
   }
 
   override fun isFinished(): Boolean {
@@ -77,6 +77,6 @@ class AimTagCommand(val drivetrain: Drive, val vision: Vision) : Command() {
   }
 
   override fun end(interrupted: Boolean) {
-    drivetrain.runSpeeds(ChassisSpeeds())
+    drivetrain.runSpeeds(ChassisVelocities())
   }
 }

@@ -11,7 +11,7 @@ import org.photonvision.targeting.PhotonTrackedTarget
 import org.photonvision.targeting.TargetCorner
 import org.team4099.lib.geometry.Transform3d
 import org.team4099.lib.geometry.Transform3dWPILIB
-import org.team4099.lib.kinematics.ChassisVelocities as ChassisSpeeds
+import org.team4099.lib.kinematics.ChassisVelocities
 import org.team4099.lib.units.derived.Angle
 import org.wpilib.math.geometry.Pose2d
 import org.wpilib.math.linalg.Matrix
@@ -24,7 +24,7 @@ class CameraIOPhotonvision(
     override val transform: Transform3d,
     override val poseMeasurementConsumer: (Pose2d?, Double, Matrix<N3?, N1?>) -> Unit,
     override val drivetrainRotationSupplier: Supplier<Angle>,
-    override val drivetrainChassisSpeedsSupplier: Supplier<ChassisSpeeds>
+    override val drivetrainChassisSpeedsSupplier: Supplier<ChassisVelocities>
 ) : CameraIO {
   override val photonEstimator: PhotonPoseEstimator =
       PhotonPoseEstimator(FieldConstants.fieldLayout, transform.transform3d)

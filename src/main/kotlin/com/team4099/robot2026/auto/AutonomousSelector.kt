@@ -20,40 +20,37 @@ import com.team4099.robot2026.subsystems.superstructure.intake.Intake
 import org.littletonrobotics.junction.networktables.LoggedNetworkChooser
 import org.team4099.lib.controller.PIDController
 import org.team4099.lib.geometry.Pose2d
-import org.team4099.lib.kinematics.ChassisVelocities as ChassisSpeeds
+import org.team4099.lib.kinematics.ChassisVelocities
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.inRadiansPerSecond
+import org.wpilib.backend.NetworkTablesTunableBackend
 import org.wpilib.command2.Command
 import org.wpilib.command2.Commands
 import org.wpilib.command2.InstantCommand
 import org.wpilib.command2.WaitCommand
 import org.wpilib.math.kinematics.ChassisVelocities as WPILIBSpeeds
-import org.wpilib.networktables.NetworkTableEntry
 import org.wpilib.networktables.NetworkTableInstance
+import org.wpilib.tunable.TunableDouble
+import org.wpilib.tunable.TunableRegistry
+import org.wpilib.tunable.Tunables
 import org.wpilib.util.Alert
 
 class AutonomousSelector(val drivetrain: Drive) {
   private var autonomousModeChooser: LoggedNetworkChooser<AutonomousMode> =
-      LoggedNetworkChooser("AutonomousMode")
-  private var waitBeforeCommandSlider: NetworkTableEntry
-  private var fieldSideChooser: LoggedNetworkChooser<Boolean> = LoggedNetworkChooser("FieldSide")
+      LoggedNetworkChooser("/SmartDashboard/AutonomousMode")
+  private val waitBeforeCommandSlider: TunableDouble
+  private var fieldSideChooser: LoggedNetworkChooser<Boolean> = LoggedNetworkChooser("/SmartDashboard/FieldSide")
 
-  private val pathBuilder: AutoPathBuilder
+  private val pathBuilder: (bline.path.Path, Boolean) -> FollowPath
 
   private val autoAimOTFCommand = AimOTFCommand(drivetrain, timeout = 20.seconds)
 
   private val autoSelectionAlert =
-      Alert(
-          "No auto selected! Please select an auto.",
-          "No auto selected! Please select an auto.",
-          Alert.Level.HIGH)
+      Alert("autoNotSelected", "No auto selected! Please select an auto.", Alert.Level.HIGH)
   private val autoSideAlert =
-      Alert(
-          "No auto side selected! Please select a side.",
-          "No auto side selected! Please select a side.",
-          Alert.Level.HIGH)
+      Alert("autoSideNotSelected", "No auto side selected! Please select a side.", Alert.Level.HIGH)
 
   init {
     fieldSideChooser.add("Left", false)
@@ -74,37 +71,41 @@ class AutonomousSelector(val drivetrain: Drive) {
     autonomousModeChooser.add("Intake Eject Full Swipe Shoot", AutonomousMode.EJECT_SWIPE)
     autonomousModeChooser.add("Do nothing", AutonomousMode.DO_NOTHING)
 
-    waitBeforeCommandSlider =
-        NetworkTableInstance.getDefault().getTable("SmartDashboard").getEntry("Wait Time")
+    TunableRegistry.registerBackend(
+        "/Pre-match",
+        NetworkTablesTunableBackend(NetworkTableInstance.getDefault(), "/Shuffleboard"))
+    waitBeforeCommandSlider = Tunables.addDouble("/Pre-match/Wait Time", 0.0)
 
-    pathBuilder =
-        AutoPathBuilder(
-            FollowPath.Builder(
-                    DriveType.SWERVE,
-                    drivetrain,
-                    { drivetrain.pose.pose2d },
-                    { startingPose -> drivetrain.pose = Pose2d(startingPose) },
-                    { drivetrain.chassisSpeeds.chassisVelocitiesWPILIB },
-                    { speeds: WPILIBSpeeds ->
-                      drivetrain.runSpeeds(ChassisSpeeds(speeds), flipIfRed = false)
-                    },
-                    PIDController(
-                            DrivetrainConstants.PID.AUTO_POS_KP,
-                            DrivetrainConstants.PID.AUTO_POS_KI,
-                            DrivetrainConstants.PID.AUTO_POS_KD)
-                        .wpiPidController,
-                    PIDController(
-                            DrivetrainConstants.PID.AUTO_THETA_PID_KP,
-                            DrivetrainConstants.PID.AUTO_THETA_PID_KI,
-                            DrivetrainConstants.PID.AUTO_THETA_PID_KD)
-                        .wpiPidController,
-                    PIDController(
-                            DrivetrainConstants.PID.AUTO_CROSSTRACK_KP,
-                            DrivetrainConstants.PID.AUTO_CROSSTRACK_KI,
-                            DrivetrainConstants.PID.AUTO_CROSSTRACK_KD)
-                        .wpiPidController)
-                .withDefaultShouldFlip(),
-            { fieldSideChooser.get() ?: false })
+    val builder =
+        FollowPath.Builder(
+                DriveType.SWERVE,
+                drivetrain,
+                { drivetrain.pose.pose2d },
+                { startingPose -> drivetrain.pose = Pose2d(startingPose) },
+                { drivetrain.chassisSpeeds.chassisVelocitiesWPILIB },
+                { speeds: WPILIBSpeeds ->
+                  drivetrain.runSpeeds(ChassisVelocities(speeds), flipIfRed = false)
+                },
+                PIDController(
+                        DrivetrainConstants.PID.AUTO_POS_KP,
+                        DrivetrainConstants.PID.AUTO_POS_KI,
+                        DrivetrainConstants.PID.AUTO_POS_KD)
+                    .wpiPidController,
+                PIDController(
+                        DrivetrainConstants.PID.AUTO_THETA_PID_KP,
+                        DrivetrainConstants.PID.AUTO_THETA_PID_KI,
+                        DrivetrainConstants.PID.AUTO_THETA_PID_KD)
+                    .wpiPidController,
+                PIDController(
+                        DrivetrainConstants.PID.AUTO_CROSSTRACK_KP,
+                        DrivetrainConstants.PID.AUTO_CROSSTRACK_KI,
+                        DrivetrainConstants.PID.AUTO_CROSSTRACK_KD)
+                    .wpiPidController)
+            .withDefaultShouldFlip()
+    pathBuilder = { path, resetPose ->
+      val command = builder.build(path).withShouldMirror { fieldSideChooser.get() ?: false }
+      if (resetPose) command.withPoseReset() else command
+    }
   }
 
   fun registerEventTriggers(superstructure: Superstructure) {
@@ -127,7 +128,7 @@ class AutonomousSelector(val drivetrain: Drive) {
   }
 
   val waitTime: Time
-    get() = waitBeforeCommandSlider.getDouble(0.0).seconds
+    get() = waitBeforeCommandSlider.get().seconds
 
   fun getCommand(superstructure: Superstructure, intake: Intake): Command {
     val mode = autonomousModeChooser.get()
@@ -172,7 +173,7 @@ class AutonomousSelector(val drivetrain: Drive) {
         }
 
     // note(nathan): saves one loop
-    return if (waitTime != 0.seconds) command else WaitCommand(waitTime.inSeconds).andThen(command)
+    return if (waitTime == 0.seconds) command else WaitCommand(waitTime.inSeconds).andThen(command)
   }
 }
 

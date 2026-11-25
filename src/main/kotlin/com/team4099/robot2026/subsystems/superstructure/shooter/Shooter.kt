@@ -17,7 +17,7 @@ import kotlin.math.sqrt
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Translation2d
 import org.team4099.lib.geometry.Translation3d
-import org.team4099.lib.kinematics.ChassisVelocities as ChassisSpeeds
+import org.team4099.lib.kinematics.ChassisVelocities
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.LinearVelocity
 import org.team4099.lib.units.base.Length
@@ -56,6 +56,7 @@ import org.wpilib.math.linalg.Vector
 import org.wpilib.math.numbers.N1
 import org.wpilib.math.numbers.N2
 import org.wpilib.math.util.MathUtil
+import org.wpilib.math.util.Nat
 import org.wpilib.sysid.SysIdRoutineLog
 import org.wpilib.units.Units.Volts
 import org.wpilib.units.measure.Voltage as WPILibVoltage
@@ -231,7 +232,7 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
      */
     fun calculateLaunchData(
         drivetrainPose: Pose2d,
-        chassisSpeeds: ChassisSpeeds
+        chassisSpeeds: ChassisVelocities
     ): CalculatedLaunchData {
       return calculateLaunchData(
           drivetrainPose,
@@ -268,7 +269,7 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
      */
     fun calculateLaunchData(
         drivetrainPose: Pose2d,
-        chassisSpeeds: ChassisSpeeds,
+        chassisSpeeds: ChassisVelocities,
         targetTranslation: Translation3d
     ): CalculatedLaunchData {
       val rotatedShooter =
@@ -285,7 +286,7 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
 
       // Get field-relative drivetrain velocity, and convert it into a vector.
       val fieldSpeeds =
-          ChassisSpeeds(
+          ChassisVelocities(
               chassisSpeeds.chassisVelocitiesWPILIB.toFieldRelative(
                   drivetrainPose.rotation.inRotation2ds))
 
@@ -305,8 +306,8 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
       val driveVector =
           Vector(
               Matrix(
-                  org.wpilib.math.util.Nat.N2(),
-                  org.wpilib.math.util.Nat.N1(),
+                  Nat.N2(),
+                  Nat.N1(),
                   doubleArrayOf(
                       (fieldSpeeds.vx + shooterSpeeds.x).inMetersPerSecond,
                       (fieldSpeeds.vy + shooterSpeeds.y).inMetersPerSecond)))
@@ -314,8 +315,8 @@ class Shooter(private val io: ShooterIO) : ControlledByStateMachine() {
       val robotTHubVector =
           Vector(
               Matrix(
-                  org.wpilib.math.util.Nat.N2(),
-                  org.wpilib.math.util.Nat.N1(),
+                  Nat.N2(),
+                  Nat.N1(),
                   doubleArrayOf(shooterTTargetX.inMeters, shooterTTargetY.inMeters)))
 
       // Get the distance (signed) between the robot and the HUB

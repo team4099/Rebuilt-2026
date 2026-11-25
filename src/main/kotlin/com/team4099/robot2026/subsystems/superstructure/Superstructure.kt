@@ -33,7 +33,9 @@ import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.max
 import org.wpilib.command2.Command
 import org.wpilib.command2.SubsystemBase
+import org.wpilib.driverstation.RobotState
 import org.wpilib.smartdashboard.Field2d
+import org.wpilib.telemetry.Telemetry
 
 class Superstructure(
     private val drivetrain: Drive,
@@ -113,7 +115,7 @@ class Superstructure(
         (Clock.epochTime - shooterStartTime).inMilliseconds)
 
     field.robotPose = drivetrain.pose.pose2d
-    org.wpilib.telemetry.Telemetry.log("Field", field)
+    Telemetry.log("Field", field)
 
     var nextState = currentState
 
@@ -290,7 +292,7 @@ class Superstructure(
         hopper.currentRequest = Request.HopperRequest.Idle()
         feeder.currentRequest = Request.FeederRequest.Idle()
         if (intake.inputs.position <= 0.degrees) {
-          if (org.wpilib.driverstation.RobotState.isAutonomous()) { // Run intake faster in teleop
+          if (RobotState.isAutonomous()) { // Run intake faster in teleop
             intakeRollers.currentRequest =
                 Request.RollersRequest.OpenLoop(RollersConstants.AUTO_INTAKE_VOLTAGE)
           } else {

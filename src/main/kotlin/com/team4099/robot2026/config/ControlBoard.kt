@@ -5,12 +5,21 @@ import java.util.function.Consumer
 import org.team4099.lib.joystick.XboxOneGamepad
 import org.wpilib.command2.button.Trigger
 import org.wpilib.driverstation.GenericHID
+import org.wpilib.framework.RobotBase
 
 object ControlBoard {
 
   private val driver = XboxOneGamepad(Constants.Joysticks.DRIVER_PORT)
   private val operator = XboxOneGamepad(Constants.Joysticks.SHOTGUN_PORT)
   private val technician = XboxOneGamepad(Constants.Joysticks.TECHNICIAN_PORT)
+
+  // The macOS simulator's gamepad mapping reports both sticks before the triggers,
+  // unlike the Xbox mapping used by the robot's Driver Station.
+  private val macSimulation = RobotBase.isSimulation() && System.getProperty("os.name").startsWith("Mac")
+  private fun leftTrigger(gamepad: XboxOneGamepad) =
+      if (macSimulation) gamepad.getRawAxis(4) else gamepad.leftTriggerAxis
+  private fun rightTrigger(gamepad: XboxOneGamepad) =
+      if (macSimulation) gamepad.getRawAxis(5) else gamepad.rightTriggerAxis
 
   val driverRumbleConsumer =
       Consumer<Boolean> {
@@ -33,15 +42,15 @@ object ControlBoard {
     get() = -driver.leftYAxis
 
   val turn: Double
-    get() = driver.rightXAxis
+    get() = if (macSimulation) driver.getRawAxis(2) else driver.rightXAxis
 
   val slowMode: Boolean
     get() = driver.rightJoystickButton
 
   val resetGyro = Trigger { driver.startButton && driver.selectButton }
 
-  val intake = Trigger { driver.leftTriggerAxis > .5 }
-  val score = Trigger { driver.rightTriggerAxis > .5 }
+  val intake = Trigger { leftTrigger(driver) > .5 }
+  val score = Trigger { rightTrigger(driver) > .5 }
 
   val manualScore = Trigger { operator.bButton && operator.dPadLeft }
   val defenseMode = Trigger { operator.bButton && operator.dPadRight }
@@ -55,9 +64,9 @@ object ControlBoard {
   val eject = Trigger { driver.dPadUp || operator.dPadUp }
 
   val prepScore = Trigger { operator.yButton }
-  val forceIntakeUpTrigger = Trigger { operator.rightTriggerAxis > .5 }
+  val forceIntakeUpTrigger = Trigger { rightTrigger(operator) > .5 }
   val forceIntakeUpShoulder = Trigger { operator.rightShoulderButton }
-  val forceIntakeDownTrigger = Trigger { operator.leftTriggerAxis > .5 }
+  val forceIntakeDownTrigger = Trigger { leftTrigger(operator) > .5 }
   val forceIntakeDownShoulder = Trigger { operator.leftShoulderButton }
   val jiggle = Trigger { operator.aButton }
 

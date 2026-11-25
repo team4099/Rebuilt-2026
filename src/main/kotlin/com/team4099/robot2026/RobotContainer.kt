@@ -197,7 +197,11 @@ object RobotContainer {
     drivetrain.moduleIOs.forEach { it.toggleBrakeMode(neutralModeValue) }
   }
 
+  private var teleopControlsMapped = false
+
   fun mapTeleopControls() {
+    if (teleopControlsMapped) return
+    teleopControlsMapped = true
     ControlBoard.resetGyro.whileTrue(ResetGyroYawCommand(drivetrain))
 
     ControlBoard.forceHome.onTrue(superstructure.requestForceHomeCommand())
@@ -260,7 +264,10 @@ object RobotContainer {
             superstructure.requestForceHomeCommand(),
             WaitCommand(0.25),
             superstructure.requestIntakeCommand()))
-    ControlBoard.intake.onFalse(superstructure.requestIdleCommand())
+    ControlBoard.intake.onFalse(
+        ConditionalCommand(InstantCommand(), superstructure.requestIdleCommand()) {
+          ControlBoard.score.asBoolean
+        })
     ControlBoard.forceIntakeUpTrigger.whileTrue(
         RepeatCommand(
             SequentialCommandGroup(

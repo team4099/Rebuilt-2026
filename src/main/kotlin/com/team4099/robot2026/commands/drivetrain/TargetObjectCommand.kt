@@ -12,7 +12,7 @@ import org.team4099.lib.controller.PIDController
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Transform2d
 import org.team4099.lib.geometry.Translation2d
-import org.team4099.lib.kinematics.ChassisVelocities as ChassisSpeeds
+import org.team4099.lib.kinematics.ChassisVelocities
 import org.team4099.lib.units.Value
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Time
@@ -27,6 +27,7 @@ import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.inDegreesPerSecond
 import org.team4099.lib.units.perSecond
 import org.wpilib.command2.Command
+import org.wpilib.driverstation.RobotState
 import org.wpilib.framework.RobotBase
 
 class TargetObjectCommand(
@@ -48,7 +49,7 @@ class TargetObjectCommand(
               DrivetrainConstants.PID.SIM_AUTO_THETA_PID_KP,
               DrivetrainConstants.PID.SIM_AUTO_THETA_PID_KI,
               DrivetrainConstants.PID.SIM_AUTO_THETA_PID_KD)
-    } else if (org.wpilib.driverstation.RobotState.isAutonomous()) {
+    } else if (RobotState.isAutonomous()) {
       thetaPID =
           PIDController(
               DrivetrainConstants.PID.AUTO_REEF_PID_KP,
@@ -118,16 +119,17 @@ class TargetObjectCommand(
       hasThetaAligned = true
 
       drivetrain.runSpeeds(
-          ChassisSpeeds(DrivetrainConstants.OBJECT_APPROACH_SPEED, 0.meters.perSecond, thetavel),
+          ChassisVelocities(
+              DrivetrainConstants.OBJECT_APPROACH_SPEED, 0.meters.perSecond, thetavel),
           flipIfRed = false)
     } else {
       drivetrain.runSpeeds(
-          ChassisSpeeds(0.meters.perSecond, 0.meters.perSecond, thetavel), flipIfRed = false)
+          ChassisVelocities(0.meters.perSecond, 0.meters.perSecond, thetavel), flipIfRed = false)
     }
   }
 
   override fun end(interrupted: Boolean) {
-    drivetrain.runSpeeds(ChassisSpeeds())
+    drivetrain.runSpeeds(ChassisVelocities())
     CustomLogger.recordOutput("ActiveCommands/TargetObjectCommand", false)
 
     CustomLogger.recordOutput("TargetObjectCommand/interrupted", interrupted)

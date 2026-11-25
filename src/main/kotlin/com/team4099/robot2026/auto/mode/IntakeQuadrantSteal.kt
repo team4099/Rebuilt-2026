@@ -1,8 +1,8 @@
 package com.team4099.robot2026.auto.mode
 
 import bline.commands.BLineCommandsV2 as BLineCommands
+import bline.commands.FollowPathV2
 import bline.path.Path
-import com.team4099.robot2026.auto.AutoPathBuilder
 import com.team4099.robot2026.commands.AgitateIntakeCommand
 import com.team4099.robot2026.config.constants.IntakeConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
@@ -15,11 +15,11 @@ class IntakeQuadrantSteal(
     val drivetrain: Drive,
     val superstructure: Superstructure,
     val intake: Intake,
-    pathBuilder: AutoPathBuilder
+    pathBuilder: (Path, Boolean) -> FollowPathV2
 ) :
     WrapperCommand(
         BLineCommands.sequence(
-            pathBuilder.build(pathOne),
+            pathBuilder(pathOne, true),
             WaitCommand(1.0),
             AgitateIntakeCommand(superstructure, intake).withTimeout(18.0 - (5.60 + 1.0)),
             superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE))) {

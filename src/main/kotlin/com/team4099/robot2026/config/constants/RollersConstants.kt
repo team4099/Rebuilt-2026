@@ -1,9 +1,9 @@
 package com.team4099.robot2026.config.constants
 
+import org.team4099.lib.units.Value
 import org.team4099.lib.units.base.amps
-import org.team4099.lib.units.base.grams
 import org.team4099.lib.units.base.seconds
-import org.team4099.lib.units.derived.meterSquared
+import org.team4099.lib.units.derived.MomentOfInertia
 import org.team4099.lib.units.derived.volts
 
 object RollersConstants {
@@ -16,7 +16,7 @@ object RollersConstants {
   val TELEOP_INTAKE_VOLTAGE = 12.0.volts
   val SCORE_ASSISTING_VOLTAGE = 0.volts
 
-  val MOMENT_OF_INERTIA = 1.0.grams.meterSquared // TODO: Change
+  val MOMENT_OF_INERTIA: MomentOfInertia = Value(0.001) // TODO: Change
 
   val SUPPLY_CURRENT_LIMIT = 40.0.amps
   val AUTO_SUPPLY_CURRENT_LIMIT = 80.0.amps

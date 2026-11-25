@@ -8,7 +8,7 @@ import org.photonvision.PhotonPoseEstimator
 import org.photonvision.simulation.PhotonCameraSim
 import org.photonvision.simulation.SimCameraProperties
 import org.team4099.lib.geometry.Transform3d
-import org.team4099.lib.kinematics.ChassisVelocities as ChassisSpeeds
+import org.team4099.lib.kinematics.ChassisVelocities
 import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.Angle
@@ -27,7 +27,7 @@ class CameraIOPVSim(
     override val poseMeasurementConsumer: (Pose2d?, Double, Matrix<N3?, N1?>) -> Unit = { _, _, _ ->
     },
     override val drivetrainRotationSupplier: Supplier<Angle>,
-    override val drivetrainChassisSpeedsSupplier: Supplier<ChassisSpeeds>
+    override val drivetrainChassisSpeedsSupplier: Supplier<ChassisVelocities>
 ) : CameraIO {
   private val cameraProperties: SimCameraProperties = SimCameraProperties()
 
@@ -38,8 +38,9 @@ class CameraIOPVSim(
   override var curStdDevs: Matrix<N3?, N1?> = VisionConstants.singleTagStdDevs
 
   init {
-    cameraProperties.setCalibration(1280, 720, 100.0.degrees.inRotation2ds)
-    cameraProperties.fps = 45.0
+    // Keep simulated image processing responsive with all cameras enabled.
+    cameraProperties.setCalibration(640, 360, 100.0.degrees.inRotation2ds)
+    cameraProperties.fps = 30.0
 
     // examples from documentation
     cameraProperties.setCalibError(0.25, 0.08)

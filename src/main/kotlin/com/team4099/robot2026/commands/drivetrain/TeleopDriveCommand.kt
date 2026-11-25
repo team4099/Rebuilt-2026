@@ -3,11 +3,12 @@ package com.team4099.robot2026.commands.drivetrain
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.util.CustomLogger
 import com.team4099.robot2026.util.driver.DriverProfile
-import org.team4099.lib.kinematics.ChassisVelocities as ChassisSpeeds
+import org.team4099.lib.kinematics.ChassisVelocities
 import org.team4099.lib.units.inDegreesPerSecond
 import org.team4099.lib.units.inMetersPerSecond
 import org.wpilib.command2.Command
 import org.wpilib.command2.button.CommandXboxController
+import org.wpilib.driverstation.RobotState
 
 class TeleopDriveCommand(
     val driver: DriverProfile,
@@ -28,7 +29,7 @@ class TeleopDriveCommand(
   override fun initialize() {}
 
   override fun execute() {
-    if (org.wpilib.driverstation.RobotState.isTeleop()) {
+    if (RobotState.isTeleop()) {
       val speed = driver.driveSpeedClampedSupplier(driveX, driveY, slowMode)
       val rotation = driver.rotationSpeedClampedSupplier(turn, slowMode)
 
@@ -37,7 +38,7 @@ class TeleopDriveCommand(
       CustomLogger.recordOutput("ActiveCommands/rotationInDPS", rotation.inDegreesPerSecond)
 
       drivetrain.runSpeeds(
-          ChassisSpeeds.fromFieldRelativeSpeeds(
+          ChassisVelocities.fromFieldRelativeSpeeds(
               speed.first, speed.second, rotation, drivetrain.pose.rotation))
 
       CustomLogger.recordDebugOutput("ActiveCommands/TeleopDriveCommand", true)

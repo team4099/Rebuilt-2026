@@ -1,16 +1,41 @@
 package com.team4099.robot2026.commands
 
 import com.ctre.phoenix6.SignalLogger
-import com.team4099.lib.logging.Dashboard
 import com.team4099.robot2026.util.CustomLogger
 import java.util.function.BiConsumer
 import java.util.function.Consumer
 import java.util.function.Supplier
+import org.wpilib.backend.NetworkTablesTelemetryBackend
+import org.wpilib.backend.NetworkTablesTunableBackend
 import org.wpilib.command2.Command
 import org.wpilib.command2.Subsystem
+import org.wpilib.networktables.NetworkTableInstance
 import org.wpilib.system.Timer
+import org.wpilib.telemetry.Telemetry
+import org.wpilib.telemetry.TelemetryRegistry
+import org.wpilib.tunable.TunableRegistry
+import org.wpilib.tunable.Tunables
 
 class SysIdCommand : Command {
+  companion object {
+    init {
+      val instance = NetworkTableInstance.getDefault()
+      for (name in listOf("SysIdTest", "SysIdTestType", "SysIdVoltageCommand", "SysIdRotate")) {
+        TunableRegistry.registerBackend(
+            "/$name", NetworkTablesTunableBackend(instance, "/SmartDashboard"))
+      }
+      for (name in listOf("SysIdOverflow", "SysIdTelemetry", "SysIdWrongMech")) {
+        TelemetryRegistry.registerBackend(
+            "/$name", NetworkTablesTelemetryBackend(instance, "/SmartDashboard"))
+      }
+    }
+
+    private val test = Tunables.addValue("/SysIdTest", "Drivetrain")
+    private val testType = Tunables.addValue("/SysIdTestType", "")
+    private val voltageCommand = Tunables.addDouble("/SysIdVoltageCommand", 0.0)
+    private val rotate = Tunables.addBoolean("/SysIdRotate", false)
+  }
+
   private val isDriveTrain: Boolean
   private lateinit var driveTrainSetter: BiConsumer<Double, Double>
   private lateinit var mechanismSetter: Consumer<Double>
@@ -45,8 +70,8 @@ class SysIdCommand : Command {
 
   // Called when the command is initially scheduled.
   override fun initialize() {
-    Dashboard.putBoolean("SysIdOverflow", false)
-    Dashboard.putString("SysIdTelemetry", "")
+    Telemetry.log("/SysIdOverflow", false)
+    Telemetry.log("/SysIdTelemetry", "")
     startTime = Timer.getTimestamp()
     data = ""
   }
@@ -56,14 +81,14 @@ class SysIdCommand : Command {
     val timestamp = Timer.getTimestamp()
 
     // Check if running the correct test
-    val test = Dashboard.getString("SysIdTest", "Drivetrain")
+    val test = test.get()
     val correctTest: Boolean =
         if (isDriveTrain) {
           test == "Drivetrain" || test == "Drivetrain (Angular)"
         } else {
           test == "Arm" || test == "Elevator" || test == "Simple"
         }
-    Dashboard.putBoolean("SysIdWrongMech", !correctTest)
+    Telemetry.log("/SysIdWrongMech", !correctTest)
 
     // Wrong test, prevent movement
     if (!correctTest) {
@@ -76,9 +101,9 @@ class SysIdCommand : Command {
     }
 
     // Calculate voltage
-    val testType = Dashboard.getString("SysIdTestType", "")
-    val voltageCommand = Dashboard.getNumber("SysIdVoltageCommand", 0.0)
-    val rotate = Dashboard.getBoolean("SysIdRotate", false)
+    val testType = testType.get()
+    val voltageCommand = voltageCommand.get()
+    val rotate = rotate.get()
     val baseVoltage: Double =
         when (testType) {
           "Quasistatic" -> voltageCommand * (timestamp - startTime)
@@ -116,7 +141,7 @@ class SysIdCommand : Command {
   override fun end(interrupted: Boolean) {
     if (data.length > 0) {
       SignalLogger.writeString("state", data.substring(0, data.length - 1))
-      Dashboard.putString("SysIdTelemetry", data.substring(0, data.length - 1))
+      Telemetry.log("/SysIdTelemetry", data.substring(0, data.length - 1))
       println("Saved " + java.lang.Long.toString(Math.round(data.length / 1024.0)) + " KB of data.")
     } else {
       println("No data to save. Something's gone wrong here...")
