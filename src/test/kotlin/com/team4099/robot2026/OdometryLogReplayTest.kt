@@ -19,8 +19,12 @@ class OdometryLogReplayTest {
     val replayedModule = ModuleIO.ModuleIOInputs()
     replayedModule.fromLog(moduleLog)
     assertArrayEquals(module.odometryTimestamps, replayedModule.odometryTimestamps)
-    assertArrayEquals(doubleArrayOf(2.0, 2.5), replayedModule.odometryDrivePositions.map { it.value }.toDoubleArray())
-    assertArrayEquals(doubleArrayOf(0.1, 0.2), replayedModule.odometryTurnPositions.map { it.value }.toDoubleArray())
+    assertArrayEquals(
+        doubleArrayOf(2.0, 2.5),
+        replayedModule.odometryDrivePositions.map { it.value }.toDoubleArray())
+    assertArrayEquals(
+        doubleArrayOf(0.1, 0.2),
+        replayedModule.odometryTurnPositions.map { it.value }.toDoubleArray())
 
     val gyro = GyroIO.GyroIOInputs()
     gyro.odometryYawTimestamps = doubleArrayOf(1.0, 1.02)
@@ -30,6 +34,7 @@ class OdometryLogReplayTest {
     val replayedGyro = GyroIO.GyroIOInputs()
     replayedGyro.fromLog(gyroLog)
     assertArrayEquals(gyro.odometryYawTimestamps, replayedGyro.odometryYawTimestamps)
-    assertArrayEquals(doubleArrayOf(0.3, 0.4), replayedGyro.odometryYawPositions.map { it.value }.toDoubleArray())
+    assertArrayEquals(
+        doubleArrayOf(0.3, 0.4), replayedGyro.odometryYawPositions.map { it.value }.toDoubleArray())
   }
 }

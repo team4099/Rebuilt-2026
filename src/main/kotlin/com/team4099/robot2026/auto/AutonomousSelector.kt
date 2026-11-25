@@ -41,7 +41,8 @@ class AutonomousSelector(val drivetrain: Drive) {
   private var autonomousModeChooser: LoggedNetworkChooser<AutonomousMode> =
       LoggedNetworkChooser("/SmartDashboard/AutonomousMode")
   private val waitBeforeCommandSlider: TunableDouble
-  private var fieldSideChooser: LoggedNetworkChooser<Boolean> = LoggedNetworkChooser("/SmartDashboard/FieldSide")
+  private var fieldSideChooser: LoggedNetworkChooser<Boolean> =
+      LoggedNetworkChooser("/SmartDashboard/FieldSide")
 
   private val pathBuilder: (bline.path.Path, Boolean) -> FollowPath
 

@@ -6,9 +6,9 @@ import org.junit.jupiter.api.Test
 import org.littletonrobotics.junction.LogTable
 import org.photonvision.targeting.PhotonTrackedTarget
 import org.wpilib.hardware.hal.HAL
+import org.wpilib.math.geometry.Rotation3d
 import org.wpilib.math.geometry.Transform3d
 import org.wpilib.math.geometry.Translation3d
-import org.wpilib.math.geometry.Rotation3d
 
 class CameraLogReplayTest {
   @Test
