@@ -15,7 +15,6 @@ import org.photonvision.targeting.PhotonTrackedTarget
 import org.team4099.lib.geometry.Pose2dWPILIB
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Pose3dWPILIB
-import org.team4099.lib.geometry.Transform3dWPILIB
 import org.team4099.lib.kinematics.ChassisVelocities
 import org.team4099.lib.math.hypot
 import org.team4099.lib.units.base.inSeconds

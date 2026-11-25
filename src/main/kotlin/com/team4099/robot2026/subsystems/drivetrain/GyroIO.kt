@@ -17,8 +17,8 @@ import org.littletonrobotics.junction.inputs.LoggableInputs
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
-import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.inDegrees
+import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.inDegreesPerSecond
 import org.team4099.lib.units.perSecond
@@ -48,11 +48,16 @@ interface GyroIO {
       table.put("yawPositionDegrees", yawPosition.inDegrees)
       table.put("yawVelocityDegPerSec", yawVelocity.inDegreesPerSecond)
       table.put("odometryRollTimestamps", odometryRollTimestamps)
-      table.put("odometryRollPositionsRadians", odometryRollPositions.map { it.inRadians }.toDoubleArray())
+      table.put(
+          "odometryRollPositionsRadians",
+          odometryRollPositions.map { it.inRadians }.toDoubleArray())
       table.put("odometryPitchTimestamps", odometryPitchTimestamps)
-      table.put("odometryPitchPositionsRadians", odometryPitchPositions.map { it.inRadians }.toDoubleArray())
+      table.put(
+          "odometryPitchPositionsRadians",
+          odometryPitchPositions.map { it.inRadians }.toDoubleArray())
       table.put("odometryYawTimestamps", odometryYawTimestamps)
-      table.put("odometryYawPositionsRadians", odometryYawPositions.map { it.inRadians }.toDoubleArray())
+      table.put(
+          "odometryYawPositionsRadians", odometryYawPositions.map { it.inRadians }.toDoubleArray())
     }
 
     override fun fromLog(table: LogTable) {
@@ -70,11 +75,23 @@ interface GyroIO {
         yawVelocity = it.degrees.perSecond
       }
       odometryRollTimestamps = table.get("odometryRollTimestamps", odometryRollTimestamps)
-      odometryRollPositions = table.get("odometryRollPositionsRadians", doubleArrayOf()).map { it.radians }.toTypedArray()
+      odometryRollPositions =
+          table
+              .get("odometryRollPositionsRadians", doubleArrayOf())
+              .map { it.radians }
+              .toTypedArray()
       odometryPitchTimestamps = table.get("odometryPitchTimestamps", odometryPitchTimestamps)
-      odometryPitchPositions = table.get("odometryPitchPositionsRadians", doubleArrayOf()).map { it.radians }.toTypedArray()
+      odometryPitchPositions =
+          table
+              .get("odometryPitchPositionsRadians", doubleArrayOf())
+              .map { it.radians }
+              .toTypedArray()
       odometryYawTimestamps = table.get("odometryYawTimestamps", odometryYawTimestamps)
-      odometryYawPositions = table.get("odometryYawPositionsRadians", doubleArrayOf()).map { it.radians }.toTypedArray()
+      odometryYawPositions =
+          table
+              .get("odometryYawPositionsRadians", doubleArrayOf())
+              .map { it.radians }
+              .toTypedArray()
     }
   }
 

@@ -15,9 +15,12 @@ object ControlBoard {
 
   // The macOS simulator's gamepad mapping reports both sticks before the triggers,
   // unlike the Xbox mapping used by the robot's Driver Station.
-  private val macSimulation = RobotBase.isSimulation() && System.getProperty("os.name").startsWith("Mac")
+  private val macSimulation =
+      RobotBase.isSimulation() && System.getProperty("os.name").startsWith("Mac")
+
   private fun leftTrigger(gamepad: XboxOneGamepad) =
       if (macSimulation) gamepad.getRawAxis(4) else gamepad.leftTriggerAxis
+
   private fun rightTrigger(gamepad: XboxOneGamepad) =
       if (macSimulation) gamepad.getRawAxis(5) else gamepad.rightTriggerAxis
 

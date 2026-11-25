@@ -27,8 +27,8 @@ import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.degrees
-import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.inDegrees
+import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.volts
@@ -71,8 +71,12 @@ interface ModuleIO {
       table.put("turnAppliedVoltage", turnAppliedVoltage.inVolts)
       table.put("turnCurrent", turnCurrent.inAmperes)
       table.put("odometryTimestamps", odometryTimestamps)
-      table.put("odometryDrivePositionsRadians", odometryDrivePositions.map { it.inRadians }.toDoubleArray())
-      table.put("odometryTurnPositionsRadians", odometryTurnPositions.map { it.inRadians }.toDoubleArray())
+      table.put(
+          "odometryDrivePositionsRadians",
+          odometryDrivePositions.map { it.inRadians }.toDoubleArray())
+      table.put(
+          "odometryTurnPositionsRadians",
+          odometryTurnPositions.map { it.inRadians }.toDoubleArray())
     }
 
     override fun fromLog(table: LogTable) {
@@ -100,8 +104,16 @@ interface ModuleIO {
       }
       table.get("turnCurrent", turnCurrent.inAmperes).let { turnCurrent = it.amps }
       odometryTimestamps = table.get("odometryTimestamps", odometryTimestamps)
-      odometryDrivePositions = table.get("odometryDrivePositionsRadians", doubleArrayOf()).map { it.radians }.toTypedArray()
-      odometryTurnPositions = table.get("odometryTurnPositionsRadians", doubleArrayOf()).map { it.radians }.toTypedArray()
+      odometryDrivePositions =
+          table
+              .get("odometryDrivePositionsRadians", doubleArrayOf())
+              .map { it.radians }
+              .toTypedArray()
+      odometryTurnPositions =
+          table
+              .get("odometryTurnPositionsRadians", doubleArrayOf())
+              .map { it.radians }
+              .toTypedArray()
     }
   }
 

@@ -70,9 +70,7 @@ class ModuleIOSim(
   private val wheelRadiusMeters = constants.WheelRadius
   private val driveController =
       PIDController(
-          DRIVE_KP * wheelRadiusMeters,
-          DRIVE_KI * wheelRadiusMeters,
-          DRIVE_KD * wheelRadiusMeters)
+          DRIVE_KP * wheelRadiusMeters, DRIVE_KI * wheelRadiusMeters, DRIVE_KD * wheelRadiusMeters)
   private val turnController = PIDController(TURN_KP, TURN_KI, TURN_KD)
   private var driveFFVolts = 0.0
   private var driveAppliedVolts = 0.0
@@ -144,7 +142,8 @@ class ModuleIOSim(
 
   override fun setDriveVelocity(velocityRadPerSec: Double) {
     driveClosedLoop = true
-    driveFFVolts = DRIVE_KS * sign(velocityRadPerSec) + DRIVE_KV * velocityRadPerSec * wheelRadiusMeters
+    driveFFVolts =
+        DRIVE_KS * sign(velocityRadPerSec) + DRIVE_KV * velocityRadPerSec * wheelRadiusMeters
     driveController.setpoint = velocityRadPerSec
   }
 
