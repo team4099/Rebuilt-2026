@@ -2,15 +2,33 @@ package com.team4099.robot2026.config
 
 import com.team4099.robot2026.config.constants.Constants
 import java.util.function.Consumer
-import org.wpilib.driverstation.XboxController
 import org.wpilib.command2.button.Trigger
 import org.wpilib.driverstation.GenericHID
+import org.wpilib.driverstation.XboxController
 
 object ControlBoard {
 
-  private val driver = XboxController(Constants.Joysticks.DRIVER_PORT)
-  private val operator = XboxController(Constants.Joysticks.SHOTGUN_PORT)
-  private val technician = XboxController(Constants.Joysticks.TECHNICIAN_PORT)
+  private val driver =
+      XboxController(Constants.Joysticks.DRIVER_PORT).apply {
+        setLeftXDeadband(Constants.Joysticks.THROTTLE_DEADBAND)
+        setRightXDeadband(Constants.Joysticks.THROTTLE_DEADBAND)
+        setLeftYDeadband(Constants.Joysticks.TURN_DEADBAND)
+        setRightYDeadband(Constants.Joysticks.TURN_DEADBAND)
+      }
+  private val operator =
+      XboxController(Constants.Joysticks.SHOTGUN_PORT).apply {
+        setLeftXDeadband(Constants.Joysticks.THROTTLE_DEADBAND)
+        setRightXDeadband(Constants.Joysticks.THROTTLE_DEADBAND)
+        setLeftYDeadband(Constants.Joysticks.TURN_DEADBAND)
+        setRightYDeadband(Constants.Joysticks.TURN_DEADBAND)
+      }
+  private val technician =
+      XboxController(Constants.Joysticks.TECHNICIAN_PORT).apply {
+        setLeftXDeadband(Constants.Joysticks.THROTTLE_DEADBAND)
+        setRightXDeadband(Constants.Joysticks.THROTTLE_DEADBAND)
+        setLeftYDeadband(Constants.Joysticks.TURN_DEADBAND)
+        setRightYDeadband(Constants.Joysticks.TURN_DEADBAND)
+      }
 
   val driverRumbleConsumer =
       Consumer<Boolean> {

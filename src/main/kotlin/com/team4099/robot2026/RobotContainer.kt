@@ -47,7 +47,6 @@ import com.team4099.robot2026.subsystems.vision.Vision
 import com.team4099.robot2026.subsystems.vision.camera.CameraIOPVSim
 import com.team4099.robot2026.subsystems.vision.camera.CameraIOPhotonvision
 import com.team4099.robot2026.util.driver.Jessika
-import org.team4099.lib.smoothDeadband
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.max
 import org.team4099.lib.units.min
@@ -186,9 +185,9 @@ object RobotContainer {
     drivetrain.defaultCommand =
         TeleopDriveCommand(
             driver = Jessika(),
-            { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-            { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-            { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+            { ControlBoard.forward },
+            { ControlBoard.strafe },
+            { ControlBoard.turn },
             { ControlBoard.slowMode },
             drivetrain)
   }
@@ -322,9 +321,9 @@ object RobotContainer {
     //    ControlBoard.rotateTrench.whileTrue(
     //        TargetAngleCommand(
     //            Jessika(),
-    //            { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-    //            { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-    //            { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+    //            { ControlBoard.forward },
+    //            { ControlBoard.strafe },
+    //            { ControlBoard.turn },
     //            { ControlBoard.slowMode },
     //            drivetrain,
     //            {
@@ -338,9 +337,9 @@ object RobotContainer {
     //    ControlBoard.rotateBump.whileTrue(
     //        TargetAngleCommand(
     //            Jessika(),
-    //            { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-    //            { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-    //            { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+    //            { ControlBoard.forward },
+    //            { ControlBoard.strafe },
+    //            { ControlBoard.turn },
     //            { ControlBoard.slowMode },
     //            drivetrain,
     //            {
@@ -356,8 +355,8 @@ object RobotContainer {
         ConditionalCommand(
             AimOTFCommand(
                 drivetrain,
-                { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-                { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+                { ControlBoard.forward },
+                { ControlBoard.strafe },
                 { ControlBoard.slowMode },
                 driver = Jessika(),
             ),
