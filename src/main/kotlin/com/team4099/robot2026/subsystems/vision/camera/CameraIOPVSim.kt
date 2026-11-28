@@ -38,8 +38,8 @@ class CameraIOPVSim(
   override var curStdDevs: Matrix<N3?, N1?> = VisionConstants.singleTagStdDevs
 
   init {
-    cameraProperties.setCalibration(640, 360, 100.0.degrees.inRotation2ds)
-    cameraProperties.fps = 30.0
+    cameraProperties.setCalibration(1280, 720, 100.0.degrees.inRotation2ds)
+    cameraProperties.fps = 45.0
 
     // examples from documentation
     cameraProperties.setCalibError(0.25, 0.08)
