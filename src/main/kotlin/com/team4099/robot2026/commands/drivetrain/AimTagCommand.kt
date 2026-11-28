@@ -4,13 +4,11 @@ import com.team4099.robot2026.config.constants.DrivetrainConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.subsystems.vision.Vision
 import com.team4099.robot2026.util.CustomLogger
-import edu.wpi.first.wpilibj.RobotBase
-import edu.wpi.first.wpilibj2.command.Command
 import kotlin.math.PI
 import kotlin.math.atan2
 import org.team4099.lib.controller.PIDController
 import org.team4099.lib.geometry.Transform3d
-import org.team4099.lib.kinematics.ChassisSpeeds
+import org.team4099.lib.kinematics.ChassisVelocities
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.meters
@@ -20,6 +18,8 @@ import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.inDegreesPerSecond
 import org.team4099.lib.units.perSecond
+import org.wpilib.command2.Command
+import org.wpilib.framework.RobotBase
 
 class AimTagCommand(val drivetrain: Drive, val vision: Vision) : Command() {
   private val thetaPID: PIDController<Radian, Velocity<Radian>>
@@ -69,7 +69,7 @@ class AimTagCommand(val drivetrain: Drive, val vision: Vision) : Command() {
 
     CustomLogger.recordOutput("AimTagCommand/omegaDPS", omega.inDegreesPerSecond)
 
-    drivetrain.runSpeeds(ChassisSpeeds(0.meters.perSecond, 0.meters.perSecond, omega))
+    drivetrain.runSpeeds(ChassisVelocities(0.meters.perSecond, 0.meters.perSecond, omega))
   }
 
   override fun isFinished(): Boolean {
@@ -77,6 +77,6 @@ class AimTagCommand(val drivetrain: Drive, val vision: Vision) : Command() {
   }
 
   override fun end(interrupted: Boolean) {
-    drivetrain.runSpeeds(ChassisSpeeds())
+    drivetrain.runSpeeds(ChassisVelocities())
   }
 }

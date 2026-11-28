@@ -1,10 +1,10 @@
 package com.team4099.lib.vision
 
-import edu.wpi.first.math.Matrix
-import edu.wpi.first.math.numbers.N1
-import edu.wpi.first.math.numbers.N3
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.units.base.Time
+import org.wpilib.math.linalg.Matrix
+import org.wpilib.math.numbers.N1
+import org.wpilib.math.numbers.N3
 
 /** Represents a single vision pose with a timestamp and associated standard deviations. */
 data class TimestampedVisionUpdate(

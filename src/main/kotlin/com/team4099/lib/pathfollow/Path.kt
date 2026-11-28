@@ -1,9 +1,5 @@
 package com.team4099.lib.pathfollow
 
-import edu.wpi.first.math.spline.PoseWithCurvature
-import edu.wpi.first.math.spline.SplineHelper
-import edu.wpi.first.math.spline.SplineParameterizer
-import edu.wpi.first.wpilibj.Alert
 import kotlin.math.PI
 import kotlin.math.atan2
 import org.team4099.lib.geometry.Pose2d
@@ -11,6 +7,10 @@ import org.team4099.lib.geometry.Translation2d
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.radians
+import org.wpilib.math.spline.PoseWithCurvature
+import org.wpilib.math.spline.SplineHelper
+import org.wpilib.math.spline.SplineParameterizer
+import org.wpilib.util.Alert
 
 /**
  * A path on the XY plane constructed with cubic splines.
@@ -24,8 +24,10 @@ class Path constructor(val startingPose: Pose2d, val endingPose: Pose2d) {
   private val waypoints = mutableListOf<Translation2d>()
   var built = false
   val addTranslationAlert: Alert =
-      Alert("Failed to add translation to built path", Alert.AlertType.kError)
-  val alreadyBuiltAlert: Alert = Alert("Failed build already built path", Alert.AlertType.kError)
+      Alert(
+          "pathTranslationAfterBuild", "Failed to add translation to built path", Alert.Level.HIGH)
+  val alreadyBuiltAlert: Alert =
+      Alert("pathAlreadyBuilt", "Failed build already built path", Alert.Level.HIGH)
 
   /**
    * Add a waypoint to the middle of this path.

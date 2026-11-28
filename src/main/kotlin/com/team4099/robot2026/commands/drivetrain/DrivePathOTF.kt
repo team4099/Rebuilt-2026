@@ -11,24 +11,18 @@ import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.DrivetrainConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.util.AllianceFlipUtil
-import edu.wpi.first.math.geometry.Pose2d as WPIPose2d
-import edu.wpi.first.math.geometry.Rotation2d
-import edu.wpi.first.math.kinematics.ChassisSpeeds as WPIChassisSpeeds
-import edu.wpi.first.wpilibj.RobotBase
-import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import java.util.function.DoubleSupplier
 import java.util.function.Supplier
+import kotlin.math.abs
 import org.littletonrobotics.junction.Logger
 import org.littletonrobotics.junction.Logger.*
 import org.team4099.lib.geometry.Pose2d
-import org.team4099.lib.kinematics.ChassisSpeeds
+import org.team4099.lib.kinematics.ChassisVelocities
 import org.team4099.lib.pplib.PathPlannerHolonomicDriveController
 import org.team4099.lib.pplib.PathPlannerHolonomicDriveController.Companion.GoalEndState
 import org.team4099.lib.pplib.PathPlannerHolonomicDriveController.Companion.PathConstraints
 import org.team4099.lib.pplib.PathPlannerRotationPID
 import org.team4099.lib.pplib.PathPlannerTranslationPID
-import org.team4099.lib.smoothDeadband
 import org.team4099.lib.units.LinearVelocity
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.inches
@@ -50,6 +44,12 @@ import org.team4099.lib.units.derived.perRadianPerSecond
 import org.team4099.lib.units.derived.perRadianSeconds
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.perSecond
+import org.wpilib.command2.Command
+import org.wpilib.command2.SequentialCommandGroup
+import org.wpilib.framework.RobotBase
+import org.wpilib.math.geometry.Pose2d as WPIPose2d
+import org.wpilib.math.geometry.Rotation2d
+import org.wpilib.math.kinematics.ChassisVelocities as WPIChassisSpeeds
 
 /**
  * @property drivetrain
@@ -169,9 +169,9 @@ class DrivePathOTF(
         FollowPathCommand(
             path,
             { AllianceFlipUtil.apply(Pose2d(poseReferenceSupplier.get())).pose2d },
-            { drivetrain.chassisSpeeds.chassisSpeedsWPILIB },
+            { drivetrain.chassisSpeeds.chassisVelocitiesWPILIB },
             { speeds: WPIChassisSpeeds, ff: DriveFeedforwards ->
-              drivetrain.runSpeeds(ChassisSpeeds(speeds), flipIfRed = false)
+              drivetrain.runSpeeds(ChassisVelocities(speeds), flipIfRed = false)
             },
             ppHolonomicDriveController.pplibController,
             Drive.PP_CONFIG,
@@ -192,16 +192,16 @@ class DrivePathOTF(
     return command.isFinished &&
         poseDelta.translation.x.absoluteValue < tolerances.xTolerance &&
         poseDelta.translation.y.absoluteValue < tolerances.yTolerance ||
-        driveX.asDouble >= DRIVE_ESCAPE_THRESHOLD ||
-        driveY.asDouble >= DRIVE_ESCAPE_THRESHOLD ||
-        turn.asDouble >= TURN_ESCAPE_THRESHOLD
+        abs(driveX.asDouble) >= DRIVE_ESCAPE_THRESHOLD ||
+        abs(driveY.asDouble) >= DRIVE_ESCAPE_THRESHOLD ||
+        abs(turn.asDouble) >= TURN_ESCAPE_THRESHOLD
   }
 
   override fun end(interrupted: Boolean) {
     // the end method of FollowPathCommand is very nice. they check if not interrupted and
     // goalendstate has velocity < 0.1 mps and with that, determines whether or not the drivetrain
     // should stop moving. tl;dr: we don't have to set drivetrain.closedloop again
-    command.end(interrupted)
+    command.end(interrupted || !command.isFinished)
 
     RobotContainer.isAligning = false
   }
@@ -216,9 +216,9 @@ class DrivePathOTF(
           SequentialCommandGroup(
               DrivePathOTF(
                   drivetrain,
-                  { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-                  { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-                  { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+                  { ControlBoard.forward },
+                  { ControlBoard.strafe },
+                  { ControlBoard.turn },
                   { drivetrain.pose.pose2d },
                   DrivetrainConstants.OTF_PATHS.LEFT_TO_NEUTRAL_1,
                   0.0.degrees,
@@ -226,11 +226,11 @@ class DrivePathOTF(
               //              DrivePathOTF(
               //                  drivetrain,
               //                  {
-              // ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+              // ControlBoard.forward },
               //                  {
-              // ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+              // ControlBoard.strafe },
               //                  {
-              // ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+              // ControlBoard.turn },
               //                  { drivetrain.pose.pose2d },
               //                  DrivetrainConstants.OTF_PATHS.LEFT_TO_NEUTRAL_2,
               //                  180.0.degrees,
@@ -245,9 +245,9 @@ class DrivePathOTF(
           SequentialCommandGroup(
               DrivePathOTF(
                   drivetrain,
-                  { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-                  { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-                  { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+                  { ControlBoard.forward },
+                  { ControlBoard.strafe },
+                  { ControlBoard.turn },
                   { drivetrain.pose.pose2d },
                   DrivetrainConstants.OTF_PATHS.RIGHT_TO_NEUTRAL_1,
                   0.0.degrees,
@@ -255,11 +255,11 @@ class DrivePathOTF(
               //              DrivePathOTF(
               //                  drivetrain,
               //                  {
-              // ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+              // ControlBoard.forward },
               //                  {
-              // ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+              // ControlBoard.strafe },
               //                  {
-              // ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+              // ControlBoard.turn },
               //                  { drivetrain.pose.pose2d },
               //                  DrivetrainConstants.OTF_PATHS.RIGHT_TO_NEUTRAL_2,
               //                  0.0.degrees,
@@ -275,9 +275,9 @@ class DrivePathOTF(
           SequentialCommandGroup(
               DrivePathOTF(
                   drivetrain,
-                  { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-                  { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-                  { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+                  { ControlBoard.forward },
+                  { ControlBoard.strafe },
+                  { ControlBoard.turn },
                   { drivetrain.pose.pose2d },
                   DrivetrainConstants.OTF_PATHS.LEFT_TO_ALLIANCE_1,
                   0.0.degrees,
@@ -285,11 +285,11 @@ class DrivePathOTF(
               //              DrivePathOTF(
               //                  drivetrain,
               //                  {
-              // ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+              // ControlBoard.forward },
               //                  {
-              // ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+              // ControlBoard.strafe },
               //                  {
-              // ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+              // ControlBoard.turn },
               //                  { drivetrain.pose.pose2d },
               //                  DrivetrainConstants.OTF_PATHS.LEFT_TO_ALLIANCE_2,
               //                  0.0.degrees,
@@ -304,9 +304,9 @@ class DrivePathOTF(
           SequentialCommandGroup(
               DrivePathOTF(
                   drivetrain,
-                  { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-                  { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-                  { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+                  { ControlBoard.forward },
+                  { ControlBoard.strafe },
+                  { ControlBoard.turn },
                   { drivetrain.pose.pose2d },
                   DrivetrainConstants.OTF_PATHS.RIGHT_TO_ALLIANCE_1,
                   0.0.degrees,
@@ -314,11 +314,11 @@ class DrivePathOTF(
               //              DrivePathOTF(
               //                  drivetrain,
               //                  {
-              // ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+              // ControlBoard.forward },
               //                  {
-              // ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+              // ControlBoard.strafe },
               //                  {
-              // ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+              // ControlBoard.turn },
               //                  { drivetrain.pose.pose2d },
               //                  DrivetrainConstants.OTF_PATHS.RIGHT_TO_ALLIANCE_2,
               //                  0.0.degrees,
@@ -333,9 +333,9 @@ class DrivePathOTF(
           SequentialCommandGroup(
               DrivePathOTF(
                   drivetrain,
-                  { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-                  { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-                  { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+                  { ControlBoard.forward },
+                  { ControlBoard.strafe },
+                  { ControlBoard.turn },
                   { drivetrain.pose.pose2d },
                   listOf(DrivetrainConstants.OTF_PATHS.CLIMB_BOTTOM.first),
                   drivetrain.pose.rotation,
@@ -345,11 +345,11 @@ class DrivePathOTF(
               //              DrivePathOTF(
               //                  drivetrain,
               //                  {
-              // ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+              // ControlBoard.forward },
               //                  {
-              // ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+              // ControlBoard.strafe },
               //                  {
-              // ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+              // ControlBoard.turn },
               //                  { drivetrain.pose.pose2d },
               //                  listOf(DrivetrainConstants.OTF_PATHS.CLIMB_BOTTOM.second),
               //                  drivetrain.pose.rotation.z,
@@ -366,9 +366,9 @@ class DrivePathOTF(
           SequentialCommandGroup(
               DrivePathOTF(
                   drivetrain,
-                  { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-                  { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-                  { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+                  { ControlBoard.forward },
+                  { ControlBoard.strafe },
+                  { ControlBoard.turn },
                   { drivetrain.pose.pose2d },
                   listOf(DrivetrainConstants.OTF_PATHS.CLIMB_TOP.first),
                   drivetrain.pose.rotation,
@@ -378,11 +378,11 @@ class DrivePathOTF(
               //              DrivePathOTF(
               //                  drivetrain,
               //                  {
-              // ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+              // ControlBoard.forward },
               //                  {
-              // ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+              // ControlBoard.strafe },
               //                  {
-              // ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
+              // ControlBoard.turn },
               //                  { drivetrain.pose.pose2d },
               //                  listOf(DrivetrainConstants.OTF_PATHS.CLIMB_TOP.second),
               //                  drivetrain.pose.rotation.z,

@@ -3,8 +3,6 @@ package com.team4099.robot2026.subsystems.superstructure.intake
 import com.team4099.lib.math.clamp
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.IntakeConstants
-import edu.wpi.first.math.system.plant.DCMotor
-import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim
 import org.team4099.lib.controller.ProfiledPIDController
 import org.team4099.lib.controller.TrapezoidProfile
 import org.team4099.lib.units.base.amps
@@ -24,6 +22,8 @@ import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
+import org.wpilib.math.system.DCMotor
+import org.wpilib.simulation.SingleJointedArmSim
 
 object IntakeIOSim : IntakeIO {
 
@@ -55,11 +55,11 @@ object IntakeIOSim : IntakeIO {
   override fun updateInputs(inputs: IntakeIO.IntakeIOInputs) {
     armSim.update(Constants.Universal.LOOP_PERIOD_TIME.inSeconds)
 
-    inputs.position = armSim.angleRads.radians
-    inputs.velocity = armSim.velocityRadPerSec.radians.perSecond
+    inputs.position = armSim.angle.radians
+    inputs.velocity = armSim.velocity.radians.perSecond
 
     inputs.intakeAppliedVoltage = pivotAppliedVoltage
-    inputs.intakeStatorCurrent = armSim.currentDrawAmps.amps
+    inputs.intakeStatorCurrent = armSim.currentDraw.amps
     inputs.intakeSupplyCurrent = 0.amps
     inputs.intakeTemperature = 0.0.celsius
 
@@ -74,7 +74,7 @@ object IntakeIOSim : IntakeIO {
   }
 
   override fun setPosition(position: Angle) {
-    val feedback = armPIDController.calculate(armSim.angleRads.radians, position)
+    val feedback = armPIDController.calculate(armSim.angle.radians, position)
     setVoltage(feedback)
   }
 

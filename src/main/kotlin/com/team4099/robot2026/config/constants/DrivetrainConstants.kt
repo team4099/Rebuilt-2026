@@ -4,11 +4,6 @@ import com.team4099.robot2026.subsystems.drivetrain.generated.AlphaBotTunerConst
 import com.team4099.robot2026.subsystems.drivetrain.generated.CompBotTunerConstants
 import com.team4099.robot2026.subsystems.drivetrain.generated.TestBotTunerConstants
 import com.team4099.robot2026.util.AllianceFlipUtil
-import edu.wpi.first.math.Matrix
-import edu.wpi.first.math.VecBuilder
-import edu.wpi.first.math.numbers.N1
-import edu.wpi.first.math.numbers.N3
-import edu.wpi.first.wpilibj.RobotBase
 import java.util.function.Supplier
 import kotlin.math.sqrt
 import org.team4099.lib.geometry.Pose2d
@@ -37,6 +32,11 @@ import org.team4099.lib.units.derived.radiansPerSecondPerRadiansPerSecond
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.perSecond
+import org.wpilib.framework.RobotBase
+import org.wpilib.math.linalg.Matrix
+import org.wpilib.math.linalg.VecBuilder
+import org.wpilib.math.numbers.N1
+import org.wpilib.math.numbers.N3
 
 object DrivetrainConstants {
   val tunerConstants
@@ -253,7 +253,7 @@ object DrivetrainConstants {
     val SIM_DRIVE_KV = DRIVE_KV
     val SIM_DRIVE_KA = DRIVE_KA
 
-    val SIM_STEERING_KP = STEERING_KP
+    val SIM_STEERING_KP = 8.0.volts / 1.radians
     val SIM_STEERING_KI = STEERING_KI
     val SIM_STEERING_KD = STEERING_KD
     val SIM_STEERING_KV = STEERING_KV

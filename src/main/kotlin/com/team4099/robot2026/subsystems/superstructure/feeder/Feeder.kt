@@ -7,18 +7,18 @@ import com.team4099.robot2026.subsystems.superstructure.Request
 import com.team4099.robot2026.subsystems.superstructure.Request.FeederRequest
 import com.team4099.robot2026.util.ControlledByStateMachine
 import com.team4099.robot2026.util.CustomLogger
-import edu.wpi.first.units.Units.Volts
-import edu.wpi.first.units.measure.Voltage as WPILibVoltage
-import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog
-import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.SubsystemBase
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Mechanism
 import java.util.function.Consumer
 import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inRotationsPerSecond
 import org.team4099.lib.units.perSecond
+import org.wpilib.command2.Command
+import org.wpilib.command2.SubsystemBase
+import org.wpilib.command2.sysid.SysIdRoutine
+import org.wpilib.command2.sysid.SysIdRoutine.Mechanism
+import org.wpilib.sysid.SysIdRoutineLog
+import org.wpilib.units.Units.Volts
+import org.wpilib.units.measure.Voltage as WPILibVoltage
 
 class Feeder(private val io: FeederIO) : ControlledByStateMachine() {
   val inputs = FeederIO.FeederIOInputs()
@@ -42,7 +42,8 @@ class Feeder(private val io: FeederIO) : ControlledByStateMachine() {
 
   val isAtTargetedVelocity: Boolean
     get() =
-        return (inputs.feederVelocity - feederVelocityTarget) <= FeederConstants.VELOCITY_TOLERANCE
+        return (inputs.feederVelocity - feederVelocityTarget).absoluteValue <=
+            FeederConstants.VELOCITY_TOLERANCE
 
   private val m_sysIdRoutine =
       SysIdRoutine(

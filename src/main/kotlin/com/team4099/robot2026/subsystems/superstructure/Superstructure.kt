@@ -22,11 +22,6 @@ import com.team4099.robot2026.subsystems.superstructure.intake.rollers.IntakeRol
 import com.team4099.robot2026.subsystems.superstructure.shooter.Shooter
 import com.team4099.robot2026.subsystems.vision.Vision
 import com.team4099.robot2026.util.CustomLogger
-import edu.wpi.first.wpilibj.DriverStation
-import edu.wpi.first.wpilibj.smartdashboard.Field2d
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
-import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Time
@@ -36,6 +31,11 @@ import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.max
+import org.wpilib.command2.Command
+import org.wpilib.command2.SubsystemBase
+import org.wpilib.driverstation.RobotState
+import org.wpilib.smartdashboard.Field2d
+import org.wpilib.telemetry.Telemetry
 
 class Superstructure(
     private val drivetrain: Drive,
@@ -76,10 +76,6 @@ class Superstructure(
   var lastJammed = Clock.timestamp
   var jigglingIntake = false
 
-  init {
-    SmartDashboard.putData("Field", field)
-  }
-
   override fun periodic() {
     val startTime = Clock.epochTime
 
@@ -119,6 +115,7 @@ class Superstructure(
         (Clock.epochTime - shooterStartTime).inMilliseconds)
 
     field.robotPose = drivetrain.pose.pose2d
+    Telemetry.log("Field", field)
 
     var nextState = currentState
 
@@ -295,7 +292,7 @@ class Superstructure(
         hopper.currentRequest = Request.HopperRequest.Idle()
         feeder.currentRequest = Request.FeederRequest.Idle()
         if (intake.inputs.position <= 0.degrees) {
-          if (DriverStation.isAutonomous()) { // Run intake faster in teleop
+          if (RobotState.isAutonomous()) { // Run intake faster in teleop
             intakeRollers.currentRequest =
                 Request.RollersRequest.OpenLoop(RollersConstants.AUTO_INTAKE_VOLTAGE)
           } else {

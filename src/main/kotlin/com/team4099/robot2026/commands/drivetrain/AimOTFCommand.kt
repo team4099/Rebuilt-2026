@@ -3,44 +3,32 @@ package com.team4099.robot2026.commands.drivetrain
 import com.team4099.lib.hal.Clock
 import com.team4099.robot2026.RobotContainer
 import com.team4099.robot2026.config.constants.DrivetrainConstants
-import com.team4099.robot2026.config.constants.ShooterConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
-import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import com.team4099.robot2026.subsystems.superstructure.shooter.Shooter
 import com.team4099.robot2026.util.CustomLogger
 import com.team4099.robot2026.util.driver.DriverProfile
-import edu.wpi.first.units.LinearVelocityUnit
-import edu.wpi.first.units.Units.Degrees
-import edu.wpi.first.units.Units.Meters
-import edu.wpi.first.units.Units.Seconds
-import edu.wpi.first.units.measure.LinearVelocity as WPILinearVelocity
-import edu.wpi.first.wpilibj.DriverStation
-import edu.wpi.first.wpilibj.RobotBase
-import edu.wpi.first.wpilibj2.command.Command
 import java.util.function.Supplier
 import kotlin.math.PI
 import kotlin.math.pow
 import kotlin.math.sqrt
-import org.ironmaple.simulation.SimulatedArena
-import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly
 import org.team4099.lib.controller.PIDController
 import org.team4099.lib.geometry.Pose2d
-import org.team4099.lib.kinematics.ChassisSpeeds
+import org.team4099.lib.kinematics.ChassisVelocities
 import org.team4099.lib.units.LinearVelocity
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMeters
-import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inRadians
-import org.team4099.lib.units.derived.inRotation2ds
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.perSecond
+import org.wpilib.command2.Command
+import org.wpilib.driverstation.RobotState
 
 /**
  * Aim for the HUB or to pass, depending on current position on the field and which option is legal.
@@ -128,7 +116,7 @@ class AimOTFCommand(
 
     hasAligned = false
     startTime = Clock.timestamp
-    startedInAuto = DriverStation.isAutonomous()
+    startedInAuto = RobotState.isAutonomous()
 
     RobotContainer.isAligning = true
   }
@@ -150,7 +138,7 @@ class AimOTFCommand(
     CustomLogger.recordOutput("AimOTFCommand/hasAligned", hasAligned)
     CustomLogger.recordOutput("AimOTFCommand/distanceTHubMeters", distanceToHub.inMeters)
 
-    if (DriverStation.isAutonomous()) {
+    if (RobotState.isAutonomous()) {
       // Use planned path velocities, dont adjust
       drivetrain.runRotationWhileKeepingTranslation(omega, flipIfRed = false)
     } else {
@@ -170,44 +158,23 @@ class AimOTFCommand(
         }
 
         drivetrain.runSpeeds(
-            ChassisSpeeds.fromFieldRelativeSpeeds(speedX, speedY, omega, drivetrain.pose.rotation))
+            ChassisVelocities.fromFieldRelativeSpeeds(
+                speedX, speedY, omega, drivetrain.pose.rotation))
       } else {
         if (Clock.timestamp - lastTimeNotStopped > 1.seconds) drivetrain.stopWithX()
       }
-    }
-
-    if (RobotBase.isSimulation() &&
-        (hasAligned &&
-            Clock.timestamp.inSeconds % 1 < 0.04 &&
-            RobotContainer.superstructure.currentState ==
-                Superstructure.Companion.SuperstructureStates.SCORE ||
-            DriverStation.isAutonomous())) {
-      SimulatedArena.getInstance()
-          .addGamePieceProjectile(
-              RebuiltFuelOnFly(
-                  drivetrain.pose.translation.translation2d,
-                  ShooterConstants.SHOOTER_OFFSET.translation.translation2d,
-                  edu.wpi.first.math.kinematics.ChassisSpeeds.fromRobotRelativeSpeeds(
-                      drivetrain.chassisSpeeds.chassisSpeedsWPILIB,
-                      drivetrain.rotation.inRotation2ds),
-                  (drivetrain.pose.rotation + ShooterConstants.SHOOTER_OFFSET.rotation)
-                      .inRotation2ds,
-                  Meters.of(ShooterConstants.SHOOTER_HEIGHT.inMeters),
-                  WPILinearVelocity.ofBaseUnits(
-                      launchSpeed.inMetersPerSecond, LinearVelocityUnit.combine(Meters, Seconds)),
-                  Degrees.of(ShooterConstants.SHOOTER_ANGLE.inDegrees)))
     }
   }
 
   override fun isFinished(): Boolean {
     return timeout > 0.seconds && Clock.timestamp - startTime > timeout ||
-        startedInAuto xor DriverStation.isAutonomous()
+        startedInAuto xor RobotState.isAutonomous()
   }
 
   override fun end(interrupted: Boolean) {
     CustomLogger.recordOutput("AimOTFCommand/interrupted", interrupted)
 
-    drivetrain.runSpeeds(ChassisSpeeds())
+    drivetrain.runSpeeds(ChassisVelocities())
     RobotContainer.isAligning = false
 
     CustomLogger.recordOutput("ActiveCommands/AimOTFCommand", false)

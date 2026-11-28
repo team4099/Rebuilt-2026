@@ -1,16 +1,16 @@
 package com.team4099.lib.sim.utils.estimation
 
-import edu.wpi.first.math.numbers.N3
-import edu.wpi.first.math.numbers.N5
-import edu.wpi.first.math.numbers.N1
-import edu.wpi.first.math.geometry.Rotation2d
-import edu.wpi.first.math.VecBuilder
-import edu.wpi.first.math.Nat
+import org.wpilib.math.numbers.N3
+import org.wpilib.math.numbers.N5
+import org.wpilib.math.numbers.N1
+import org.wpilib.math.geometry.Rotation2d
+import org.wpilib.math.linalg.VecBuilder
+import org.wpilib.math.util.Nat
 import org.photonvision.targeting.PhotonTrackedTarget
 import org.photonvision.targeting.TargetCorner
-import edu.wpi.first.math.Matrix
-import edu.wpi.first.math.Vector
-import edu.wpi.first.math.geometry.Rotation3d
+import org.wpilib.math.linalg.Matrix
+import org.wpilib.math.linalg.Vector
+import org.wpilib.math.geometry.Rotation3d
 import java.util.Random
 import java.util.stream.Collectors
 

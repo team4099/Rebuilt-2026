@@ -13,7 +13,6 @@
 package com.team4099.robot2026.subsystems.drivetrain
 
 import com.ctre.phoenix6.signals.NeutralModeValue
-import edu.wpi.first.math.geometry.Rotation2d
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
 import org.team4099.lib.units.AngularVelocity
@@ -29,11 +28,13 @@ import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
+import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inDegreesPerSecond
 import org.team4099.lib.units.perSecond
+import org.wpilib.math.geometry.Rotation2d
 
 interface ModuleIO {
   class ModuleIOInputs : LoggableInputs {
@@ -69,6 +70,13 @@ interface ModuleIO {
       table.put("turnVelocityDegPerSec", turnVelocity.inDegreesPerSecond)
       table.put("turnAppliedVoltage", turnAppliedVoltage.inVolts)
       table.put("turnCurrent", turnCurrent.inAmperes)
+      table.put("odometryTimestamps", odometryTimestamps)
+      table.put(
+          "odometryDrivePositionsRadians",
+          odometryDrivePositions.map { it.inRadians }.toDoubleArray())
+      table.put(
+          "odometryTurnPositionsRadians",
+          odometryTurnPositions.map { it.inRadians }.toDoubleArray())
     }
 
     override fun fromLog(table: LogTable) {
@@ -95,6 +103,17 @@ interface ModuleIO {
         turnAppliedVoltage = it.volts
       }
       table.get("turnCurrent", turnCurrent.inAmperes).let { turnCurrent = it.amps }
+      odometryTimestamps = table.get("odometryTimestamps", odometryTimestamps)
+      odometryDrivePositions =
+          table
+              .get("odometryDrivePositionsRadians", doubleArrayOf())
+              .map { it.radians }
+              .toTypedArray()
+      odometryTurnPositions =
+          table
+              .get("odometryTurnPositionsRadians", doubleArrayOf())
+              .map { it.radians }
+              .toTypedArray()
     }
   }
 

@@ -1,11 +1,11 @@
 package com.team4099.robot2026.util
 
 import com.team4099.robot2026.config.constants.Constants
-import edu.wpi.first.util.WPISerializable
-import edu.wpi.first.util.struct.Struct
-import edu.wpi.first.util.struct.StructSerializable
 import org.littletonrobotics.junction.Logger
 import org.littletonrobotics.junction.inputs.LoggableInputs
+import org.wpilib.util.WPISerializable
+import org.wpilib.util.struct.Struct
+import org.wpilib.util.struct.StructSerializable
 
 class CustomLogger {
   companion object {

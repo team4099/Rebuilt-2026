@@ -9,14 +9,9 @@ import com.team4099.robot2026.config.constants.VisionConstants
 import com.team4099.robot2026.subsystems.vision.camera.CameraIO
 import com.team4099.robot2026.util.CustomLogger
 import com.team4099.robot2026.util.toPose3d
-import edu.wpi.first.wpilibj.DriverStation
-import edu.wpi.first.wpilibj.RobotBase
-import edu.wpi.first.wpilibj2.command.SubsystemBase
 import java.util.function.Supplier
-import org.ironmaple.simulation.SimulatedArena
 import org.photonvision.simulation.VisionSystemSim
 import org.team4099.lib.geometry.Pose2d
-import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.geometry.Transform3d
 import org.team4099.lib.geometry.Transform3dWPILIB
@@ -28,6 +23,10 @@ import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.sin
+import org.wpilib.command2.SubsystemBase
+import org.wpilib.driverstation.Alliance
+import org.wpilib.driverstation.MatchState
+import org.wpilib.framework.RobotBase
 
 class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose2d>) : SubsystemBase() {
   val io: List<CameraIO> = cameras.toList()
@@ -71,9 +70,9 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose2d>) : Sub
 
     for (identifier in cameras.map { it.identifier }) {
       for (tag in FieldConstants.fieldLayout.tags) {
-        CustomLogger.recordDebugOutput("Vision/$identifier/${tag.ID}/robotDistanceToTarget", -1)
+        CustomLogger.recordDebugOutput("Vision/$identifier/${tag.id}/robotDistanceToTarget", -1)
         CustomLogger.recordDebugOutput(
-            "Vision/$identifier/${tag.ID}/robotTTag", Transform3dWPILIB())
+            "Vision/$identifier/${tag.id}/robotTTag", Transform3dWPILIB())
       }
       CustomLogger.recordDebugOutput("Vision/$identifier/cornerDetections", DoubleArray(0))
       CustomLogger.recordDebugOutput("Vision/$identifier/closestTargetTagID", -1)
@@ -86,8 +85,7 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose2d>) : Sub
     visionSim?.update(poseSupplier.get().pose2d)
 
     tagIDFilter =
-        if (DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) ==
-            DriverStation.Alliance.Blue)
+        if (MatchState.getAlliance().orElse(Alliance.BLUE) == Alliance.BLUE)
             VisionConstants.BLUE_TARGET_TAGS
         else VisionConstants.RED_TARGET_TAGS
 
@@ -213,16 +211,6 @@ class Vision(vararg cameras: CameraIO, val poseSupplier: Supplier<Pose2d>) : Sub
           } else {
             objectsDetected =
                 MutableList(VisionConstants.OBJECT_CLASS.entries.size) { mutableListOf() }
-
-            for (objIdx in VisionConstants.OBJECT_CLASS.entries.toTypedArray().indices) {
-              objectsDetected[objIdx].addAll(
-                  SimulatedArena.getInstance()
-                      .getGamePiecesByType(
-                          VisionConstants.OBJECT_CLASS.entries[objIdx].mapleSimType!!)
-                      .map {
-                        Transform3d(Pose3d(poseSupplier.get()), Pose3d(it.pose3d)).translation
-                      })
-            }
           }
 
           for (objects in VisionConstants.OBJECT_CLASS.entries) {

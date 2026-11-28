@@ -4,11 +4,11 @@ import com.team4099.robot2026.config.constants.ClimbConstants
 import com.team4099.robot2026.subsystems.superstructure.Request.ClimbRequest as ClimbRequest
 import com.team4099.robot2026.util.ControlledByStateMachine
 import com.team4099.robot2026.util.CustomLogger
-import edu.wpi.first.wpilibj.RobotBase
 import org.team4099.lib.units.base.inInches
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.volts
+import org.wpilib.framework.RobotBase
 
 class Climb(val io: ClimbIO) : ControlledByStateMachine() {
   val inputs = ClimbIO.ClimbInputs()

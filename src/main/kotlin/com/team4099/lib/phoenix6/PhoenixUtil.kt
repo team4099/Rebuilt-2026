@@ -13,33 +13,9 @@ package com.team4099.lib.phoenix6
 import com.ctre.phoenix6.BaseStatusSignal
 import com.ctre.phoenix6.StatusCode
 import com.ctre.phoenix6.configs.CANcoderConfiguration
-import com.ctre.phoenix6.configs.Slot0Configs
 import com.ctre.phoenix6.configs.TalonFXConfiguration
-import com.ctre.phoenix6.hardware.CANcoder
-import com.ctre.phoenix6.hardware.TalonFX
-import com.ctre.phoenix6.signals.StaticFeedforwardSignValue
-import com.ctre.phoenix6.sim.CANcoderSimState
-import com.ctre.phoenix6.sim.TalonFXSimState
 import com.ctre.phoenix6.swerve.SwerveModuleConstants
-import com.team4099.robot2026.config.constants.DrivetrainConstants
-import edu.wpi.first.units.Units
-import edu.wpi.first.units.measure.Angle
-import edu.wpi.first.units.measure.AngularVelocity
-import edu.wpi.first.units.measure.Voltage
-import edu.wpi.first.wpilibj.RobotBase
-import edu.wpi.first.wpilibj.Timer
 import java.util.function.Supplier
-import org.ironmaple.simulation.SimulatedArena
-import org.ironmaple.simulation.motorsims.SimulatedBattery
-import org.ironmaple.simulation.motorsims.SimulatedMotorController
-import org.team4099.lib.units.derived.inVolts
-import org.team4099.lib.units.derived.inVoltsPerMeterPerSecondPerSecond
-import org.team4099.lib.units.derived.inVoltsPerMeters
-import org.team4099.lib.units.derived.inVoltsPerMetersPerSecond
-import org.team4099.lib.units.derived.inVoltsPerMetersPerSecondPerSecond
-import org.team4099.lib.units.derived.inVoltsPerRadian
-import org.team4099.lib.units.derived.inVoltsPerRadianPerSecond
-import org.team4099.lib.units.derived.inVoltsPerRadianSeconds
 
 object PhoenixUtil {
   /** Attempts to run the command until no error is produced. */
@@ -77,97 +53,6 @@ object PhoenixUtil {
     }
     if (rioSignals.size > 0) {
       BaseStatusSignal.refreshAll(*rioSignals)
-    }
-  }
-
-  val simulationOdometryTimeStamps: DoubleArray
-    get() {
-      val odometryTimeStamps = DoubleArray(SimulatedArena.getSimulationSubTicksIn1Period())
-      for (i in odometryTimeStamps.indices) {
-        odometryTimeStamps[i] =
-            (Timer.getFPGATimestamp() - 0.02 +
-                i * SimulatedArena.getSimulationDt().`in`(Units.Seconds))
-      }
-
-      return odometryTimeStamps
-    }
-
-  fun regulateModuleConstantForSimulation(
-      moduleConstants: ConfiguredSwerveModuleConstants
-  ): ConfiguredSwerveModuleConstants {
-    if (RobotBase.isReal()) {
-      return moduleConstants
-    }
-
-    return moduleConstants
-        .withEncoderOffset(0.0)
-        .withDriveMotorInverted(false)
-        .withSteerMotorInverted(false)
-        .withEncoderInverted(false)
-        .withDriveMotorGains(
-            Slot0Configs()
-                .withKP(DrivetrainConstants.PID.SIM_DRIVE_KP.inVoltsPerMetersPerSecond)
-                .withKI(DrivetrainConstants.PID.SIM_DRIVE_KI.inVoltsPerMeters)
-                .withKD(DrivetrainConstants.PID.SIM_DRIVE_KD.inVoltsPerMetersPerSecondPerSecond)
-                .withKS(DrivetrainConstants.PID.SIM_DRIVE_KS.inVolts)
-                .withKV(DrivetrainConstants.PID.SIM_DRIVE_KV.inVoltsPerMetersPerSecond)
-                .withKA(DrivetrainConstants.PID.SIM_DRIVE_KA.inVoltsPerMeterPerSecondPerSecond)
-                .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign))
-        .withSteerMotorGains(
-            Slot0Configs()
-                .withKP(DrivetrainConstants.PID.SIM_STEERING_KP.inVoltsPerRadian)
-                .withKI(DrivetrainConstants.PID.SIM_STEERING_KI.inVoltsPerRadianSeconds)
-                .withKD(DrivetrainConstants.PID.SIM_STEERING_KD.inVoltsPerRadianPerSecond)
-                .withKS(0.0)
-                .withKV(DrivetrainConstants.PID.SIM_STEERING_KV.inVoltsPerRadianPerSecond)
-                .withKA(0.0)
-                .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign))
-        .withSlipCurrent(120.0)
-  }
-
-  open class TalonFXMotorControllerSim(talonFX: TalonFX) : SimulatedMotorController {
-    val id: Int
-
-    private val talonFXSimState: TalonFXSimState
-
-    init {
-      this.id = instances++
-
-      this.talonFXSimState = talonFX.simState
-    }
-
-    override fun updateControlSignal(
-        mechanismAngle: Angle,
-        mechanismVelocity: AngularVelocity,
-        encoderAngle: Angle,
-        encoderVelocity: AngularVelocity
-    ): Voltage {
-      talonFXSimState.setRawRotorPosition(encoderAngle)
-      talonFXSimState.setRotorVelocity(encoderVelocity)
-      talonFXSimState.setSupplyVoltage(SimulatedBattery.getBatteryVoltage())
-      return talonFXSimState.motorVoltageMeasure
-    }
-
-    companion object {
-      private var instances = 0
-    }
-  }
-
-  class TalonFXMotorControllerWithRemoteCancoderSim(talonFX: TalonFX, cancoder: CANcoder) :
-      TalonFXMotorControllerSim(talonFX) {
-    private val remoteCancoderSimState: CANcoderSimState = cancoder.simState
-
-    override fun updateControlSignal(
-        mechanismAngle: Angle,
-        mechanismVelocity: AngularVelocity,
-        encoderAngle: Angle,
-        encoderVelocity: AngularVelocity
-    ): Voltage {
-      remoteCancoderSimState.setRawPosition(mechanismAngle)
-      remoteCancoderSimState.setVelocity(mechanismVelocity)
-
-      return super.updateControlSignal(
-          mechanismAngle, mechanismVelocity, encoderAngle, encoderVelocity)
     }
   }
 }

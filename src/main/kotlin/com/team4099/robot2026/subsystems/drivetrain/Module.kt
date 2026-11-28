@@ -15,10 +15,6 @@ package com.team4099.robot2026.subsystems.drivetrain
 import com.ctre.phoenix6.configs.CANcoderConfiguration
 import com.ctre.phoenix6.configs.TalonFXConfiguration
 import com.ctre.phoenix6.swerve.SwerveModuleConstants
-import edu.wpi.first.math.geometry.Rotation2d
-import edu.wpi.first.math.kinematics.SwerveModulePosition
-import edu.wpi.first.math.kinematics.SwerveModuleState
-import edu.wpi.first.wpilibj.Alert
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.units.LinearVelocity
 import org.team4099.lib.units.base.Length
@@ -31,6 +27,10 @@ import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.inRadiansPerSecond
 import org.team4099.lib.units.inRotationsPerSecond
 import org.team4099.lib.units.perSecond
+import org.wpilib.math.geometry.Rotation2d
+import org.wpilib.math.kinematics.SwerveModulePosition
+import org.wpilib.math.kinematics.SwerveModuleVelocity
+import org.wpilib.util.Alert
 
 class Module(
     val io: ModuleIO,
@@ -41,11 +41,20 @@ class Module(
   private val inputs: ModuleIO.ModuleIOInputs = ModuleIO.ModuleIOInputs()
 
   private val driveDisconnectedAlert =
-      Alert("Disconnected drive motor on module $index.", Alert.AlertType.kError)
+      Alert(
+          "module${index}DriveDisconnected",
+          "Disconnected drive motor on module $index.",
+          Alert.Level.HIGH)
   private val turnDisconnectedAlert =
-      Alert("Disconnected turn motor on module $index.", Alert.AlertType.kError)
+      Alert(
+          "module${index}TurnDisconnected",
+          "Disconnected turn motor on module $index.",
+          Alert.Level.HIGH)
   private val turnEncoderDisconnectedAlert =
-      Alert("Disconnected turn encoder on module $index.", Alert.AlertType.kError)
+      Alert(
+          "module${index}TurnEncoderDisconnected",
+          "Disconnected turn encoder on module $index.",
+          Alert.Level.HIGH)
 
   /** Returns the module positions received this cycle. */
   var odometryPositions: Array<SwerveModulePosition?> = arrayOf()
@@ -70,28 +79,27 @@ class Module(
     turnEncoderDisconnectedAlert.set(!inputs.turnEncoderConnected)
   }
 
-  /** Runs the module with the specified setpoint state. Mutates the state to optimize it. */
-  fun runSetpoint(state: SwerveModuleState) {
+  /** Runs the module with the specified setpoint state and returns the optimized setpoint. */
+  fun runSetpoint(state: SwerveModuleVelocity): SwerveModuleVelocity {
     // Optimize velocity setpoint
-    state.optimize(angle.inRotation2ds)
-    state.cosineScale(inputs.turnPosition.inRotation2ds)
+    val optimized =
+        state.optimize(angle.inRotation2ds).cosineScale(inputs.turnPosition.inRotation2ds)
 
     // Apply setpoints
-    io.setDriveVelocity(state.speedMetersPerSecond / constants.WheelRadius)
-    io.setTurnPosition(state.angle)
+    io.setDriveVelocity(optimized.velocity / constants.WheelRadius)
+    io.setTurnPosition(optimized.angle)
+    return optimized
   }
 
   fun pointWheelsAt(angle: Angle) {
-    val state = SwerveModuleState(0.0, angle.inRotation2ds)
-    state.optimize(angle.inRotation2ds)
-
-    io.setTurnPosition(state.angle)
+    val state = SwerveModuleVelocity(0.0, angle.inRotation2ds)
+    io.setTurnPosition(state.optimize(this.angle.inRotation2ds).angle)
   }
 
   /** Runs the module with the specified output while controlling to zero degrees. */
   fun runCharacterization(output: Double) {
     io.setDriveOpenLoop(output)
-    io.setTurnPosition(Rotation2d.kZero)
+    io.setTurnPosition(Rotation2d.ZERO)
   }
 
   /** Disables all outputs to motors. */
@@ -116,9 +124,9 @@ class Module(
     /** Returns the module modulePosition (turn angle and drive modulePosition). */
     get() = SwerveModulePosition(position.inMeters, angle.inRotation2ds)
 
-  val state: SwerveModuleState
+  val state: SwerveModuleVelocity
     /** Returns the module state (turn angle and drive velocity). */
-    get() = SwerveModuleState(velocity.inMetersPerSecond, angle.inRotation2ds)
+    get() = SwerveModuleVelocity(velocity.inMetersPerSecond, angle.inRotation2ds)
 
   val odometryTimestamps: DoubleArray
     /** Returns the timestamps of the samples received this cycle. */

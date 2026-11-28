@@ -1,10 +1,10 @@
 package com.team4099.lib.sim.vision
 
 import kotlin.jvm.JvmOverloads
-import edu.wpi.first.math.geometry.Pose3d
-import edu.wpi.first.math.geometry.Rotation3d
-import edu.wpi.first.math.geometry.Transform3d
-import edu.wpi.first.math.geometry.Translation3d
+import org.wpilib.math.geometry.Pose3d
+import org.wpilib.math.geometry.Rotation3d
+import org.wpilib.math.geometry.Transform3d
+import org.wpilib.math.geometry.Translation3d
 import java.util.stream.Collectors
 
 /**
@@ -43,7 +43,7 @@ class RotTrlTransform3d
    * The inverse of this transformation. Applying the inverse will "undo" this transformation.
    */
   fun inverse(): RotTrlTransform3d {
-    val inverseRot = rotation.unaryMinus()
+    val inverseRot = rotation.inverse()
     val inverseTrl = translation.rotateBy(inverseRot).unaryMinus()
     return RotTrlTransform3d(inverseRot, inverseTrl)
   }
@@ -64,7 +64,7 @@ class RotTrlTransform3d
   fun apply(pose: Pose3d): Pose3d {
     return Pose3d(
       pose.translation.rotateBy(rotation).plus(translation),
-      pose.rotation.plus(rotation)
+      pose.rotation.rotateBy(rotation)
     )
   }
 

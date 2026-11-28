@@ -12,12 +12,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue
 import com.team4099.lib.math.clamp
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.IntakeConstants
-import edu.wpi.first.units.measure.Angle as WPIAngle
-import edu.wpi.first.units.measure.AngularAcceleration
-import edu.wpi.first.units.measure.AngularVelocity
-import edu.wpi.first.units.measure.Current as WPICurrent
-import edu.wpi.first.units.measure.Temperature
-import edu.wpi.first.units.measure.Voltage
 import org.team4099.lib.units.base.Current
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
@@ -47,9 +41,16 @@ import org.team4099.lib.units.inRotationsPerSecond
 import org.team4099.lib.units.inRotationsPerSecondPerSecond
 import org.team4099.lib.units.inRotationsPerSecondPerSecondPerSecond
 import org.team4099.lib.units.perSecond
+import org.wpilib.units.measure.Angle as WPIAngle
+import org.wpilib.units.measure.AngularAcceleration
+import org.wpilib.units.measure.AngularVelocity
+import org.wpilib.units.measure.Current as WPICurrent
+import org.wpilib.units.measure.Temperature
+import org.wpilib.units.measure.Voltage
 
 object IntakeIOTalon : IntakeIO {
-  private val intakeTalon: TalonFX = TalonFX(Constants.Intake.INTAKE_PIVOT_MOTOR_ID)
+  private val intakeTalon: TalonFX =
+      TalonFX(Constants.Intake.INTAKE_PIVOT_MOTOR_ID, com.ctre.phoenix6.CANBus())
   private val intakeConfiguration: TalonFXConfiguration = TalonFXConfiguration()
   private val voltageControl = VoltageOut(-1337.volts.inVolts).withEnableFOC(true)
   private val motionMagicVoltage = MotionMagicVoltage(-1337.degrees.inDegrees)
@@ -72,7 +73,6 @@ object IntakeIOTalon : IntakeIO {
     intakeConfiguration.CurrentLimits.SupplyCurrentLimit =
         IntakeConstants.TELEOP_SUPPLY_CURRENT_LIMIT.inAmperes
     intakeConfiguration.Slot0.GravityType = GravityTypeValue.Arm_Cosine
-
     intakeConfiguration.MotionMagic.MotionMagicCruiseVelocity =
         IntakeConstants.MAX_VELOCITY.inRotationsPerSecond
     intakeConfiguration.MotionMagic.MotionMagicAcceleration =
@@ -95,7 +95,7 @@ object IntakeIOTalon : IntakeIO {
   }
 
   override fun setBrakeMode(brake: Boolean) {
-    intakeTalon.setNeutralMode(if (brake) NeutralModeValue.Brake else NeutralModeValue.Coast)
+    intakeTalon.configNeutralMode(if (brake) NeutralModeValue.Brake else NeutralModeValue.Coast)
   }
 
   override fun setVoltage(voltage: ElectricalPotential) {

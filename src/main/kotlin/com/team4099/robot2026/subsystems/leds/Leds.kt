@@ -4,10 +4,12 @@ import com.team4099.lib.hal.Clock
 import com.team4099.robot2026.config.constants.LedConstants.CandleState
 import com.team4099.robot2026.subsystems.superstructure.Superstructure
 import com.team4099.robot2026.util.CustomLogger
-import edu.wpi.first.wpilibj.DriverStation
-import edu.wpi.first.wpilibj2.command.SubsystemBase
 import java.util.function.Supplier
 import org.team4099.lib.units.base.inMilliseconds
+import org.wpilib.command2.SubsystemBase
+import org.wpilib.driverstation.Alliance
+import org.wpilib.driverstation.MatchState
+import org.wpilib.driverstation.RobotState
 
 class Leds(
     var isAligningSupplier: Supplier<Boolean>,
@@ -25,10 +27,9 @@ class Leds(
     val startTime = Clock.epochTime
 
     state =
-        if (DriverStation.isDisabled()) {
-          if (!DriverStation.getAlliance().isPresent) CandleState.NOTHING
-          else if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
-              CandleState.BLUE_DISABLED
+        if (RobotState.isDisabled()) {
+          if (!MatchState.getAlliance().isPresent) CandleState.NOTHING
+          else if (MatchState.getAlliance().get() == Alliance.BLUE) CandleState.BLUE_DISABLED
           else CandleState.RED_DISABLED
         } else if (isAligningSupplier.get()) CandleState.IS_ALIGNING
         else if (stateSupplier.get() == Superstructure.Companion.SuperstructureStates.INTAKE)

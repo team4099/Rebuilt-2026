@@ -5,16 +5,16 @@ import com.team4099.lib.sim.utils.util.PhotonUtils.estimateCamToTargetTrl
 import com.team4099.lib.sim.utils.estimation.OpenCVHelp.solveTagPNP
 import com.team4099.lib.sim.utils.estimation.OpenCVHelp.solveTagsPNP
 import org.photonvision.targeting.PhotonTrackedTarget
-import edu.wpi.first.math.geometry.Rotation2d
+import org.wpilib.math.geometry.Rotation2d
 import org.photonvision.targeting.TargetCorner
 import com.team4099.lib.sim.vision.RotTrlTransform3d
-import edu.wpi.first.apriltag.AprilTag
-import edu.wpi.first.apriltag.AprilTagFieldLayout
-import edu.wpi.first.math.geometry.Pose3d
-import edu.wpi.first.math.geometry.Rotation3d
-import edu.wpi.first.math.geometry.Transform3d
-import edu.wpi.first.math.geometry.Translation3d
-import edu.wpi.first.math.util.Units
+import org.wpilib.fields.FieldTag as AprilTag
+import org.wpilib.fields.Field as AprilTagFieldLayout
+import org.wpilib.math.geometry.Pose3d
+import org.wpilib.math.geometry.Rotation3d
+import org.wpilib.math.geometry.Transform3d
+import org.wpilib.math.geometry.Translation3d
+import org.wpilib.math.util.Units
 import java.util.ArrayList
 import kotlin.jvm.JvmOverloads
 import kotlin.streams.toList

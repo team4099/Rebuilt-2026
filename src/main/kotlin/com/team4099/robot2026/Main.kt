@@ -1,7 +1,7 @@
 package com.team4099.robot2026
 
-import edu.wpi.first.wpilibj.RobotBase
 import kotlin.time.ExperimentalTime
+import org.wpilib.framework.RobotBase
 
 class Main {
   companion object {

@@ -30,13 +30,6 @@ import com.ctre.phoenix6.signals.SensorDirectionValue
 import com.ctre.phoenix6.swerve.SwerveModuleConstants
 import com.team4099.lib.phoenix6.PhoenixUtil.tryUntilOk
 import com.team4099.robot2026.config.constants.DrivetrainConstants
-import edu.wpi.first.math.filter.Debouncer
-import edu.wpi.first.math.geometry.Rotation2d
-import edu.wpi.first.math.util.Units
-import edu.wpi.first.units.measure.Angle
-import edu.wpi.first.units.measure.AngularVelocity
-import edu.wpi.first.units.measure.Current
-import edu.wpi.first.units.measure.Voltage
 import java.util.Queue
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Meter
@@ -49,6 +42,13 @@ import org.team4099.lib.units.derived.inVoltsPerMetersPerSecondPerSecond
 import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
+import org.wpilib.math.filter.Debouncer
+import org.wpilib.math.geometry.Rotation2d
+import org.wpilib.math.util.Units
+import org.wpilib.units.measure.Angle
+import org.wpilib.units.measure.AngularVelocity
+import org.wpilib.units.measure.Current
+import org.wpilib.units.measure.Voltage
 
 abstract class ModuleIOTalonFX(
     val constants:

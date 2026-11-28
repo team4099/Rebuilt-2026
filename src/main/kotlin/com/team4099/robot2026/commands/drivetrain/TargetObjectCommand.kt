@@ -7,17 +7,12 @@ import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.subsystems.vision.Vision
 import com.team4099.robot2026.util.ClusterScore
 import com.team4099.robot2026.util.CustomLogger
-import edu.wpi.first.wpilibj.DriverStation
-import edu.wpi.first.wpilibj.RobotBase
-import edu.wpi.first.wpilibj2.command.Command
 import kotlin.math.PI
-import org.ironmaple.simulation.SimulatedArena
-import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnField
 import org.team4099.lib.controller.PIDController
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Transform2d
 import org.team4099.lib.geometry.Translation2d
-import org.team4099.lib.kinematics.ChassisSpeeds
+import org.team4099.lib.kinematics.ChassisVelocities
 import org.team4099.lib.units.Value
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Time
@@ -31,6 +26,9 @@ import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.inDegreesPerSecond
 import org.team4099.lib.units.perSecond
+import org.wpilib.command2.Command
+import org.wpilib.driverstation.RobotState
+import org.wpilib.framework.RobotBase
 
 class TargetObjectCommand(
     private val drivetrain: Drive,
@@ -51,7 +49,7 @@ class TargetObjectCommand(
               DrivetrainConstants.PID.SIM_AUTO_THETA_PID_KP,
               DrivetrainConstants.PID.SIM_AUTO_THETA_PID_KI,
               DrivetrainConstants.PID.SIM_AUTO_THETA_PID_KD)
-    } else if (DriverStation.isAutonomous()) {
+    } else if (RobotState.isAutonomous()) {
       thetaPID =
           PIDController(
               DrivetrainConstants.PID.AUTO_REEF_PID_KP,
@@ -71,66 +69,6 @@ class TargetObjectCommand(
     startTime = Clock.timestamp
     thetaPID.reset()
     hasThetaAligned = false
-
-    if (RobotBase.isSimulation()) {
-      val arena = SimulatedArena.getInstance()
-      val robotPose = drivetrain.pose
-      val rng = java.util.Random()
-
-      val fuelRadius = 0.15
-      val minSpacing = fuelRadius * 2.0 + 0.01 // 1 cm gap
-      val maxDistanceFromRobot = 5.0
-
-      data class Point(val x: Double, val y: Double)
-
-      fun dist(a: Point, b: Point): Double = kotlin.math.hypot(a.x - b.x, a.y - b.y)
-
-      val allPlacedPoints = mutableListOf<Point>()
-
-      repeat(3) { clusterIndex ->
-        // Random cluster center within 5m of robot
-        val r = rng.nextDouble() * maxDistanceFromRobot
-        val theta = rng.nextDouble() * 2.0 * Math.PI
-
-        val clusterCenter =
-            Point(
-                robotPose.x.inMeters + r * kotlin.math.cos(theta),
-                robotPose.y.inMeters + r * kotlin.math.sin(theta))
-
-        // Random cluster size (tweak bounds if desired)
-        val clusterSize = rng.nextInt(4) + 3 // 3–6 balls
-
-        val clusterPoints = mutableListOf<Point>()
-
-        var attempts = 0
-        while (clusterPoints.size < clusterSize && attempts < 500) {
-          attempts++
-
-          // Small random offset inside cluster
-          val cr = rng.nextDouble() * 0.6
-          val ct = rng.nextDouble() * 2.0 * Math.PI
-
-          val candidate =
-              Point(
-                  clusterCenter.x + cr * kotlin.math.cos(ct),
-                  clusterCenter.y + cr * kotlin.math.sin(ct))
-
-          // Ensure no touching ANY existing fuel
-          val valid = (clusterPoints + allPlacedPoints).all { dist(it, candidate) >= minSpacing }
-
-          if (valid) {
-            clusterPoints.add(candidate)
-            allPlacedPoints.add(candidate)
-          }
-        }
-
-        // Spawn fuel
-        clusterPoints.forEach { p ->
-          arena.addGamePiece(
-              RebuiltFuelOnField(edu.wpi.first.math.geometry.Translation2d(p.x, p.y)))
-        }
-      }
-    }
 
     CustomLogger.recordOutput("TargetObjectCommand/lastInitialized", Clock.timestamp.inSeconds)
   }
@@ -161,7 +99,10 @@ class TargetObjectCommand(
     CustomLogger.recordOutput("TargetObjectCommand/odomTObjecty", robotTObject.y.inMeters)
 
     val setpointRotation: Value<Radian> =
-        robotTObject.translation2d.angle.radians.radians + drivetrain.pose.rotation
+        robotTObject.translation2d.angle
+            .orElse(org.wpilib.math.geometry.Rotation2d.ZERO)
+            .radians
+            .radians + drivetrain.pose.rotation
 
     CustomLogger.recordOutput("TargetObjectCommand/setPointRotation", setpointRotation.inDegrees)
     CustomLogger.recordOutput("TargetObjectCommand/driverot", drivetrain.rotation.inDegrees)
@@ -178,16 +119,17 @@ class TargetObjectCommand(
       hasThetaAligned = true
 
       drivetrain.runSpeeds(
-          ChassisSpeeds(DrivetrainConstants.OBJECT_APPROACH_SPEED, 0.meters.perSecond, thetavel),
+          ChassisVelocities(
+              DrivetrainConstants.OBJECT_APPROACH_SPEED, 0.meters.perSecond, thetavel),
           flipIfRed = false)
     } else {
       drivetrain.runSpeeds(
-          ChassisSpeeds(0.meters.perSecond, 0.meters.perSecond, thetavel), flipIfRed = false)
+          ChassisVelocities(0.meters.perSecond, 0.meters.perSecond, thetavel), flipIfRed = false)
     }
   }
 
   override fun end(interrupted: Boolean) {
-    drivetrain.runSpeeds(ChassisSpeeds())
+    drivetrain.runSpeeds(ChassisVelocities())
     CustomLogger.recordOutput("ActiveCommands/TargetObjectCommand", false)
 
     CustomLogger.recordOutput("TargetObjectCommand/interrupted", interrupted)

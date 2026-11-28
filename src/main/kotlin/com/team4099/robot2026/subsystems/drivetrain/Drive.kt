@@ -12,13 +12,8 @@
 // GNU General Public License for more details.
 package com.team4099.robot2026.subsystems.drivetrain
 
-import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.config.ModuleConfig
-import com.pathplanner.lib.config.PIDConstants
 import com.pathplanner.lib.config.RobotConfig
-import com.pathplanner.lib.controllers.PPHolonomicDriveController
-import com.pathplanner.lib.pathfinding.Pathfinding
-import com.pathplanner.lib.util.PathPlannerLogging
 import com.team4099.lib.hal.Clock
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.DrivetrainConstants
@@ -27,48 +22,15 @@ import com.team4099.robot2026.config.constants.VisionConstants
 import com.team4099.robot2026.util.AllianceFlipUtil
 import com.team4099.robot2026.util.CustomLogger
 import com.team4099.robot2026.util.Velocity2d
-import edu.wpi.first.hal.FRCNetComm
-import edu.wpi.first.hal.HAL
-import edu.wpi.first.math.Matrix
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
-import edu.wpi.first.math.geometry.Pose2d as WPIPose2d
-import edu.wpi.first.math.kinematics.ChassisSpeeds as WPIChassisSpeeds
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics
-import edu.wpi.first.math.kinematics.SwerveModulePosition
-import edu.wpi.first.math.kinematics.SwerveModuleState
-import edu.wpi.first.math.numbers.N1
-import edu.wpi.first.math.numbers.N3
-import edu.wpi.first.math.system.plant.DCMotor
-import edu.wpi.first.units.Units
-import edu.wpi.first.units.Units.KilogramSquareMeters
-import edu.wpi.first.units.Units.Kilograms
-import edu.wpi.first.units.Units.Meters
-import edu.wpi.first.units.Units.Seconds
-import edu.wpi.first.units.Units.Volts
-import edu.wpi.first.units.measure.Voltage
-import edu.wpi.first.wpilibj.Alert
-import edu.wpi.first.wpilibj.DriverStation
-import edu.wpi.first.wpilibj.RobotBase
-import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog
-import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.SubsystemBase
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine
-import frc.robot.util.LocalADStarAK
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
-import java.util.function.Consumer
-import java.util.function.Supplier
-import kotlin.math.absoluteValue
 import kotlin.math.hypot
 import kotlin.math.max
-import org.ironmaple.simulation.drivesims.COTS
-import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig
-import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Translation2d
 import org.team4099.lib.geometry.Twist2d
-import org.team4099.lib.kinematics.ChassisSpeeds
+import org.team4099.lib.kinematics.ChassisVelocities
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.base.inKilograms
 import org.team4099.lib.units.base.inMeters
@@ -76,27 +38,40 @@ import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.inKilogramsMeterSquared
-import org.team4099.lib.units.derived.inMetersPerSecondPerMeterPerSecond
-import org.team4099.lib.units.derived.inMetersPerSecondPerMeterSeconds
-import org.team4099.lib.units.derived.inMetersPerSecondPerMetersPerSecond
-import org.team4099.lib.units.derived.inRadiansPerSecondPerRadian
-import org.team4099.lib.units.derived.inRadiansPerSecondPerRadianSeconds
-import org.team4099.lib.units.derived.inRadiansPerSecondPerRadiansPerSecond
 import org.team4099.lib.units.derived.inRotation2ds
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.inMetersPerSecond
+import org.wpilib.command2.Command
+import org.wpilib.command2.SubsystemBase
+import org.wpilib.command2.sysid.SysIdRoutine
+import org.wpilib.driverstation.RobotState
+import org.wpilib.framework.RobotBase
+import org.wpilib.math.estimator.SwerveDrivePoseEstimator
+import org.wpilib.math.geometry.Pose2d as WPIPose2d
+import org.wpilib.math.kinematics.SwerveDriveKinematics
+import org.wpilib.math.kinematics.SwerveModulePosition
+import org.wpilib.math.kinematics.SwerveModuleVelocity
+import org.wpilib.math.linalg.Matrix
+import org.wpilib.math.numbers.N1
+import org.wpilib.math.numbers.N3
+import org.wpilib.math.system.DCMotor
+import org.wpilib.sysid.SysIdRoutineLog
+import org.wpilib.units.Units
+import org.wpilib.units.Units.Seconds
+import org.wpilib.units.Units.Volts
+import org.wpilib.units.measure.Voltage
+import org.wpilib.util.Alert
 
 class Drive(
     private val gyroIO: GyroIO,
     val moduleIOs: Array<ModuleIO>,
-    val getSimulationPoseCallback: Supplier<edu.wpi.first.math.geometry.Pose2d>,
-    val resetSimulationPoseCallback: Consumer<edu.wpi.first.math.geometry.Pose2d>
 ) : SubsystemBase() {
   private val gyroInputs: GyroIO.GyroIOInputs = GyroIO.GyroIOInputs()
   private val modules = arrayOfNulls<Module>(4) // FL, FR, BL, BR
   private val sysId: SysIdRoutine
   private val gyroDisconnectedAlert =
-      Alert("Disconnected gyro, using kinematics as fallback.", Alert.AlertType.kError)
+      Alert(
+          "gyroDisconnected", "Disconnected gyro, using kinematics as fallback.", Alert.Level.HIGH)
 
   private val kinematics: SwerveDriveKinematics =
       SwerveDriveKinematics(
@@ -119,7 +94,7 @@ class Drive(
           DrivetrainConstants.STATE_STDEVS,
           VisionConstants.singleTagStdDevs)
 
-  var targetSpeeds = ChassisSpeeds()
+  var targetSpeeds = ChassisVelocities()
     private set
 
   init {
@@ -128,43 +103,8 @@ class Drive(
     modules[2] = Module(moduleIOs[2], 2, DrivetrainConstants.tunerConstants.BackLeft)
     modules[3] = Module(moduleIOs[3], 3, DrivetrainConstants.tunerConstants.BackRight)
 
-    // Usage reporting for swerve template
-    HAL.report(
-        FRCNetComm.tResourceType.kResourceType_RobotDrive,
-        FRCNetComm.tInstances.kRobotDriveSwerve_AdvantageKit)
-
     // Start odometry thread
     PhoenixOdometryThread.instance.start()
-
-    // Configure AutoBuilder for PathPlanner
-    // WARNING! takes in pose as pose2d and does not account for z
-    AutoBuilder.configure(
-        { this.pose.pose2d },
-        { pose: WPIPose2d -> this.pose = Pose2d(pose) },
-        { this.chassisSpeeds.chassisSpeedsWPILIB },
-        { speeds: WPIChassisSpeeds -> this.runSpeeds(ChassisSpeeds(speeds)) },
-        PPHolonomicDriveController(
-            PIDConstants(
-                DrivetrainConstants.PID.AUTO_POS_KD.inMetersPerSecondPerMetersPerSecond,
-                DrivetrainConstants.PID.AUTO_POS_KI.inMetersPerSecondPerMeterSeconds,
-                DrivetrainConstants.PID.AUTO_POS_KD.inMetersPerSecondPerMeterPerSecond),
-            PIDConstants(
-                DrivetrainConstants.PID.AUTO_THETA_PID_KP.inRadiansPerSecondPerRadian,
-                DrivetrainConstants.PID.AUTO_THETA_PID_KD.inRadiansPerSecondPerRadiansPerSecond,
-                DrivetrainConstants.PID.AUTO_THETA_PID_KI.inRadiansPerSecondPerRadianSeconds)),
-        PP_CONFIG,
-        {
-          DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) ==
-              DriverStation.Alliance.Red
-        },
-        this)
-    Pathfinding.setPathfinder(LocalADStarAK())
-    PathPlannerLogging.setLogActivePathCallback { activePath: List<WPIPose2d> ->
-      CustomLogger.recordOutput("Odometry/Trajectory", *activePath.toTypedArray<WPIPose2d>())
-    }
-    PathPlannerLogging.setLogTargetPoseCallback { targetPose: WPIPose2d ->
-      CustomLogger.recordOutput("Odometry/TrajectorySetpoint", targetPose)
-    }
 
     // Configure SysId
     sysId =
@@ -189,16 +129,16 @@ class Drive(
     odometryLock.unlock()
 
     // Stop moving when disabled
-    if (DriverStation.isDisabled()) {
+    if (RobotState.isDisabled()) {
       for (module in modules) {
         module!!.stop()
       }
     }
 
     // Log empty setpoint states when disabled
-    if (DriverStation.isDisabled()) {
-      CustomLogger.recordOutput("SwerveStates/Setpoints", *arrayOf<SwerveModuleState>())
-      CustomLogger.recordOutput("SwerveStates/SetpointsOptimized", *arrayOf<SwerveModuleState>())
+    if (RobotState.isDisabled()) {
+      CustomLogger.recordOutput("SwerveStates/Setpoints", *arrayOf<SwerveModuleVelocity>())
+      CustomLogger.recordOutput("SwerveStates/SetpointsOptimized", *arrayOf<SwerveModuleVelocity>())
     }
 
     // Update odometry
@@ -212,8 +152,8 @@ class Drive(
         modulePositions[moduleIndex] = modules[moduleIndex]!!.odometryPositions[i]
         moduleDeltas[moduleIndex] =
             SwerveModulePosition(
-                modulePositions[moduleIndex]!!.distanceMeters -
-                    lastModulePositions[moduleIndex]!!.distanceMeters,
+                modulePositions[moduleIndex]!!.distance -
+                    lastModulePositions[moduleIndex]!!.distance,
                 modulePositions[moduleIndex]!!.angle)
         lastModulePositions[moduleIndex] = modulePositions[moduleIndex]
       }
@@ -237,7 +177,7 @@ class Drive(
     gyroDisconnectedAlert.set(!gyroInputs.connected && RobotBase.isReal())
 
     CustomLogger.recordOutput("Odometry/pose", pose.pose2d)
-    CustomLogger.recordOutput("SwerveChassisSpeeds/Measured", chassisSpeeds.chassisSpeedsWPILIB)
+    CustomLogger.recordOutput("SwerveChassisSpeeds/Measured", chassisSpeeds.chassisVelocitiesWPILIB)
 
     Logger.recordOutput("SwerveStates/Measured", *moduleStates)
 
@@ -254,41 +194,37 @@ class Drive(
    *
    * @param speeds Speeds in meters/sec
    */
-  fun runSpeeds(speeds: ChassisSpeeds, flipIfRed: Boolean = true) {
+  fun runSpeeds(speeds: ChassisVelocities, flipIfRed: Boolean = true) {
     targetSpeeds = speeds
 
     val flippedSpeeds =
         if (flipIfRed && AllianceFlipUtil.shouldFlip())
-            ChassisSpeeds(-speeds.vx, -speeds.vy, speeds.omega)
+            ChassisVelocities(-speeds.vx, -speeds.vy, speeds.omega)
         else speeds
     // Calculate module setpoints
-    val discreteSpeeds =
-        ChassisSpeeds.discretize(flippedSpeeds, Constants.Universal.LOOP_PERIOD_TIME)
-    val setpointStates: Array<SwerveModuleState> =
-        kinematics.toSwerveModuleStates(discreteSpeeds.chassisSpeedsWPILIB)
-
-    SwerveDriveKinematics.desaturateWheelSpeeds(
-        setpointStates, DrivetrainConstants.tunerConstants.kSpeedAt12Volts.inMetersPerSecond)
+    val discreteSpeeds = flippedSpeeds.discretize(Constants.Universal.LOOP_PERIOD_TIME)
+    val setpointStates: Array<SwerveModuleVelocity> =
+        SwerveDriveKinematics.desaturateWheelVelocities(
+            kinematics.toSwerveModuleVelocities(discreteSpeeds.chassisVelocitiesWPILIB),
+            DrivetrainConstants.tunerConstants.kSpeedAt12Volts.inMetersPerSecond)
 
     // Log unoptimized setpoints and setpoint speeds
     Logger.recordOutput("SwerveStates/Setpoints", *setpointStates)
-    Logger.recordOutput("SwerveChassisSpeeds/Setpoints", discreteSpeeds.chassisSpeedsWPILIB)
+    Logger.recordOutput("SwerveChassisSpeeds/Setpoints", discreteSpeeds.chassisVelocitiesWPILIB)
 
     // Send setpoints to modules
-    for (i in 0..3) {
-      modules[i]!!.runSetpoint(setpointStates[i])
-    }
+    val optimizedStates = Array(4) { i -> modules[i]!!.runSetpoint(setpointStates[i]) }
 
-    // Log optimized setpoints (runSetpoint mutates each state)
-    Logger.recordOutput("SwerveStates/SetpointsOptimized", *setpointStates)
+    // Log optimized setpoints
+    Logger.recordOutput("SwerveStates/SetpointsOptimized", *optimizedStates)
   }
 
   fun runTranslationWhileKeepingRotation(vels: Velocity2d, flipIfRed: Boolean = true) {
-    runSpeeds(ChassisSpeeds(vels.x, vels.y, targetSpeeds.omega), flipIfRed)
+    runSpeeds(ChassisVelocities(vels.x, vels.y, targetSpeeds.omega), flipIfRed)
   }
 
   fun runRotationWhileKeepingTranslation(omega: AngularVelocity, flipIfRed: Boolean = true) {
-    runSpeeds(ChassisSpeeds(targetSpeeds.vx, targetSpeeds.vy, omega), flipIfRed)
+    runSpeeds(ChassisVelocities(targetSpeeds.vx, targetSpeeds.vy, omega), flipIfRed)
   }
 
   /** Point the module's wheels at the direction specified */
@@ -307,7 +243,7 @@ class Drive(
 
   /** Stops the drive. */
   fun stop() {
-    runSpeeds(ChassisSpeeds())
+    runSpeeds(ChassisVelocities())
   }
 
   /**
@@ -334,10 +270,10 @@ class Drive(
     return run { runCharacterization(0.0) }.withTimeout(1.0).andThen(sysId.dynamic(direction))
   }
 
-  private val moduleStates: Array<SwerveModuleState?>
+  private val moduleStates: Array<SwerveModuleVelocity?>
     /** Returns the module states (turn angles and drive velocities) for all of the modules. */
     get() {
-      val states: Array<SwerveModuleState?> = arrayOfNulls(4)
+      val states: Array<SwerveModuleVelocity?> = arrayOfNulls(4)
       for (i in 0..3) {
         states[i] = modules[i]!!.state
       }
@@ -354,9 +290,9 @@ class Drive(
       return states
     }
 
-  val chassisSpeeds: ChassisSpeeds
+  val chassisSpeeds: ChassisVelocities
     /** Returns the measured chassis speeds of the robot. */
-    get() = ChassisSpeeds(kinematics.toChassisSpeeds(*moduleStates))
+    get() = ChassisVelocities(kinematics.toChassisVelocities(*moduleStates))
 
   val wheelRadiusCharacterizationPositions: DoubleArray
     /** Returns the position of each module in radians. */
@@ -380,12 +316,9 @@ class Drive(
 
   var pose: Pose2d
     /** Returns the current odometry pose. */
-    get() =
-        if (RobotBase.isReal()) Pose2d(poseEstimator.estimatedPosition)
-        else Pose2d(getSimulationPoseCallback.get())
+    get() = Pose2d(poseEstimator.estimatedPosition)
     /** Resets the current odometry pose. */
     set(pose) {
-      resetSimulationPoseCallback.accept(pose.pose2d)
       poseEstimator.resetPosition(rawGyroRotation.inRotation2ds, modulePositions, pose.pose2d)
     }
 
@@ -466,46 +399,5 @@ class Drive(
               Translation2d(
                   DrivetrainConstants.tunerConstants.BackRight.LocationX.meters,
                   DrivetrainConstants.tunerConstants.BackRight.LocationY.meters))
-
-    val mapleSimConfig: DriveTrainSimulationConfig =
-        DriveTrainSimulationConfig.Default()
-            .withBumperSize(
-                Meters.of(
-                    (DrivetrainConstants.DRIVETRAIN_LENGTH + DrivetrainConstants.BUMPER_WIDTH * 2)
-                        .inMeters),
-                Meters.of(
-                    (DrivetrainConstants.DRIVETRAIN_WIDTH + DrivetrainConstants.BUMPER_WIDTH * 2)
-                        .inMeters))
-            .withTrackLengthTrackWidth(
-                Meters.of(
-                    DrivetrainConstants.tunerConstants.FrontLeft.LocationX.absoluteValue +
-                        DrivetrainConstants.tunerConstants.BackRight.LocationX.absoluteValue),
-                Meters.of(
-                    DrivetrainConstants.tunerConstants.FrontLeft.LocationY.absoluteValue +
-                        DrivetrainConstants.tunerConstants.BackRight.LocationY.absoluteValue))
-            .withRobotMass(Kilograms.of(Constants.Universal.ROBOT_WEIGHT.inKilograms))
-            .withGyro(COTS.ofPigeon2())
-            .withSwerveModules(
-                // FL, FR, BL, BR
-                // reason we map the factories is in case we have seperate
-                // modules (aka seperate ratios/constants) on some corners
-                *(arrayOf(
-                        DrivetrainConstants.tunerConstants.FrontLeft,
-                        DrivetrainConstants.tunerConstants.FrontRight,
-                        DrivetrainConstants.tunerConstants.BackLeft,
-                        DrivetrainConstants.tunerConstants.BackRight)
-                    .map {
-                      SwerveModuleSimulationConfig(
-                          DCMotor.getKrakenX60Foc(1),
-                          DCMotor.getKrakenX60Foc(1),
-                          it.DriveMotorGearRatio,
-                          it.SteerMotorGearRatio,
-                          Volts.of(it.DriveFrictionVoltage),
-                          Volts.of(it.SteerFrictionVoltage),
-                          Meters.of(it.WheelRadius),
-                          KilogramSquareMeters.of(it.SteerInertia),
-                          DrivetrainConstants.CURRENT_COF)
-                    }
-                    .toTypedArray()))
   }
 }

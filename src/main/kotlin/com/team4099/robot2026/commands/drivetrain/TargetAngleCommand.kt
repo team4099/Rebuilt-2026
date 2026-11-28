@@ -7,12 +7,10 @@ import com.team4099.robot2026.config.constants.DrivetrainConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
 import com.team4099.robot2026.util.CustomLogger
 import com.team4099.robot2026.util.driver.DriverProfile
-import edu.wpi.first.wpilibj.RobotBase
-import edu.wpi.first.wpilibj2.command.Command
 import kotlin.math.PI
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.PIDController
-import org.team4099.lib.kinematics.ChassisSpeeds
+import org.team4099.lib.kinematics.ChassisVelocities
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.Radian
@@ -27,6 +25,8 @@ import org.team4099.lib.units.derived.perDegreeSeconds
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.inDegreesPerSecond
 import org.team4099.lib.units.perSecond
+import org.wpilib.command2.Command
+import org.wpilib.framework.RobotBase
 
 class TargetAngleCommand(
     val driver: DriverProfile,
@@ -119,7 +119,7 @@ class TargetAngleCommand(
     val speed = driver.driveSpeedClampedSupplier(driveX, driveY, slowMode)
 
     drivetrain.runSpeeds(
-        ChassisSpeeds.fromFieldRelativeSpeeds(
+        ChassisVelocities.fromFieldRelativeSpeeds(
             speed.first, speed.second, thetaFeedback, drivetrain.rotation))
   }
 
@@ -132,7 +132,7 @@ class TargetAngleCommand(
     val speed = driver.driveSpeedClampedSupplier(driveX, driveY, slowMode)
     val rotation = driver.rotationSpeedClampedSupplier(turn, slowMode)
     drivetrain.runSpeeds(
-        ChassisSpeeds.fromFieldRelativeSpeeds(
+        ChassisVelocities.fromFieldRelativeSpeeds(
             speed.first, speed.second, rotation, drivetrain.pose.rotation))
   }
 }
