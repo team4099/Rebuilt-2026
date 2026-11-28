@@ -37,6 +37,7 @@ import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.Angle
+import org.team4099.lib.units.derived.inKilogramsMeterSquared
 import org.team4099.lib.units.derived.inRotation2ds
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.inMetersPerSecond
@@ -367,7 +368,7 @@ class Drive(
     val PP_CONFIG: RobotConfig =
         RobotConfig(
             Constants.Universal.ROBOT_WEIGHT.inKilograms,
-            Constants.Universal.ROBOT_MOI_KG_METERS_SQUARED,
+            Constants.Universal.ROBOT_MOI.inKilogramsMeterSquared,
             ModuleConfig(
                 DrivetrainConstants.tunerConstants.FrontLeft.WheelRadius,
                 DrivetrainConstants.tunerConstants.kSpeedAt12Volts.inMetersPerSecond,

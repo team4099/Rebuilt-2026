@@ -1,5 +1,6 @@
 package com.team4099.robot2026.subsystems.leds
 
+import com.ctre.phoenix6.CANBus
 import com.ctre.phoenix6.configs.CANdleConfiguration
 import com.ctre.phoenix6.controls.EmptyAnimation
 import com.ctre.phoenix6.hardware.CANdle
@@ -7,7 +8,7 @@ import com.ctre.phoenix6.signals.LossOfSignalBehaviorValue
 import com.team4099.robot2026.config.constants.LedConstants
 
 class LedIOCandle(val id: Int) : LedIO {
-  private val candle = CANdle(id, com.ctre.phoenix6.CANBus())
+  private val candle = CANdle(id, CANBus())
   private val configs = CANdleConfiguration()
 
   init {

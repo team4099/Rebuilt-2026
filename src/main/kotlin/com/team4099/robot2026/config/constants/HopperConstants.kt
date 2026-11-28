@@ -1,7 +1,6 @@
 package com.team4099.robot2026.config.constants
 
 import org.team4099.lib.units.AngularAcceleration
-import org.team4099.lib.units.Value
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Ampere
 import org.team4099.lib.units.base.amps
@@ -16,6 +15,7 @@ import org.team4099.lib.units.derived.StaticFeedforward
 import org.team4099.lib.units.derived.VelocityFeedforward
 import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.gramsMeterSquared
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
@@ -30,7 +30,7 @@ object HopperConstants {
 
   val VOLTAGE_COMPENSATION = 12.volts
 
-  val MOMENT_OF_INERTIA: MomentOfInertia = Value(0.016973)
+  val MOMENT_OF_INERTIA: MomentOfInertia = 16.973.gramsMeterSquared
   val MAX_ACCELERATION: AngularAcceleration = 1000.rotations.perSecond.perSecond
 
   val SCORE_VOLTAGE = 12.volts

@@ -74,6 +74,7 @@ interface CameraIO {
     var frameAccepted: Boolean = false
     var cameraTargets = mutableListOf<PhotonTrackedTarget>()
     var indices = 0
+    var warmedUp = false
 
     override fun toLog(table: LogTable) {
       table.put("timestampSeconds", timestamp.inSeconds)
@@ -142,6 +143,19 @@ interface CameraIO {
 
     if (unreadResults.isEmpty()) return
 
+    if (!inputs.warmedUp) {
+      inputs.cameraTargets =
+          FieldConstants.fieldLayout.tags
+              .map {
+                PhotonTrackedTarget().apply {
+                  fiducialId = 0
+                  bestCameraToTarget = Transform3d()
+                }
+              }
+              .toMutableList()
+      inputs.warmedUp = true
+      return
+    }
     val mostRecentPipelineResult = unreadResults.last()
 
     inputs.timestamp = mostRecentPipelineResult.timestampSeconds.seconds

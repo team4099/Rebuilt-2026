@@ -50,14 +50,15 @@ interface GyroIO {
       table.put("odometryRollTimestamps", odometryRollTimestamps)
       table.put(
           "odometryRollPositionsRadians",
-          odometryRollPositions.map { it.inRadians }.toDoubleArray())
+          DoubleArray(odometryRollPositions.size) { odometryRollPositions[it].inRadians })
       table.put("odometryPitchTimestamps", odometryPitchTimestamps)
       table.put(
           "odometryPitchPositionsRadians",
-          odometryPitchPositions.map { it.inRadians }.toDoubleArray())
+          DoubleArray(odometryPitchPositions.size) { odometryPitchPositions[it].inRadians })
       table.put("odometryYawTimestamps", odometryYawTimestamps)
       table.put(
-          "odometryYawPositionsRadians", odometryYawPositions.map { it.inRadians }.toDoubleArray())
+          "odometryYawPositionsRadians",
+          DoubleArray(odometryYawPositions.size) { odometryYawPositions[it].inRadians })
     }
 
     override fun fromLog(table: LogTable) {
@@ -75,23 +76,17 @@ interface GyroIO {
         yawVelocity = it.degrees.perSecond
       }
       odometryRollTimestamps = table.get("odometryRollTimestamps", odometryRollTimestamps)
-      odometryRollPositions =
-          table
-              .get("odometryRollPositionsRadians", doubleArrayOf())
-              .map { it.radians }
-              .toTypedArray()
+      table.get("odometryRollPositionsRadians", doubleArrayOf()).let { values ->
+        odometryRollPositions = Array(values.size) { values[it].radians }
+      }
       odometryPitchTimestamps = table.get("odometryPitchTimestamps", odometryPitchTimestamps)
-      odometryPitchPositions =
-          table
-              .get("odometryPitchPositionsRadians", doubleArrayOf())
-              .map { it.radians }
-              .toTypedArray()
+      table.get("odometryPitchPositionsRadians", doubleArrayOf()).let { values ->
+        odometryPitchPositions = Array(values.size) { values[it].radians }
+      }
       odometryYawTimestamps = table.get("odometryYawTimestamps", odometryYawTimestamps)
-      odometryYawPositions =
-          table
-              .get("odometryYawPositionsRadians", doubleArrayOf())
-              .map { it.radians }
-              .toTypedArray()
+      table.get("odometryYawPositionsRadians", doubleArrayOf()).let { values ->
+        odometryYawPositions = Array(values.size) { values[it].radians }
+      }
     }
   }
 

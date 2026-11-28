@@ -42,17 +42,17 @@ class Module(
 
   private val driveDisconnectedAlert =
       Alert(
-          "Disconnected drive motor on module $index.",
+          "module${index}DriveDisconnected",
           "Disconnected drive motor on module $index.",
           Alert.Level.HIGH)
   private val turnDisconnectedAlert =
       Alert(
-          "Disconnected turn motor on module $index.",
+          "module${index}TurnDisconnected",
           "Disconnected turn motor on module $index.",
           Alert.Level.HIGH)
   private val turnEncoderDisconnectedAlert =
       Alert(
-          "Disconnected turn encoder on module $index.",
+          "module${index}TurnEncoderDisconnected",
           "Disconnected turn encoder on module $index.",
           Alert.Level.HIGH)
 

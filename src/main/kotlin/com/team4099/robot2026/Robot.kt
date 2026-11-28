@@ -3,6 +3,7 @@ package com.team4099.robot2026
 import bline.commands.FollowPathV2 as FollowPath
 import com.ctre.phoenix6.SignalLogger
 import com.team4099.lib.hal.Clock
+import com.team4099.robot2026.commands.drivetrain.DrivePathOTF
 import com.team4099.robot2026.config.ControlBoard
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.FieldConstants
@@ -43,30 +44,24 @@ import org.wpilib.util.Alert.Level as AlertType
 object Robot : LoggedRobot() {
   val logFolderAlert =
       Alert(
-          "Log folder path does not exist. Data will NOT be logged.",
+          "logFolderMissing",
           "Log folder path does not exist. Data will NOT be logged.",
           AlertType.HIGH)
   val logReceiverQueueAlert =
       Alert(
-          "Logging queue exceeded capacity, data will NOT be logged.",
+          "logQueueOverflow",
           "Logging queue exceeded capacity, data will NOT be logged.",
           AlertType.HIGH)
   val logOpenFileAlert =
-      Alert(
-          "Failed to open log file. Data will NOT be logged",
-          "Failed to open log file. Data will NOT be logged",
-          AlertType.HIGH)
+      Alert("logFileOpenFailed", "Failed to open log file. Data will NOT be logged", AlertType.HIGH)
   val logWriteAlert =
       Alert(
-          "Failed write to the log file. Data will NOT be logged",
+          "logFileWriteFailed",
           "Failed write to the log file. Data will NOT be logged",
           AlertType.HIGH)
-  val logSimulationAlert = Alert("Running in simulation", "Running in simulation", AlertType.LOW)
+  val logSimulationAlert = Alert("simulation", "Running in simulation", AlertType.LOW)
   val logTuningModeEnabled =
-      Alert(
-          "Tuning Mode Enabled. Expect loop times to be greater",
-          "Tuning Mode Enabled. Expect loop times to be greater",
-          AlertType.MEDIUM)
+      Alert("tuningMode", "Tuning Mode Enabled. Expect loop times to be greater", AlertType.MEDIUM)
 
   lateinit var autonomousCommand: Command
   var scoringFirst: Boolean = false
@@ -142,7 +137,8 @@ object Robot : LoggedRobot() {
 
     // init a buncha things
     FieldConstants.fieldLayout
-    RobotContainer.mapDefaultCommands()
+    RobotContainer.mapControls()
+    CommandScheduler.getInstance().schedule(DrivePathOTF.warmupCommand())
 
     // Set the scheduler to log events for command initialize, interrupt, finish
     CommandScheduler.getInstance().onCommandInitialize { command: Command ->
@@ -211,11 +207,7 @@ object Robot : LoggedRobot() {
   }
 
   override fun teleopInit() {
-    RobotContainer.mapTeleopControls()
     RobotContainer.getAutonomousCommand().cancel()
-    if (Constants.Tuning.TUNING_MODE) {
-      RobotContainer.mapTunableCommands()
-    }
     scoringFirst =
         (MatchState.getGameData().orElse("") == "R" &&
             (MatchState.getAlliance().orElse(Alliance.BLUE) == Alliance.BLUE)) ||
@@ -259,12 +251,7 @@ object Robot : LoggedRobot() {
   }
 
   override fun utilityInit() {
-    RobotContainer.mapTestControls()
     RobotContainer.getAutonomousCommand().cancel()
     RobotContainer.intake.setBrakeMode(true)
-  }
-
-  override fun simulationPeriodic() {
-    RobotContainer.updateSimulation()
   }
 }

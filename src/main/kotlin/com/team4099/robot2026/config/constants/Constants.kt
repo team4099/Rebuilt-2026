@@ -5,6 +5,7 @@ import com.team4099.robot2026.util.ArgParser.argToEnum
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.pounds
 import org.team4099.lib.units.base.seconds
+import org.team4099.lib.units.derived.gramsMeterSquared
 import org.team4099.lib.units.milli
 import org.team4099.lib.units.perSecond
 
@@ -27,7 +28,7 @@ object Constants {
     const val DISABLE_COLLISIONS = false
 
     val ROBOT_WEIGHT = 125.pounds
-    const val ROBOT_MOI_KG_METERS_SQUARED = 6.3
+    val ROBOT_MOI = 6300.0.gramsMeterSquared
 
     val whoami = argToEnum<WHOAMI>(System.getProperty("robot"))
   }

@@ -2,7 +2,6 @@ package com.team4099.robot2026.config.constants
 
 import com.team4099.lib.hal.Clock
 import com.team4099.robot2026.Robot
-import org.team4099.lib.units.Value
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.seconds
@@ -14,6 +13,7 @@ import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.gramsMeterSquared
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
@@ -25,7 +25,7 @@ object IntakeConstants {
 
   val INTAKE_TOLERANCE = 2.0.degrees
 
-  val PIVOT_INERTIA: MomentOfInertia = Value(0.001)
+  val PIVOT_INERTIA: MomentOfInertia = 1.gramsMeterSquared
   val PIVOT_LENGTH = 1.0.inches
   val PIVOT_MAX_ANGLE = 120.degrees
   val PIVOT_MIN_ANGLE = (-60).degrees

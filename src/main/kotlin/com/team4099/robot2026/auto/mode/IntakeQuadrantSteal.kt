@@ -15,11 +15,11 @@ class IntakeQuadrantSteal(
     val drivetrain: Drive,
     val superstructure: Superstructure,
     val intake: Intake,
-    pathBuilder: (Path, Boolean) -> FollowPathV2
+    pathBuilder: (Path) -> FollowPathV2
 ) :
     WrapperCommand(
         BLineCommands.sequence(
-            pathBuilder(pathOne, true),
+            pathBuilder(pathOne).withPoseReset(),
             WaitCommand(1.0),
             AgitateIntakeCommand(superstructure, intake).withTimeout(18.0 - (5.60 + 1.0)),
             superstructure.requestForceIntakeCommand(IntakeConstants.ANGLES.FORCE_HALFUP_ANGLE))) {

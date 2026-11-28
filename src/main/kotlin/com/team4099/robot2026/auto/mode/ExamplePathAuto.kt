@@ -6,12 +6,12 @@ import com.team4099.robot2026.subsystems.drivetrain.Drive
 import org.wpilib.command2.SequentialCommandGroup
 import org.wpilib.command2.WaitCommand
 
-class ExamplePathAuto(val drivetrain: Drive, pathBuilder: (Path, Boolean) -> FollowPathV2) :
+class ExamplePathAuto(val drivetrain: Drive, pathBuilder: (Path) -> FollowPathV2) :
     SequentialCommandGroup() {
   init {
     addRequirements(drivetrain)
 
-    addCommands(WaitCommand(0.5), pathBuilder(pathOne, true))
+    addCommands(WaitCommand(0.5), pathBuilder(pathOne).withPoseReset())
   }
 
   companion object {

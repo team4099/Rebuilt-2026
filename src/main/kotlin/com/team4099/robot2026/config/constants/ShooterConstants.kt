@@ -3,7 +3,6 @@ package com.team4099.robot2026.config.constants
 import org.team4099.lib.geometry.Transform2d
 import org.team4099.lib.geometry.Translation2d
 import org.team4099.lib.units.AngularAcceleration
-import org.team4099.lib.units.Value
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Ampere
 import org.team4099.lib.units.base.amps
@@ -19,6 +18,7 @@ import org.team4099.lib.units.derived.StaticFeedforward
 import org.team4099.lib.units.derived.VelocityFeedforward
 import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.gramsMeterSquared
 import org.team4099.lib.units.derived.inKilogramsMeterSquared
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.rotations
@@ -35,7 +35,7 @@ object ShooterConstants {
   val SUPPLY_CURRENT_LIMIT = 40.0.amps
   val STATOR_CURRENT_LIMIT = 80.0.amps
   val VOLTAGE_COMPENSATION = 12.0.volts
-  val MOMENT_OF_INERTIA: MomentOfInertia = Value(0.0035914)
+  val MOMENT_OF_INERTIA: MomentOfInertia = 3.5914.gramsMeterSquared
 
   val MAX_ACCELERATION: AngularAcceleration = 1000.rotations.perSecond.perSecond
 

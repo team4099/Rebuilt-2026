@@ -14,13 +14,13 @@ class EjectSwipe(
     val drivetrain: Drive,
     val superstructure: Superstructure,
     val intake: Intake,
-    pathBuilder: (Path, Boolean) -> FollowPathV2
+    pathBuilder: (Path) -> FollowPathV2
 ) :
     WrapperCommand(
         BLineCommands.sequence(
-            pathBuilder(pathOne, true),
+            pathBuilder(pathOne).withPoseReset(),
             BLineCommands.sequence(
-                pathBuilder(pathTwo, false),
+                pathBuilder(pathTwo),
                 AgitateIntakeCommand(superstructure, intake)
                     .withTimeout(18.0 - (8.94) - (7.30) - (1.0)),
                 superstructure.requestForceIntakeCommand(

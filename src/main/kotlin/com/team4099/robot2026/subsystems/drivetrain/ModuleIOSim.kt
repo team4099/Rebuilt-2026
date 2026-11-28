@@ -67,10 +67,7 @@ class ModuleIOSim(
 
   private var driveClosedLoop = false
   private var turnClosedLoop = false
-  private val wheelRadiusMeters = constants.WheelRadius
-  private val driveController =
-      PIDController(
-          DRIVE_KP * wheelRadiusMeters, DRIVE_KI * wheelRadiusMeters, DRIVE_KD * wheelRadiusMeters)
+  private val driveController = PIDController(DRIVE_KP, DRIVE_KI, DRIVE_KD)
   private val turnController = PIDController(TURN_KP, TURN_KI, TURN_KD)
   private var driveFFVolts = 0.0
   private var driveAppliedVolts = 0.0
@@ -142,8 +139,7 @@ class ModuleIOSim(
 
   override fun setDriveVelocity(velocityRadPerSec: Double) {
     driveClosedLoop = true
-    driveFFVolts =
-        DRIVE_KS * sign(velocityRadPerSec) + DRIVE_KV * velocityRadPerSec * wheelRadiusMeters
+    driveFFVolts = DRIVE_KS * sign(velocityRadPerSec) + DRIVE_KV * velocityRadPerSec
     driveController.setpoint = velocityRadPerSec
   }
 
@@ -158,8 +154,8 @@ class ModuleIOSim(
       kP: ProportionalGain<Velocity<Meter>, Volt>,
       kD: DerivativeGain<Velocity<Meter>, Volt>
   ) {
-    driveController.p = kP.value * wheelRadiusMeters
-    driveController.d = kD.value * wheelRadiusMeters
+    driveController.p = kP.value
+    driveController.d = kD.value
   }
 
   companion object {

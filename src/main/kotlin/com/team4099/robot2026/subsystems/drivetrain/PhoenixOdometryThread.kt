@@ -122,10 +122,10 @@ class PhoenixOdometryThread private constructor() : Thread() {
       // Save new data to queues
       Drive.odometryLock.lock()
       try {
-        // Sample timestamp is current FPGA time minus average CAN latency
+        // Sample timestamp is current monotonic time minus average CAN latency
         //     Default timestamps from Phoenix are NOT compatible with
-        //     FPGA timestamps, this solution is imperfect but close
-        var timestamp: Double = RobotController.getMonotonicTime() / 1e6
+        //     monotonic timestamps, this solution is imperfect but close
+        var timestamp: Double = RobotController.getMonotonicTime() / 1e9
         var totalLatency = 0.0
         for (signal in phoenixSignals) {
           totalLatency += signal!!.timestamp.latency

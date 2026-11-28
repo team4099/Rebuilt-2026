@@ -38,7 +38,6 @@ class CameraIOPVSim(
   override var curStdDevs: Matrix<N3?, N1?> = VisionConstants.singleTagStdDevs
 
   init {
-    // Keep simulated image processing responsive with all cameras enabled.
     cameraProperties.setCalibration(640, 360, 100.0.degrees.inRotation2ds)
     cameraProperties.fps = 30.0
 

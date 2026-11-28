@@ -16,11 +16,11 @@ class IntakeQuadrantFollowFar(
     val drivetrain: Drive,
     val superstructure: Superstructure,
     val intake: Intake,
-    pathBuilder: (Path, Boolean) -> FollowPathV2
+    pathBuilder: (Path) -> FollowPathV2
 ) :
     WrapperCommand(
         BLineCommands.sequence(
-            pathBuilder(pathOne, true),
+            pathBuilder(pathOne).withPoseReset(),
             SequentialCommandGroup(
                 WaitCommand(1.0),
                 AgitateIntakeCommand(superstructure, intake).withTimeout(18.0 - (7.46 + 1.0)),

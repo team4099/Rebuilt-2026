@@ -168,14 +168,14 @@ class DrivePathOTF(
     command =
         FollowPathCommand(
             path,
-            { poseReferenceSupplier.get() },
+            { AllianceFlipUtil.apply(Pose2d(poseReferenceSupplier.get())).pose2d },
             { drivetrain.chassisSpeeds.chassisVelocitiesWPILIB },
             { speeds: WPIChassisSpeeds, ff: DriveFeedforwards ->
               drivetrain.runSpeeds(ChassisVelocities(speeds), flipIfRed = false)
             },
             ppHolonomicDriveController.pplibController,
             Drive.PP_CONFIG,
-            { false },
+            { AllianceFlipUtil.shouldFlip() },
         )
 
     command.initialize()

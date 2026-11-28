@@ -1,6 +1,7 @@
 package com.team4099.robot2026.subsystems.superstructure.climb
 
 import com.ctre.phoenix6.BaseStatusSignal
+import com.ctre.phoenix6.CANBus
 import com.ctre.phoenix6.StatusSignal
 import com.ctre.phoenix6.configs.TalonFXConfiguration
 import com.ctre.phoenix6.controls.MotionMagicVoltage
@@ -33,7 +34,7 @@ import org.wpilib.units.measure.Temperature as WPILibTemperature
 import org.wpilib.units.measure.Voltage as WPILibVoltage
 
 object ClimbIOTalon : ClimbIO {
-  private val talon: TalonFX = TalonFX(Constants.Climb.CLIMB_MOTOR_ID, com.ctre.phoenix6.CANBus())
+  private val talon: TalonFX = TalonFX(Constants.Climb.CLIMB_MOTOR_ID, CANBus())
 
   private val configs: TalonFXConfiguration = TalonFXConfiguration()
   private val slot0Configs = configs.Slot0

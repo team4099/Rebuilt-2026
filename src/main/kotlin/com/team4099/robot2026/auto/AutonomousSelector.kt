@@ -44,7 +44,7 @@ class AutonomousSelector(val drivetrain: Drive) {
   private var fieldSideChooser: LoggedNetworkChooser<Boolean> =
       LoggedNetworkChooser("/SmartDashboard/FieldSide")
 
-  private val pathBuilder: (bline.path.Path, Boolean) -> FollowPath
+  private val pathBuilder: (bline.path.Path) -> FollowPath
 
   private val autoAimOTFCommand = AimOTFCommand(drivetrain, timeout = 20.seconds)
 
@@ -103,9 +103,8 @@ class AutonomousSelector(val drivetrain: Drive) {
                         DrivetrainConstants.PID.AUTO_CROSSTRACK_KD)
                     .wpiPidController)
             .withDefaultShouldFlip()
-    pathBuilder = { path, resetPose ->
-      val command = builder.build(path).withShouldMirror { fieldSideChooser.get() ?: false }
-      if (resetPose) command.withPoseReset() else command
+    pathBuilder = { path ->
+      builder.build(path).withShouldMirror { fieldSideChooser.get() ?: false }
     }
   }
 

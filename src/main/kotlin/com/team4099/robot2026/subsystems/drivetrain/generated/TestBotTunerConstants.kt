@@ -23,7 +23,9 @@ import org.team4099.lib.units.base.inAmperes
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.derived.ElectricalPotential
+import org.team4099.lib.units.derived.gramsMeterSquared
 import org.team4099.lib.units.derived.inDegrees
+import org.team4099.lib.units.derived.inKilogramsMeterSquared
 import org.team4099.lib.units.derived.inRotations
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.inVoltsPerMeters
@@ -154,8 +156,8 @@ object TestBotTunerConstants : TunerConstants {
   private const val kPigeonId = 1
 
   // These are only used for simulation
-  private val kSteerInertia = 0.04
-  private val kDriveInertia = 0.025
+  private val kSteerInertia = 40.0.gramsMeterSquared
+  private val kDriveInertia = 25.0.gramsMeterSquared
 
   // Simulated voltage necessary to overcome friction
   private val kSteerFrictionVoltage: ElectricalPotential = 0.2.volts
@@ -188,8 +190,8 @@ object TestBotTunerConstants : TunerConstants {
           .withDriveMotorInitialConfigs(driveInitialConfigs)
           .withSteerMotorInitialConfigs(steerInitialConfigs)
           .withEncoderInitialConfigs(encoderInitialConfigs)
-          .withSteerInertia(kSteerInertia)
-          .withDriveInertia(kDriveInertia)
+          .withSteerInertia(kSteerInertia.inKilogramsMeterSquared)
+          .withDriveInertia(kDriveInertia.inKilogramsMeterSquared)
           .withSteerFrictionVoltage(kSteerFrictionVoltage.inVolts)
           .withDriveFrictionVoltage(kDriveFrictionVoltage.inVolts)
 

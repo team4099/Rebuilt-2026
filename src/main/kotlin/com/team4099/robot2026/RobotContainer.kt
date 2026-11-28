@@ -4,11 +4,13 @@ import com.ctre.phoenix6.signals.NeutralModeValue
 import com.team4099.robot2026.auto.AutonomousSelector
 import com.team4099.robot2026.commands.AgitateIntakeCommand
 import com.team4099.robot2026.commands.drivetrain.AimOTFCommand
+import com.team4099.robot2026.commands.drivetrain.DrivePathOTF
 import com.team4099.robot2026.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2026.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2026.config.ControlBoard
 import com.team4099.robot2026.config.constants.Constants
 import com.team4099.robot2026.config.constants.DrivetrainConstants
+import com.team4099.robot2026.config.constants.FieldConstants
 import com.team4099.robot2026.config.constants.IntakeConstants
 import com.team4099.robot2026.config.constants.VisionConstants
 import com.team4099.robot2026.subsystems.drivetrain.Drive
@@ -181,7 +183,11 @@ object RobotContainer {
     autonomousSelector.registerEventTriggers(superstructure)
   }
 
-  fun mapDefaultCommands() {
+  fun setDriveBrakeMode(neutralModeValue: NeutralModeValue = NeutralModeValue.Brake) {
+    drivetrain.moduleIOs.forEach { it.toggleBrakeMode(neutralModeValue) }
+  }
+
+  fun mapControls() {
     drivetrain.defaultCommand =
         TeleopDriveCommand(
             driver = Jessika(),
@@ -190,17 +196,7 @@ object RobotContainer {
             { ControlBoard.turn },
             { ControlBoard.slowMode },
             drivetrain)
-  }
 
-  fun setDriveBrakeMode(neutralModeValue: NeutralModeValue = NeutralModeValue.Brake) {
-    drivetrain.moduleIOs.forEach { it.toggleBrakeMode(neutralModeValue) }
-  }
-
-  private var teleopControlsMapped = false
-
-  fun mapTeleopControls() {
-    if (teleopControlsMapped) return
-    teleopControlsMapped = true
     ControlBoard.resetGyro.whileTrue(ResetGyroYawCommand(drivetrain))
 
     ControlBoard.forceHome.onTrue(superstructure.requestForceHomeCommand())
@@ -263,10 +259,7 @@ object RobotContainer {
             superstructure.requestForceHomeCommand(),
             WaitCommand(0.25),
             superstructure.requestIntakeCommand()))
-    ControlBoard.intake.onFalse(
-        ConditionalCommand(InstantCommand(), superstructure.requestIdleCommand()) {
-          ControlBoard.score.asBoolean
-        })
+    ControlBoard.intake.onFalse(superstructure.requestIdleCommand())
     ControlBoard.forceIntakeUpTrigger.whileTrue(
         RepeatCommand(
             SequentialCommandGroup(
@@ -368,6 +361,26 @@ object RobotContainer {
               //                      Superstructure.Companion.SuperstructureStates.PREP_SCORE
             })
 
+    ControlBoard.leftTrenchOTF.whileTrue(
+        ConditionalCommand(
+            DrivePathOTF.allianceZoneToNeutralInLeftTrench(drivetrain),
+            DrivePathOTF.neutralZoneToAllianceInLeftTrench(drivetrain)) {
+              FieldConstants.inTrenchAllianceZone(drivetrain.pose)
+            })
+    ControlBoard.rightTrenchOTF.whileTrue(
+        ConditionalCommand(
+            DrivePathOTF.allianceZoneToNeutralInRightTrench(drivetrain),
+            DrivePathOTF.neutralZoneToAllianceInRightTrench(drivetrain)) {
+              FieldConstants.inTrenchAllianceZone(drivetrain.pose)
+            })
+
+    //    ControlBoard.climbOTF.whileTrue(
+    //        ConditionalCommand(
+    //            DrivePathOTF.alignClimbBottom(drivetrain), DrivePathOTF.alignClimbTop(drivetrain))
+    // {
+    //              FieldConstants.inClimbLowerHalf(drivetrain.pose)
+    //            })\][
+
     //    ControlBoard.quasiForward.whileTrue(
     //        drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kForward))
     //    ControlBoard.quasiBackward.whileTrue(
@@ -380,16 +393,10 @@ object RobotContainer {
     ControlBoard.eject.onTrue(superstructure.requestEjectCommand())
   }
 
-  fun mapTestControls() {}
-
-  fun mapTunableCommands() {}
-
   fun getAutonomousCommand() = autonomousSelector.getCommand(superstructure, intake)
 
   fun resetSimulationField() {
     if (RobotBase.isSimulation())
         drivetrain.pose = org.team4099.lib.geometry.Pose2d(DrivetrainConstants.INITIAL_SIM_POSE)
   }
-
-  fun updateSimulation() {}
 }
